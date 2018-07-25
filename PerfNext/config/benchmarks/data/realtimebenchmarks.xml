@@ -1,0 +1,106 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<benchmarks>
+	<benchmark name="Calibrate_Test" variant="Realtime" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="sharedCache">calibrate</property>
+			<property name="benchmarkArgs">all</property>
+			<property name="timeout">240000</property>
+			<property name="AOT_timeout">1800000</property>
+			<property name="minHeapSize">900</property>
+			<property name="maxHeapSize">900</property>
+			<property name="JDKOptions"> -Xrealtime -Xgc:nosynchronousGCOnOOM -Xgc:targetUtilization=50 -Xdisableexplicitgc -Xgc:scopedMemoryMaximumSize=128m,immortalMemorySize=100m -Xnojit</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/Calibrate_Test</property>
+			<property name="resultTag">SUMMARY:</property>
+		</properties>	
+		<iterations>100</iterations>
+	</benchmark>
+	<benchmark name="Recalibrate" variant="Realtime_longevity" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="minHeapSize" hidden="true">0</property>
+			<property name="maxHeapSize" hidden="true">0</property>
+			<property name="testScript">run-tests.stdout.sh</property>
+			<property name="benchmarkArgs">2</property>
+			<property name="timeout">216000000</property>
+			<property name="environment"></property>
+			<property name="resultTag">GC Priority Adjustment</property>
+			<property name="instDir">{perffarm_root}/Recalibrate</property>
+			<property name="workDir">{perffarm_root}/Recalibrate/recalibrate1.3.5/bin</property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="Recalibrate" variant="Realtime_5min" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="minHeapSize" hidden="true">0</property>
+			<property name="maxHeapSize" hidden="true">0</property>
+			<property name="testScript">run-tests.stdout.sh</property>
+			<property name="benchmarkArgs">8</property>
+			<property name="timeout">3000000</property>
+			<property name="environment"></property>
+			<property name="resultTag">GC Priority Adjustment</property>
+			<property name="instDir">{perffarm_root}/Recalibrate</property>
+			<property name="workDir">{perffarm_root}/Recalibrate/recalibrate1.3.5/bin</property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="Recalibrate" variant="Realtime_1hour" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="minHeapSize" hidden="true">0</property>
+			<property name="maxHeapSize" hidden="true">0</property>
+			<property name="testScript">run-tests.stdout.sh</property>
+			<property name="benchmarkArgs">1</property>
+			<property name="timeout">36000000</property>
+			<property name="environment"></property>
+			<property name="resultTag">GC Priority Adjustment</property>
+			<property name="instDir">{perffarm_root}/Recalibrate</property>
+			<property name="workDir">{perffarm_root}/Recalibrate/recalibrate1.3.5/bin</property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="RTMB" variant="WRT" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="minHeapSize"/>
+			<property name="maxHeapSize" autoCorrect="false" default="2048"/>
+			<property name="JDKOptions">-Xrealtime -Xgc:scopedMemoryMaximumSize=500m -Xgc:noSynchronousGCOnOOM</property>
+			<property name="benchmarkArgs">--file ./config/hrt_input.txt --jvm-options "\""-Xmx128m -Xrealtime -Xgc:scopedMemoryMaximumSize=10m -Xgc:noSynchronousGCOnOOM"\"" -v:simple</property>
+			<property name="timeout">36000000</property>
+			<property name="environment"></property>
+			<property name="resultTag">Final Score for system%.</property>
+			<property name="workDir">{perffarm_root}/RTMB/rtmb_java</property>
+		</properties>	
+		<iterations>5</iterations>
+	</benchmark>
+	<benchmark name="RTMB" variant="SRT" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="minHeapSize"/>
+			<property name="maxHeapSize" autoCorrect="false" default="2048"/>
+			<property name="JDKOptions" bits="64">-Xjit -Xcompressedrefs -Xgcpolicy:metronome</property>
+			<property name="JDKOptions" bits="32">-Xjit -Xgcpolicy:metronome</property>
+			<property name="benchmarkArgs" bits="64">--file ./config/srt_input.txt --jvm-options "\""-Xcompressedrefs -Xmx128m -Xgcpolicy:metronome -Xgc:noSynchronousGCOnOOM -Xjit"\"" -v:simple --timer-accuracy "\""10022824 ns"\""</property>
+			<property name="benchmarkArgs" bits="32">--file ./config/srt_input.txt --jvm-options "\""-Xmx128m -Xgcpolicy:metronome -Xgc:noSynchronousGCOnOOM -Xjit"\"" -v:simple --timer-accuracy "\""10022824 ns"\""</property>
+			<property name="timeout">36000000</property>
+			<property name="environment"></property>
+			<property name="resultTag">Final Score for system%.</property>
+			<property name="workDir">{perffarm_root}/RTMB/rtmb_java</property>
+		</properties>	
+		<iterations>5</iterations>
+	</benchmark>
+</benchmarks>

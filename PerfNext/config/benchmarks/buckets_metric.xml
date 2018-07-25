@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<buckets>
+    <bucket name="Liberty" description="Liberty benchmarks">
+        <benchmark name="DayTrader3">
+        	<metric metric="Throughput, JIT CPU total ms" name="LibertyDayTrader" variant="17dev-4way-LargeThreadPool"/>
+        	<metric metric="Startup: Footprint, Startup time, Adjusted Single Server Memory" name="LibertyStartupDT" variant="17dev-4way-0-256-qs"/>
+        </benchmark>
+        <benchmark name="TradeLite">
+        	<metric metric="Footprint, Startup time, Adjusted Single Server Memory" name="LibertyStartup" variant="17dev-4way-0-256-qs"/>
+     	</benchmark>
+     	<benchmark name="HugeEJB">
+        	<metric metric="Footprint, Startup time, Adjusted Single Server Memory" name="LibertyStartupHugeEJB" variant="17dev-4way-0-256-qs"/>
+     	</benchmark>
+        <benchmark name="AcmeAir">
+        	<metric metric="Throughput, JIT CPU total ms" name="LibertyAcmeAir" variant="17dev-4way"/>
+        	<metric metric="Startup: Footprint, Startup time, Adjusted Single Server Memory" name="LibertyStartupAcmeAir" variant="17dev-4way-0-256-qs"/>
+<!-- 			<metric metric="WithIdleMode: Throughput, JIT CPU total ms" name="LibertyAcmeAir" variant="9dev-4way-withIdle"/> -->
+        </benchmark>
+        <benchmark name="DayTrader7">
+        	<metric metric="Throughput, JIT CPU total ms" name="LibertyDayTrader7" variant="17dev-4way-LargeThreadPool"/>
+        	<metric metric="Startup: Footprint, Startup time, Adjusted Single Server Memory" name="LibertyStartupDT7" variant="17dev-4way-0-256-qs"/>
+       	</benchmark>
+    </bucket>
+
+    <bucket name="SPEC" description="SPEC benchmarks">
+        <benchmark name="SPECjbb2015">
+			<metric metric="Multi Group: max_jOPS, critical_jOPS" name="SPECjbb2015" variant="multi_2grp_gencon"/>
+			<metric metric="Composite: max_jOPS, critical_jOPS" name="SPECjbb2015" variant="TODO"/>
+        </benchmark>
+        <benchmark name="SPECjvm2008">
+			<metric metric="Basic: compress derby mpegaudio serial sunflow" name="SPECjvm2008" variant="Basic"/>
+			<metric metric="XML: xml.transform xml.validation" name="SPECjvm2008" variant="xml"/>
+			<metric metric="Scimark Large: scimark.fft.large scimark.lu.large scimark.sor.large scimark.sparse.large" name="SPECjvm2008" variant="scimark_large"/>
+			<metric metric="Scimark Small: scimark.fft.small scimark.lu.small scimark.sor.small scimark.sparse.small scimark.monte_carlo" name="SPECjvm2008" variant="scimark_small"/>
+			<metric metric="Crypto: crypto.aes crypto.rsa crypto.signverify" name="SPECjvm2008" variant="crypto"/>
+			<metric metric="Compiler: compiler.compiler compiler.sunflow" name="SPECjvm2008" variant="compiler"/>
+			<metric metric="Startup: Starts each benchmark (i.e. startup.helloworld, startup.scimark.fft, ...) in a new JVM for one operation" name="SPECjvm2008" variant="startup"/>
+        </benchmark>        
+    </bucket>
+
+    <bucket name="ODM" description="ODM benchmarks">
+        <benchmark name="v881">
+        	<metric metric="Seg5FastpathRVEJB: Global Throughput" name="ILOG_WODM" variant="881-4way-Seg5FastpathRVEJB"/>
+        	<metric metric="Seg300RulesFastpathRVEJB: Global Throughput" name="ILOG_WODM" variant="881-4way-Seg300RulesFastpathRVEJB"/>
+        </benchmark>
+        <benchmark name="v870">
+        	<metric metric="Seg5FastpathRVEJB: Global Throughput" name="ILOG_WODM" variant="870-4way-Seg5FastpathRVEJB"/>
+        	<metric metric="Seg300RulesFastpathRVEJB: Global Throughput" name="ILOG_WODM" variant="870-4way-Seg300RulesFastpathRVEJB"/>
+        </benchmark>
+    </bucket>
+
+    <bucket name="Spark" description="ApacheSpark benchmarks">
+        <benchmark name="HiBench">
+        	<metric metric="PageRank, Terasort, Wordcount, Sort, Sleep" name="HiBench" variant="default"/>
+        </benchmark>
+    </bucket>
+
+    <bucket name="Crypto">
+        <benchmark name="Crypto-BB" variant="default">
+        	<metric metric="CipherBench (AES_CBC, AES_ECB, DESede_CBC, DES_CBC), DigestBench (SHA, SHA256, SHA512), EllipticCurveBench" name="Crypto-BB" variant="default"/>
+        </benchmark>
+    </bucket>
+</buckets>
+
+

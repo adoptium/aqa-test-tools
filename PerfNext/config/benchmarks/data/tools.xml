@@ -1,0 +1,53 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<!-- Benchmarks list for the XUL launcher.
+	 Notes on the syntax:
+	 
+	 Each benchmark element must have the name and variant attributes defined.
+	 
+	 The setup attribute instructs the Axxon job creation process to generate
+	 setup jobs for that benchmark. Typically, perffarm benchmarks require setup
+	 jobs. Large benchmarks (such as WAS) are pre-installed and thus do not have
+	 a setup step.
+	 
+	 Each benchmark has a set of capabilities and a set of properties:
+	  - Capabilities restrict a benchmark to running on a machine that provides
+	 that capability. Capabilities defined against a machine may carry a set of
+	 property values specific to that machine.
+	  - Properties provide default values used to construct the benchmark job,
+	  which may be modified by the user through the XUL launcher. They may
+	  optionally be qualified by the 'bits' attribute, which restricts that
+	  property to apply only when a matching platform is selected.
+	  
+	  A benchmark may be restricted to a subset of platforms - in which case,
+	  there should be a platforms element with separate platform subelements
+	  containing the 'type' of platform (eg. WindowsIA32) as defined in
+	  platforms.xml. If no platforms element is present, the benchmark will be
+	  available on all platforms.
+	  
+	  The iterations element specifies the default number of iterations for
+	  that benchmark (this can be overridden by the user in the launcher).
+ -->
+<benchmarks>
+	<benchmark name="gcmv" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">gcmv_Package</property>
+			<property name="workDir">{perffarm_root}/gcmv</property>
+			<property name="timeout">10000</property>
+			<property name="resultTag">Garbage Collection and Memory Visualizer</property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+</benchmarks>

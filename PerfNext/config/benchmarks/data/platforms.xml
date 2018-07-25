@@ -1,0 +1,247 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<!-- Platforms list for the XUL launcher.
+	 Notes on syntax:
+	 
+	 A platform entry contains a set of values that should be used when 
+	 constructing jobs that run on that platform.
+	 
+	 The type, bits and id attributes must be set. The platform type is a
+	 'friendly' name which need only match the names used in the restrictions
+	 placed on benchmarks in benchmarks.xml. The id attribute must match the
+	 platform id assigned to that platform by the JTC build system.
+	 
+	 A number of restrictions can be defined against a platform; currently, the
+	 only one recognised is 'maxHeapSize'. This is a hard limit for this
+	 platform on the heap size that can be requested (a lower limit may be set
+	 on an individual machine).
+	 
+	 Defining a new platform requires:
+	  - a platform entry added here
+	  - the platform selection radio buttons updated to allow the new platform
+	  to be selected
+	  - the selectedPlatform() function in perflaunchui.js updated to return
+	  the appropriate build identifier  
+
+ -->
+<platforms>
+	<platform type="WindowsIA32" bits="32" id="wi32">
+		<pathSeparator>\</pathSeparator>
+		<classpathSeparator>;</classpathSeparator>
+		<commandSeparator>&amp;</commandSeparator>
+		<trafficLightPlatformName>Windows_IA32</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">1500</restriction>
+		</restrictions>
+	</platform>
+	<platform type="WindowsAMD64" bits="64" id="wa64">
+		<pathSeparator>\</pathSeparator>
+		<classpathSeparator>;</classpathSeparator>
+		<commandSeparator>&amp;</commandSeparator>
+		<trafficLightPlatformName>Windows_AMD64</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+	<platform type="LinuxIA32" bits="32" id="xi32">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>Linux_IA32</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">2560</restriction>
+		</restrictions>
+	</platform>
+	<platform type="LinuxAMD64" bits="64" id="xa64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>Linux_AMD64</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+	<platform type="AIXPPC32" bits="32" id="ap32">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>AIX_PPC32</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">2560</restriction>
+		</restrictions>
+	</platform>
+	<platform type="AIXPPC64" bits="64" id="ap64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>AIX_PPC64</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+	<platform type="LinuxPPC32" bits="32" id="xp32">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>Linux_PPC32</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">2560</restriction>
+		</restrictions>
+	</platform>
+	<platform type="LinuxPPC64" bits="64" id="xp64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>Linux_PPC64</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+	<platform type="LinuxPPCLE64" bits="64" id="xl64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>Linux_PPCLE64</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+	<platform type="zLinux31" bits="31" id="xz31">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>ZLinux_Z31</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">1500</restriction>
+		</restrictions>
+	</platform>
+	<platform type="zLinux64" bits="64" id="xz64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>ZLinux_Z64</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+	<platform type="zOS31" bits="31" id="mz31">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>ZOS_Z31</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">1400</restriction>
+		</restrictions>
+	</platform>
+	<platform type="zOS64" bits="64" id="mz64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>ZOS_Z64</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+	<platform type="DarwinIA32" bits="32" id="di32">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>&amp;</commandSeparator>
+		<trafficLightPlatformName>Darwin_IA32</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">1500</restriction>
+		</restrictions>
+	</platform>
+	<platform type="DarwinAMD64" bits="64" id="da64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>&amp;</commandSeparator>
+		<trafficLightPlatformName>Darwin_AMD64</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+<!-- Hybrid Platforms -->
+	<platform type="HP-IA32" bits="32" id="hpia32">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName/>
+		<restrictions>
+			<restriction name="maxHeapSize">1500</restriction>
+		</restrictions>
+	</platform>
+	<platform type="HP-IA64" bits="64" id="hpia64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>HP-UX_ITANIUM</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+	<platform type="HP-UX" bits="32" id="hpux">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>HP-UX_PARISC</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">1500</restriction>
+		</restrictions>
+	</platform>
+	<platform type="HP-UX64" bits="64" id="hpux64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName/>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+	<platform type="SolarisIA32" bits="32" id="solx86">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName/>
+		<restrictions>
+			<restriction name="maxHeapSize">1500</restriction>
+		</restrictions>
+	</platform>
+	<platform type="SolarisAMD64" bits="64" id="solx64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>SOLARIS_OPTERON_x64</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+	<platform type="SolarisSPARC" bits="32" id="sol">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>SOLARIS_SPARC32</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">1500</restriction>
+		</restrictions>
+	</platform>
+	<platform type="SolarisSPARC64" bits="64" id="sol64">
+		<pathSeparator>/</pathSeparator>
+		<classpathSeparator>:</classpathSeparator>
+		<commandSeparator>;</commandSeparator>
+		<trafficLightPlatformName>SOLARIS_SPARC64</trafficLightPlatformName>
+		<restrictions>
+			<restriction name="maxHeapSize">65536</restriction>
+		</restrictions>
+	</platform>
+</platforms>

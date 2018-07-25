@@ -1,0 +1,42 @@
+const { TestResultsDB, ObjectID } = require( '../Database' );
+module.exports = async ( req, res ) => {
+    const { testId, limit } = req.query;
+    const db = new TestResultsDB();
+    const data = await db.getTestById( testId );
+    const history = await db.aggregate( [
+        {
+            $match: {
+                "buildName": data[0].buildName,
+                "type": data[0].type,
+            }
+        },
+        { $limit: parseInt( limit, 10 ) },
+        { $unwind: "$tests" },
+        {
+            $match: {
+                "tests.testName": data[0].tests.testName
+            }
+        },
+        {
+            $project: {
+                parentId: 1,
+                buildName: 1,
+                buildNum: 1,
+                machine: 1,
+                buildUrl: 1,
+                tests: 1,
+                timestamp: 1
+            }
+        },
+        { $sort: { 'buildNum': -1 } },
+    ] );
+
+    let result = [];
+    for ( let element of history ) {
+        const parentObj = await db.getSpecificData( { "_id": element.parentId }, { "buildNum": 1 } );
+        element.parentNum = parentObj[0].buildNum;
+        result.push(element);
+    }
+
+    res.send( result );
+}

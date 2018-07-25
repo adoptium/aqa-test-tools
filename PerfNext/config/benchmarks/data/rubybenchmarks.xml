@@ -1,0 +1,278 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<benchmarks>
+	<benchmark name="RubyTest" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Ruby" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_rubytest</property>
+			<property name="benchmarkArgs"></property>
+			<property name="instances">4</property>
+			<property name="environment"></property>
+			<property name="workDir">{ruby_root}/RubyTest</property>
+			<property name="resultTag">COMPLETE</property>
+			<property name="timeout">480000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="Ruby_default" variant="ALL" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Ruby" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_rubytests</property>
+			<property name="benchmarks">all</property>
+			<property name="environment"></property>
+			<property name="workDir">{ruby_root}/RubyTest</property>
+			<property name="resultTag">COMPLETE</property>
+			<property name="timeout">7200000</property>
+		</properties>
+		<iterations>4</iterations>		
+	</benchmark>
+	<benchmark name="Ruby_Suite" variant="macro" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_rubySuite</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="benchmarks">macro-benchmarks</property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/RubySuite</property>
+                        <property name="resultTag">Ruby Performance Benchmarks Finished Successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>1</iterations>
+        </benchmark>
+         <benchmark name="Ruby_Suite" variant="micro" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_rubySuite</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="benchmarks">micro-benchmarks</property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/RubySuite</property>
+                        <property name="resultTag">Ruby Performance Benchmarks Finished Successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>1</iterations>
+        </benchmark>
+        <benchmark name="Ruby_Suite" variant="ALL" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_rubySuite</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="benchmarks">all</property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/RubySuite</property>
+                        <property name="resultTag">Ruby Performance Benchmarks Finished Successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>1</iterations>
+        </benchmark>
+        <benchmark name="Ruby_simple_StartupFootprint" variant="sleeper" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_rubySimple_sufp</property>
+                        <property name="bench_name">sleeper</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/OMR_simpleload</property>
+                        <property name="resultTag">Ruby sleeper StartupFootprint measurement Finished</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>3</iterations>
+        </benchmark>
+        <benchmark name="RubyRails_PoC_StartupFootprint" variant="v2.2" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_rubyRails_sufp</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="NODE_SDK"></property>
+                        <property name="users">10</property>
+                        <property name="duration">60</property>
+                        <property name="port">3000</property>
+                        <property name="hostname">localhost</property>
+                        <property name="jmeter_script">Rails_Polls_sqlite3_v2.2-Throughput.jmx</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/rpoll_v2.2</property>
+                        <property name="resultTag">Ruby Rails PoC StartupFootprint measurement Finished</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>3</iterations>
+        </benchmark>
+        <benchmark name="RubyRails_PoC_Throughput" variant="v2.2" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_rubyRails_PoC</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="NODE_SDK"></property>
+                        <property name="users">40</property>
+                        <property name="duration">120</property>
+                        <property name="port">3000</property>
+                        <property name="hostname">localhost</property>
+                        <property name="jmeter_script">Rails_Polls_sqlite3_v2.2-Throughput.jmx</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/rpoll_v2.2</property>
+                        <property name="resultTag">Ruby Rails PoC Benchmark Finished Successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>3</iterations>
+        </benchmark>
+        <benchmark name="Ruby_Bench9K" variant="classic" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_bench9k</property>
+                        <property name="benchmarks">classic</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="RubyOptions"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/bench9000</property>
+                        <property name="resultTag">Ruby bench9000 has completed successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="Ruby_Bench9K" variant="chunky" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_bench9k</property>
+                        <property name="benchmarks">chunky</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="RubyOptions"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/bench9000</property>
+                        <property name="resultTag">Ruby bench9000 has completed successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="Ruby_Bench9K" variant="psd" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_bench9k</property>
+                        <property name="benchmarks">psd</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="RubyOptions"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/bench9000</property>
+                        <property name="resultTag">Ruby bench9000 has completed successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="Ruby_Bench9K" variant="micro" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_bench9k</property>
+                        <property name="benchmarks">micro</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="RubyOptions"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/bench9000</property>
+                        <property name="resultTag">Ruby bench9000 has completed successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="Ruby_Bench9K" variant="rbs_micro_bench" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_bench9k</property>
+                        <property name="benchmarks">rbs_micro_bench</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="RubyOptions"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/bench9000</property>
+                        <property name="resultTag">Ruby bench9000 has completed successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="Ruby_Bench9K" variant="ruby-benchmark-suite" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Ruby" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_bench9k</property>
+                        <property name="benchmarks">ruby-benchmark-suite</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="RubyOptions"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{ruby_root}/bench9000</property>
+                        <property name="resultTag">Ruby bench9000 has completed successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+</benchmarks>

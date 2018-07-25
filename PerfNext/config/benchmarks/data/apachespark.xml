@@ -1,0 +1,224 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+
+<!-- Apache Spark benchmarks
+ -->
+<benchmarks>
+
+	<benchmark name="SparkInstall" variant="Spark" setup="false">
+		<platforms/>
+		<capabilities>
+			<capability name="Spark" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="sparkCache">/spark_cache</property>
+			<property name="zipFilename">latestspark</property>
+			<property name="rootDir">{perffarm_root}/ApacheSpark</property>
+			<property name="extractSparkPatchDir">{perffarm_root}/ApacheSpark/spark-dk-1.0</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+
+	<benchmark name="ApacheSpark" variant="PySpark" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Spark" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="JDKOptions" bits="64"></property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="DumpOptions"></property>
+			<property name="SparkDriverMemory">8g</property>
+			<property name="Variant">PySpark</property>
+			<property name="NumberRecords">1000000</property>
+			<property name="NumberPartitions">100</property>
+			<property name="NumberTrials">10</property>
+			<property name="InterTrialWait">1</property>
+			<property name="SparkHomeDir">{perffarm_root}/ApacheSpark/spark-1.2.2</property>
+			<property name="timeout">3600000</property>
+			<property name="script">RunSpark.sh</property>
+			<property name="workDir">{perffarm_root}/ApacheSpark</property>
+			<property name="resultTag">Number of failed tests: 0</property>
+			<property name="benchmarkPackage" hidden="true">ApacheSpark_Package</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	
+		<benchmark name="ApacheSpark" variant="Spark" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Spark" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="JDKOptions" bits="64"></property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="DumpOptions"></property>
+			<property name="SparkDriverMemory">8g</property>
+			<property name="Variant">Spark</property>
+			<property name="NumberRecords">200 * 1000 * 1000</property>
+			<property name="NumberPartitions">500</property>
+			<property name="InterTrialWait">3</property>
+			<property name="SparkHomeDir">{perffarm_root}/ApacheSpark/spark-1.2.2</property>
+			<property name="timeout">3600000</property>
+			<property name="script">RunSpark.sh</property>
+			<property name="workDir">{perffarm_root}/ApacheSpark</property>
+			<property name="resultTag">Number of failed tests: 0</property>
+			<property name="benchmarkPackage" hidden="true">ApacheSpark_Package</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	
+		<benchmark name="ApacheSpark" variant="SparkTest-1.4.0" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Spark" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="JDKOptions" bits="64"></property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="DumpOptions"></property>
+			<property name="SparkDriverMemory">8g</property>
+			<property name="Variant">Spark</property>
+			<property name="NumberRecords">200 * 1000 * 1000</property>
+			<property name="NumberPartitions">500</property>
+			<property name="InterTrialWait">3</property>
+			<property name="SparkHomeDir">{perffarm_root}/ApacheSpark/spark-1.4.0</property>
+			<property name="timeout">5000000</property>
+			<property name="script">RunSpark.sh</property>
+			<property name="workDir">{perffarm_root}/ApacheSpark</property>
+			<property name="resultTag">Number of failed tests: 0</property>
+			<property name="benchmarkPackage" hidden="true">ApacheSpark_Package</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	
+	
+		<benchmark name="ApacheSpark" variant="TempSparkTest" setup="false">
+		<platforms/>
+		<capabilities>
+			<capability name="Spark" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="JDKOptions" bits="64"></property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="DumpOptions"></property>
+			<property name="SparkDriverMemory">8g</property>
+			<property name="Variant">Spark</property>
+			<property name="NumberRecords">200 * 1000</property>
+			<property name="NumberPartitions">500</property>
+			<property name="InterTrialWait">3</property>
+			<property name="SparkHomeDir">{perffarm_root}/ApacheSpark/spark-1.2.2</property>
+			<property name="timeout">3600000</property>
+			<property name="script">RunSpark.sh</property>
+			<property name="workDir">{perffarm_root}/ApacheSpark</property>
+			<property name="resultTag">Number of failed tests: 0</property>
+			<property name="benchmarkPackage" hidden="true">ApacheSpark_Package</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	
+	
+		<benchmark name="ApacheSpark" variant="Streaming" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Spark" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="JDKOptions" bits="64"></property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="DumpOptions"></property>
+			<property name="SparkDriverMemory">8g</property>
+			<property name="Variant">Streaming</property>
+			<property name="NumberRecords">1000000</property>
+			<property name="NumberPartitions">100</property>
+			<property name="NumberTrials">10</property>
+			<property name="InterTrialWait">1</property>
+			<property name="SparkHomeDir">{perffarm_root}/ApacheSpark/spark-1.2.2</property>
+			<property name="timeout">3600000</property>
+			<property name="script">RunSpark.sh</property>
+			<property name="workDir">{perffarm_root}/ApacheSpark</property>
+			<property name="resultTag">Number of failed tests: 0</property>
+			<property name="benchmarkPackage" hidden="true">ApacheSpark_Package</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	
+		<benchmark name="ApacheSpark" variant="MLLIB" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Spark" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="JDKOptions" bits="64"></property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="DumpOptions"></property>
+			<property name="SparkDriverMemory">8g</property>
+			<property name="Variant">MLLIB</property>
+			<property name="NumberRecords">1000000</property>
+			<property name="NumberPartitions">100</property>
+			<property name="NumberTrials">10</property>
+			<property name="InterTrialWait">1</property>
+			<property name="SparkHomeDir">{perffarm_root}/ApacheSpark/spark-1.2.2</property>
+			<property name="timeout">3600000</property>
+			<property name="script">RunSpark.sh</property>
+			<property name="workDir">{perffarm_root}/ApacheSpark</property>
+			<property name="resultTag">Number of failed tests: 0</property>
+			<property name="benchmarkPackage" hidden="true">ApacheSpark_Package</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	
+		<benchmark name="ApacheSpark" variant="Python" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Spark" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="JDKOptions" bits="64"></property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="DumpOptions"></property>
+			<property name="SparkDriverMemory">8g</property>
+			<property name="Variant">Python</property>
+			<property name="NumberRecords">1000000</property>
+			<property name="NumberPartitions">100</property>
+			<property name="NumberTrials">10</property>
+			<property name="InterTrialWait">1</property>
+			<property name="SparkHomeDir">{perffarm_root}/ApacheSpark/spark-1.2.2</property>
+			<property name="timeout">3600000</property>
+			<property name="script">RunSpark.sh</property>
+			<property name="workDir">{perffarm_root}/ApacheSpark</property>
+			<property name="resultTag">Number of failed tests: 0</property>
+			<property name="benchmarkPackage" hidden="true">ApacheSpark_Package</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	
+	
+		
+</benchmarks>

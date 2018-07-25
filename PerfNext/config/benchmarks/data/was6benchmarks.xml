@@ -1,0 +1,317 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<!-- WAS benchmarks list for the XUL launcher.
+	 This is combined with benchmarks.xml to produce a complete list. The list
+	 is split into several separate files to make it easier to read / edit.
+ -->
+<benchmarks>
+	<benchmark name="WebSphereWarmup" variant="WAS61GA">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS61GA" type="product"/>
+			<capability name="Startup" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="minHeapSize">50</property>
+			<property name="maxHeapSize">256</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">false</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">false</property>
+			<property name="iterations" desc_id="sufp_Runs">2</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="resultsFileName">process_size/footprint_results.xml</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="ssmf_main">{WPA/inst1/root}/server_startup_memory_footprint/xml/server_startup_memory_footprint.xml</staxscript>
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="WebSphereFootprint" variant="WAS61GA">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS61GA" type="product"/>
+			<capability name="Startup" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="minHeapSize">50</property>
+			<property name="maxHeapSize">256</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">true</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">true</property>
+			<property name="iterations" desc_id="sufp_Runs">4</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="resultsFileName">process_size/footprint_results.xml</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="ssmf_main">{WPA/inst1/root}/server_startup_memory_footprint/xml/server_startup_memory_footprint.xml</staxscript>
+		<iterations>5</iterations>
+	</benchmark>
+	<benchmark name="WebSphereFootprintOutOfBox" variant="WAS61GA">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS61GA" type="product"/>
+			<capability name="StartupOutOfBox" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="minHeapSize">50</property>
+			<property name="maxHeapSize">256</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">true</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">true</property>
+			<property name="iterations" desc_id="sufp_Runs">4</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="resultsFileName">process_size/footprint_results.xml</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="ssmf_main">{WPA/inst1/root}/server_startup_memory_footprint/xml/server_startup_memory_footprint.xml</staxscript>
+		<iterations>5</iterations>
+	</benchmark>
+	<benchmark name="WebSphereStartup" variant="WAS61GA">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS61GA" type="product"/>
+			<capability name="Startup" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="minHeapSize">50</property>
+			<property name="maxHeapSize">256</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">false</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">false</property>
+			<property name="iterations" desc_id="sufp_Runs">8</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="resultsFileName">startup_time/startup_time_results.xml</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="ssmf_main">{WPA/inst1/root}/server_startup_memory_footprint/xml/server_startup_memory_footprint.xml</staxscript>
+		<iterations>5</iterations>
+	</benchmark>
+	<benchmark name="WebSphereStartupOutOfBox" variant="WAS61GA">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS61GA" type="product"/>
+			<capability name="StartupOutOfBox" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="minHeapSize">50</property>
+			<property name="maxHeapSize">256</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">false</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">false</property>
+			<property name="iterations" desc_id="sufp_Runs">8</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="resultsFileName">startup_time/startup_time_results.xml</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="ssmf_main">{WPA/inst1/root}/server_startup_memory_footprint/xml/server_startup_memory_footprint.xml</staxscript>
+		<iterations>5</iterations>
+	</benchmark>
+	<benchmark name="DayTrader12" variant="WAS61GAopt1GB">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS61GA" type="product"/>
+			<capability name="DayTrader12" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="scenarioList" desc_id="dt_scenario">TradeEJBSync&#45;9080&#45;50&#45;1</property>
+			<property name="recordedRuns" desc_id="dt_recRuns">3</property>
+			<property name="warmupRuns" desc_id="dt_warmRuns">4</property>
+			<property name="recordedDuration" desc_id="dt_recD">60</property>
+			<property name="warmupDuration" desc_id="dt_warmD">60</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">true</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">true</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="resultsFileName">processed_results.xml</property>
+			<property name="getStats">true</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="patrol_daytrader_bucket_legacy_main">{WPA/inst1/root}/patrol_team/xml/patrol_classic_ui_daytrader_bucket.xml</staxscript>	
+		<iterations>6</iterations>
+	</benchmark>
+	<benchmark name="SOABench_3k3k" variant="WAS6109opt1GB">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS6109" type="product"/>
+			<capability name="SOABench" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="QoS">base</property>
+			<property name="Synchronicity">synchronous</property>
+			<property name="Clients">50</property>
+			<property name="Payload">soa1_bean_3k_3k.xml</property>
+			<property name="LoadDriverType">jibe</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">true</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">true</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="recordedRuns" desc_id="soa_recRuns">3</property>
+			<property name="warmupRuns" desc_id="soa_warmRuns">4</property>
+			<property name="recordedDuration" desc_id="dt_recD">60</property>
+			<property name="warmupDuration" desc_id="dt_warmD">60</property>
+			<property name="resultsFileName">processed_results.xml</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="patrol_soabench_bucket_main">{WPA/inst1/root}/patrol_team/xml/patrol_classic_ui_soabench_bucket.xml</staxscript>
+		<iterations>6</iterations>
+	</benchmark>
+	<benchmark name="SOABench_3k10k" variant="WAS6109opt1GB">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS6109" type="product"/>
+			<capability name="SOABench" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="QoS">base</property>
+			<property name="Synchronicity">synchronous</property>
+			<property name="Clients">50</property>
+			<property name="Payload">soa2_bean_3k_10k.xml</property>
+			<property name="LoadDriverType">jibe</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">true</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">true</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="recordedRuns" desc_id="soa_recRuns">3</property>
+			<property name="warmupRuns" desc_id="soa_warmRuns">4</property>
+			<property name="recordedDuration" desc_id="dt_recD">60</property>
+			<property name="warmupDuration" desc_id="dt_warmD">60</property>
+			<property name="resultsFileName">processed_results.xml</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="patrol_soabench_bucket_main">{WPA/inst1/root}/patrol_team/xml/patrol_classic_ui_soabench_bucket.xml</staxscript>
+		<iterations>6</iterations>
+	</benchmark>
+	<benchmark name="SOABench_10k3k" variant="WAS6109opt1GB">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS6109" type="product"/>
+			<capability name="SOABench" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="QoS">base</property>
+			<property name="Synchronicity">synchronous</property>
+			<property name="Clients">50</property>
+			<property name="Payload">soa3_bean_10k_3k.xml</property>
+			<property name="LoadDriverType">jibe</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">true</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">true</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="recordedRuns" desc_id="soa_recRuns">3</property>
+			<property name="warmupRuns" desc_id="soa_warmRuns">4</property>
+			<property name="recordedDuration" desc_id="dt_recD">60</property>
+			<property name="warmupDuration" desc_id="dt_warmD">60</property>
+			<property name="resultsFileName">processed_results.xml</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="patrol_soabench_bucket_main">{WPA/inst1/root}/patrol_team/xml/patrol_classic_ui_soabench_bucket.xml</staxscript>
+		<iterations>6</iterations>
+	</benchmark>
+	<benchmark name="SOABench_10k10k" variant="WAS6109opt1GB">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS6109" type="product"/>
+			<capability name="SOABench" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="QoS">base</property>
+			<property name="Synchronicity">synchronous</property>
+			<property name="Clients">50</property>
+			<property name="Payload">soa4_bean_10k_10k.xml</property>
+			<property name="LoadDriverType">jibe</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">true</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">true</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="recordedRuns" desc_id="soa_recRuns">3</property>
+			<property name="warmupRuns" desc_id="soa_warmRuns">4</property>
+			<property name="recordedDuration" desc_id="dt_recD">60</property>
+			<property name="warmupDuration" desc_id="dt_warmD">60</property>
+			<property name="resultsFileName">processed_results.xml</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="patrol_soabench_bucket_main">{WPA/inst1/root}/patrol_team/xml/patrol_classic_ui_soabench_bucket.xml</staxscript>
+		<iterations>6</iterations>
+	</benchmark>
+	<benchmark name="SOABench_100k100k" variant="WAS6109opt1GB">
+		<platforms/>
+		<capabilities>
+			<capability name="WAS6109" type="product"/>
+			<capability name="SOABench" type="config"/>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="QoS">base</property>
+			<property name="Synchronicity">synchronous</property>
+			<property name="Clients">50</property>
+			<property name="Payload">soa5_bean_100k_100k.xml</property>
+			<property name="LoadDriverType">jibe</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="JDKOptions" desc_id="was_jdkoptions"></property>
+			<property name="logVerboseGC" desc_id="was_verbosegc">true</property>
+			<property name="logVerboseJIT" desc_id="was_verbosejit">true</property>
+			<!-- This syntax allows defaults to be set dependent on bitcount -->
+			<property name="compressedRefs" bits="64">false</property>
+			<property name="compressedRefs" bits="32">false</property>
+			<property name="environment" desc_id="was_env"></property>
+			<property name="recordedRuns" desc_id="soa_recRuns">3</property>
+			<property name="warmupRuns" desc_id="soa_warmRuns">4</property>
+			<property name="recordedDuration" desc_id="dt_recD">60</property>
+			<property name="warmupDuration" desc_id="dt_warmD">60</property>
+			<property name="resultsFileName">processed_results.xml</property>
+		</properties>	
+		<staxscript resultTag="/scenario" funcName="patrol_soabench_bucket_main">{WPA/inst1/root}/patrol_team/xml/patrol_classic_ui_soabench_bucket.xml</staxscript>
+		<iterations>6</iterations>
+	</benchmark>
+</benchmarks>

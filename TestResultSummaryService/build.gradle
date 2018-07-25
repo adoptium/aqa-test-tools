@@ -1,0 +1,76 @@
+/*		Node.js
+*	http://www.nodeclipse.org/projects/gradle
+* Nodeclipse/Enide build.gradle template/drop-in for Node.js/Avatar.js project, version 0.16
+*	https://github.com/Nodeclipse/nodeclipse-1/blob/master/org.nodeclipse.ui/templates/hello-world/build.gradle
+* This file lets you optionally run Node.js app as Java Avatar.js app
+* Usage
+*	1. put in project root
+*	2. check version numbers, OS (no x32 bit OS support)
+*	3. execute `gradle copyLibs` to get libraries locally (then you can proceed even without gradle)
+*	4. use from command line `gradle run` or with http://marketplace.eclipse.org/content/gradle Run As ->
+* Support for this template
+*	https://github.com/nodeclipse/nodeclipse-1/issues/
+* History
+*	2014-04-25 rename to run, add <<
+*	2014-04-29 state that `gradle copyLibs` step is required
+*	2014-05-20 =['src'] instead of 'src'
+* @author Paul Verest
+*/
+println GradleVersion.current().prettyPrint()
+
+apply plugin: 'java'
+apply plugin: 'eclipse'
+apply plugin: 'idea'
+
+repositories {
+	maven {
+        url "https://maven.java.net/content/repositories/public/"
+    }
+    //mavenCentral()
+    //jcenter()
+}
+
+dependencies {
+    compile "com.oracle:avatar-js:0.10.25-SNAPSHOT"
+    compile "com.oracle:libavatar-js-win-x64:0.10.25-SNAPSHOT"
+    //compile fileTree(dir: 'libs', include: '*.jar')
+    //testCompile "junit:junit:4.11"
+}
+
+task copyLibs(type: Copy) {
+    from configurations.compile
+    into 'lib' // ! not libs
+    //TODO files need to be renamed
+}
+
+/* uncomment for adding Java sources
+sourceSets {
+    main {
+        java.srcDirs = ['src']
+        resources.srcDirs = ['src']
+    }
+    test {
+        java.srcDirs = ['tests']
+        resources.srcDirs = ['tests']
+    }
+}
+task initSourceFolders { // add << before { to prevent executing during configuration phase
+   sourceSets*.java.srcDirs*.each { it.mkdirs() }
+   sourceSets*.resources.srcDirs*.each { it.mkdirs() }
+}
+*/
+
+task run(type: Exec) <<{
+	println 'runHelloWorld1'
+	// java -Djava.library.path=lib -jar lib/avatar-js.jar app.js
+	commandLine 'java', '-Djava.library.path=lib', '-jar', 'lib/avatar-js.jar', 'app.js'
+	println 'runHelloWorld1 finished'
+}
+task run2(type: JavaExec) <<{
+	println 'runHelloWorld2'
+	args 'app.js'
+	main 'com.oracle.avatar.js.Server'
+	systemProperties 'java.library.path':'lib'
+	classpath 'lib/avatar-js.jar'
+	println 'runHelloWorld2 finished'
+}

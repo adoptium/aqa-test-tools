@@ -1,0 +1,2695 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<!-- Benchmarks list for the XUL launcher.
+	 Notes on the syntax:
+
+	 Each benchmark element must have the name and variant attributes defined.
+
+	 The setup attribute instructs the Axxon job creation process to generate
+	 setup jobs for that benchmark. Typically, perffarm benchmarks require setup
+	 jobs. Large benchmarks (such as WAS) are pre-installed and thus do not have
+	 a setup step.
+
+	 Each benchmark has a set of capabilities and a set of properties:
+	  - Capabilities restrict a benchmark to running on a machine that provides
+	 that capability. Capabilities defined against a machine may carry a set of
+	 property values specific to that machine.
+	  - Properties provide default values used to construct the benchmark job,
+	  which may be modified by the user through the XUL launcher. They may
+	  optionally be qualified by the 'bits' attribute, which restricts that
+	  property to apply only when a matching platform is selected.
+
+	  A benchmark may be restricted to a subset of platforms - in which case,
+	  there should be a platforms element with separate platform subelements
+	  containing the 'type' of platform (eg. WindowsIA32) as defined in
+	  platforms.xml. If no platforms element is present, the benchmark will be
+	  available on all platforms.
+
+	  The iterations element specifies the default number of iterations for
+	  that benchmark (this can be overridden by the user in the launcher).
+ -->
+<benchmarks>
+<benchmark name="ForkJoinPool" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="perffarm" />
+		</capabilities>
+		<properties>
+			<property name="JDKOptions"></property>
+			<property name="baselineJDKOpts"></property>
+			<property name="buildJDKOpts"></property>
+			<property name="DumpOptions">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="timeout">1200000</property>
+			<property name="Iterations">10</property>
+			<property name="workDir">{perffarm_root}/ForkJoinPool</property>
+			<property name="script">ForkJoin.sh</property>
+			<property name="resultTag">Benchmark completed successfully</property>
+			<property name="benchmarkPackage" hidden="true">ForkJoin_Package</property>
+		</properties>
+		<iterations>6</iterations>
+	</benchmark>
+
+
+	<benchmark name="Concurrent_random" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="environment">IBM_JAVA_OPTIONS= </property>
+			<property name="benchmarkPackage" hidden="true">Concurrent_Package</property>
+			<property name="benchmarkArgs">ALL</property>
+			<property name="timeout">900000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="JDKOptions"></property>
+
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/Concurrent</property>
+			<property name="resultTag">%%Concurrent Complete</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="Concurrent_barriers" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="environment">IBM_JAVA_OPTIONS= </property>
+			<property name="benchmarkPackage" hidden="true">Concurrent_Package</property>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">18000000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="internal_iterations">100</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/Concurrent</property>
+			<property name="resultTag">%%Concurrent Complete</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="Concurrent_queues" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="environment">IBM_JAVA_OPTIONS= </property>
+			<property name="benchmarkPackage" hidden="true">Concurrent_Package</property>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="environment"></property>
+			<property name="JDKOptions"></property>
+			<property name="workDir">{perffarm_root}/Concurrent</property>
+			<property name="resultTag">%%Concurrent Complete</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="Concurrent_sort" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="environment">IBM_JAVA_OPTIONS= </property>
+			<property name="benchmarkPackage" hidden="true">Concurrent_Package</property>
+			<property name="benchmarkArgs">ALL</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/Concurrent</property>
+			<property name="resultTag">%%Concurrent Complete</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="JAXBTests" variant="marshal" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">120 60</property>
+			<property name="timeout">600000</property>
+			<property name="minHeapSize">256</property>
+			<property name="maxHeapSize">256</property>
+			<property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/jaxbtests</property>
+			<property name="resultTag">Measurement Ops</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="JAXBTests" variant="unmarshal" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">120 60</property>
+			<property name="timeout">600000</property>
+			<property name="minHeapSize">256</property>
+			<property name="maxHeapSize">256</property>
+			<property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/jaxbtests</property>
+			<property name="resultTag">Measurement Ops</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="ConverterPerf2" variant="default" setup="true">
+		<capabilities>
+            <capability name="singleNode" type="affinity"/>
+        </capabilities>
+		<properties>
+			<property name="warmupSeconds">30</property>
+			<property name="measurementSeconds">10</property>
+			<property name="encodings">ASCII BIG5 CP1047 CP1388 CP1399 EUC_KR GB18030 ISO8859_1 UTF8 UTF16 SHIFT-JIS</property>
+			<property name="dataSize">4096</property>
+			<property name="timeout">1800000</property>
+			<property name="benchmarkArgs"></property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="dumpOptions">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="jvmArgs" bits="31">-Xms128m -Xmx128m -Dtestdata=ascii</property>
+			<property name="jvmArgs" bits="32">-Xms128m -Xmx128m -Dtestdata=ascii</property>
+			<property name="jvmArgs" bits="64">-Xms128m -Xmx128m -Dtestdata=ascii -Xcompressedrefs</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/convperf-new</property>
+			<property name="resultTag">Measurement complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ConverterPerf2NIO" variant="default" setup="true">
+		<capabilities>
+            <capability name="singleNode" type="affinity"/>
+        </capabilities>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">ConverterPerf2_Package</property>
+			<property name="warmupSeconds">30</property>
+			<property name="measurementSeconds">10</property>
+			<property name="encodings">ASCII BIG5 CP1047 CP1388 CP1399 EUC_KR GB18030 ISO8859_1 UTF8 UTF16 SHIFT-JIS</property>
+			<property name="dataSize">4096</property>
+			<property name="timeout">1800000</property>
+			<property name="benchmarkArgs"></property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="dumpOptions">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="jvmArgs" bits="31">-Xms128m -Xmx128m -Dtestdata=ascii</property>
+			<property name="jvmArgs" bits="32">-Xms128m -Xmx128m -Dtestdata=ascii</property>
+			<property name="jvmArgs" bits="64">-Xms128m -Xmx128m -Dtestdata=ascii -Xcompressedrefs</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/convperf-new</property>
+			<property name="resultTag">Measurement complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ConverterPerf2" variant="extended" setup="true">
+		<capabilities>
+            <capability name="singleNode" type="affinity"/>
+        </capabilities>
+		<properties>
+			<property name="warmupSeconds">30</property>
+			<property name="measurementSeconds">10</property>
+			<property name="encodings">ASCII BIG5 CP1047 CP1388 CP1399 EUC_KR GB18030 ISO8859_1 UTF8 UTF16 SHIFT-JIS</property>
+			<property name="dataSize">4096</property>
+			<property name="timeout">1800000</property>
+			<property name="benchmarkArgs"></property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="dumpOptions">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="jvmArgs" bits="31">-Xms128m -Xmx128m -Dtestdata=extended</property>
+			<property name="jvmArgs" bits="32">-Xms128m -Xmx128m -Dtestdata=extended</property>
+			<property name="jvmArgs" bits="64">-Xms128m -Xmx128m -Dtestdata=extended -Xcompressedrefs</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/convperf-new</property>
+			<property name="resultTag">Measurement complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ConverterPerf2NIO" variant="extended" setup="true">
+		<capabilities>
+            <capability name="singleNode" type="affinity"/>
+        </capabilities>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">ConverterPerf2_Package</property>
+			<property name="warmupSeconds">30</property>
+			<property name="measurementSeconds">10</property>
+			<property name="encodings">ASCII BIG5 CP1047 CP1388 CP1399 EUC_KR GB18030 ISO8859_1 UTF8 UTF16 SHIFT-JIS</property>
+			<property name="dataSize">4096</property>
+			<property name="timeout">1800000</property>
+			<property name="benchmarkArgs"></property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="dumpOptions">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="jvmArgs" bits="31">-Xms128m -Xmx128m -Dtestdata=extended</property>
+			<property name="jvmArgs" bits="32">-Xms128m -Xmx128m -Dtestdata=extended</property>
+			<property name="jvmArgs" bits="64">-Xms128m -Xmx128m -Dtestdata=extended -Xcompressedrefs</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/convperf-new</property>
+			<property name="resultTag">Measurement complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ConverterPerf2" variant="8bytes" setup="true">
+		<capabilities>
+            <capability name="singleNode" type="affinity"/>
+        </capabilities>
+		<properties>
+			<property name="warmupSeconds">30</property>
+			<property name="measurementSeconds">10</property>
+			<property name="encodings">ASCII BIG5 CP1047 CP1388 CP1399 EUC_KR GB18030 ISO8859_1 UTF8 UTF16 SHIFT-JIS</property>
+			<property name="dataSize">8</property>
+			<property name="timeout">1800000</property>
+			<property name="benchmarkArgs"></property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="dumpOptions">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="jvmArgs" bits="31">-Xms128m -Xmx128m -Dtestdata=ascii</property>
+			<property name="jvmArgs" bits="32">-Xms128m -Xmx128m -Dtestdata=ascii</property>
+			<property name="jvmArgs" bits="64">-Xms128m -Xmx128m -Dtestdata=ascii -Xcompressedrefs</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/convperf-new</property>
+			<property name="resultTag">Measurement complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ConverterPerf2NIO" variant="8bytes" setup="true">
+		<capabilities>
+            <capability name="singleNode" type="affinity"/>
+        </capabilities>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">ConverterPerf2_Package</property>
+			<property name="warmupSeconds">30</property>
+			<property name="measurementSeconds">10</property>
+			<property name="encodings">ASCII BIG5 CP1047 CP1388 CP1399 EUC_KR GB18030 ISO8859_1 UTF8 UTF16 SHIFT-JIS</property>
+			<property name="dataSize">8</property>
+			<property name="timeout">1800000</property>
+			<property name="benchmarkArgs"></property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="dumpOptions">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="jvmArgs" bits="31">-Xms128m -Xmx128m -Dtestdata=ascii</property>
+			<property name="jvmArgs" bits="32">-Xms128m -Xmx128m -Dtestdata=ascii</property>
+			<property name="jvmArgs" bits="64">-Xms128m -Xmx128m -Dtestdata=ascii -Xcompressedrefs</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/convperf-new</property>
+			<property name="resultTag">Measurement complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ConverterPerf" variant="default" setup="true">
+		<capabilities>
+            <capability name="singleNode" type="affinity"/>
+        </capabilities>
+		<properties>
+			<property name="benchmarkArgs">xml CharacterTests.xml CharacterTests-NIO.xml</property>
+			<property name="timeout">600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/convperf</property>
+			<property name="resultTag">CharToByte</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ConverterPerf" variant="long" setup="true">
+		<capabilities>
+            <capability name="singleNode" type="affinity"/>
+        </capabilities>
+		<properties>
+			<property name="benchmarkArgs">xml CharacterTests-1mill.xml CharacterTests-NIO-1mill.xml</property>
+			<property name="timeout">1200000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/convperf</property>
+			<property name="resultTag">CharToByte</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ConverterPerf" variant="oraclelong" setup="true">
+		<capabilities>
+            <capability name="singleNode" type="affinity"/>
+        </capabilities>
+		<properties>
+			<property name="benchmarkArgs">xml CharacterTests-oracle-1mill.xml CharacterTests-NIO-oracle-1mill.xml</property>
+			<property name="timeout">1000000</property>
+			<property name="minHeapSize">2048</property>
+			<property name="maxHeapSize">2048</property>
+			<property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/convperf</property>
+			<property name="resultTag">CharToByte</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="DecafSec" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">core ndd=4</property>
+			<property name="timeout">1800000</property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="JDKOptions" bits="64">-Duser.home={perffarm_root}/decafsec -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Duser.home={perffarm_root}/decafsec</property>
+			<property name="JDKOptions" bits="31">-Duser.home={perffarm_root}/decafsec</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/decafsec</property>
+			<property name="resultTag">#*#*# END OF TEST CASE decafMark core_perfTestMAC_3 JCE Security Test #*#*#</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="DecafSecReuse" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">core ndd=4</property>
+			<property name="timeout">1800000</property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="JDKOptions" bits="64">-Duser.home={perffarm_root}/decafsecReuse -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Duser.home={perffarm_root}/decafsecReuse</property>
+			<property name="JDKOptions" bits="31">-Duser.home={perffarm_root}/decafsecReuse</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/DecafSecReuse</property>
+			<property name="resultTag">#*#*# END OF TEST CASE decafMark core_perfTestMAC_3 JCE Security Test #*#*#</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="HashcodeBenchmark" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">1800000</property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/HashcodeBenchmark</property>
+			<property name="resultTag">Average hash time</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="HashcodeCollisionTest" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">1800000</property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/HashcodeCollisionTest</property>
+			<property name="resultTag">---------------------------------</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="Lambda-JSR335" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="script">Lambda-JSR335-run</property>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">2700000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/Lambda-JSR335</property>
+			<property name="resultTag">*** JSR 335 Lambda Performance Benchmarks Finished Successfully.</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="Lambda-JSR335-BB" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="script">run-jsr335-bb</property>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">4800000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/Lambda-JSR335-BB</property>
+			<property name="resultTag">Error Count 0</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="Crypto-BB" variant="default" setup="true">
+		<capabilities>
+            <capability name="singleNode" type="affinity"/>
+    </capabilities>
+		<properties>
+			<property name="script">run-crypto-bb</property>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">4800000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/Crypto-BB</property>
+			<property name="resultTag">Error Count 0</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="Crypto-BB-v2" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">BumbleBench_Package</property>
+			<property name="script">run-crypto-bb</property>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">4800000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/BumbleBench</property>
+			<property name="resultTag">Error Count 0</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="GPU-BB" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="script">run-gpu-bb</property>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize" autoCorrect="false">2048</property>
+			<property name="maxHeapSize" autoCorrect="false">2048</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/GPU-BB</property>
+			<property name="resultTag">Error Count 0</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="GPU-BB" variant="MatMult" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="script">run-gpu-bb</property>
+			<property name="benchmarkArgs">--rows '2 4 8 16 32 64 128 256 512 1024 2048' --benchmarks 'MatMultGPULambdaBench'</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize" autoCorrect="false">2048</property>
+			<property name="maxHeapSize" autoCorrect="false">2048</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/GPU-BB</property>
+			<property name="resultTag">Error Count 0</property>
+		</properties>
+		<iterations>3</iterations>
+	</benchmark>
+	<benchmark name="GPU-BB" variant="Doitgen" setup="false">
+		<capabilities/>
+		<properties>
+			<property name="script">run-gpu-bb</property>
+			<property name="benchmarkArgs">--rows '2 4 8 16 32 64 128 256' --benchmarks 'DoitgenGPULambdaBench'</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize" autoCorrect="false">2048</property>
+			<property name="maxHeapSize" autoCorrect="false">2048</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/GPU-BB</property>
+			<property name="resultTag">Error Count 0</property>
+		</properties>
+		<iterations>3</iterations>
+	</benchmark>
+	<benchmark name="GPU-BB" variant="Bitonic" setup="false">
+		<capabilities/>
+		<properties>
+			<property name="script">run-gpu-bb</property>
+			<property name="benchmarkArgs">--rows '2 4 8 16 32 64 128 256 512 1024 2048' --benchmarks 'BitonicGPULambdaBench'</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize" autoCorrect="false">2048</property>
+			<property name="maxHeapSize" autoCorrect="false">2048</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/GPU-BB</property>
+			<property name="resultTag">Error Count 0</property>
+		</properties>
+		<iterations>3</iterations>
+	</benchmark>
+	<benchmark name="GPU-BB" variant="Kmeans" setup="false">
+		<capabilities/>
+		<properties>
+			<property name="script">run-gpu-bb</property>
+			<property name="benchmarkArgs">--benchmarks 'KmeansGPULambdaBench'</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize" autoCorrect="false">2048</property>
+			<property name="maxHeapSize" autoCorrect="false">2048</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/GPU-BB</property>
+			<property name="resultTag">Error Count 0</property>
+		</properties>
+		<iterations>3</iterations>
+	</benchmark>
+	<benchmark name="GPU-Sort" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="script">run-gpu-sort</property>
+			<property name="maxLength">'10000 20000 30000 40000 50000 60000 70000 80000 90000 100000'</property>
+			<property name="benchmarks">'GPUSortBench'</property>
+			<property name="gpuOption">--gpu-on-only</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize" autoCorrect="false">2048</property>
+			<property name="maxHeapSize" autoCorrect="false">2048</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/GPU-Sort</property>
+			<property name="resultTag">Error Count 0</property>
+		</properties>
+		<iterations>3</iterations>
+	</benchmark>
+	<benchmark name="HiBench" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="script">run_hibench</property>
+			<property name="benchmarkPackage" hidden="true">Spark_Benchmark_Package</property>
+			<property name="benchmarks">'websearch.pagerank micro.terasort micro.wordcount micro.sort micro.sleep'</property>
+			<property name="slave">vandoorne</property>
+			<property name="hibench-scale-profile">large</property>
+			<property name="spark-executor-memory">25g</property>
+			<property name="spark-executor-extrajavaoptions">-Xms25G</property>
+			<property name="spark-driver-extrajavaoptions">-Xms4G</property>
+			<property name="timeout">3600000</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/Spark_Benchmark</property>
+			<property name="resultTag">Run all done!</property>
+		</properties>
+		<iterations>6</iterations>
+	</benchmark>
+	<benchmark name="SPSS" variant="seq" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="script">run.sh</property>
+			<property name="benchmarkArgs">seq 8</property>
+			<property name="timeout">1800000</property>
+			<property name="minHeapSize" autoCorrect="false">16384</property>
+			<property name="maxHeapSize" autoCorrect="false">16384</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="CPUAffinity" desc_id="nonWAS_CPUAffinity"></property>
+			<property name="workDir">{perffarm_root}/SPSS/GLE</property>
+			<property name="resultTag">best:</property>
+		</properties>
+		<iterations>3</iterations>
+	</benchmark>
+	<benchmark name="SPSS" variant="par" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="script">run.sh</property>
+			<property name="benchmarkArgs">par 8</property>
+			<property name="timeout">1200000</property>
+			<property name="minHeapSize" autoCorrect="false">16384</property>
+			<property name="maxHeapSize" autoCorrect="false">16384</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="CPUAffinity" desc_id="nonWAS_CPUAffinity"></property>
+			<property name="workDir">{perffarm_root}/SPSS/GLE</property>
+			<property name="resultTag">best:</property>
+		</properties>
+		<iterations>3</iterations>
+	</benchmark>
+	<benchmark name="SPSS" variant="gpu" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="script">run.sh</property>
+			<property name="benchmarkArgs">gpu 8</property>
+			<property name="timeout">1200000</property>
+			<property name="minHeapSize" autoCorrect="false">16384</property>
+			<property name="maxHeapSize" autoCorrect="false">16384</property>
+<!-- djones6 - I was originally planning to pass in the JIT options here, but we can't pass the | character.
+     These options instead are hard-coded into the benchmark's Makefile. -->
+<!--			<property name="JDKOptions">-Xjit:enableGPU={safeMT|enforce}</property>  -->
+			<property name="JDKOptions"></property>
+			<property name="environment">LD_LIBRARY_PATH=/usr/local/cuda/nvvm/lib64:/usr/local/cuda/lib64</property>
+			<property name="CPUAffinity" desc_id="nonWAS_CPUAffinity"></property>
+			<property name="workDir">{perffarm_root}/SPSS/GLE</property>
+			<property name="resultTag">best:</property>
+		</properties>
+		<iterations>3</iterations>
+	</benchmark>
+	<benchmark name="NewIO2Async" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">800000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Dwarmup=120000 -Drequest=60000.txt -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Dwarmup=120000 -Drequest=60000.txt</property>
+			<property name="JDKOptions" bits="31">-Dwarmup=120000 -Drequest=60000.txt</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/NewIO2Async</property>
+			<property name="resultTag">Total requests per second</property>
+			<property name="warmupTime">120000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="NewIO2Async" variant="multijvm" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">800000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Dwarmup=120000 -Drequest=60000.txt -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Dwarmup=120000 -Drequest=60000.txt</property>
+			<property name="JDKOptions" bits="31">-Dwarmup=120000 -Drequest=60000.txt</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/NewIO2Async</property>
+			<property name="resultTag">Total requests per second</property>
+			<property name="warmupTime">120000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="NewIO2" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Dwarmup=120000 -Drequest=60000.txt -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Dwarmup=120000 -Drequest=60000.txt</property>
+			<property name="JDKOptions" bits="31">-Dwarmup=120000 -Drequest=60000.txt</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/NewIO2</property>
+			<property name="resultTag">Total requests per second</property>
+			<property name="warmupTime">120000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="NewIO2" variant="smallmsg" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Dwarmup=120000 -Drequest=600.txt -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Dwarmup=120000 -Drequest=600.txt</property>
+			<property name="JDKOptions" bits="31">-Dwarmup=120000 -Drequest=600.txt</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/NewIO2</property>
+			<property name="resultTag">Total requests per second</property>
+			<property name="warmupTime">120000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="SharedClasses" variant="default" setup="true">
+		<properties>
+			<property name="workDir">{perffarm_root}/sharedclasses</property>
+			<property name="resultTag">Total classes loaded = 9999</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="SCOptions">-Xscmx100m -Xshareclasses:name=perffarm_cache</property>
+			<property name="timeout">300000</property>
+		</properties>
+		<iterations>5</iterations>
+	</benchmark>
+	<benchmark name="SharedStringFootprint" variant="default" setup="true">
+		<properties>
+			<property name="benchmarkPackage" hidden="true">SharedStrings_Package</property>
+			<property name="workDir">{perffarm_root}/SharedStrings</property>
+			<property name="resultTag">Total bytes consumed</property>
+			<property name="minHeapSize">1</property>
+			<property name="maxHeapSize">1</property>
+			<property name="JDKOptions"></property>
+			<property name="SCOptions">-Xscmx16m -Xshareclasses:name=ss_footprint</property>
+			<property name="timeout">300000</property>
+		</properties>
+		<iterations>5</iterations>
+	</benchmark>
+	<benchmark name="SharedStringStartup" variant="default" setup="true">
+		<properties>
+			<property name="benchmarkPackage" hidden="true">SharedStrings_Package</property>
+			<property name="workDir">{perffarm_root}/SharedStrings</property>
+			<property name="resultTag">Total execution time:</property>
+			<property name="minHeapSize">64</property>
+			<property name="maxHeapSize">64</property>
+			<property name="JDKOptions"></property>
+			<property name="SCOptions">-Xscmx100m -Xshareclasses:name=ss_startup</property>
+			<property name="ZeroOptions">-Xzero:sharestring</property>
+			<property name="timeout">300000</property>
+			<property name="parallelJVMs">8</property>
+		</properties>
+		<iterations>5</iterations>
+	</benchmark>
+	<benchmark name="Startup" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">-a -m1 -M1 _213_javac</property>
+			<property name="benchmarkPackage" hidden="true">SpecJVM98_Package</property>
+			<property name="timeout">60000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions">-Xnoquickstart</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/specjvm98</property>
+			<property name="resultTag">======= _213_javac Finished</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="Tomcat6" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">120000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp</property>
+			<property name="JDKOptions" bits="31">-Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/Tomcat6</property>
+			<property name="resultTag">--- robinf: Tomcat has finished its startup measurement ---</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="TomcatStartup" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">120000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions">-Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/tomcatStartup</property>
+			<property name="resultTag">--- robinf: Tomcat has finished its startup measurement ---</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="TomcatStartup" variant="quickstart" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">120000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions">-Xquickstart -Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/tomcatStartup</property>
+			<property name="resultTag">--- robinf: Tomcat has finished its startup measurement ---</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="TomcatStartup" variant="shared" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">120000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Xshareclasses:name=tomcat -Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xshareclasses:name=tomcat -Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp</property>
+			<property name="JDKOptions" bits="31">-Xshareclasses:name=tomcat -Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/tomcatStartup</property>
+			<property name="resultTag">--- robinf: Tomcat has finished its startup measurement ---</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="TomcatStartup" variant="quickstart_shared" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">120000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Xquickstart -Xshareclasses:name=tomcat -Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xquickstart -Xshareclasses:name=tomcat -Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp</property>
+			<property name="JDKOptions" bits="31">-Xquickstart -Xshareclasses:name=tomcat -Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/tomcatStartup</property>
+			<property name="resultTag">--- robinf: Tomcat has finished its startup measurement ---</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="TomcatStartup" variant="oracle_servermode" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">oracle</property>
+			<property name="timeout">120000</property>
+			<property name="minHeapSize">2048</property>
+			<property name="maxHeapSize">2048</property>
+			<property name="JDKOptions">-server -Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/tomcatStartup</property>
+			<property name="categories" desc_id="categories">variant.shared</property>
+			<property name="resultTag">--- robinf: Tomcat has finished its startup measurement ---</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="TomcatStartup" variant="oracle_clientmode" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">oracle</property>
+			<property name="timeout">120000</property>
+			<property name="minHeapSize">2048</property>
+			<property name="maxHeapSize">2048</property>
+			<property name="JDKOptions">-client -Dcatalina.home=./ -Dcatalina.base=./ -Djava.io.tmpdir=./temp</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/tomcatStartup</property>
+			<property name="categories" desc_id="categories">variant.quickstart_shared</property>
+			<property name="resultTag">--- robinf: Tomcat has finished its startup measurement ---</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="Volano" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">-rooms 10 -users 20 -count 100</property>
+			<property name="timeout">600000</property>
+			<property name="minHeapSize">8</property>
+			<property name="maxHeapSize">64</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/vmark2.5.0.9</property>
+			<property name="resultTag">Average throughput =</property>
+		</properties>
+		<iterations>6</iterations>
+	</benchmark>
+	<benchmark name="Volano" variant="long" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">-rooms 10 -users 20 -count 1000</property>
+			<property name="timeout">1680000</property>
+			<property name="minHeapSize">8</property>
+			<property name="maxHeapSize">64</property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/vmark2.5.0.9</property>
+			<property name="resultTag">Average throughput =</property>
+		</properties>
+		<iterations>6</iterations>
+	</benchmark>
+	<benchmark name="Volano2" variant="long" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">-rooms 10 -users 20 -count 2000</property>
+			<property name="timeout">360000</property>
+			<property name="minHeapSize">128</property>
+			<property name="maxHeapSize">128</property>
+			<property name="buildJDKOpts"></property>
+			<property name="baselineJDKOpts"></property>
+			<property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="environment"></property>
+			<property name="CPUAffinity" desc_id="nonWAS_CPUAffinity"></property>
+			<property name="workDir">{perffarm_root}/vmark2.5.0.9</property>
+			<property name="resultTag">Average throughput =</property>
+		</properties>
+		<iterations>6</iterations>
+	</benchmark>
+	<benchmark name="SharedClasses" variant="xaot">
+		<platforms>
+			<platform>WindowsIA32</platform>
+			<platform>WindowsAMD64</platform>
+			<platform>LinuxIA32</platform>
+			<platform>LinuxAMD64</platform>
+			<platform>AIXPPC32</platform>
+			<platform>AIXPPC64</platform>
+			<platform>zLinux31</platform>
+			<platform>zLinux64</platform>
+			<platform>zOS31</platform>
+			<platform>zOS64</platform>
+		</platforms>
+		<capabilities>
+			<capability name="SharedClasses" />
+		</capabilities>
+		<properties>
+			<property name="workDir">{perffarm_root}/sharedclasses</property>
+			<property name="resultTag">Total classes loaded = 9999</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="SCOptions">-Xscmx100m -Xshareclasses:nonpersistent,noroundpages,name=scbench -Xits0</property>
+			<property name="timeout">300000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="SharedClasses" variant="xbaseline">
+		<platforms>
+			<platform>WindowsIA32</platform>
+			<platform>WindowsAMD64</platform>
+			<platform>LinuxIA32</platform>
+			<platform>LinuxAMD64</platform>
+			<platform>AIXPPC32</platform>
+			<platform>AIXPPC64</platform>
+			<platform>zLinux31</platform>
+			<platform>zLinux64</platform>
+			<platform>zOS31</platform>
+			<platform>zOS64</platform>
+		</platforms>
+		<capabilities>
+			<capability name="SharedClasses" />
+		</capabilities>
+		<properties>
+			<property name="workDir">{perffarm_root}/sharedclasses</property>
+			<property name="resultTag">Total classes loaded = 9999</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="SCOptions">-Xscmx100m -Xshareclasses:nonpersistent,noaot,noroundpages,name=scbench -Xits0</property>
+			<property name="timeout">300000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="SharedClasses" variant="xmprotect">
+		<platforms>
+			<platform>WindowsIA32</platform>
+			<platform>WindowsAMD64</platform>
+			<platform>LinuxIA32</platform>
+			<platform>LinuxAMD64</platform>
+			<platform>AIXPPC32</platform>
+			<platform>AIXPPC64</platform>
+			<platform>zLinux31</platform>
+			<platform>zLinux64</platform>
+			<platform>zOS31</platform>
+			<platform>zOS64</platform>
+		</platforms>
+		<capabilities>
+			<capability name="SharedClasses" />
+		</capabilities>
+		<properties>
+			<property name="workDir">{perffarm_root}/sharedclasses</property>
+			<property name="resultTag">Total classes loaded = 9999</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="SCOptions">-Xscmx100m -Xshareclasses:nonpersistent,noaot,mprotect=all,name=scbench -Xits0</property>
+			<property name="timeout">300000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="SharedClasses" variant="xnormal">
+		<platforms>
+			<platform>WindowsIA32</platform>
+			<platform>WindowsAMD64</platform>
+			<platform>LinuxIA32</platform>
+			<platform>LinuxAMD64</platform>
+			<platform>AIXPPC32</platform>
+			<platform>AIXPPC64</platform>
+			<platform>zLinux31</platform>
+			<platform>zLinux64</platform>
+			<platform>zOS31</platform>
+			<platform>zOS64</platform>
+		</platforms>
+		<capabilities>
+			<capability name="SharedClasses" />
+		</capabilities>
+		<properties>
+			<property name="workDir">{perffarm_root}/sharedclasses</property>
+			<property name="resultTag">Total classes loaded = 9999</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="SCOptions">-Xscmx100m -Xshareclasses:name=scbench -Xits0</property>
+			<property name="timeout">300000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="SharedClasses" variant="xpersist">
+		<platforms>
+			<platform>WindowsIA32</platform>
+			<platform>WindowsAMD64</platform>
+			<platform>LinuxIA32</platform>
+			<platform>LinuxAMD64</platform>
+			<platform>AIXPPC32</platform>
+			<platform>AIXPPC64</platform>
+			<platform>zLinux31</platform>
+			<platform>zLinux64</platform>
+			<platform>zOS31</platform>
+			<platform>zOS64</platform>
+		</platforms>
+		<capabilities>
+			<capability name="SharedClasses" />
+		</capabilities>
+		<properties>
+			<property name="workDir">{perffarm_root}/sharedclasses</property>
+			<property name="resultTag">Total classes loaded = 9999</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="SCOptions">-Xscmx100m -Xshareclasses:noaot,noroundpages,name=scbench -Xits0</property>
+			<property name="timeout">300000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="SharedClasses" variant="xstrint">
+		<platforms>
+			<platform>WindowsIA32</platform>
+			<platform>WindowsAMD64</platform>
+			<platform>LinuxIA32</platform>
+			<platform>LinuxAMD64</platform>
+			<platform>AIXPPC32</platform>
+			<platform>AIXPPC64</platform>
+			<platform>zLinux31</platform>
+			<platform>zLinux64</platform>
+			<platform>zOS31</platform>
+			<platform>zOS64</platform>
+		</platforms>
+		<capabilities>
+			<capability name="SharedClasses" />
+		</capabilities>
+		<properties>
+			<property name="workDir">{perffarm_root}/sharedclasses</property>
+			<property name="resultTag">Total classes loaded = 9999</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions"></property>
+			<property name="SCOptions">-Xscmx100m -Xshareclasses:nonpersistent,noaot,noroundpages,name=scbench</property>
+			<property name="timeout">300000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="StartupShutdown" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">120000</property>
+			<property name="minHeapSize"></property>
+			<property name="maxHeapSize"></property>
+			<property name="JDKOptions"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/StartupShutdown</property>
+			<property name="resultTag">Hello World</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Basic" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamic_Package</property>
+			<property name="benchmarkArgs">ALL</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic</property>
+			<property name="resultTag">InvokeDynamic Tests complete</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby" variant="ALL" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamicRuby_Package</property>
+			<property name="warmupRuns">10</property>
+			<property name="measurementRuns">5</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-XX:-MHDebugTargets -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-XX:-MHDebugTargets</property>
+			<property name="JDKOptions" bits="31">-XX:-MHDebugTargets</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic_Ruby</property>
+			<property name="resultTag">InvokeDynamic_Ruby Tests complete</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby" variant="bench_fib_complex" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamicRuby_Package</property>
+			<property name="warmupRuns">60</property>
+			<property name="measurementRuns">5</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-XX:-MHDebugTargets -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-XX:-MHDebugTargets</property>
+			<property name="JDKOptions" bits="31">-XX:-MHDebugTargets</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic_Ruby</property>
+			<property name="resultTag">bench_fib_complex Tests complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby" variant="bench_const_lookup" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamicRuby_Package</property>
+			<property name="warmupRuns">60</property>
+			<property name="measurementRuns">5</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-XX:-MHDebugTargets -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-XX:-MHDebugTargets</property>
+			<property name="JDKOptions" bits="31">-XX:-MHDebugTargets</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic_Ruby</property>
+			<property name="resultTag">bench_const_lookup Tests complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby" variant="bench_case" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamicRuby_Package</property>
+			<property name="warmupRuns">5</property>
+			<property name="measurementRuns">4</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-XX:-MHDebugTargets -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-XX:-MHDebugTargets</property>
+			<property name="JDKOptions" bits="31">-XX:-MHDebugTargets</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic_Ruby</property>
+			<property name="resultTag">bench_case Tests complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby" variant="bench_method_dispatch" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamicRuby_Package</property>
+			<property name="warmupRuns">5</property>
+			<property name="measurementRuns">4</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-XX:-MHDebugTargets -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-XX:-MHDebugTargets</property>
+			<property name="JDKOptions" bits="31">-XX:-MHDebugTargets</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic_Ruby</property>
+			<property name="resultTag">bench_method_dispatch Tests complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby_v172" variant="ALL" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv172_Package</property>
+			<property name="warmupRuns">10</property>
+			<property name="measurementRuns">5</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-XX:-MHDebugTargets -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-XX:-MHDebugTargets</property>
+			<property name="JDKOptions" bits="31">-XX:-MHDebugTargets</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v172</property>
+			<property name="resultTag">InvokeDynamic_Ruby Tests complete</property>
+		</properties>
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby_v172" variant="bench_fib_complex" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv172_Package</property>
+			<property name="warmupRuns">60</property>
+			<property name="measurementRuns">5</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-XX:-MHDebugTargets -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-XX:-MHDebugTargets</property>
+			<property name="JDKOptions" bits="31">-XX:-MHDebugTargets</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v172</property>
+			<property name="resultTag">bench_fib_complex Tests complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby_v172" variant="bench_const_lookup" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv172_Package</property>
+			<property name="warmupRuns">60</property>
+			<property name="measurementRuns">5</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-XX:-MHDebugTargets -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-XX:-MHDebugTargets</property>
+			<property name="JDKOptions" bits="31">-XX:-MHDebugTargets</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v172</property>
+			<property name="resultTag">bench_const_lookup Tests complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby_v172" variant="bench_case" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv172_Package</property>
+			<property name="warmupRuns">5</property>
+			<property name="measurementRuns">4</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-XX:-MHDebugTargets -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-XX:-MHDebugTargets</property>
+			<property name="JDKOptions" bits="31">-XX:-MHDebugTargets</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v172</property>
+			<property name="resultTag">bench_case Tests complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby_v172" variant="bench_method_dispatch" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv172_Package</property>
+			<property name="warmupRuns">5</property>
+			<property name="measurementRuns">4</property>
+			<property name="timeout">3600000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-XX:-MHDebugTargets -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-XX:-MHDebugTargets</property>
+			<property name="JDKOptions" bits="31">-XX:-MHDebugTargets</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v172</property>
+			<property name="resultTag">bench_method_dispatch Tests complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="InvokeDynamic_Ruby_v1716" variant="bench_fiber_ring" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv1716_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v1716</property>
+                        <property name="benchLocation">bench</property>
+                        <property name="resultTag">bench_fiber_ring Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v1716" variant="bench_red_black" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv1716_Package</property>
+                        <property name="warmupRuns">30</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v1716</property>
+                        <property name="benchLocation">bench</property>
+                        <property name="resultTag">bench_red_black Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v1716" variant="bench_concurrent_singletons" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv1716_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v1716</property>
+                        <property name="benchLocation">bench/concurrency</property>
+                        <property name="resultTag">bench_concurrent_singletons Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v1716" variant="ivar_access_bench" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv1716_Package</property>
+                        <property name="warmupRuns">10</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v1716</property>
+                        <property name="benchLocation">bench/core/basic_object</property>
+                        <property name="resultTag">ivar_access_bench Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v1716" variant="bench_array_to_java" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv1716_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v1716</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_array_to_java Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v1716" variant="bench_java_arrays" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv1716_Package</property>
+                        <property name="warmupRuns">30</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v1716</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_java_arrays Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v1716" variant="bench_java_invocation" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv1716_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v1716</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_java_invocation Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v1716" variant="bench_java_subclass_invocation" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv1716_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v1716</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_java_subclass_invocation Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v1716" variant="bench_object_construction" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv1716_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v1716</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_object_construction Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v1716" variant="bench_ruby_subclass" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv1716_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v1716</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_ruby_subclass Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+    </benchmark>
+    <benchmark name="InvokeDynamic_Ruby_v904" variant="bench_fiber_ring" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv904_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v904</property>
+                        <property name="benchLocation">bench</property>
+                        <property name="resultTag">bench_fiber_ring Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v904" variant="bench_red_black" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv904_Package</property>
+                        <property name="warmupRuns">30</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v904</property>
+                        <property name="benchLocation">bench</property>
+                        <property name="resultTag">bench_red_black Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v904" variant="bench_concurrent_singletons" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv904_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v904</property>
+                        <property name="benchLocation">bench/concurrency</property>
+                        <property name="resultTag">bench_concurrent_singletons Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v904" variant="ivar_access_bench" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv904_Package</property>
+                        <property name="warmupRuns">10</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v904</property>
+                        <property name="benchLocation">bench/core/basic_object</property>
+                        <property name="resultTag">ivar_access_bench Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v904" variant="bench_array_to_java" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv904_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v904</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_array_to_java Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v904" variant="bench_java_arrays" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv904_Package</property>
+                        <property name="warmupRuns">30</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v904</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_java_arrays Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v904" variant="bench_java_invocation" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv904_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v904</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_java_invocation Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v904" variant="bench_java_subclass_invocation" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv904_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v904</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_java_subclass_invocation Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v904" variant="bench_object_construction" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv904_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v904</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_object_construction Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+        </benchmark>
+        <benchmark name="InvokeDynamic_Ruby_v904" variant="bench_ruby_subclass" setup="true">
+                <capabilities/>
+                <properties>
+                        <property name="benchmarkPackage" hidden="true">InvokeDynamicRubyv904_Package</property>
+                        <property name="warmupRuns">60</property>
+                        <property name="measurementRuns">5</property>
+                        <property name="timeout">3600000</property>
+                        <property name="minHeapSize">512</property>
+                        <property name="maxHeapSize">512</property>
+                        <property name="JDKOptions" bits="64">-Djruby.compile.invokedynamic=true -Xcompressedrefs</property>
+                        <property name="JDKOptions" bits="32">-Djruby.compile.invokedynamic=true</property>
+                        <property name="JDKOptions" bits="31">-Djruby.compile.invokedynamic=true</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{perffarm_root}/InvokeDynamic_Ruby_v904</property>
+                        <property name="benchLocation">bench/java</property>
+                        <property name="resultTag">bench_ruby_subclass Tests complete</property>
+                </properties>
+                <iterations>4</iterations>
+    </benchmark>
+    <benchmark name="InvokeDynamicCleanup" variant="default" setup="false">
+                <capabilities/>
+                <properties>
+                        <property name="server">${/job/jvm/server}</property>
+						<property name="scriptServer">webber</property>
+						<property name="rebootDelay">360000</property>
+						<property name="winUserId"></property>
+						<property name="winPasswd"></property>
+                </properties>
+                <iterations>1</iterations>
+    </benchmark>
+	<benchmark name="ILOG_WODM" variant="851-Seg5FastpathRVEJB" setup="true">
+		<properties>
+			<property name="script">run_ilog_with_gcmv</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm_Package</property>
+			<property name="benchmarkArgs">ruleset=Segmentation5FastpathRVEJB javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=.\j2se-perf-report-test.csv jrulesVersion=8.5.1 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="DumpOptions" platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="threadsPerCPU">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ILOG_WODM" variant="851-Seg300RulesFastpathRVEJB" setup="true">
+		<properties>
+			<property name="script">run_ilog_with_gcmv</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm_Package</property>
+			<property name="benchmarkArgs">ruleset=Segmentation300RulesFastpathRVEJB javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=.\j2se-perf-report-test.csv jrulesVersion=8.5.1 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="threadsPerCPU">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ILOG_WODM" variant="870-Seg5FastpathRVEJB" setup="true">
+        <capabilities>
+            <capability name="AllWay" type="affinity"/>
+        </capabilities>
+		<properties>
+            <property name="script">run_ilog_with_gcmv</property>
+            <property name="rulesetUsageEnabled" hidden="true">false</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm870_Package</property>
+			<property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation5_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="baselineJDKOpts" hidden="true" bits="64"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="32"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="31"></property>
+			<property name="buildJDKOpts" hidden="true" bits="64"></property>
+			<property name="buildJDKOpts" hidden="true" bits="32"></property>
+			<property name="buildJDKOpts" hidden="true" bits="31"></property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm870</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ILOG_WODM" variant="870-Seg300RulesFastpathRVEJB" setup="true">
+        <capabilities>
+            <capability name="AllWay" type="affinity"/>
+        </capabilities>
+		<properties>
+		    <property name="script">run_ilog_with_gcmv</property>
+		    <property name="rulesetUsageEnabled" hidden="true">false</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm870_Package</property>
+			<property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation300RulesSingleTask_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="baselineJDKOpts" hidden="true" bits="64"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="32"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="31"></property>
+			<property name="buildJDKOpts" hidden="true" bits="64"></property>
+			<property name="buildJDKOpts" hidden="true" bits="32"></property>
+			<property name="buildJDKOpts" hidden="true" bits="31"></property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm870</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ILOG_WODM" variant="870-Seg300MonitorRuleset" setup="true">
+        <capabilities>
+            <capability name="AllWay" type="affinity"/>
+        </capabilities>
+		<properties>
+		    <property name="script">run_ilog_with_gcmv</property>
+		    <property name="rulesetUsageEnabled" hidden="true">true</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm870_Package</property>
+			<property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation300RulesSingleTask_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="baselineJDKOpts" hidden="true" bits="64"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="32"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="31"></property>
+			<property name="buildJDKOpts" hidden="true" bits="64"></property>
+			<property name="buildJDKOpts" hidden="true" bits="32"></property>
+			<property name="buildJDKOpts" hidden="true" bits="31"></property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm870</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ILOG_WODM" variant="851-4way-Seg5FastpathRVEJB" setup="true">
+		<capabilities>
+			<capability name="4way" type="affinity"/>
+		</capabilities>
+		<properties>
+            <property name="script">run_ilog_with_gcmv</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm851_Package</property>
+			<property name="benchmarkArgs">ruleset=Segmentation5FastpathRVEJB javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=.\j2se-perf-report-test.csv jrulesVersion=8.5.1 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="baselineJDKOpts" hidden="true" bits="64"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="32"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="31"></property>
+			<property name="buildJDKOpts" hidden="true" bits="64"></property>
+			<property name="buildJDKOpts" hidden="true" bits="32"></property>
+			<property name="buildJDKOpts" hidden="true" bits="31"></property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm851</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ILOG_WODM" variant="851-4way-Seg300RulesFastpathRVEJB" setup="true">
+		<capabilities>
+			<capability name="4way" type="affinity"/>
+		</capabilities>
+		<properties>
+		    <property name="script">run_ilog_with_gcmv</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm851_Package</property>
+			<property name="benchmarkArgs">ruleset=Segmentation300RulesFastpathRVEJB javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=.\j2se-perf-report-test.csv jrulesVersion=8.5.1 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="baselineJDKOpts" hidden="true" bits="64"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="32"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="31"></property>
+			<property name="buildJDKOpts" hidden="true" bits="64"></property>
+			<property name="buildJDKOpts" hidden="true" bits="32"></property>
+			<property name="buildJDKOpts" hidden="true" bits="31"></property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm851</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ILOG_WODM" variant="870-4way-Seg5FastpathRVEJB" setup="true">
+		<capabilities>
+			<capability name="4way" type="affinity"/>
+		</capabilities>
+		<properties>
+            <property name="script">run_ilog_with_gcmv</property>
+            <property name="rulesetUsageEnabled" hidden="true">false</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm870_Package</property>
+			<property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation5_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="baselineJDKOpts" hidden="true" bits="64"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="32"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="31"></property>
+			<property name="buildJDKOpts" hidden="true" bits="64"></property>
+			<property name="buildJDKOpts" hidden="true" bits="32"></property>
+			<property name="buildJDKOpts" hidden="true" bits="31"></property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm870</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ILOG_WODM" variant="870-4way-Seg300RulesFastpathRVEJB" setup="true">
+		<capabilities>
+			<capability name="4way" type="affinity"/>
+		</capabilities>
+		<properties>
+		    <property name="script">run_ilog_with_gcmv</property>
+		    <property name="rulesetUsageEnabled" hidden="true">false</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm870_Package</property>
+			<property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation300RulesSingleTask_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="baselineJDKOpts" hidden="true" bits="64"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="32"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="31"></property>
+			<property name="buildJDKOpts" hidden="true" bits="64"></property>
+			<property name="buildJDKOpts" hidden="true" bits="32"></property>
+			<property name="buildJDKOpts" hidden="true" bits="31"></property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm870</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ILOG_WODM" variant="870-8way-Seg5FastpathRVEJB" setup="true">
+		<capabilities>
+			<capability name="8way" type="affinity"/>
+		</capabilities>
+		<properties>
+            <property name="script">run_ilog_with_gcmv</property>
+            <property name="rulesetUsageEnabled" hidden="true">false</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm870_Package</property>
+			<property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation5_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="baselineJDKOpts" hidden="true" bits="64"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="32"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="31"></property>
+			<property name="buildJDKOpts" hidden="true" bits="64"></property>
+			<property name="buildJDKOpts" hidden="true" bits="32"></property>
+			<property name="buildJDKOpts" hidden="true" bits="31"></property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm870</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ILOG_WODM" variant="870-8way-Seg300RulesFastpathRVEJB" setup="true">
+		<capabilities>
+			<capability name="8way" type="affinity"/>
+		</capabilities>
+		<properties>
+		    <property name="script">run_ilog_with_gcmv</property>
+		    <property name="rulesetUsageEnabled" hidden="true">false</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm870_Package</property>
+			<property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation300RulesSingleTask_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="baselineJDKOpts" hidden="true" bits="64"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="32"></property>
+			<property name="baselineJDKOpts" hidden="true" bits="31"></property>
+			<property name="buildJDKOpts" hidden="true" bits="64"></property>
+			<property name="buildJDKOpts" hidden="true" bits="32"></property>
+			<property name="buildJDKOpts" hidden="true" bits="31"></property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm870</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	   <benchmark name="ILOG_WODM" variant="881-Seg5FastpathRVEJB" setup="true">
+        <capabilities>
+            <capability name="AllWay" type="affinity"/>
+        </capabilities>
+        <properties>
+            <property name="script">run_ilog_with_gcmv</property>
+            <property name="rulesetUsageEnabled" hidden="true">false</property>
+            <property name="benchmarkPackage" hidden="true">ilog_wodm881_Package</property>
+            <property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation5_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+            <property name="timeout">900000</property>
+            <property name="gcPolicy">optthruput</property>
+            <property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+            <property name="JDKOptions" bits="32">-Xlp</property>
+            <property name="JDKOptions" bits="31">-Xlp</property>
+            <property name="baselineJDKOpts" hidden="true" bits="64"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="32"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="31"></property>
+            <property name="buildJDKOpts" hidden="true" bits="64"></property>
+            <property name="buildJDKOpts" hidden="true" bits="32"></property>
+            <property name="buildJDKOpts" hidden="true" bits="31"></property>
+            <property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+            <property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+            <property name="minHeapSize">1024</property>
+            <property name="maxHeapSize">1024</property>
+            <property name="tenuredSize"></property>
+            <property name="nurserySize"></property>
+            <property name="environment"></property>
+            <property name="workDir">{perffarm_root}/ilog_wodm881</property>
+            <property name="resultTag">Global Throughput</property>
+        </properties>
+        <iterations>4</iterations>
+    </benchmark>
+    <benchmark name="ILOG_WODM" variant="881-Seg300RulesFastpathRVEJB" setup="true">
+        <capabilities>
+            <capability name="AllWay" type="affinity"/>
+        </capabilities>
+        <properties>
+            <property name="script">run_ilog_with_gcmv</property>
+            <property name="rulesetUsageEnabled" hidden="true">false</property>
+            <property name="benchmarkPackage" hidden="true">ilog_wodm881_Package</property>
+            <property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation300RulesSingleTask_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+            <property name="timeout">900000</property>
+            <property name="gcPolicy">optthruput</property>
+            <property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+            <property name="JDKOptions" bits="32">-Xlp</property>
+            <property name="JDKOptions" bits="31">-Xlp</property>
+            <property name="baselineJDKOpts" hidden="true" bits="64"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="32"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="31"></property>
+            <property name="buildJDKOpts" hidden="true" bits="64"></property>
+            <property name="buildJDKOpts" hidden="true" bits="32"></property>
+            <property name="buildJDKOpts" hidden="true" bits="31"></property>
+            <property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+            <property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+            <property name="minHeapSize">1024</property>
+            <property name="maxHeapSize">1024</property>
+            <property name="tenuredSize"></property>
+            <property name="nurserySize"></property>
+            <property name="environment"></property>
+            <property name="workDir">{perffarm_root}/ilog_wodm881</property>
+            <property name="resultTag">Global Throughput</property>
+        </properties>
+        <iterations>4</iterations>
+    </benchmark>
+    <benchmark name="ILOG_WODM" variant="881-Seg300MonitorRuleset" setup="true">
+        <capabilities>
+            <capability name="AllWay" type="affinity"/>
+        </capabilities>
+        <properties>
+            <property name="script">run_ilog_with_gcmv</property>
+            <property name="rulesetUsageEnabled" hidden="true">true</property>
+            <property name="benchmarkPackage" hidden="true">ilog_wodm881_Package</property>
+            <property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation300RulesSingleTask_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+            <property name="timeout">900000</property>
+            <property name="gcPolicy">optthruput</property>
+            <property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+            <property name="JDKOptions" bits="32">-Xlp</property>
+            <property name="JDKOptions" bits="31">-Xlp</property>
+            <property name="baselineJDKOpts" hidden="true" bits="64"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="32"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="31"></property>
+            <property name="buildJDKOpts" hidden="true" bits="64"></property>
+            <property name="buildJDKOpts" hidden="true" bits="32"></property>
+            <property name="buildJDKOpts" hidden="true" bits="31"></property>
+            <property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+            <property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+            <property name="minHeapSize">1024</property>
+            <property name="maxHeapSize">1024</property>
+            <property name="tenuredSize"></property>
+            <property name="nurserySize"></property>
+            <property name="environment"></property>
+            <property name="workDir">{perffarm_root}/ilog_wodm881</property>
+            <property name="resultTag">Global Throughput</property>
+        </properties>
+        <iterations>4</iterations>
+    </benchmark>
+    <benchmark name="ILOG_WODM" variant="881-4way-Seg5FastpathRVEJB" setup="true">
+        <capabilities>
+            <capability name="4way" type="affinity"/>
+        </capabilities>
+        <properties>
+            <property name="script">run_ilog_with_gcmv</property>
+            <property name="rulesetUsageEnabled" hidden="true">false</property>
+            <property name="benchmarkPackage" hidden="true">ilog_wodm881_Package</property>
+            <property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation5_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+            <property name="timeout">900000</property>
+            <property name="gcPolicy">optthruput</property>
+            <property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+            <property name="JDKOptions" bits="32">-Xlp</property>
+            <property name="JDKOptions" bits="31">-Xlp</property>
+            <property name="baselineJDKOpts" hidden="true" bits="64"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="32"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="31"></property>
+            <property name="buildJDKOpts" hidden="true" bits="64"></property>
+            <property name="buildJDKOpts" hidden="true" bits="32"></property>
+            <property name="buildJDKOpts" hidden="true" bits="31"></property>
+            <property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+            <property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+            <property name="minHeapSize">1024</property>
+            <property name="maxHeapSize">1024</property>
+            <property name="tenuredSize"></property>
+            <property name="nurserySize"></property>
+            <property name="environment"></property>
+            <property name="workDir">{perffarm_root}/ilog_wodm881</property>
+            <property name="resultTag">Global Throughput</property>
+        </properties>
+        <iterations>4</iterations>
+    </benchmark>
+    <benchmark name="ILOG_WODM" variant="881-4way-Seg300RulesFastpathRVEJB" setup="true">
+        <capabilities>
+            <capability name="4way" type="affinity"/>
+        </capabilities>
+        <properties>
+            <property name="script">run_ilog_with_gcmv</property>
+            <property name="rulesetUsageEnabled" hidden="true">false</property>
+            <property name="benchmarkPackage" hidden="true">ilog_wodm881_Package</property>
+            <property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation300RulesSingleTask_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+            <property name="timeout">900000</property>
+            <property name="gcPolicy">optthruput</property>
+            <property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+            <property name="JDKOptions" bits="32">-Xlp</property>
+            <property name="JDKOptions" bits="31">-Xlp</property>
+            <property name="baselineJDKOpts" hidden="true" bits="64"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="32"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="31"></property>
+            <property name="buildJDKOpts" hidden="true" bits="64"></property>
+            <property name="buildJDKOpts" hidden="true" bits="32"></property>
+            <property name="buildJDKOpts" hidden="true" bits="31"></property>
+            <property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+            <property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+            <property name="minHeapSize">1024</property>
+            <property name="maxHeapSize">1024</property>
+            <property name="tenuredSize"></property>
+            <property name="nurserySize"></property>
+            <property name="environment"></property>
+            <property name="workDir">{perffarm_root}/ilog_wodm881</property>
+            <property name="resultTag">Global Throughput</property>
+        </properties>
+        <iterations>4</iterations>
+    </benchmark>
+    <benchmark name="ILOG_WODM" variant="881-8way-Seg5FastpathRVEJB" setup="true">
+        <capabilities>
+            <capability name="8way" type="affinity"/>
+        </capabilities>
+        <properties>
+            <property name="script">run_ilog_with_gcmv</property>
+            <property name="rulesetUsageEnabled" hidden="true">false</property>
+            <property name="benchmarkPackage" hidden="true">ilog_wodm881_Package</property>
+            <property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation5_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+            <property name="timeout">900000</property>
+            <property name="gcPolicy">optthruput</property>
+            <property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+            <property name="JDKOptions" bits="32">-Xlp</property>
+            <property name="JDKOptions" bits="31">-Xlp</property>
+            <property name="baselineJDKOpts" hidden="true" bits="64"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="32"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="31"></property>
+            <property name="buildJDKOpts" hidden="true" bits="64"></property>
+            <property name="buildJDKOpts" hidden="true" bits="32"></property>
+            <property name="buildJDKOpts" hidden="true" bits="31"></property>
+            <property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+            <property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+            <property name="minHeapSize">1024</property>
+            <property name="maxHeapSize">1024</property>
+            <property name="tenuredSize"></property>
+            <property name="nurserySize"></property>
+            <property name="environment"></property>
+            <property name="workDir">{perffarm_root}/ilog_wodm881</property>
+            <property name="resultTag">Global Throughput</property>
+        </properties>
+        <iterations>4</iterations>
+    </benchmark>
+    <benchmark name="ILOG_WODM" variant="881-8way-Seg300RulesFastpathRVEJB" setup="true">
+        <capabilities>
+            <capability name="8way" type="affinity"/>
+        </capabilities>
+        <properties>
+            <property name="script">run_ilog_with_gcmv</property>
+            <property name="rulesetUsageEnabled" hidden="true">false</property>
+            <property name="benchmarkPackage" hidden="true">ilog_wodm881_Package</property>
+            <property name="benchmarkArgs">ruleset=F_JAVAXOM_Segmentation300RulesSingleTask_DE javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000 reportPath=j2se-perf-report-87.csv jrulesVersion=8.7 DT_or_Rules=DT</property>
+            <property name="timeout">900000</property>
+            <property name="gcPolicy">optthruput</property>
+            <property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+            <property name="JDKOptions" bits="32">-Xlp</property>
+            <property name="JDKOptions" bits="31">-Xlp</property>
+            <property name="baselineJDKOpts" hidden="true" bits="64"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="32"></property>
+            <property name="baselineJDKOpts" hidden="true" bits="31"></property>
+            <property name="buildJDKOpts" hidden="true" bits="64"></property>
+            <property name="buildJDKOpts" hidden="true" bits="32"></property>
+            <property name="buildJDKOpts" hidden="true" bits="31"></property>
+            <property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+            <property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+            <property name="minHeapSize">1024</property>
+            <property name="maxHeapSize">1024</property>
+            <property name="tenuredSize"></property>
+            <property name="nurserySize"></property>
+            <property name="environment"></property>
+            <property name="workDir">{perffarm_root}/ilog_wodm881</property>
+            <property name="resultTag">Global Throughput</property>
+        </properties>
+        <iterations>4</iterations>
+    </benchmark>
+	<benchmark name="ILOG_WODM85" variant="Segmentation5FastpathRVEJB" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="script">run_ilog_with_gcmv</property>
+			<property name="benchmarkPackage" hidden="true">ilog_wodm85_Package</property>
+			<property name="benchmarkArgs">ruleset=Segmentation5FastpathRVEJB javaXOM sizeparam=1 warmup=240 timeout=400 stateful 100000000</property>
+			<property name="timeout">900000</property>
+			<property name="gcPolicy">optthruput</property>
+			<property name="JDKOptions" bits="64">-Xlp -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xlp</property>
+			<property name="JDKOptions" bits="31">-Xlp</property>
+			<property name="DumpOptions" Platform="notZOS">-Xdump:system:defaults:file={perffarm_dump}/core.%Y%m%d.%H%M%S.%pid.%seq.dmp -Xdump:nofailover</property>
+			<property name="DumpOptions" Platform="ZOS">-Xdump:nofailover</property>
+			<property name="minHeapSize">1024</property>
+			<property name="maxHeapSize">1024</property>
+			<property name="tenuredSize"></property>
+			<property name="nurserySize"></property>
+			<property name="threadsPerCPU">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/ilog_wodm85</property>
+			<property name="resultTag">Global Throughput</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="HashPerf" variant="default" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">randomstrings.txt 2000000 30 30</property>
+			<property name="timeout">900000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/HashPerf</property>
+			<property name="resultTag">MEASURE complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="HashPerf" variant="badstrings" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">badstrings.txt 2000000 30 30</property>
+			<property name="timeout">900000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/HashPerf</property>
+			<property name="resultTag">MEASURE complete</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="JavaGrande" variant="JGFMathBench" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="class">JGFMathBench</property>
+			<property name="benchmarkPackage" hidden="true">javagrande_Package</property>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">1800000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/javagrande/v2.0</property>
+			<property name="resultTag">Section1:Math:IEEERemainderDouble</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="JavaGrande" variant="JGFStrictMathBench" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="class">JGFStrictMathBench</property>
+			<property name="benchmarkPackage" hidden="true">javagrande_Package</property>
+			<property name="benchmarkArgs"></property>
+			<property name="timeout">1800000</property>
+			<property name="minHeapSize">512</property>
+			<property name="maxHeapSize">512</property>
+			<property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32"></property>
+			<property name="JDKOptions" bits="31"></property>
+			<property name="environment"></property>
+			<property name="workDir">{perffarm_root}/javagrande/v2.0</property>
+			<property name="resultTag">Section1:StrictMath:IEEERemainderDouble</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="ORBBench" variant="Collections_local" setup="true">
+		<platforms/>
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">final_cfg_collection_testing.xml 1</property>
+			<property name="environment"></property>
+			<property name="JDKOptions" bits="64">-Xjit:optLevel=hot -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xjit:optLevel=hot</property>
+			<property name="JDKOptions" bits="31">-Xjit:optLevel=hot</property>
+			<property name="minHeapSize">2500</property>
+			<property name="maxHeapSize">2500</property>
+			<property name="timeout">1200000</property>
+			<property name="workDir">{perffarm_root}/ORBBench</property>
+			<property name="script">benchmark_localmode_run.sh</property>
+			<property name="resultsDir">reports/test1</property>
+			<property name="resultTag">Round Trip Time</property>
+			<property name="benchmarkPackage" hidden="true">ORBBench_Package</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="ORBBench" variant="NestedObjs_local" setup="true">
+		<platforms/>
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">final_cfg_nestedObjs_testing_2.xml 1</property>
+			<property name="environment"></property>
+			<property name="JDKOptions" bits="64">-Xjit:optLevel=hot -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xjit:optLevel=hot</property>
+			<property name="JDKOptions" bits="31">-Xjit:optLevel=hot</property>
+			<property name="minHeapSize">2500</property>
+			<property name="maxHeapSize">2500</property>
+			<property name="timeout">1200000</property>
+			<property name="workDir">{perffarm_root}/ORBBench</property>
+			<property name="script">benchmark_localmode_run.sh</property>
+			<property name="resultsDir">reports/test1</property>
+			<property name="resultTag">Round Trip Time</property>
+			<property name="benchmarkPackage" hidden="true">ORBBench_Package</property>
+		</properties>
+		<iterations>20</iterations>
+	</benchmark>
+	<benchmark name="ORBBench" variant="CustomMarshal_local" setup="true">
+		<platforms/>
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">final_cfg_customMarshal_testing.xml 1</property>
+			<property name="environment"></property>
+			<property name="JDKOptions" bits="64">-Xjit:optLevel=hot -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xjit:optLevel=hot</property>
+			<property name="JDKOptions" bits="31">-Xjit:optLevel=hot</property>
+			<property name="minHeapSize">2500</property>
+			<property name="maxHeapSize">2500</property>
+			<property name="timeout">1200000</property>
+			<property name="workDir">{perffarm_root}/ORBBench</property>
+			<property name="script">benchmark_localmode_run.sh</property>
+			<property name="resultsDir">reports/test1</property>
+			<property name="resultTag">Round Trip Time</property>
+			<property name="benchmarkPackage" hidden="true">ORBBench_Package</property>
+		</properties>
+		<iterations>10</iterations>
+	</benchmark>
+	<benchmark name="ORBBench" variant="ArrayTest_local" setup="true">
+		<platforms/>
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">final_cfg_arrayTest_testing_2.xml 1</property>
+			<property name="environment"></property>
+			<property name="JDKOptions" bits="64">-Xjit:optLevel=hot -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xjit:optLevel=hot</property>
+			<property name="JDKOptions" bits="31">-Xjit:optLevel=hot</property>
+			<property name="minHeapSize">2500</property>
+			<property name="maxHeapSize">2500</property>
+			<property name="timeout">1200000</property>
+			<property name="workDir">{perffarm_root}/ORBBench</property>
+			<property name="script">benchmark_localmode_run.sh</property>
+			<property name="resultsDir">reports/test1</property>
+			<property name="resultTag">Round Trip Time</property>
+			<property name="benchmarkPackage" hidden="true">ORBBench_Package</property>
+		</properties>
+		<iterations>15</iterations>
+	</benchmark>
+	<benchmark name="ORBBench" variant="Collections_Collocated" setup="true">
+		<platforms/>
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">final_cfg_collection_Colloc_testing_3.xml 1</property>
+			<property name="environment"></property>
+			<property name="JDKOptions" bits="64">-Xjit:optLevel=hot -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xjit:optLevel=hot</property>
+			<property name="JDKOptions" bits="31">-Xjit:optLevel=hot</property>
+			<property name="minHeapSize">2500</property>
+			<property name="maxHeapSize">2500</property>
+			<property name="timeout">1200000</property>
+			<property name="workDir">{perffarm_root}/ORBBench</property>
+			<property name="script">benchmark_collocmode_run.sh</property>
+			<property name="resultsDir">reports/test1</property>
+			<property name="resultTag">Round Trip Time</property>
+			<property name="benchmarkPackage" hidden="true">ORBBench_Package</property>
+		</properties>
+		<iterations>50</iterations>
+	</benchmark>
+	<benchmark name="ORBBench" variant="NestedObjs_Collocated" setup="true">
+		<platforms/>
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">final_cfg_nestedObjs_Colloc_testing_3.xml 1</property>
+			<property name="environment"></property>
+			<property name="JDKOptions" bits="64">-Xjit:optLevel=hot -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xjit:optLevel=hot</property>
+			<property name="JDKOptions" bits="31">-Xjit:optLevel=hot</property>
+			<property name="minHeapSize">2500</property>
+			<property name="maxHeapSize">2500</property>
+			<property name="timeout">1200000</property>
+			<property name="workDir">{perffarm_root}/ORBBench</property>
+			<property name="script">benchmark_collocmode_run.sh</property>
+			<property name="resultsDir">reports/test1</property>
+			<property name="resultTag">Round Trip Time</property>
+			<property name="benchmarkPackage" hidden="true">ORBBench_Package</property>
+		</properties>
+		<iterations>75</iterations>
+	</benchmark>
+	<benchmark name="ORBBench" variant="CustomMarshal_Collocated" setup="true">
+		<platforms/>
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">final_cfg_customMarshal_Colloc_testing_2.xml 1</property>
+			<property name="environment"></property>
+			<property name="JDKOptions" bits="64">-Xjit:optLevel=hot -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xjit:optLevel=hot</property>
+			<property name="JDKOptions" bits="31">-Xjit:optLevel=hot</property>
+			<property name="minHeapSize">2500</property>
+			<property name="maxHeapSize">2500</property>
+			<property name="timeout">1200000</property>
+			<property name="workDir">{perffarm_root}/ORBBench</property>
+			<property name="script">benchmark_collocmode_run.sh</property>
+			<property name="resultsDir">reports/test1</property>
+			<property name="resultTag">Round Trip Time</property>
+			<property name="benchmarkPackage" hidden="true">ORBBench_Package</property>
+		</properties>
+		<iterations>75</iterations>
+	</benchmark>
+	<benchmark name="ORBBench" variant="ArrayTest_Collocated" setup="true">
+		<platforms/>
+		<capabilities/>
+		<properties>
+			<property name="benchmarkArgs">final_cfg_arrayTest_Colloc_testing_5.xml 1</property>
+			<property name="environment"></property>
+			<property name="JDKOptions" bits="64">-Xjit:optLevel=hot -Xcompressedrefs</property>
+			<property name="JDKOptions" bits="32">-Xjit:optLevel=hot</property>
+			<property name="JDKOptions" bits="31">-Xjit:optLevel=hot</property>
+			<property name="minHeapSize">2500</property>
+			<property name="maxHeapSize">2500</property>
+			<property name="timeout">1200000</property>
+			<property name="workDir">{perffarm_root}/ORBBench</property>
+			<property name="script">benchmark_collocmode_run.sh</property>
+			<property name="resultsDir">reports/test1</property>
+			<property name="resultTag">Round Trip Time</property>
+			<property name="benchmarkPackage" hidden="true">ORBBench_Package</property>
+		</properties>
+		<iterations>30</iterations>
+	</benchmark>
+        <benchmark name="joctaneV2" variant="default" setup="true">
+                <platforms/>
+                <capabilities/>
+                <properties>
+                        <property name="script">run_joctaneV2</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="jjsArgs"></property>
+                        <property name="environment">JAVA_OPTS=-Xss512k\ -Xiss16k</property>
+                        <property name="workDir">{perffarm_root}/joctaneV2</property>
+                        <property name="resultTag">COMPLETE</property>
+                        <property name="timeout">4000</property>
+                </properties>
+                <iterations>6</iterations>
+        </benchmark>
+    <benchmark name="joctaneV2Cleanup" variant="default" setup="false">
+                <platforms/>
+                <capabilities/>
+                <properties>
+                        <property name="server">${/job/jvm/server}</property>
+						<property name="scriptServer">webber</property>
+						<property name="rebootDelay">360000</property>
+						<property name="winUserId"></property>
+						<property name="winPasswd"></property>
+                </properties>
+                <iterations>1</iterations>
+    </benchmark>
+    <benchmark name="DAA_J2C" variant="int" setup="true">
+	<platforms/>
+	<capabilities/>
+	<properties>
+	    <property name="benchmarkArgs">-g 10000 -i 100 -s 125 -r 8 -b J2C -v -m ByteArrayMarshaller.writeInt,ByteArrayUnmarshaller.readInt</property>
+	    <property name="useDAA">true</property>
+	    <property name="environment"></property>
+	    <property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+	    <property name="JDKOptions" bits="32"></property>
+	    <property name="JDKOptions" bits="31"></property>
+	    <property name="minHeapSize">512</property>
+	    <property name="maxHeapSize">512</property>
+	    <property name="timeout">900000</property>
+	    <property name="workDir">{perffarm_root}/DAA_J2C</property>
+	    <property name="resultTag">Benchmark suite complete</property>
+	    <property name="benchmarkPackage" hidden="true">DAA_J2C_Package</property>
+	</properties>
+	<iterations>4</iterations>
+    </benchmark>
+    <benchmark name="DAA_J2C" variant="int-v2" setup="true">
+	<platforms/>
+	<capabilities/>
+	<properties>
+	    <property name="benchmarkArgs">-g 10000 -i 100 -s 125 -r 8 -b J2C -v -m ByteArrayMarshaller.writeInt-v2,ByteArrayUnmarshaller.readInt-v2</property>
+	    <property name="useDAA">true</property>
+	    <property name="environment"></property>
+	    <property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+	    <property name="JDKOptions" bits="32"></property>
+	    <property name="JDKOptions" bits="31"></property>
+	    <property name="minHeapSize">512</property>
+	    <property name="maxHeapSize">512</property>
+	    <property name="timeout">900000</property>
+	    <property name="workDir">{perffarm_root}/DAA_J2C</property>
+	    <property name="resultTag">Benchmark suite complete</property>
+	    <property name="benchmarkPackage" hidden="true">DAA_J2C_Package</property>
+	</properties>
+	<iterations>4</iterations>
+    </benchmark>
+    <benchmark name="DAA_J2C" variant="short" setup="true">
+	<platforms/>
+	<capabilities/>
+	<properties>
+	    <property name="benchmarkArgs">-g 10000 -i 100 -s 125 -r 8 -b J2C -v -m ByteArrayMarshaller.writeShort,ByteArrayUnmarshaller.readShort</property>
+	    <property name="useDAA">true</property>
+	    <property name="environment"></property>
+	    <property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+	    <property name="JDKOptions" bits="32"></property>
+	    <property name="JDKOptions" bits="31"></property>
+	    <property name="minHeapSize">512</property>
+	    <property name="maxHeapSize">512</property>
+	    <property name="timeout">900000</property>
+	    <property name="workDir">{perffarm_root}/DAA_J2C</property>
+	    <property name="resultTag">Benchmark suite complete</property>
+	    <property name="benchmarkPackage" hidden="true">DAA_J2C_Package</property>
+	</properties>
+	<iterations>4</iterations>
+    </benchmark>
+    <benchmark name="DAA_J2C" variant="long" setup="true">
+	<platforms/>
+	<capabilities/>
+	<properties>
+	    <property name="benchmarkArgs">-g 10000 -i 100 -s 125 -r 8 -b J2C -v -m ByteArrayMarshaller.writeLong,ByteArrayUnmarshaller.readLong</property>
+	    <property name="useDAA">true</property>
+	    <property name="environment"></property>
+	    <property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+	    <property name="JDKOptions" bits="32"></property>
+	    <property name="JDKOptions" bits="31"></property>
+	    <property name="minHeapSize">512</property>
+	    <property name="maxHeapSize">512</property>
+	    <property name="timeout">900000</property>
+	    <property name="workDir">{perffarm_root}/DAA_J2C</property>
+	    <property name="resultTag">Benchmark suite complete</property>
+	    <property name="benchmarkPackage" hidden="true">DAA_J2C_Package</property>
+	</properties>
+	<iterations>4</iterations>
+    </benchmark>
+    <benchmark name="DAA_J2C" variant="bigdec2extdec" setup="true">
+	<platforms/>
+	<capabilities/>
+	<properties>
+	    <property name="benchmarkArgs">-g 25000 -i 100 -s 125 -r 8 -b J2C -v -m DecimalData.convertBigDecimalToExternalDecimal,DecimalData.convertExternalDecimalToBigDecimal</property>
+	    <property name="useDAA">true</property>
+	    <property name="environment"></property>
+	    <property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+	    <property name="JDKOptions" bits="32"></property>
+	    <property name="JDKOptions" bits="31"></property>
+	    <property name="minHeapSize">512</property>
+	    <property name="maxHeapSize">512</property>
+	    <property name="timeout">1200000</property>
+	    <property name="workDir">{perffarm_root}/DAA_J2C</property>
+	    <property name="resultTag">Benchmark suite complete</property>
+	    <property name="benchmarkPackage" hidden="true">DAA_J2C_Package</property>
+	</properties>
+	<iterations>4</iterations>
+    </benchmark>
+    <benchmark name="DAA_J2C" variant="bigdec2packdec" setup="true">
+	<platforms/>
+	<capabilities/>
+	<properties>
+	    <property name="benchmarkArgs">-g 25000 -i 100 -s 125 -r 8 -b J2C -v -m DecimalData.convertBigDecimalToPackedDecimal,DecimalData.convertPackedDecimalToBigDecimal</property>
+	    <property name="useDAA">true</property>
+	    <property name="environment"></property>
+	    <property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+	    <property name="JDKOptions" bits="32"></property>
+	    <property name="JDKOptions" bits="31"></property>
+	    <property name="minHeapSize">512</property>
+	    <property name="maxHeapSize">512</property>
+	    <property name="timeout">1200000</property>
+	    <property name="workDir">{perffarm_root}/DAA_J2C</property>
+	    <property name="resultTag">Benchmark suite complete</property>
+	    <property name="benchmarkPackage" hidden="true">DAA_J2C_Package</property>
+	</properties>
+	<iterations>4</iterations>
+    </benchmark>
+    <benchmark name="DAA_J2C" variant="long2extdec" setup="true">
+	<platforms/>
+	<capabilities/>
+	<properties>
+	    <property name="benchmarkArgs">-g 25000 -i 100 -s 125 -r 8 -b J2C -v -m DecimalData.convertLongToExternalDecimal,DecimalData.convertExternalDecimalToLong</property>
+	    <property name="useDAA">true</property>
+	    <property name="environment"></property>
+	    <property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+	    <property name="JDKOptions" bits="32"></property>
+	    <property name="JDKOptions" bits="31"></property>
+	    <property name="minHeapSize">512</property>
+	    <property name="maxHeapSize">512</property>
+	    <property name="timeout">1200000</property>
+	    <property name="workDir">{perffarm_root}/DAA_J2C</property>
+	    <property name="resultTag">Benchmark suite complete</property>
+	    <property name="benchmarkPackage" hidden="true">DAA_J2C_Package</property>
+	</properties>
+	<iterations>4</iterations>
+    </benchmark>
+    <benchmark name="DAA_J2C" variant="mixed" setup="true">
+	<platforms/>
+	<capabilities/>
+	<properties>
+	    <property name="benchmarkArgs">-g 25000 -i 100 -s 125 -r 8 -b J2C -v -m DecimalData.convertBigDecimalToExternalDecimal-vFP,DecimalData.convertBigDecimalToPackedDecimal-vFP,DecimalData.convertPackedDecimalToInteger</property>
+	    <property name="useDAA">true</property>
+	    <property name="environment"></property>
+	    <property name="JDKOptions" bits="64">-Xcompressedrefs</property>
+	    <property name="JDKOptions" bits="32"></property>
+	    <property name="JDKOptions" bits="31"></property>
+	    <property name="minHeapSize">512</property>
+	    <property name="maxHeapSize">512</property>
+	    <property name="timeout">1200000</property>
+	    <property name="workDir">{perffarm_root}/DAA_J2C</property>
+	    <property name="resultTag">Benchmark suite complete</property>
+	    <property name="benchmarkPackage" hidden="true">DAA_J2C_Package</property>
+	</properties>
+	<iterations>4</iterations>
+    </benchmark>
+    <benchmark name="GPU" variant="streams" setup="true">
+	<platforms/>
+	    <capabilities>
+		<capability name="GPU" />
+	    </capabilities>
+	<properties>
+            <property name="script">run_gpustreams</property>
+            <property name="benchmarkArgs">_perffarm</property>
+            <property name="environment"></property>
+	    <property name="timeout">1200000</property>
+	    <property name="workDir">{perffarm_root}/gpu</property>
+	    <property name="resultTag">on GPU successfully</property>
+	    <property name="benchmarkPackage" hidden="true">gpu_Package</property>
+	</properties>
+	<iterations>4</iterations>
+    </benchmark>
+    <benchmark name="HealthcenterSuFp" variant="default" setup="true">
+	<platforms/>
+	<capabilities/>
+	<properties>
+	    <property name="environment"></property>
+	    <property name="JDKOptions"></property>
+	    <property name="script">hc_agent_footprint</property>
+	    <property name="timeout">1200000</property>
+	    <property name="workDir">{perffarm_root}/jaxbtests</property>
+	    <property name="resultTag">--- HC agent (headless)</property>
+	    <property name="benchmarkPackage" hidden="true">JAXBTests_Package</property>
+	</properties>
+	<iterations>4</iterations>
+    </benchmark>
+</benchmarks>

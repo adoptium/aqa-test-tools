@@ -1,0 +1,202 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<!-- Tasks list for the XUL launcher.
+
+	 Tasks are a special case of benchmarks, in that they are presented the
+	 same way in the launcher, but are just commands to be sequenced in along
+	 with real benchmarks. Syntax is the same as benchmarks.xml, however tasks
+	 never have setup jobs or multiple iterations.
+
+	 The logic for constructing a task's job is contained within tasks.xsl,
+	 which typically will output a preconstructed Axxon job with placeholders.
+	 
+	 Two types of tasks can be defined: pre and post tasks. These will be
+	 sequenced either before or after any of the benchmark jobs are run. The
+	 SDK installation (if selected) will always be d\one first.
+ -->
+<tasks>
+	<post>
+		<task name="TrafficLightUpdate" variant="node_platform_compare" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node_platform_compare</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.1_compare" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.1_compare</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.2_compare" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.2_compare</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.1" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.1</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.1_gbench" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.1_gbench</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.1_kraken" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.1_kraken</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.1_sunspider" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.1_sunspider</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.1_jsbench" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.1_jsbench</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.1_octane" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.1_octane</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.1_joyent" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.1_joyent</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">true</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.1_joyentBL" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.1_joyent</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">true</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">true</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.2" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.2</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.2_gbench" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.2_gbench</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.2_kraken" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.2_kraken</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.2_sunspider" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.2_sunspider</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.2_jsbench" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.2_jsbench</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.2_octane" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.2_octane</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">false</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.2_joyent" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.2_joyent</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">true</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">false</property>
+			</properties>
+		</task>
+		<task name="TrafficLightUpdate" variant="node-v1.2_joyentBL" desc_id="tlupdate">
+			<capabilities/>
+			<properties>
+				<property name="lights">node-v1.2_joyent</property>
+				<property name="platformName" generated="true" desc_id="tlupdate_platformName"/>
+				<property name="preserveBaseline" desc_id="tlupdate_preserveBaseline">true</property>
+				<property name="forceBaseline" desc_id="tlupdate_forceBaseline">true</property>
+			</properties>
+		</task>
+	</post>
+</tasks>

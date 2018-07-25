@@ -1,0 +1,274 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<benchmarks>
+	<benchmark name="decafmark" variant="ByteStringNIOSuite" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="timeout">1800000</property>
+			<property name="workDir">{perffarm_root}/decafmark</property>
+			<property name="resultTag">>>>> No error occured.</property>
+			<property name="testKey">all</property>
+			<property name="displayType"></property>
+			<property name="testcaseMode"></property>
+			<property name="warmup_duration"></property>
+			<property name="test_duration"></property>
+			<property name="warmup_durationOH"></property>
+			<property name="test_durationOH"></property>
+			<property name="max_time"></property>
+			<property name="base"></property>
+			<property name="warmup_repetitions_OH"></property>
+			<property name="warmup_repetitions"></property>
+			<property name="test_repetitions_OH"></property>
+			<property name="test_repetitions"></property>
+			<property name="target_opt_level"></property>
+			<property name="force_opt_level"></property>
+			<property name="skip_durationOH"></property>
+			<property name="skip_duration"></property>
+			<property name="skip_repetitionsOH"></property>
+			<property name="skip_repetitions"></property>
+			<property name="minTrials"></property>
+			<property name="maxTrials"></property>
+			<property name="convergenceWidth"></property>
+			<property name="gnuplot"></property>
+			<property name="disableJITonTest"></property>
+			<property name="disableInlining"></property>
+			<property name="initialHeapSize">512</property>
+			<property name="maximumHeapSize">512</property>
+			<property name="jvmOptions"></property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="decafmark" variant="ByteStringSuite" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="timeout">1800000</property>
+			<property name="workDir">{perffarm_root}/decafmark</property>
+			<property name="resultTag">>>>> No error occured.</property>
+			<property name="testKey">all</property>
+			<property name="displayType"></property>
+			<property name="testcaseMode"></property>
+			<property name="warmup_duration"></property>
+			<property name="test_duration"></property>
+			<property name="warmup_durationOH"></property>
+			<property name="test_durationOH"></property>
+			<property name="max_time"></property>
+			<property name="base"></property>
+			<property name="warmup_repetitions_OH"></property>
+			<property name="warmup_repetitions"></property>
+			<property name="test_repetitions_OH"></property>
+			<property name="test_repetitions"></property>
+			<property name="target_opt_level"></property>
+			<property name="force_opt_level"></property>
+			<property name="skip_durationOH"></property>
+			<property name="skip_duration"></property>
+			<property name="skip_repetitionsOH"></property>
+			<property name="skip_repetitions"></property>
+			<property name="minTrials"></property>
+			<property name="maxTrials"></property>
+			<property name="convergenceWidth"></property>
+			<property name="gnuplot"></property>
+			<property name="disableJITonTest"></property>
+			<property name="disableInlining"></property>
+			<property name="initialHeapSize">512</property>
+			<property name="maximumHeapSize">512</property>
+			<property name="jvmOptions"></property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="decafmark" variant="decafsec" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="timeout">1800000</property>
+			<property name="workDir">{perffarm_root}/decafmark</property>
+			<property name="resultTag">>>>> No error occured.</property>
+			<property name="testKey">all</property>
+			<property name="displayType"></property>
+			<property name="testcaseMode"></property>
+			<property name="warmup_duration"></property>
+			<property name="test_duration"></property>
+			<property name="warmup_durationOH"></property>
+			<property name="test_durationOH"></property>
+			<property name="max_time"></property>
+			<property name="base"></property>
+			<property name="warmup_repetitions_OH"></property>
+			<property name="warmup_repetitions"></property>
+			<property name="test_repetitions_OH"></property>
+			<property name="test_repetitions"></property>
+			<property name="target_opt_level"></property>
+			<property name="force_opt_level"></property>
+			<property name="skip_durationOH"></property>
+			<property name="skip_duration"></property>
+			<property name="skip_repetitionsOH"></property>
+			<property name="skip_repetitions"></property>
+			<property name="minTrials"></property>
+			<property name="maxTrials"></property>
+			<property name="convergenceWidth"></property>
+			<property name="gnuplot"></property>
+			<property name="disableJITonTest"></property>
+			<property name="disableInlining"></property>
+			<property name="initialHeapSize">512</property>
+			<property name="maximumHeapSize">512</property>
+			<property name="jvmOptions"></property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="decafmark" variant="hashcodebenchmark" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="timeout">1800000</property>
+			<property name="workDir">{perffarm_root}/decafmark</property>
+			<property name="resultTag">>>>> No error occured.</property>
+			<property name="testKey">all</property>
+			<property name="displayType"></property>
+			<property name="testcaseMode"></property>
+			<property name="warmup_duration"></property>
+			<property name="test_duration"></property>
+			<property name="warmup_durationOH"></property>
+			<property name="test_durationOH"></property>
+			<property name="max_time"></property>
+			<property name="base"></property>
+			<property name="warmup_repetitions_OH"></property>
+			<property name="warmup_repetitions"></property>
+			<property name="test_repetitions_OH"></property>
+			<property name="test_repetitions"></property>
+			<property name="target_opt_level"></property>
+			<property name="force_opt_level"></property>
+			<property name="skip_durationOH"></property>
+			<property name="skip_duration"></property>
+			<property name="skip_repetitionsOH"></property>
+			<property name="skip_repetitions"></property>
+			<property name="minTrials"></property>
+			<property name="maxTrials"></property>
+			<property name="convergenceWidth"></property>
+			<property name="gnuplot"></property>
+			<property name="disableJITonTest"></property>
+			<property name="disableInlining"></property>
+			<property name="initialHeapSize">512</property>
+			<property name="maximumHeapSize">512</property>
+			<property name="jvmOptions"></property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="decafmark" variant="hashcodecollisiontest" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="timeout">1800000</property>
+			<property name="workDir">{perffarm_root}/decafmark</property>
+			<property name="resultTag">>>>> No error occured.</property>
+			<property name="testKey">all</property>
+			<property name="displayType"></property>
+			<property name="testcaseMode"></property>
+			<property name="warmup_duration"></property>
+			<property name="test_duration"></property>
+			<property name="warmup_durationOH"></property>
+			<property name="test_durationOH"></property>
+			<property name="max_time"></property>
+			<property name="base"></property>
+			<property name="warmup_repetitions_OH"></property>
+			<property name="warmup_repetitions"></property>
+			<property name="test_repetitions_OH"></property>
+			<property name="test_repetitions"></property>
+			<property name="target_opt_level"></property>
+			<property name="force_opt_level"></property>
+			<property name="skip_durationOH"></property>
+			<property name="skip_duration"></property>
+			<property name="skip_repetitionsOH"></property>
+			<property name="skip_repetitions"></property>
+			<property name="minTrials"></property>
+			<property name="maxTrials"></property>
+			<property name="convergenceWidth"></property>
+			<property name="gnuplot"></property>
+			<property name="disableJITonTest"></property>
+			<property name="disableInlining"></property>
+			<property name="initialHeapSize">512</property>
+			<property name="maximumHeapSize">512</property>
+			<property name="jvmOptions"></property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="decafmark" variant="JAXBTest" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="timeout">1800000</property>
+			<property name="workDir">{perffarm_root}/decafmark</property>
+			<property name="resultTag">>>>> No error occured.</property>
+			<property name="testKey">all</property>
+			<property name="displayType"></property>
+			<property name="testcaseMode"></property>
+			<property name="warmup_duration"></property>
+			<property name="test_duration"></property>
+			<property name="warmup_durationOH"></property>
+			<property name="test_durationOH"></property>
+			<property name="max_time"></property>
+			<property name="base"></property>
+			<property name="warmup_repetitions_OH"></property>
+			<property name="warmup_repetitions"></property>
+			<property name="test_repetitions_OH"></property>
+			<property name="test_repetitions"></property>
+			<property name="target_opt_level"></property>
+			<property name="force_opt_level"></property>
+			<property name="skip_durationOH"></property>
+			<property name="skip_duration"></property>
+			<property name="skip_repetitionsOH"></property>
+			<property name="skip_repetitions"></property>
+			<property name="minTrials"></property>
+			<property name="maxTrials"></property>
+			<property name="convergenceWidth"></property>
+			<property name="gnuplot"></property>
+			<property name="disableJITonTest"></property>
+			<property name="disableInlining"></property>
+			<property name="initialHeapSize">512</property>
+			<property name="maximumHeapSize">512</property>
+			<property name="jvmOptions"></property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+	<benchmark name="decafmark" variant="NewIO3" setup="true">
+		<capabilities/>
+		<properties>
+			<property name="timeout">1800000</property>
+			<property name="workDir">{perffarm_root}/decafmark</property>
+			<property name="resultTag">>>>> No error occured.</property>
+			<property name="testKey">all</property>
+			<property name="displayType"></property>
+			<property name="testcaseMode"></property>
+			<property name="warmup_duration"></property>
+			<property name="test_duration"></property>
+			<property name="warmup_durationOH"></property>
+			<property name="test_durationOH"></property>
+			<property name="max_time"></property>
+			<property name="base"></property>
+			<property name="warmup_repetitions_OH"></property>
+			<property name="warmup_repetitions"></property>
+			<property name="test_repetitions_OH"></property>
+			<property name="test_repetitions"></property>
+			<property name="target_opt_level"></property>
+			<property name="force_opt_level"></property>
+			<property name="skip_durationOH"></property>
+			<property name="skip_duration"></property>
+			<property name="skip_repetitionsOH"></property>
+			<property name="skip_repetitions"></property>
+			<property name="minTrials"></property>
+			<property name="maxTrials"></property>
+			<property name="convergenceWidth"></property>
+			<property name="gnuplot"></property>
+			<property name="disableJITonTest"></property>
+			<property name="disableInlining"></property>
+			<property name="initialHeapSize">512</property>
+			<property name="maximumHeapSize">512</property>
+			<property name="jvmOptions"></property>
+		</properties>	
+		<iterations>1</iterations>
+	</benchmark>
+</benchmarks>

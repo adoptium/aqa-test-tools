@@ -1,0 +1,823 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<benchmarks>
+<benchmark name="AcmeAir" variant="0.0.4-nocluster" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+            <property name="baselineArgs" hidden="true"></property>
+            <property name="buildArgs" hidden="true"></property>
+			<property name="instances">1</property>
+			<property name="nodeFile">app_nocluster.js</property>
+			<property name="clusterMode">false</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">25</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair004</property>
+			<property name="benchmarkPackage">AcmeAir004_Package</property>
+			<property name="resultTag">throughput</property>
+			<property name="timeout">600</property>
+			<property name="commandTimeout">600000</property>
+		</properties>
+		<iterations>8</iterations>
+	</benchmark>
+
+<benchmark name="AcmeAir" variant="0.0.4_1core" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+            <property name="baselineArgs" hidden="true"></property>
+            <property name="buildArgs" hidden="true"></property>
+			<property name="instances">1</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">25</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair004</property>
+			<property name="benchmarkPackage">AcmeAir004_Package</property>
+			<property name="resultTag">throughput</property>
+			<property name="timeout">600</property>
+			<property name="commandTimeout">600000</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+<benchmark name="AcmeAir" variant="0.0.4_graph" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+            <property name="baselineArgs" hidden="true"></property>
+            <property name="buildArgs" hidden="true"></property>
+			<property name="instances">1</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">25</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair004</property>
+			<property name="benchmarkPackage">AcmeAir004_Package</property>
+			<property name="resultTag">throughput</property>
+			<property name="timeout">600</property>
+			<property name="commandTimeout">600000</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+<benchmark name="AcmeAir" variant="0.0.4" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+            <property name="baselineArgs" hidden="true"></property>
+            <property name="buildArgs" hidden="true"></property>
+			<property name="instances">1</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">25</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair004</property>
+			<property name="benchmarkPackage">AcmeAir004_Package</property>
+			<property name="resultTag">throughput</property>
+			<property name="timeout">600</property>
+			<property name="commandTimeout">600000</property>
+		</properties>
+		<iterations>8</iterations>
+	</benchmark>
+<benchmark name="AcmeAir" variant="0.0.4-appmetrics" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+	                <property name="baselineArgs" hidden="true"></property>
+			<property name="buildArgs" hidden="true">ENV USE_APPMETRICS=true ENV NODE_FILE=app_appmetrics.js</property>
+			<property name="instances">1</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">25</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair004</property>
+			<property name="benchmarkPackage">AcmeAir004_Package</property>
+			<property name="resultTag">throughput</property>
+			<property name="timeout">600</property>
+			<property name="commandTimeout">600000</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="AcmeAir" variant="0.0.4-4way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+            <property name="baselineArgs" hidden="true"></property>
+            <property name="buildArgs" hidden="true"></property>
+			<property name="instances">4</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">100</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair004</property>
+			<property name="benchmarkPackage">AcmeAir004_Package</property>
+			<property name="resultTag">throughput</property>
+			<property name="timeout">600</property>
+			<property name="commandTimeout">600000</property>
+		</properties>
+		<iterations>8</iterations>
+	</benchmark>
+
+<benchmark name="AcmeAir" variant="0.0.4-8way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+            <property name="baselineArgs" hidden="true"></property>
+            <property name="buildArgs" hidden="true"></property>
+			<property name="instances">8</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">200</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair004</property>
+			<property name="benchmarkPackage">AcmeAir004_Package</property>
+			<property name="resultTag">throughput</property>
+			<property name="timeout">600</property>
+			<property name="commandTimeout">600000</property>
+		</properties>
+		<iterations>8</iterations>
+	</benchmark>
+
+<benchmark name="AcmeAir" variant="0.0.4-16way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+            <property name="baselineArgs" hidden="true"></property>
+            <property name="buildArgs" hidden="true"></property>
+			<property name="instances">16</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">400</property>
+			<property name="driver">hammertime</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair004</property>
+			<property name="benchmarkPackage">AcmeAir004_Package</property>
+			<property name="resultTag">throughput</property>
+			<property name="timeout">600</property>
+			<property name="commandTimeout">600000</property>
+		</properties>
+		<iterations>8</iterations>
+	</benchmark>
+
+<benchmark name="AcmeAir" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+            <property name="baselineArgs" hidden="true"></property>
+            <property name="buildArgs" hidden="true"></property>
+			<property name="instances">1</property>
+			<property name="driver">bottas</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">16</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+	</benchmark>
+
+<benchmark name="AcmeAir" variant="default-appmetric" setup="true">
+        <platforms/>
+        <capabilities>
+            <capability name="Nodejs" type="config"/>
+        </capabilities>
+        <properties>
+            <property name="script">run_acmeair</property>
+            <property name="baselineArgs" hidden="true"></property>
+            <property name="buildArgs" hidden="true">app_appmetric_deepdive.js</property>
+            <property name="instances">1</property>
+            <property name="driver">magnussen</property>
+            <property name="port">4000</property>
+            <property name="networkType">10G</property>
+            <property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+            <property name="driverNo">16</property>
+            <property name="environment"></property>
+            <property name="workDir">{nodejs_root}/acmeair</property>
+            <property name="resultTag">geomean</property>
+            <property name="timeout">600</property>
+        </properties>
+        <iterations>8</iterations>
+    </benchmark>
+
+<benchmark name="AcmeAir" variant="4way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+			<property name="instances">4</property>
+			<property name="driver">bottas</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">16</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="AcmeAir" variant="8way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+			<property name="instances">8</property>
+			<property name="driver">bottas</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">16</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="AcmeAir" variant="16way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_acmeair</property>
+			<property name="instances">16</property>
+			<property name="driver">bottas</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverCmd">/java/perffarm/Jmeter/bin/jmeter</property>
+			<property name="driverNo">16</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="StaticServer" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_staticserver</property>
+			<property name="instances">1</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverNo">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/staticserver</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="StaticServer" variant="4way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_staticserver</property>
+			<property name="instances">4</property>
+			<property name="driver">bottas</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverNo">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/staticserver</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="StaticServer" variant="8way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_staticserver</property>
+			<property name="instances">8</property>
+			<property name="driver">bottas</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverNo">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/staticserver</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="StaticServer" variant="16way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_staticserver</property>
+			<property name="instances">16</property>
+			<property name="driver">bottas</property>
+			<property name="port">4000</property>
+			<property name="networkType">10G</property>
+			<property name="driverNo">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/staticserver</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="node-core-benchmarks" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="args"></property>
+			<property name="SubsetOfSuites"></property>
+			<property name="script">run_benchmark.sh</property>
+			<property name="environment"></property>
+			<property name="benchmarkFolder">benchmark</property>
+			<property name="workDir">{nodejs_root}/node-core-benchmarks</property>
+			<property name="resultTag">benchmark complete</property>
+			<property name="benchmarkPackage">node-core-benchmarks_Package</property>
+			<property name="timeout">1000</property>
+		</properties>
+		<iterations>5</iterations>
+</benchmark>
+<benchmark name="node-core-benchmarks" variant="4.4.6" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="args"></property>
+			<property name="SubsetOfSuites"></property>
+			<property name="script">run_benchmark.sh</property>
+			<property name="environment"></property>
+			<property name="benchmarkFolder">benchmark_4.4.6</property>
+			<property name="workDir">{nodejs_root}/node-core-benchmarks</property>
+			<property name="resultTag">benchmark complete</property>
+			<property name="benchmarkPackage">node-core-benchmarks_Package</property>
+			<property name="timeout">1000</property>
+		</properties>
+		<iterations>5</iterations>
+</benchmark>
+<benchmark name="node-core-footprint" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="args"></property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/node-core-benchmarks</property>
+			<property name="resultTag">benchmark complete</property>
+			<property name="jsFile">report-startup-memory.js</property>
+			<property name="benchmarkPackage">node-core-benchmarks_Package</property>
+			<property name="timeout">1000</property>
+		</properties>
+		<iterations>5</iterations>
+</benchmark>
+
+<benchmark name="node-core-startup" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="args"></property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/node-core-benchmarks</property>
+			<property name="resultTag">benchmark complete</property>
+			<property name="script">startuptime.sh</property>
+			<property name="benchmarkPackage">node-core-benchmarks_Package</property>
+			<property name="timeout">1000</property>
+		</properties>
+		<iterations>5</iterations>
+</benchmark>
+<benchmark name="node-core-startup" variant="raw" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="args"></property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/node-core-benchmarks</property>
+			<property name="resultTag">benchmark complete</property>
+			<property name="script">raw_startup.sh</property>
+			<property name="benchmarkPackage">node-core-benchmarks_Package</property>
+			<property name="timeout">1000</property>
+		</properties>
+		<iterations>5</iterations>
+</benchmark>
+<benchmark name="node-core-startup" variant="raw-version" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="args"></property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/node-core-benchmarks</property>
+			<property name="resultTag">benchmark complete</property>
+			<property name="script">raw_startup-version.sh</property>
+			<property name="benchmarkPackage">node-core-benchmarks_Package</property>
+			<property name="timeout">1000</property>
+		</properties>
+		<iterations>5</iterations>
+</benchmark>
+<benchmark name="node-core-startup" variant="helloWorld" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="args"></property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/node-core-benchmarks</property>
+			<property name="resultTag">benchmark complete</property>
+			<property name="script">helloWorld.sh</property>
+			<property name="benchmarkPackage">node-core-benchmarks_Package</property>
+			<property name="timeout">1000</property>
+		</properties>
+		<iterations>5</iterations>
+</benchmark>
+<benchmark name="node-core-startup" variant="helloWorldRaw" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="args"></property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/node-core-benchmarks</property>
+			<property name="resultTag">benchmark complete</property>
+			<property name="script">raw_helloWorld.sh</property>
+			<property name="benchmarkPackage">node-core-benchmarks_Package</property>
+			<property name="timeout">1000</property>
+		</properties>
+		<iterations>5</iterations>
+</benchmark>
+
+<benchmark name="gbench" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run.py</property>
+			<property name="args">--all-tests</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/gbench</property>
+			<property name="resultTag">Total time for all the tests</property>
+			<property name="timeout">1200</property>
+		</properties>
+		<iterations>5</iterations>
+</benchmark>
+
+<benchmark name="JSBench" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_jsbench</property>
+			<property name="instances">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/jsbench</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="JSBench" variant="4way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_jsbench</property>
+			<property name="instances">4</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/jsbench</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="JSBench" variant="8way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_jsbench</property>
+			<property name="instances">8</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/jsbench</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="JSBench" variant="16way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_jsbench</property>
+			<property name="instances">16</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/jsbench</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="Kraken" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_kraken</property>
+			<property name="instances">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/kraken</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">900</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="Kraken" variant="4way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_kraken</property>
+			<property name="instances">4</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/kraken</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">900</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="Kraken" variant="8way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_kraken</property>
+			<property name="instances">8</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/kraken</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">900</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="Kraken" variant="16way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_kraken</property>
+			<property name="instances">16</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/kraken</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">900</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="OctaneV2" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_octaneV2</property>
+			<property name="args">all</property>
+			<property name="instances">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/octaneV2</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="OctaneNoMandreel" variant="4way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_octane-nomandreel</property>
+			<property name="instances">4</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/octane-nomandreel</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="OctaneNoMandreel" variant="8way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_octane-nomandreel</property>
+			<property name="instances">8</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/octane-nomandreel</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="OctaneNoMandreel" variant="16way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_octane-nomandreel</property>
+			<property name="instances">16</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/octane-nomandreel</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="SunSpider" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_sunspider</property>
+			<property name="instances">1</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/sunspider</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">900</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="SunSpider" variant="4way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_sunspider</property>
+			<property name="instances">4</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/sunspider</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">900</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="SunSpider" variant="8way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_sunspider</property>
+			<property name="instances">8</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/sunspider</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">900</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="SunSpider" variant="16way" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_sunspider</property>
+			<property name="instances">16</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/sunspider</property>
+			<property name="resultTag">geomean</property>
+			<property name="timeout">900</property>
+		</properties>
+		<iterations>8</iterations>
+</benchmark>
+
+<benchmark name="AcmeAirStartup" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Nodejs" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">acmeair_sufp</property>
+            <property name="baselineArgs" hidden="true"></property>
+            <property name="buildArgs" hidden="true"></property>
+			<property name="instances">1</property>
+			<property name="measures">8</property>
+			<property name="port">4000</property>
+			<property name="environment"></property>
+			<property name="workDir">{nodejs_root}/acmeair004</property>
+			<property name="benchmarkPackage">AcmeAir004_Package</property>
+			<property name="resultTag">Runtime Footprint in kb</property>
+			<property name="timeout">600</property>
+			<property name="commandTimeout">600000</property>
+		</properties>
+		<iterations>8</iterations>
+	</benchmark>
+</benchmarks>

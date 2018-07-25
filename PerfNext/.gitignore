@@ -1,0 +1,4 @@
+node_modules
+/bin/
+/.apt_generated/
+perfnext_passwords

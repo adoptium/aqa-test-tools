@@ -1,0 +1,5 @@
+@import '~antd/dist/antd.css';
+
+.ant-layout {
+	overflow: visible !important;
+}
