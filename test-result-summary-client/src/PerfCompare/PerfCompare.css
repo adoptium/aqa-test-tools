@@ -1,0 +1,19 @@
+.improvement {
+    background: #ddffdd;
+}
+
+.regression {
+    background: #ffdddd;
+}
+
+.nochange {
+    background: #fdfdfd;
+}
+
+.caution {
+    background: #ffffe6;
+}
+
+p {
+    text-align: center;
+}

@@ -1,0 +1,39 @@
+{
+  "name": "test-result-summary-client",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "antd": "^3.1.0",
+    "classnames": "^2.2.5",
+    "codemirror": "^5.37.0",
+    "highcharts": "^5.0.14",
+    "highstock-release": "^5.0.14",
+    "history": "^4.7.2",
+    "jquery": "^3.2.1",
+    "mathjs": "^3.16.5",
+    "mergely": "^4.0.0",
+    "moment": "^2.18.1",
+    "qs": "^6.5.1",
+    "react": "^16.2.0",
+    "react-day-picker": "^7.0.6",
+    "react-dom": "^16.2.0",
+    "react-grid-layout": "^0.16.3",
+    "react-highcharts": "^15.0.0",
+    "react-highlight-words": "^0.10.0",
+    "react-jsx-highcharts": "^2.0.3",
+    "react-jsx-highstock": "^2.0.3",
+    "react-router": "^4.2.0",
+    "react-router-dom": "^4.2.2",
+    "react-scripts": "1.0.17"
+  },
+  "scripts": {
+    "start": "react-app-rewired start",
+    "build": "react-app-rewired build",
+    "test": "react-app-rewired test --env=jsdom",
+    "eject": "react-scripts eject"
+  },
+  "proxy": "http://localhost:3001",
+  "devDependencies": {
+    "react-app-rewired": "^1.5.2"
+  }
+}

@@ -1,8 +1,19 @@
-# openjdk-test-tools
-Tools that enhance the ability to monitor, triage, configure the different type of tests we run at AdoptOpenJDK.   These tools are not a test framework, (such as stf which is the framework used to run system tests).  
+# testci
+This repository stores code for test tools that do a variety of tasks, including launching perf builds and tests through Jenkins, and services to allow you to view a variety of test results.
 
-These tools include:
-* PerfNext - a way to configure, tune and launch performance benchmarks to Jenkins servers
-* Test Results Summary Service - helps summarize different Jenkins jobs, providing additional features that a simple Jenkins plugin may not (including the ability to monitor multiple Jenkins servers, push different sets of test results to a database, search test and compare results across different platforms, report on differences between jobs, etc).
+### [PerfNext](https://github.com/AdoptOpenJDK/openjdk-test-tools/tree/master/PerfNext)
+ - a way to configure, tune and launch performance benchmarks to Jenkins servers.  This creates a more open, accessible and simpler approach to Performance testing, as our current approach is neither open or accessible to developers.
 
-These tools are a 'work in progress', and a platform for adding other tools and services.  The intent is to create a highly customizable toolset to aid developers in testing and delivering high quality code.  
+Some of the identified requirements are to allow developers to:
+- easily launch and run a variety of benchmarks/perf tests
+- view their results
+- set allowable ranges/limits
+- warn/flag on perf degradation
+- store history of results
+- compare results against other historical results
+
+### [Test Result Summary Service (TRSS)](https://github.com/AdoptOpenJDK/openjdk-test-tools/tree/master/TestResultSummaryService)
+ - helps summarize different Jenkins jobs, providing additional features that a simple Jenkins plugin may not (including the ability to monitor multiple Jenkins servers, push different sets of test results to a database, search test and compare results across different platforms, report on differences between jobs, etc).  This project aims to be abstract enough for any build to log results to and present results in a personalized dashboard.
+
+### [test-result-summary-client](https://github.com/AdoptOpenJDK/openjdk-test-tools/tree/master/test-result-summary-client)
+React client for TestResultSummaryService

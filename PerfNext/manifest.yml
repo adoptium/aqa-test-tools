@@ -1,0 +1,6 @@
+---
+applications:
+- name: Perflauncher
+  memory: 512M
+  host: Perflauncher
+  domain: stage1.mybluemix.net

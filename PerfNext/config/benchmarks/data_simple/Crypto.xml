@@ -1,0 +1,14 @@
+<benchmarks>
+	<benchmark name="Crypto-BB" variant="default" setup="true">
+		<capabilities>
+		    <capability name="singleNode" type="affinity"/>
+		</capabilities>
+		<scripts>
+			<sh dir="$benchmark_dir" file="run-crypto-bb.sh" pkgName="Crypto-BB">
+				<argument arg="--jdk-options">'-Xms512m -Xmx512m'</argument>
+			</sh>
+		</scripts>
+		<ENV/>
+		<iterations>1</iterations>
+	</benchmark>
+</benchmarks>

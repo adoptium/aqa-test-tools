@@ -1,0 +1,333 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<benchmarks>
+	<benchmark name="speed-python" variant="default" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">default</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="startup" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">startup</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="regex" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">regex</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="threading" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">threading</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="serialize" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">serialize</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">2400</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="etree" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">etree</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">900</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="apps" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">apps</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="calls" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">calls</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">2400</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="math" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">math</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="template" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">template</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="logging" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">logging</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="hexiom2" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">hexiom2</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">2400</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="other_ibm_group1" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">other_ibm_group1</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">1800</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="other_ibm_group2" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">other_ibm_group2</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">1800</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="other_ibm_group3" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">other_ibm_group3</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">600</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="speed-python" variant="all_v3_working_2014_may" setup="true">
+		<platforms/>
+		<capabilities>
+			<capability name="Python" type="config"/>
+		</capabilities>
+		<properties>
+			<property name="script">run_speed-python</property>
+			<property name="benchmarks">all_v3_working_2014_may</property>
+			<property name="accuracy">rigorous</property>
+			<property name="environment"></property>
+			<property name="workDir">{python_root}/speed-python</property>
+			<property name="resultTag">Stddev:</property>
+			<property name="timeout">9000</property>
+		</properties>
+		<iterations>4</iterations>
+	</benchmark>
+	<benchmark name="Python_simple_StartupFootprint" variant="sleeper" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Python" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_pythonSimple_sufp</property>
+                        <property name="bench_name">sleeper</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{python_root}/OMR_simpleload</property>
+                        <property name="resultTag">Python sleeper StartupFootprint measurement Finished</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>3</iterations>
+        </benchmark>
+        <benchmark name="PythonDjango_PoC_StartupFootprint" variant="v2.2" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Python" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_pythonDjango_sufp</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="users">10</property>
+                        <property name="duration">60</property>
+                        <property name="port">8000</property>
+                        <property name="hostname">localhost</property>
+                        <property name="jmeter_script">Django_Polls_sqlite3_v2.2-Throughput.jmx</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{python_root}/dpoll_v2.2</property>
+                        <property name="resultTag">Python Django PoC StartupFootprint measurement Finished</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>3</iterations>
+        </benchmark>
+        <benchmark name="PythonDjango_PoC_Throughput" variant="v2.2" setup="true">
+                <platforms/>
+                <capabilities>
+                        <capability name="Python" type="config"/>
+                </capabilities>
+                <properties>
+                        <property name="script">run_pythonDjango_PoC</property>
+                        <property name="benchmarkArgs"></property>
+                        <property name="iterations">4</property>
+                        <property name="warmupiterations">10</property>
+                        <property name="users">40</property>
+                        <property name="duration">120</property>
+                        <property name="port">3000</property>
+                        <property name="hostname">localhost</property>
+                        <property name="jmeter_script">Django_Polls_sqlite3_v2.2-Throughput.jmx</property>
+                        <property name="environment"></property>
+                        <property name="workDir">{python_root}/dpoll_v2.2</property>
+                        <property name="resultTag">Python Django PoC Benchmark Finished Successfully</property>
+                        <property name="timeout">480000</property>
+                </properties>
+                <iterations>3</iterations>
+        </benchmark>
+</benchmarks>

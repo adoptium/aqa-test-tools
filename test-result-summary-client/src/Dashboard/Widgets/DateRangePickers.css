@@ -1,0 +1,28 @@
+.chart {
+	position: relative;
+	height: 100%;
+}
+
+.date-range-pickers {
+	position: absolute;
+	z-index: 1000;
+	top: 0;
+	right: 0;
+}
+
+.date-range-pickers>span {
+	color: #666;
+}
+
+.date-range-pickers .DayPickerInput>input {
+	border: 1px solid #e6e6e6;
+	color: #666;
+	cursor: pointer;
+	border-radius: 4px;
+	text-align: center;
+	width: 100px;
+}
+
+.date-range-pickers__to-label {
+	margin-left: 10px;
+}

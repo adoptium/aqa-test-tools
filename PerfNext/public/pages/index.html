@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="utf-8">
+      <meta http-equiv="X-UA-Compatible" content="IE=edge">
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <title>Perffarm Prototype</title>
+      <!-- Bootstrap Core CSS -->
+      <link href="../lib/3rd-party/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+      <!-- MetisMenu CSS -->
+      <link href="../lib/3rd-party/metisMenu/metisMenu.min.css" rel="stylesheet">
+      <!-- Custom CSS -->
+      <link href="../lib/css/sb-admin-2.css" rel="stylesheet">
+      <!-- Morris Charts CSS -->
+      <link href="../lib/3rd-party/morrisjs/morris.css" rel="stylesheet">
+      <!-- Custom Fonts -->
+      <link href="../lib/3rd-party/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+      <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+      <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+      <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+      <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+      <![endif]-->
+   </head>
+   <body>
+      <div id="wrapper">
+         <!-- Navigation -->
+         <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0;">
+            <div class="navbar-header">
+               <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+               <span class="sr-only">Toggle navigation</span>
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+               <span class="icon-bar"></span>
+               </button>
+               <a class="navbar-brand" href="index.html">Perffarm v1.0 Prototype</a>
+            </div>
+            <!-- /.navbar-header -->
+            <ul class="nav navbar-top-links navbar-right">
+               <li class="dropdown">
+                  <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                  <i class="fa fa-info-circle fa-fw"></i> Change Log <i class="fa fa-caret-down"></i>
+                  </a>
+                  <ul class="dropdown-menu dropdown-messages">
+                     <li>
+                        <a class="text-center" href="#">
+                        <strong>Change Log</strong>
+                        </a>
+                     </li>
+                     <li class="divider"></li>
+                     <li>
+                        <a href="#">
+                           <div>
+                              <strong>v1.0 Prototype</strong>
+                              <span class="pull-right text-muted">
+                              <em>May 5th, 2017</em>
+                              </span>
+                           </div>
+                           <div>Frontend Setup - Initial Template (Bootstrap SB Admin) </div>
+                        </a>
+                     </li>
+                  </ul>
+                  <!-- /.dropdown-messages -->
+               </li>
+               <!-- /.dropdown -->               
+            </ul>
+            <!-- /.navbar-top-links -->
+            <div class="navbar-default sidebar" role="navigation">
+               <div class="sidebar-nav navbar-collapse">
+                  <ul class="nav" id="side-menu">
+                     <li>
+                        <a href="index.html"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
+                     </li>
+                     <li>
+                        <a href="#"><i class="fa fa-rocket fa-fw"></i> Launchers<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                           <li>
+                              <a href="schedule.html"><i class="fa fa-wrench fa-fw"></i> Schedule Build</a>
+                           </li>
+                           <li>
+                              <a href="schedule-simple.html"><i class="fa fa-space-shuttle fa-fw"></i> Lean Launcher</a>
+                           </li>
+                        </ul>
+                        <!-- /.nav-second-level -->
+                     </li>
+                  </ul>
+               </div>
+               <!-- /.sidebar-collapse -->
+            </div>
+            <!-- /.navbar-static-side -->
+         </nav>
+         <div id="page-wrapper">
+            <div class="row">
+               <div class="col-lg-12">
+                  <h1 class="page-header">Dashboard</h1>
+               </div>
+               <!-- /.col-lg-12 -->
+            </div>
+            <!-- /.row -->
+            <div class="row">
+               <div class="col-lg-3 col-md-6">
+                  <div class="panel panel-primary">
+                     <div class="panel-heading">
+                        <div class="row">
+                           <div class="col-xs-3">
+                              <i class="fa fa-upload fa-5x"></i>
+                           </div>
+                           <div class="col-xs-9 text-right">
+                              <div class="huge">26</div>
+                              <div>Scheduled Tasks!</div>
+                           </div>
+                        </div>
+                     </div>
+                     <a href="#">
+                        <div class="panel-footer">
+                           <span class="pull-left">View Details</span>
+                           <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                           <div class="clearfix"></div>
+                        </div>
+                     </a>
+                  </div>
+               </div>
+               <div class="col-lg-3 col-md-6">
+                  <div class="panel panel-green">
+                     <div class="panel-heading">
+                        <div class="row">
+                           <div class="col-xs-3">
+                              <i class="fa fa-tasks fa-5x"></i>
+                           </div>
+                           <div class="col-xs-9 text-right">
+                              <div class="huge">12</div>
+                              <div>New Reports (last 24 hours)</div>
+                           </div>
+                        </div>
+                     </div>
+                     <a href="#">
+                        <div class="panel-footer">
+                           <span class="pull-left">View Details</span>
+                           <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                           <div class="clearfix"></div>
+                        </div>
+                     </a>
+                  </div>
+               </div>
+               <div class="col-lg-3 col-md-6">
+                  <div class="panel panel-yellow">
+                     <div class="panel-heading">
+                        <div class="row">
+                           <div class="col-xs-3">
+                              <i class="fa fa-warning fa-5x"></i>
+                           </div>
+                           <div class="col-xs-9 text-right">
+                              <div class="huge">13</div>
+                              <div>Degredations identified!</div>
+                           </div>
+                        </div>
+                     </div>
+                     <a href="#">
+                        <div class="panel-footer">
+                           <span class="pull-left">View Details</span>
+                           <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                           <div class="clearfix"></div>
+                        </div>
+                     </a>
+                  </div>
+               </div>
+               <div class="col-lg-3 col-md-6">
+                  <div class="panel panel-red">
+                     <div class="panel-heading">
+                        <div class="row">
+                           <div class="col-xs-3">
+                              <i class="fa fa-times fa-5x"></i>
+                           </div>
+                           <div class="col-xs-9 text-right">
+                              <div class="huge">3</div>
+                              <div>Tasks Failed!</div>
+                           </div>
+                        </div>
+                     </div>
+                     <a href="#">
+                        <div class="panel-footer">
+                           <span class="pull-left">View Details</span>
+                           <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                           <div class="clearfix"></div>
+                        </div>
+                     </a>
+                  </div>
+               </div>
+            </div>
+            <!-- /.row -->
+            <div class="row">
+               <div class="col-lg-8">
+                  <div class="panel panel-default">
+                     <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> 10 Day Trend
+                        <div class="pull-right">
+                           <div class="btn-group">
+                              <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                              Actions
+                              <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu pull-right" role="menu">
+                                 <li><a href="#">Print</a>
+                                 </li>
+                                 <li><a href="#">Download</a>
+                                 </li>
+                                 <li><a href="#">Raw Data</a>
+                                 </li>
+                              </ul>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- /.panel-heading -->
+                     <div class="panel-body">
+                        <div id="morris-area-chart"></div>
+                     </div>
+                     <!-- /.panel-body -->
+                  </div>
+                  <!-- /.panel -->
+                  <div class="panel panel-default">
+                     <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> Bar Chart
+                        <div class="pull-right">
+                           <div class="btn-group">
+                              <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
+                              Actions
+                              <span class="caret"></span>
+                              </button>
+                              <ul class="dropdown-menu pull-right" role="menu">
+                                 <li><a href="#">Print</a>
+                                 </li>
+                                 <li><a href="#">Download</a>
+                                 </li>
+                                 <li><a href="#">Raw Data</a>
+                                 </li>
+                              </ul>
+                           </div>
+                        </div>
+                     </div>
+                     <!-- /.panel-heading -->
+                     <div class="panel-body">
+                        <div class="row">
+                           <div class="col-lg-12">
+                              <div id="morris-bar-chart"></div>
+                           </div>
+                           <!-- /.col-lg-8 (nested) -->
+                        </div>
+                        <!-- /.row -->
+                     </div>
+                     <!-- /.panel-body -->
+                  </div>
+                  <!-- /.panel -->
+               </div>
+               <!-- /.col-lg-8 -->
+               <div class="col-lg-4">
+                  <!-- /.panel -->
+                  <div class="panel panel-default">
+                     <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> Donut Chart
+                     </div>
+                     <div class="panel-body">
+                        <div id="morris-donut-chart"></div>
+                        <a href="#" class="btn btn-default btn-block">View Details</a>
+                     </div>
+                     <!-- /.panel-body -->
+                  </div>
+                  <div class="panel panel-default">
+                     <div class="panel-heading">
+                        <i class="fa fa-bar-chart-o fa-fw"></i> Latest Benchmarks
+                     </div>
+                     <div class="panel-body">
+                        <div class="table-responsive">
+                           <table class="table table-bordered table-hover table-striped" style=" text-align: center; vertical-align: middle;">
+                              <thead>
+                                 <tr>
+                                    <th>Machine</th>
+                                    <th>Date</th>
+                                    <th>Benchmark</th>
+                                    <th>Action</th>
+                                 </tr>
+                              </thead>
+                              <tbody>
+                                 <tr>
+                                    <td>Machine 1</td>
+                                    <td>10/21/2013</td>
+                                    <td>Crypto</td>
+                                    <td><button type="button" class="btn btn-success btn-xs">View</button></td>
+                                 </tr>
+                                 <tr>
+                                    <td>Machine 6</td>
+                                    <td>10/21/2013</td>
+                                    <td>Random</td>
+                                    <td><button type="button" class="btn btn-success btn-xs">View</button></td>
+                                 </tr>
+                                 <tr>
+                                    <td>Machine 7</td>
+                                    <td>10/21/2013</td>
+                                    <td>Test</td>
+                                    <td><button type="button" class="btn btn-success btn-xs">View</button></td>
+                                 </tr>
+                                 <tr>
+                                    <td>Machine 9</td>
+                                    <td>10/21/2013</td>
+                                    <td>Sample</td>
+                                    <td><button type="button" class="btn btn-success btn-xs">View</button></td>
+                                 </tr>
+                                 <tr>
+                                    <td>Machine 5</td>
+                                    <td>10/21/2013</td>
+                                    <td>Crypto</td>
+                                    <td><button type="button" class="btn btn-success btn-xs">View</button></td>
+                                 </tr>
+                                 <tr>
+                                    <td>Machine 1</td>
+                                    <td>10/21/2013</td>
+                                    <td>Random</td>
+                                    <td><button type="button" class="btn btn-success btn-xs">View</button></td>
+                                 </tr>
+                                 <tr>
+                                    <td>Machine 7</td>
+                                    <td>10/21/2013</td>
+                                    <td>New</td>
+                                    <td><button type="button" class="btn btn-success btn-xs">View</button></td>
+                                 </tr>
+                                 <tr>
+                                    <td>Machine 2</td>
+                                    <td>10/21/2013</td>
+                                    <td>Crypto</td>
+                                    <td><button type="button" class="btn btn-success btn-xs">View</button></td>
+                                 </tr>
+                              </tbody>
+                           </table>
+                        </div>
+                     </div>
+                     <!-- /.panel-body -->
+                  </div>
+                  <!-- /.panel -->
+                </div>
+               <!-- /.col-lg-4 -->
+            </div>
+            <!-- /.row -->
+         </div>
+         <!-- /#page-wrapper -->
+      </div>
+      <!-- /#wrapper -->
+      <!-- jQuery -->
+      <script src="../lib/3rd-party/jquery/jquery.min.js"></script>
+      <!-- Bootstrap Core JavaScript -->
+      <script src="../lib/3rd-party/bootstrap/js/bootstrap.min.js"></script>
+      <!-- Metis Menu Plugin JavaScript -->
+      <script src="../lib/3rd-party/metisMenu/metisMenu.min.js"></script>
+      <!-- Morris Charts JavaScript -->
+      <script src="../lib/3rd-party/raphael/raphael.min.js"></script>
+      <script src="../lib/3rd-party/morrisjs/morris.min.js"></script>
+      <script src="../temp-chart-data/morris-data.js"></script>
+      <!-- Custom Theme JavaScript -->
+      <script src="../lib/js/sb-admin-2.js"></script>
+   </body>
+</html>

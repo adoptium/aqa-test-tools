@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<benchmarks>
+    <benchmark name="SPECjvm2008" variant="Basic" setup="true">
+        <description>SPECjvm2008 Benchmark</description>
+        <properties>
+            <scripts>
+                <java dir="$benchmark_dir" file="" pkgName="SPECjvm2008">
+                	<argument arg="JDKOptions">-Xcompressedrefs -Xms3584m -Xmx3584m</argument>
+                	<argument arg="benchmarkArgs">-jar SPECjvm2008.jar -ikv -crf false</argument>
+                	<argument arg="benchmarks">compress derby mpegaudio serial sunflow</argument>
+                </java>
+            </scripts>
+                        
+            <ENV>
+				<property name="WORKDIR">$(pwd)</property>
+				<property name="IBM_JAVA_OPTIONS">-Dfile.encoding=ISO8859-1</property>
+				<property name="CLASSPATH">SPECjvm2008.jar</property>
+            </ENV>
+        </properties>
+        <iterations>1</iterations>
+    </benchmark>
+    <!-- Don't have a period in variant name (i.e. xml.all, startup.all) since both name and variant are used in
+    class name for HW Env. Otherwise, benchmark arguments won't be able to be generated and displayed -->
+    <benchmark name="SPECjvm2008" variant="xml" setup="true">
+        <description>SPECjvm2008 Benchmark</description>
+        <properties>
+            <scripts>
+                <java dir="$benchmark_dir" file="" pkgName="SPECjvm2008">
+                	<argument arg="JDKOptions">-Xcompressedrefs -Xms3584m -Xmx3584m</argument>
+                	<argument arg="benchmarkArgs">-jar SPECjvm2008.jar -ikv -crf false</argument>
+                	<argument arg="benchmarks">xml.transform xml.validation</argument>
+                </java>
+            </scripts>
+                        
+            <ENV>
+				<property name="WORKDIR">$(pwd)</property>
+				<property name="IBM_JAVA_OPTIONS">-Dfile.encoding=ISO8859-1</property>
+				<property name="CLASSPATH">SPECjvm2008.jar</property>
+            </ENV>
+        </properties>
+        <iterations>1</iterations>
+    </benchmark>
+    <benchmark name="SPECjvm2008" variant="scimark_large" setup="true">
+        <description>SPECjvm2008 Benchmark</description>
+        <properties>
+            <scripts>
+                <java dir="$benchmark_dir" file="" pkgName="SPECjvm2008">
+                	<argument arg="JDKOptions">-Xcompressedrefs -Xms3584m -Xmx3584m</argument>
+                	<argument arg="benchmarkArgs">-jar SPECjvm2008.jar -ikv -crf false</argument>
+                	<argument arg="benchmarks">scimark.fft.large scimark.lu.large scimark.sor.large scimark.sparse.large</argument>
+                </java>
+            </scripts>
+                        
+            <ENV>
+				<property name="WORKDIR">$(pwd)</property>
+				<property name="IBM_JAVA_OPTIONS">-Dfile.encoding=ISO8859-1</property>
+				<property name="CLASSPATH">SPECjvm2008.jar</property>
+            </ENV>
+        </properties>
+        <iterations>1</iterations>
+    </benchmark>
+    <benchmark name="SPECjvm2008" variant="scimark_small" setup="true">
+        <description>SPECjvm2008 Benchmark</description>
+        <properties>
+            <scripts>
+                <java dir="$benchmark_dir" file="" pkgName="SPECjvm2008">
+                	<argument arg="JDKOptions">-Xcompressedrefs -Xms3584m -Xmx3584m</argument>
+                	<argument arg="benchmarkArgs">-jar SPECjvm2008.jar -ikv -crf false</argument>
+                	<argument arg="benchmarks">scimark.fft.small scimark.lu.small scimark.sor.small scimark.sparse.small scimark.monte_carlo</argument>
+                </java>
+            </scripts>
+                        
+            <ENV>
+				<property name="WORKDIR">$(pwd)</property>
+				<property name="IBM_JAVA_OPTIONS">-Dfile.encoding=ISO8859-1</property>
+				<property name="CLASSPATH">SPECjvm2008.jar</property>
+            </ENV>
+        </properties>
+        <iterations>1</iterations>
+    </benchmark>
+    <benchmark name="SPECjvm2008" variant="crypto" setup="true">
+        <description>SPECjvm2008 Benchmark</description>
+        <properties>
+            <scripts>
+                <java dir="$benchmark_dir" file="" pkgName="SPECjvm2008">
+                	<argument arg="JDKOptions">-Xcompressedrefs -Xms3584m -Xmx3584m</argument>
+                	<argument arg="benchmarkArgs">-jar SPECjvm2008.jar -ikv -crf false</argument>
+                	<argument arg="benchmarks">crypto.aes crypto.rsa crypto.signverify</argument>
+                </java>
+            </scripts>
+                        
+            <ENV>
+				<property name="WORKDIR">$(pwd)</property>
+				<property name="IBM_JAVA_OPTIONS">-Dfile.encoding=ISO8859-1</property>
+				<property name="CLASSPATH">SPECjvm2008.jar</property>
+            </ENV>
+        </properties>
+        <iterations>1</iterations>
+    </benchmark>
+    <benchmark name="SPECjvm2008" variant="compiler" setup="true">
+        <description>SPECjvm2008 Benchmark</description>
+        <properties>
+            <scripts>
+                <java dir="$benchmark_dir" file="" pkgName="SPECjvm2008">
+                	<argument arg="JDKOptions">-Xcompressedrefs -Xms3584m -Xmx3584m</argument>
+                	<argument arg="benchmarkArgs">-jar SPECjvm2008.jar -ikv -crf false</argument>
+                	<argument arg="benchmarks">compiler.compiler compiler.sunflow</argument>
+                </java>
+            </scripts>
+                        
+            <ENV>
+				<property name="WORKDIR">$(pwd)</property>
+				<property name="IBM_JAVA_OPTIONS">-Dfile.encoding=ISO8859-1</property>
+				<property name="CLASSPATH">SPECjvm2008.jar</property>
+            </ENV>
+        </properties>
+        <iterations>1</iterations>
+    </benchmark>
+    <benchmark name="SPECjvm2008" variant="startup" setup="true">
+        <description>SPECjvm2008 Benchmark</description>
+        <properties>
+            <scripts>
+                <java dir="$benchmark_dir" file="" pkgName="SPECjvm2008">
+                	<argument arg="JDKOptions">-Xcompressedrefs -Xms3584m -Xmx3584m</argument>
+                	<argument arg="benchmarkArgs">-jar SPECjvm2008.jar -ikv -crf false</argument>
+                	<argument arg="benchmarks">startup.helloworld startup.compiler.compiler startup.compiler.sunflow startup.compress startup.crypto.aes startup.crypto.rsa startup.crypto.signverify startup.mpegaudio startup.scimark.fft startup.scimark.lu startup.scimark.monte_carlo startup.scimark.sor startup.scimark.sparse startup.serial startup.sunflow startup.xml.transform startup.xml.validation</argument>
+                </java>
+            </scripts>
+                        
+            <ENV>
+				<property name="WORKDIR">$(pwd)</property>
+				<property name="IBM_JAVA_OPTIONS">-Dfile.encoding=ISO8859-1</property>
+				<property name="CLASSPATH">SPECjvm2008.jar</property>
+            </ENV>
+        </properties>
+        <iterations>1</iterations>
+    </benchmark>
+</benchmarks>

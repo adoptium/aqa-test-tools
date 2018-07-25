@@ -1,0 +1,56 @@
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<descriptions>
+	<!-- Descriptions for benchMe update elements -->
+	<description id="bmupdate_buildID">A buildID number you want the BenchMe scores to be updated for.  The default is to update the scores for the jobs in the buildID containing this task.</description>
+	<description id="bmupdate_server">The BenchMe application server machine.</description>
+	<!-- Descriptions for Score History update elements -->
+	<description id="shupdate_buildID">Build ID for the job, this is not used.</description>
+	<description id="shupdate_server">The server machine for the Traffic Lights database.</description>
+	<!-- Descriptions for traffic light update elements -->
+	<description id="tlupdate">A task that updates a traffic light after a set of benchmarks have run.</description>
+	<description id="tlupdate_lights">The identifier of a traffic light (eg: 60, Tier1and2)</description>
+	<description id="tlupdate_platformName">The name of this platform in the traffic light (underscores should be used in place of spaces).</description>
+	<description id="tlupdate_preserveBaseline">Prevents this traffic light update task running as part of an interleaved baseline run.</description>
+	<description id="tlupdate_forceBaseline">Forces the traffic light update task to update the baseline data.</description>
+	<!-- Descriptions for Patch_JDK task -->
+	<description id="patchjdk_sourcedir">The source directory (on Perffarm) containing the patch jarfile</description>
+	<description id="patchjdk_destjar">The JDK jar file to patch, relative to the SDK being installed. Eg. jre/lib/rt.jar</description>
+	<description id="patchjdk_base">If true, an interleaved baseline is also patched. If false, the baseline is left unmodified.</description>
+	<description id="patchjdk_mf">If true, the META-INF directory of the target jar is updated with the contents of the patch. If false, META-INF is left unmodified. (Usually, you want to leave META-INF unmodified).</description>
+	<description id="patchws-sdkdir">If set to true (default) then the patch will work on z builds with ws-sdk/J7.0_64 etc directories, if false it will treat them as usual pmz6470sr3-20121025/sdk/ builds.</description>
+	<!-- Descriptions for other tasks -->
+	<description id="wasVersion">Determines which WAS install the configuration files are copied from. Must match the WAS capability name in the machine data tool (eg: WAS80, WAS85, WAS855)</description>
+	<!-- Descriptions for WAS benchmarks -->
+	<description id="was_jdkoptions">JVM args - MUST be provided in the following format (INCLUDING a leading comma): ,'-Xjit':'noOpt','-DmyProperty':'myValue' . The wasperf automation automatically joins the pairs with the correct separator. Unary options (such as -Xint) can be specified thus: '-Xint':1 . You can also turn off a default option, eg: '-Xscmx':0 .</description>	
+	<description id="dt_scenario">A comma separated list of scenarios that will run. The format for a scenario is: SCENARIO-PORT-DYNACACHE-CLIENTS-ITERATIONS. Example: PingServlet-9080-50-100</description>
+	<description id="dt_recRuns">No of measurement runs (following the warmup runs). The default in the wasperf automation is 3.</description>
+	<description id="soa_recRuns">No of measurement runs (following the warmup runs). The default in the wasperf automation is 2.</description>
+	<description id="dt_warmRuns">No of warmup runs. The first warmup is done with a single client, any subsequent warmups are done with the normal number (identical to a measurement run). The default in the wasperf automation is 2.</description>
+	<description id="soa_warmRuns">No of warmup runs. A (brief) warmup is done with a single client prior to these. The default in the wasperf automation is 1.</description>
+	<description id="soa_clientWarm">Warmup time for the thinclient (Java-based) driver. This effectively warms both the server and client. The default in the wasperf automation is 60, which is insufficient. This property MUST be smaller than warmupDuration, if any warmup repetitions are being performed.</description>
+	<description id="dt_singleClientWarmups">The number of 1 client 60 second runs to do</description>
+	<description id="dt_recD">Length of each measurement run (in seconds). The default in the wasperf automation is 180.</description>
+	<description id="dt_warmD">Length of each warmup run (in seconds). The default in the wasperf automation is 180.</description>
+	<description id="was_verbosegc">Specify the verbose GC log filename. This will be set via the -Xverbosegclog parameter, to record GC activity during WAS benchmarks. The parameter should be the name of a file. Leave this parameter empty to disable verbose GC logging.</description>
+	<description id="was_verbosejit">Specify -Xjit parameters to use during the run, for example to enable verbose JIT logging. Leave this parameter empty if you do not want any -Xjit options.</description>
+	<description id="was_env">A space-separated list of name=value environment variable pairs. Any spaces in name or value should be escaped with a backslash \ - do not use quotes.</description>
+	<description id="was_clearsc">Normally we clear the shared class cache before starting the wasperf automation. Set to 'false' to preserve whatever shared class cache is present on the machine.</description>
+	<!-- Healthcenter stuff -->
+	<description id="hcToggle">Setting this parameter to true causes the Healthcenter client to be run concurrently, attempting to connect to the agent running alongside the benchmark.</description>
+	<description id="hcClient">Determines which machine will be used to run the Healthcenter client.</description>
+	<!-- General benchmark parameters -->
+	<description id="categories">Add an extra category tag to this benchmark. Example: variant.default</description>
+	<description id="nonWAS_CPUAffinity">Optional command to limit the CPU or memory available to the JVM. This MUST be specified in the following format: taskset PARMS -c 0-3, or execrset PARMS -c 0-7 -e, or numactl PARMS --cpunodebind=0 --membind=0.  If you do not include the PARMS, then the command line will be rejected by STAF.</description>
+</descriptions>
