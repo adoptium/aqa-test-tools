@@ -97,7 +97,7 @@ export default class Settings extends Component {
             const response = await fetch( `/api/deleteBuildListById?_id=${target._id}`, {
                 method: 'get'
             } );
-            const results = await response.json();
+            await response.json();
         }
         this.setState( { data: data.filter( item => item.key !== key ) } );
     }
@@ -134,7 +134,7 @@ export default class Settings extends Component {
                 }
 
                 const upsertBuildList = await fetch( `/api/upsertBuildList`, postData );
-                const result = await upsertBuildList.json();
+                await upsertBuildList.json();
                 message.info( 'Data Submitted!' );
             } else {
                 const row = invalidRow + 1;

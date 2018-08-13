@@ -263,7 +263,7 @@ export default class PerfCompare extends Component {
             let baselineURLScheme, baselineHostWithPort, baselineBuildName, baselineBuildNum;
             let testURLScheme, testHostWithPort, testBuildName, testBuildNum;
 
-            const baselinBuildURLSplit = this.state.inputURL.baselineID.split("/");
+            const baselineBuildURLSplit = this.state.inputURL.baselineID.split("/");
             const testBuildURLSplit = this.state.inputURL.testID.split("/");
             
             // Find the index for the top level "job" path in the Jenkins URLs given.
@@ -271,14 +271,14 @@ export default class PerfCompare extends Component {
             // https://customJenkinsServer/view/PerfTests/job/Daily-Liberty-DayTrader3/155/
             // https://customJenkinsServer/job/Daily-Liberty-DayTrader3/155/
 
-            const jenkinsTopLevelJobIndexBaseline= baselinBuildURLSplit.indexOf("job");
+            const jenkinsTopLevelJobIndexBaseline= baselineBuildURLSplit.indexOf("job");
             const jenkinsTopLevelJobIndexTest= testBuildURLSplit.indexOf("job");
 
             try {
-                baselineURLScheme = baselinBuildURLSplit[0];
-                baselineHostWithPort = baselinBuildURLSplit[2];
-                baselineBuildName = baselinBuildURLSplit[jenkinsTopLevelJobIndexBaseline + 1];
-                baselineBuildNum = baselinBuildURLSplit[jenkinsTopLevelJobIndexBaseline + 2];
+                baselineURLScheme = baselineBuildURLSplit[0];
+                baselineHostWithPort = baselineBuildURLSplit[2];
+                baselineBuildName = baselineBuildURLSplit[jenkinsTopLevelJobIndexBaseline + 1];
+                baselineBuildNum = baselineBuildURLSplit[jenkinsTopLevelJobIndexBaseline + 2];
 
                 // Build the original URL composed of host and port only
                 baselineBuildURL = baselineURLScheme + "//" + baselineHostWithPort;
@@ -287,7 +287,7 @@ export default class PerfCompare extends Component {
                 if (baselineBuildNum === undefined || (baselineBuildURL !== "https://customJenkinsServer")) {
                     displayErrorMessage += "Invalid Baseline URL. "
                 }
-            } catch (baselinBuildURLSplitError) {
+            } catch (baselineBuildURLSplitError) {
                 displayErrorMessage += "Invalid Baseline URL. "
             }
 
@@ -379,7 +379,7 @@ export default class PerfCompare extends Component {
         )
         let curAllVariantData = [];
         let curVariantData, curMetricTable, curMatchingTestVariantIndex, curMatchingTestMetricIndex;
-        let curMetricName, curBaselineScore, curTestScore, curDiff, curBaselineCI, curTestCI, curColor, curMetricUnits, curHigherBetter;
+        let curMetricName, curBaselineScore, curTestScore, curRawValues, curDiff, curBaselineCI, curTestCI, curColor, curMetricUnits, curHigherBetter;
 
         // Only compare variants that are in the baseline run
         for (let i = 0; i < this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants.length; i++) {
@@ -413,6 +413,11 @@ export default class PerfCompare extends Component {
                 }
 
                 curMetricName = this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].name;
+
+                curRawValues = {
+                    "baseline": this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].value,
+                    "test": this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].value
+                };
 
                 try {
                     curBaselineScore = math.round((this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].mean), 3);
@@ -485,7 +490,7 @@ export default class PerfCompare extends Component {
                     curDiff = "error";
                     curColor = 'caution';
                 }
-                
+
                 curMetricTable.push({
                     key: i+"x"+j,
                     metric: `${curMetricName} (${curMetricUnits})`,
@@ -493,6 +498,7 @@ export default class PerfCompare extends Component {
                     baselineCI: curBaselineCI,
                     testScore: curTestScore,
                     testCI: curTestCI,
+                    rawValues: curRawValues,
                     diff: curDiff,
                     color: curColor,
                 })
@@ -540,6 +546,13 @@ export default class PerfCompare extends Component {
                         bordered
                         columns={perfCompareColumns}
                         rowClassName={(record) => record.color.replace('#', '')}
+                        expandedRowRender={(record) => (
+                            <div>
+                                <p>Raw Score Values</p>
+                                <p>Baseline: {JSON.stringify(record.rawValues["baseline"])}</p>
+                                <p>Test: {JSON.stringify(record.rawValues["test"])}</p>
+                            </div>
+                        )}
                         dataSource={x.metricTable}
                         pagination={false}
                     />

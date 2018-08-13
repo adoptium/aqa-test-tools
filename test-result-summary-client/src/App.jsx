@@ -4,11 +4,12 @@ import { Link } from 'react-router-dom';
 import { Layout, Menu, Icon } from 'antd';
 
 import { Dashboard } from './Dashboard/';
+import ErrorBoundary from './ErrorBoundary';
 import { Output } from './Build/Output/';
 import { TestCompare } from './TestCompare/';
 import { PerfCompare } from './PerfCompare/';
 import { AllTestsInfo, BuildDetail, DeepHistory, TestPerPlatform, TopLevelBuilds } from './Build/';
-import { SearchOutput, SearchResult } from './Search/';
+import { SearchResult } from './Search/';
 import { Settings } from './Settings/';
 
 import './App.css';
@@ -49,20 +50,22 @@ export default class App extends Component {
                     </Menu>
                 </Sider>
                 <Layout style={{ padding: '0 24px 24px' }}>
-                    <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
-                        <Route exact path="/" component={Dashboard} />
-                        <Route path="/admin/settings" component={Settings} />
-                        <Route path="/dashboard" component={Dashboard} />
-                        <Route path="/tests/:type" component={TopLevelBuilds} />
-                        <Route path="/output/:outputType" component={Output} />
-                        <Route path="/deepHistory" component={DeepHistory} />
-                        <Route path="/testCompare" component={TestCompare} />
-                        <Route path="/perfCompare" component={PerfCompare} />
-                        <Route path="/buildDetail" component={BuildDetail} />
-                        <Route path="/allTestsInfo" component={AllTestsInfo} />
-                        <Route path="/testPerPlatform" component={TestPerPlatform} />
-                        <Route path="/searchResult" component={SearchResult} />
-                    </Content>
+                    <ErrorBoundary>
+                        <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
+                            <Route exact path="/" component={Dashboard} />
+                            <Route path="/admin/settings" component={Settings} />
+                            <Route path="/dashboard" component={Dashboard} />
+                            <Route path="/tests/:type" component={TopLevelBuilds} />
+                            <Route path="/output/:outputType" component={Output} />
+                            <Route path="/deepHistory" component={DeepHistory} />
+                            <Route path="/testCompare" component={TestCompare} />
+                            <Route path="/perfCompare" component={PerfCompare} />
+                            <Route path="/buildDetail" component={BuildDetail} />
+                            <Route path="/allTestsInfo" component={AllTestsInfo} />
+                            <Route path="/testPerPlatform" component={TestPerPlatform} />
+                            <Route path="/searchResult" component={SearchResult} />
+                        </Content>
+                    </ErrorBoundary>
                 </Layout>
             </Layout>
         </Layout>

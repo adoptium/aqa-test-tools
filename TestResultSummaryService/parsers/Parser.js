@@ -8,9 +8,9 @@ class Parser {
     extractArtifact( output ) {
         let m;
         let artifact = null;
-        const artifactRegex = /(Deploying artifact:)(\s?)(.*?)\r/;
+        const artifactRegex = /Deploying artifact: ?(.*?)[\r\n]/;
         if ( ( m = artifactRegex.exec( output ) ) !== null ) {
-            artifact = m[3].trim();
+            artifact = m[1].trim();
         }
         return artifact;
     }
@@ -46,24 +46,11 @@ class Parser {
     extractStartedBy( output ) {
         let m;
         let user = null;
-        const userRegex = /Started by\s*(\S*)\s(.*)/;
+        const userRegex = /Started by ?(.*?)[\r\n]/;
         if ( ( m = userRegex.exec( output ) ) !== null ) {
             user = m[1];
-            if ( user === "user" ) {
-                user = m[2];
-            }
         }
         return user;
-    }
-
-    extractJDKBuildDate( output ) {
-      let m;
-      let buildDate = null;
-      const buildDateRegex = /\+\sLAST_BUILD_DATE\=(.*)/;
-      if ( ( m = buildDateRegex.exec( output ) ) != null) {
-        buildDate = m[1];
-      }
-      return buildDate;
     }
 
     convertBuildDateToUnixTime ( buildDate ) {

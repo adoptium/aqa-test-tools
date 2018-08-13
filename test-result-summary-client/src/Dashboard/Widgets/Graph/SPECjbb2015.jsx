@@ -83,10 +83,10 @@ export default class SPECjbb2015 extends Component {
                 let maxjOPS = null;
                 let criticaljOPS = null;
                 for ( let i = 0; i < t.tests[0].testData.metrics.length; i++ ) {
-                    if ( t.tests[0].testData.metrics[i].name === "maxjOPS" ) {
+                    if ( t.tests[0].testData.metrics[i].name === "max_jOPS" ) {
                         maxjOPS = t.tests[0].testData.metrics[i].value;
                     }
-                    if ( t.tests[0].testData.metrics[i].name === "criticaljOPS" ) {
+                    if ( t.tests[0].testData.metrics[i].name === "critical_jOPS" ) {
                         criticaljOPS = t.tests[0].testData.metrics[i].value;
                     }
                 }
