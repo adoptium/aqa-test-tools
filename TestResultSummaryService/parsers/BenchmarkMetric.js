@@ -38,12 +38,12 @@ const BenchmarkMetricRegex = {
     SPECjbb2015: {
         metrics: [
             {
-                name: "maxjOPS",
+                name: "max_jOPS",
                 regex: /RUN RESULT:[\s\S]*?max-jOPS\s?=\s?([0-9]*[.]?[0-9]+)[\s\S]*?critical-jOPS\s?=\s?[0-9]*[.]?[0-9]+[\s\S]*?\n/,
                 regexRepeat: false
             },
             {
-                name: "criticaljOPS",
+                name: "critical_jOPS",
                 regex: /RUN RESULT:[\s\S]*?max-jOPS\s?=\s?[0-9]*[.]?[0-9]+[\s\S]*?critical-jOPS\s?=\s?([0-9]*[.]?[0-9]+)[\s\S]*?\n/,
                 regexRepeat: false
             }

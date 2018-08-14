@@ -68,6 +68,7 @@ export default class TestTable extends Component {
             dataIndex: 'result',
             key: 'result',
             render: renderResult,
+            width: 100,
             filters: [{
                 text: 'FAILURE',
                 value: 'FAILURE',

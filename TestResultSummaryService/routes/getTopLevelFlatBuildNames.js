@@ -1,13 +1,7 @@
 const { TestResultsDB, ObjectID } = require( '../Database' );
-// ToDo: this is a temporary api. It should be removed once pipeline of
-// pipelines is set up in Perf/JCK, similar to FvTest
+
 module.exports = async ( req, res ) => {
-    let { limit, type } = req.query;
-    if ( limit === undefined ) {
-        limit = 5;
-    } else {
-        limit = parseInt( limit, 10 );
-    }
+    let { type } = req.query;
     const db = new TestResultsDB();
     const result = await db.aggregate( [
         {
@@ -20,7 +14,9 @@ module.exports = async ( req, res ) => {
                 _id: { buildName: '$buildName' },
             }
         },
-        { $limit: limit }
+        { 
+        	$sort : { _id : 1 } 
+        }
     ] );
     res.send( result );
 }

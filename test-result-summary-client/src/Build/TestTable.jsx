@@ -67,7 +67,7 @@ export default class TestTable extends Component {
             title: 'Duration',
             dataIndex: 'duration',
             key: 'duration',
-            width: 120,
+            width: 100,
             render: renderDuration,
             sorter: ( a, b ) => {
                 return a.duration - b.duration;
@@ -80,6 +80,7 @@ export default class TestTable extends Component {
                     dataIndex: i.toString(),
                     key: i.toString(),
                     render: renderResult,
+                    width: 120,
                     filters: [{
                         text: 'FAILED',
                         value: 'FAILED',

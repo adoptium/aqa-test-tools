@@ -30,11 +30,9 @@ class BuildMonitor {
                 const allBuilds = await jenkinsInfo.getAllBuilds( url, buildName );
                 if ( allBuilds ) {
                     // sort the allBuilds to make sure build number is in descending order
-                    allBuilds.sort(( a, b ) => {
-                        return ( a.id > b.id ) ? -1 : ( ( b.id > a.id ) ? 1 : 0 );
-                    } );
+                    allBuilds.sort(( a, b ) => parseInt(b.id) - parseInt(a.id));
                     /*
-                     Loop through allBuilds or past 10 builds
+                     Loop through allBuilds or past 20 builds
                      (whichever is less) to avoid OOM error.
                      If there is not a match in db, create the new 
                      build. Otherwise, break.
@@ -42,16 +40,17 @@ class BuildMonitor {
                      if we find a match, all remaining builds that has 
                      a lower build number is in db.
                     */
-                    const limit = Math.min( 10, allBuilds.length );
+                    const limit = Math.min( 20, allBuilds.length );
                     for ( let i = 0; i < limit; i++ ) {
                         const buildNum = parseInt( allBuilds[i].id, 10 );
                         const testResults = new TestResultsDB();
                         const buildsInDB = await testResults.getData( { url, buildName, buildNum } ).toArray();
                         if ( !buildsInDB || buildsInDB.length === 0 ) {
                             let status = "NotDone";
-                            if ( allBuilds[i].result === null ) {
-                                status = "Streaming";
-                            }
+                            // Turn off streaming
+                            //if ( allBuilds[i].result === null ) {
+                            //    status = "Streaming";
+                            //}
                             const buildData = {
                                 url,
                                 buildName,
