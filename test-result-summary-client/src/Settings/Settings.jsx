@@ -70,9 +70,7 @@ export default class Settings extends Component {
             const data = results.map(( info, i ) => {
                 return {
                     key: i,
-                    _id: info._id,
-                    buildUrl: info.buildUrl,
-                    type: info.type
+                    ...info
                 };
             } )
             this.setState( { data } );
@@ -107,6 +105,7 @@ export default class Settings extends Component {
         const newData = {
             key: data ? data.length : 0,
             buildUrl: "",
+            numBuildsToKeep: 10
         };
         this.setState( {
             data: [...data, newData]
@@ -118,28 +117,36 @@ export default class Settings extends Component {
         if ( data && data.length > 0 ) {
             let invalidRow = null;
             for ( let i = 0; i < data.length; i++ ) {
-                if ( !data[i].buildUrl || !data[i].type ) {
-                    invalidRow = i;
-                    break;
+                invalidRow = i + 1;
+                if ( !data[i].buildUrl ) {
+                    message.info( `Please provide a Build URL at Row ${invalidRow} and click the check mark!` );
+                    return;
                 }
-            }
-            if ( !invalidRow ) {
-                const postData = {
-                    method: 'POST',
-                    headers: {
-                        Accept: 'application/json',
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify( { data } ),
+                if ( !data[i].type ) {
+                    message.info( `Please choose a Build Type at Row ${invalidRow}!` );
+                    return;
+                }
+                if ( !data[i].numBuildsToKeep || !parseInt( data[i].numBuildsToKeep ) || parseInt( data[i].numBuildsToKeep ) < 0 ) {
+                    message.info( `Invalid # of Builds To Keep at Row ${invalidRow}! ${data[i].numBuildsToKeep}` );
+                    return;
                 }
 
-                const upsertBuildList = await fetch( `/api/upsertBuildList`, postData );
-                await upsertBuildList.json();
-                message.info( 'Data Submitted!' );
-            } else {
-                const row = invalidRow + 1;
-                message.info( `Invalid data at Row ${row}!` );
+                data[i].numBuildsToKeep = parseInt( data[i].numBuildsToKeep, 10 );
             }
+
+            const postData = {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify( { data } ),
+            }
+
+            const upsertBuildList = await fetch( `/api/upsertBuildList`, postData );
+            await upsertBuildList.json();
+            message.info( 'Data Submitted!' );
+
         }
     }
 
@@ -183,6 +190,17 @@ export default class Settings extends Component {
                         </Dropdown>
                     );
                 }
+            }, {
+                title: '# of Builds to Keep ',
+                dataIndex: 'numBuildsToKeep',
+                render: ( text, record ) => {
+                    return (
+                        <EditableCell
+                            value={text}
+                            onChange={this.onCellChange( record.key, 'numBuildsToKeep' )}
+                        />
+                    )
+                },
             }, {
                 title: 'Action',
                 dataIndex: 'action',
