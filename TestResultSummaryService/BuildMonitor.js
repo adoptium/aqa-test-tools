@@ -1,79 +1,102 @@
-const DataManager = require( './DataManager' );
-const JenkinsInfo = require( './JenkinsInfo' );
-const ObjectID = require( 'mongodb' ).ObjectID;
-const { TestResultsDB } = require( './Database' );
-const { logger } = require( './Utils' );
+const DataManager = require('./DataManager');
+const JenkinsInfo = require('./JenkinsInfo');
+const ObjectID = require('mongodb').ObjectID;
+const Promise = require('bluebird');
+const { TestResultsDB } = require('./Database');
+const { logger } = require('./Utils');
+const { deleteBuildsAndChildrenByFields } = require('./routes/deleteBuildsAndChildrenByFields');
 
 class BuildMonitor {
-    async execute( task ) {
-        let { buildUrl, type } = task;
-        if ( buildUrl && type ) {
-            //remove space and last /
-            buildUrl = buildUrl.trim().replace( /\/$/, "" );
+    async execute(task) {
+        let { buildUrl, type, numBuildsToKeep } = task;
+        if (!buildUrl || !type) {
+            logger.error("BuildMonitor: Invalid buildUrl and/or type", buildUrl, type);
+            return;
+        }
+        const { buildName, url } = this.getBuildInfo(buildUrl);
+        if (!buildName) {
+            logger.error("BuildMonitor: Cannot parse buildUrl ", buildUrl);
+            return;
+        }
+        logger.debug("BuildMonitor: url", url, "buildName", buildName);
 
-            let url = null;
-            let buildName = null;
-            let tokens = null;
-            if ( buildUrl.includes( "/view/" ) ) {
-                tokens = buildUrl.split( /\/view\// );
-            } else if ( buildUrl.includes( "/job/" ) ) {
-                tokens = buildUrl.split( /\/job\// );
-            }
-            if ( tokens && tokens.length == 2 ) {
-                url = tokens[0];
-                const strs = tokens[1].split( "/" );
-                buildName = strs[strs.length - 1];
-
-                logger.debug( "BuildMonitor: url", url, "buildName", buildName );
-
-                const jenkinsInfo = new JenkinsInfo();
-                const allBuilds = await jenkinsInfo.getAllBuilds( url, buildName );
-                if ( allBuilds ) {
-                    // sort the allBuilds to make sure build number is in descending order
-                    allBuilds.sort(( a, b ) => parseInt(b.id) - parseInt(a.id));
-                    /*
-                     Loop through allBuilds or past 20 builds
-                     (whichever is less) to avoid OOM error.
-                     If there is not a match in db, create the new 
-                     build. Otherwise, break.
-                     Since allBuilds are in descending order, we assume
-                     if we find a match, all remaining builds that has 
-                     a lower build number is in db.
-                    */
-                    const limit = Math.min( 20, allBuilds.length );
-                    for ( let i = 0; i < limit; i++ ) {
-                        const buildNum = parseInt( allBuilds[i].id, 10 );
-                        const testResults = new TestResultsDB();
-                        const buildsInDB = await testResults.getData( { url, buildName, buildNum } ).toArray();
-                        if ( !buildsInDB || buildsInDB.length === 0 ) {
-                            let status = "NotDone";
-                            // Turn off streaming
-                            //if ( allBuilds[i].result === null ) {
-                            //    status = "Streaming";
-                            //}
-                            const buildData = {
-                                url,
-                                buildName,
-                                buildNum,
-                                buildDuration: null,
-                                buildResult: allBuilds[i].result ? allBuilds[i].result : null,
-                                timestamp: allBuilds[i].timestamp ? allBuilds[i].timestamp : null,
-                                type: type === "FVT" ? "Test" : type,
-                                status,
-                            };
-                            await new DataManager().createBuild( buildData );
-                        } else {
-                            break;
-                        }
-                    }
-                } else {
-                    logger.error( "Cannot find the build ", buildUrl );
-                }
+        const jenkinsInfo = new JenkinsInfo();
+        const allBuilds = await jenkinsInfo.getAllBuilds(url, buildName);
+        if (!allBuilds) {
+            logger.error("BuildMonitor: Cannot find the build ", buildUrl);
+            return;
+        }
+        // sort the allBuilds to make sure build number is in
+        // descending order
+        allBuilds.sort((a, b) => parseInt(b.id) - parseInt(a.id));
+        /*
+         * Loop through allBuilds or past 5 builds (whichever is
+         * less) to avoid OOM error. If there is not a match in db,
+         * create the new build. Otherwise, break. Since allBuilds
+         * are in descending order, we assume if we find a match,
+         * all remaining builds that has a lower build number is in
+         * db.
+         */
+        const limit = Math.min(5, allBuilds.length);
+        const testResults = new TestResultsDB();
+        for (let i = 0; i < limit; i++) {
+            const buildNum = parseInt(allBuilds[i].id, 10);
+            const buildsInDB = await testResults.getData({ url, buildName, buildNum }).toArray();
+            if (!buildsInDB || buildsInDB.length === 0) {
+                let status = "NotDone";
+                // Turn off streaming
+                // if ( allBuilds[i].result === null ) {
+                // status = "Streaming";
+                // }
+                const buildData = {
+                    url,
+                    buildName,
+                    buildNum,
+                    buildDuration: null,
+                    buildResult: allBuilds[i].result ? allBuilds[i].result : null,
+                    timestamp: allBuilds[i].timestamp ? allBuilds[i].timestamp : null,
+                    type: type === "FVT" ? "Test" : type,
+                    status,
+                };
+                await new DataManager().createBuild(buildData);
             } else {
-                logger.error( "Cannot parse buildUrl ", buildUrl );
+                break;
             }
-        } else {
-            logger.error( "Invalid buildUrl and/or type", buildUrl, type );
+        }
+    }
+
+
+    getBuildInfo(buildUrl) {
+        // remove space and last /
+        buildUrl = buildUrl.trim().replace(/\/$/, "");
+
+        let url = null;
+        let buildName = null;
+        let tokens = null;
+        if (buildUrl.includes("/view/")) {
+            tokens = buildUrl.split(/\/view\//);
+        } else if (buildUrl.includes("/job/")) {
+            tokens = buildUrl.split(/\/job\//);
+        }
+        if (tokens && tokens.length == 2) {
+            url = tokens[0];
+            const strs = tokens[1].split("/");
+            buildName = strs[strs.length - 1];
+        }
+        return { buildName, url };
+    }
+
+    async deleteOldBuilds(task) {
+        let { buildUrl, type, numBuildsToKeep } = task;
+        const { buildName, url } = this.getBuildInfo(buildUrl);
+        // keep only limited builds in DB and delete old builds
+        const testResults = new TestResultsDB();
+        const allBuildsInDB = await testResults.getData({ url, buildName }).sort({ buildUrl: 1 }).toArray();
+        if (allBuildsInDB && allBuildsInDB.length > numBuildsToKeep) {
+            const endIndex = Math.max(0, allBuildsInDB.length - numBuildsToKeep);
+            await Promise.all(allBuildsInDB.slice(0, endIndex).map(async (build) => {
+                await deleteBuildsAndChildrenByFields({ _id: build._id });
+            }));
         }
     }
 }

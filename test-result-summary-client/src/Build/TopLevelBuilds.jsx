@@ -72,23 +72,23 @@ export default class TopLevelBuilds extends Component {
 
             const renderBuild = ( value, row, index ) => {
                 if ( value && value.buildNum ) {
-                    let result = null;
-                    let id = null;
+                    let result = value.buildResult;
                     if ( value.tests && value.tests.length > 0 ) {
                         result = value.tests[0].testResult;
-                        id = value.tests[0]._id;
-                    }
-
-                    if ( id ) {
+                        if ( value.tests[0]._id ) {
+                            return <div>
+                                <Link to={{ pathname: '/output/test', search: params( { id: value.tests[0]._id } ) }}
+                                    style={{ color: result === "PASSED" ? "#2cbe4e" : ( result === "FAILED" ? "#f50" : "#DAA520" ) }}>
+                                    Build #{value.buildNum}
+                                </Link>
+                            </div>;
+                        }
+                    } else {
                         return <div>
-                            <Link to={{ pathname: '/output/test', search: params( { id } ) }}
-                                style={{ color: result === "PASSED" ? "#2cbe4e" : ( result === "FAILED" ? "#f50" : "#DAA520" ) }}>
+                            <Link to={{ pathname: '/output/all', search: params( { id: value._id } ) }}
+                                style={{ color: result === "SUCCESS" ? "#2cbe4e" : ( result === "FAILURE" ? "#f50" : "#DAA520" ) }}>
                                 Build #{value.buildNum}
                             </Link>
-                        </div>;
-                    } else {
-                        return <div style={{ color: result === "PASSED" ? "#2cbe4e" : ( result === "FAILED" ? "#f50" : "#DAA520" ) }}>
-                            Build #{value.buildNum}
                         </div>;
                     }
                 }
@@ -138,7 +138,7 @@ export default class TopLevelBuilds extends Component {
                     }
                     dataSource[info.buildName].push( {
                         key: info.buildName + j,
-                        build: { _id: info._id, type: info.type, buildResult: info.buildResult, buildNum: info.buildNum, tests: info.tests },
+                        build: { ...info },
                         date: info.timestamp ? new Date( info.timestamp ).toLocaleString() : null,
                         startBy: info.startBy ? info.startBy : null,
                         jenkins: { buildName: info.buildName, buildNum: info.buildNum, buildUrl: info.buildUrl, url: info.url }

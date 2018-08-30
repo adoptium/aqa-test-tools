@@ -4,7 +4,7 @@ const BuildMonitor = require( './BuildMonitor' );
 const { TestResultsDB, BuildListDB } = require( './Database' );
 const { logger } = require( './Utils' );
 
-const elapsed = [2, 5, 1 * 60, 2 * 60, 5 * 60, 30 * 60];
+const elapsed = [2 * 60, 5 * 60, 30 * 60];
 
 class EventHandler {
 
@@ -47,6 +47,7 @@ class EventHandler {
                     for ( let task of tasks ) {
                         try {
                             const buildMonitor = new BuildMonitor();
+                            await buildMonitor.deleteOldBuilds(task);
                             await buildMonitor.execute( task );
                         } catch ( e ) {
                             logger.error( "Exception in BuildMonitor: ", e );

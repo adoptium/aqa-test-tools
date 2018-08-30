@@ -3,7 +3,7 @@ const wrap = fn => ( req, res ) => fn( req, res ).catch( console.error.bind( con
 
 app.get( '/compareTests', wrap( require( "./compareTests" ) ) );
 app.get( '/deleteBuildListById', wrap( require( "./deleteBuildListById" ) ) );
-app.get( '/deleteBuildsAndChildrenByFields', wrap( require( "./deleteBuildsAndChildrenByFields" ) ) );
+app.get( '/deleteBuildsAndChildrenByFields', wrap( require( "./deleteBuildsAndChildrenByFields" ).default ) );
 app.get( '/deleteCollection', wrap( require( "./deleteCollection" ) ) );
 app.get( '/deleteUnusedOutput', wrap( require( "./deleteUnusedOutput" ) ) );
 app.get( '/getAllTestsWithHistory', wrap( require( "./getAllTestsWithHistory" ) ) );
