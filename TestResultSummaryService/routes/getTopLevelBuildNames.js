@@ -1,8 +1,8 @@
-const { TestResultsDB, ObjectID } = require( '../Database' );
-module.exports = async ( req, res ) => {
+const { TestResultsDB, ObjectID } = require('../Database');
+module.exports = async (req, res) => {
     let { type } = req.query;
     const db = new TestResultsDB();
-    const result = await db.aggregate( [
+    const result = await db.aggregate([
         {
             $match: {
                 parentId: { $exists: false },
@@ -11,12 +11,15 @@ module.exports = async ( req, res ) => {
         },
         {
             $group: {
-                _id: { buildName: '$buildName' },
+                _id: {
+                    url: '$url',
+                    buildName: '$buildName'
+                },
             }
         },
         {
-            $sort : { _id : 1 }
+            $sort: { _id: 1 }
         }
-    ] );
-    res.send( result );
+    ]);
+    res.send(result);
 }
