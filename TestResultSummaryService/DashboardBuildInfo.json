@@ -1,0 +1,110 @@
+{
+    "CustomJenkins": {
+        "url": "https://customJenkinsServer",
+        "builds": [
+            "Daily-ODM",
+            "Daily-SPECjbb2015",
+            "Daily-Liberty-DayTrader3",
+            "daily_openjdk8_j9_jcktest_ppc64le_linux",
+            "daily_openjdk8_j9_jcktest_x86-64_linux",
+            "daily_openjdk9_j9_jcktest_ppc64le_linux",
+            "daily_openjdk9_j9_jcktest_x86-64_linux"
+        ],
+        "default": [
+            "daily_openjdk8_j9_jcktest_ppc64le_linux",
+            "daily_openjdk8_j9_jcktest_x86-64_linux",
+            "daily_openjdk9_j9_jcktest_ppc64le_linux",
+            "daily_openjdk9_j9_jcktest_x86-64_linux"
+        ]
+    },
+    "OpenJ9": {
+        "url": "https://ci.eclipse.org/openj9/",
+        "builds": [
+            "Pipeline-Build-Test-All",
+            "Pipeline-Build-Test-JDK8-linux_390-64_cmprssptrs",
+            "Pipeline-Build-Test-JDK8-linux_ppc-64_cmprssptrs_le",
+            "Test-extended.functional-JDK8-aix_ppc-64_cmprssptrs",
+            "Test-extended.functional-JDK8-linux_390-64_cmprssptrs",
+            "Test-extended.functional-JDK8-linux_ppc-64_cmprssptrs_le",
+            "Test-extended.functional-JDK8-linux_x86-64",
+            "Test-extended.functional-JDK8-linux_x86-64_cmprssptrs",
+            "Test-extended.functional-JDK8-win_x86-64_cmprssptrs",
+            "Test-extended.functional-JDK10-aix_ppc-64_cmprssptrs",
+            "Test-extended.functional-JDK10-linux_390-64_cmprssptrs",
+            "Test-extended.functional-JDK10-linux_ppc-64_cmprssptrs_le",
+            "Test-extended.functional-JDK10-linux_x86-64",
+            "Test-extended.functional-JDK10-linux_x86-64_cmprssptrs",
+            "Test-extended.functional-JDK10-win_x86-64_cmprssptrs",
+            "Test-extended.system-JDK8-aix_ppc-64_cmprssptrs",
+            "Test-extended.system-JDK8-linux_390-64_cmprssptrs",
+            "Test-extended.system-JDK8-linux_ppc-64_cmprssptrs_le",
+            "Test-extended.system-JDK8-linux_x86-64",
+            "Test-extended.system-JDK8-linux_x86-64_cmprssptrs",
+            "Test-extended.system-JDK8-win_x86-64_cmprssptrs",
+            "Test-extended.system-JDK10-aix_ppc-64_cmprssptrs",
+            "Test-extended.system-JDK10-linux_390-64_cmprssptrs",
+            "Test-extended.system-JDK10-linux_ppc-64_cmprssptrs_le",
+            "Test-extended.system-JDK10-linux_x86-64",
+            "Test-extended.system-JDK10-linux_x86-64_cmprssptrs",
+            "Test-extended.system-JDK10-win_x86-64_cmprssptrs",
+            "Test-sanity.functional-JDK8-aix_ppc-64_cmprssptrs",
+            "Test-sanity.functional-JDK8-linux_390-64_cmprssptrs",
+            "Test-sanity.functional-JDK8-linux_ppc-64_cmprssptrs_le",
+            "Test-sanity.functional-JDK8-linux_x86-64",
+            "Test-sanity.functional-JDK8-linux_x86-64_cmprssptrs",
+            "Test-sanity.functional-JDK8-win_x86-64_cmprssptrs",
+            "Test-sanity.functional-JDK10-aix_ppc-64_cmprssptrs",
+            "Test-sanity.functional-JDK10-linux_390-64_cmprssptrs",
+            "Test-sanity.functional-JDK10-linux_ppc-64_cmprssptrs_le",
+            "Test-sanity.functional-JDK10-linux_x86-64",
+            "Test-sanity.functional-JDK10-linux_x86-64_cmprssptrs",
+            "Test-sanity.functional-JDK10-win_x86-64_cmprssptrs",
+            "Test-sanity.system-JDK8-aix_ppc-64_cmprssptrs",
+            "Test-sanity.system-JDK8-linux_390-64_cmprssptrs",
+            "Test-sanity.system-JDK8-linux_ppc-64_cmprssptrs_le",
+            "Test-sanity.system-JDK8-linux_x86-64",
+            "Test-sanity.system-JDK8-linux_x86-64_cmprssptrs",
+            "Test-sanity.system-JDK8-win_x86-64_cmprssptrs",
+            "Test-sanity.system-JDK10-aix_ppc-64_cmprssptrs",
+            "Test-sanity.system-JDK10-linux_390-64_cmprssptrs",
+            "Test-sanity.system-JDK10-linux_ppc-64_cmprssptrs_le",
+            "Test-sanity.system-JDK10-linux_x86-64",
+            "Test-sanity.system-JDK10-linux_x86-64_cmprssptrs",
+            "Test-sanity.system-JDK10-win_x86-64_cmprssptrs"
+        ],
+        "default": [
+            "Pipeline-Build-Test-All",
+            "Test-sanity.functional-JDK8-aix_ppc-64_cmprssptrs",
+            "Test-sanity.functional-JDK8-linux_390-64_cmprssptrs",
+            "Test-sanity.functional-JDK8-linux_ppc-64_cmprssptrs_le",
+            "Test-sanity.functional-JDK8-linux_x86-64",
+            "Test-sanity.functional-JDK8-linux_x86-64_cmprssptrs",
+            "Test-sanity.functional-JDK8-win_x86-64_cmprssptrs",
+            "Test-sanity.functional-JDK10-aix_ppc-64_cmprssptrs",
+            "Test-sanity.functional-JDK10-linux_390-64_cmprssptrs",
+            "Test-sanity.functional-JDK10-linux_ppc-64_cmprssptrs_le",
+            "Test-sanity.functional-JDK10-linux_x86-64",
+            "Test-sanity.functional-JDK10-linux_x86-64_cmprssptrs",
+            "Test-sanity.functional-JDK10-win_x86-64_cmprssptrs"
+        ]
+    },
+    "AdoptOpenJDK": {
+        "url": "https://ci.adoptopenjdk.net/",
+        "builds": [
+            "openjdk8_hs_openjdktest_x86-64_linux",
+            "openjdk8_hs_openjdktest_x86-64_macos",
+            "openjdk8_j9_openjdktest_x86-64_linux",
+            "openjdk10_hs_openjdktest_aarch64_linux",
+            "openjdk10_hs_openjdktest_x86-64_linux",
+            "openjdk10_j9_openjdktest_x86-64_linux",
+            "openjdk10_hs_systemtest_ppc64le_linux",
+            "openjdk10_hs_systemtest_x86-64_linux"
+        ],
+        "default": [
+            "openjdk8_j9_openjdktest_x86-64_linux",
+            "openjdk8_hs_openjdktest_x86-64_linux",
+            "openjdk10_hs_openjdktest_x86-64_linux",
+            "openjdk10_j9_openjdktest_x86-64_linux"
+        ]
+    }
+}
