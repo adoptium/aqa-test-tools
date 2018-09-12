@@ -284,7 +284,7 @@ export default class PerfCompare extends Component {
                 baselineBuildURL = baselineURLScheme + "//" + baselineHostWithPort;
 
                 // Check if the benchmark and test data is valid
-                if (baselineBuildNum === undefined || (baselineBuildURL !== "https://customJenkinsServer")) {
+                if (baselineBuildNum === undefined || (baselineBuildURL === undefined )) {
                     displayErrorMessage += "Invalid Baseline URL. "
                 }
             } catch (baselineBuildURLSplitError) {
@@ -299,7 +299,7 @@ export default class PerfCompare extends Component {
 
                 testBuildURL = testURLScheme + "//" + testHostWithPort;
 
-                if (testBuildNum === undefined || (testBuildURL !== "https://customJenkinsServer")) {
+                if (testBuildNum === undefined || (testBuildURL === undefined )) {
                     displayErrorMessage += "Invalid Test URL. "
                 }
             } catch (testBuildURLSplit) {
