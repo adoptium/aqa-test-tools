@@ -25,34 +25,25 @@ export default class TopLevelBuilds extends Component {
     }
 
     async updateData( type ) {
-        const builds = [];
-        if ( type === "Perf" ) {
-            const response = await fetch( `/api/getTopLevelFlatBuildNames?type=${type}`, {
-                method: 'get'
-            } );
-            const results = await response.json();
-            for ( let i = 0; i < results.length; i++ ) {
-                const fetchBuild = await fetch( `/api/getBuildHistory?buildName=${results[i]._id.buildName}`, {
-                    method: 'get'
-                } );
-                const res = await fetchBuild.json();
-                builds.push( res );
-            }
+        const builds = {};
 
-        } else {
-            const response = await fetch( `/api/getTopLevelBuildNames?type=${type}`, {
+        const response = await fetch(`/api/getTopLevelBuildNames?type=${type}`, {
+            method: 'get'
+        });
+        const results = await response.json();
+        for (let i = 0; i < results.length; i++) {
+            const url = results[i]._id.url;
+            const buildName = results[i]._id.buildName;
+            const fetchBuild = await fetch(`/api/getBuildHistory?buildName=${buildName}&url=${url}`, {
                 method: 'get'
-            } );
-            const results = await response.json();
-            for ( let i = 0; i < results.length; i++ ) {
-                const fetchBuild = await fetch( `/api/getBuildHistory?buildName=${results[i]._id.buildName}`, {
-                    method: 'get'
-                } );
-                const res = await fetchBuild.json();
-                builds.push( res );
+            });
+            const res = await fetchBuild.json();
+            if (!builds[url]) {
+                builds[url] = {};
             }
+            builds[url][buildName] = res;
         }
-        this.setState( { builds, type } );
+        this.setState({ builds, type });
     }
 
     render() {
@@ -129,35 +120,28 @@ export default class TopLevelBuilds extends Component {
                 }
             }];
 
-            const dataSource = {};
-
-            builds.map( build => {
-                build.map(( info, j ) => {
-                    if ( !dataSource[info.buildName] ) {
-                        dataSource[info.buildName] = [];
-                    }
-                    dataSource[info.buildName].push( {
-                        key: info.buildName + j,
-                        build: { ...info },
-                        date: info.timestamp ? new Date( info.timestamp ).toLocaleString() : null,
-                        startBy: info.startBy ? info.startBy : null,
-                        jenkins: { buildName: info.buildName, buildNum: info.buildNum, buildUrl: info.buildUrl, url: info.url }
-                    } );
-                } )
-            } );
-            return ( <LocaleProvider locale={enUS}>
+            return (<LocaleProvider locale={enUS}>
                 <div>
-                    {builds.map(( build, i ) => {
-                        return <Table
-                            key={i}
-                            columns={columns}
-                            dataSource={dataSource[build[0].buildName]}
-                            bordered
-                            title={() => <b>{build[0].buildName}</b>}
-                        />
-                    } )}
+                    {Object.values(builds).map((urls, i) => {
+                        return Object.values(urls).map((infos, i) => {
+                            const buildInfo = infos.map(info => ({
+                                key: info.buildUrl,
+                                build: info,
+                                date: info.timestamp ? new Date(info.timestamp).toLocaleString() : null,
+                                startBy: info.startBy ? info.startBy : null,
+                                jenkins: info
+                            }));
+                            return <Table
+                                key={i}
+                                columns={columns}
+                                dataSource={buildInfo}
+                                bordered
+                                title={() => <div><b>{buildInfo[0].build.buildName}</b> in server {buildInfo[0].build.url}</div>}
+                            />
+                        })
+                    })}
                 </div>
-            </LocaleProvider> );
+            </LocaleProvider>);
         } else {
             return null;
         }
