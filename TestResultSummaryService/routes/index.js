@@ -10,6 +10,7 @@ app.get( '/getAllTestsWithHistory', wrap( require( "./getAllTestsWithHistory" ) 
 app.get( '/getBuildHistory', wrap( require( "./getBuildHistory" ) ) );
 app.get( '/getBuildList', wrap( require( "./getBuildList" ) ) );
 app.get( '/getChildBuilds', wrap( require( "./getChildBuilds" ) ) );
+app.get( '/getDashboardBuildInfo', wrap( require( "./getDashboardBuildInfo" ) ) );
 app.get( '/getData', wrap( require( "./getData" ) ) );
 app.get( '/getHistoryPerTest', wrap( require( "./getHistoryPerTest" ) ) );
 app.get( '/getLastBuildInfo', wrap( require( "./getLastBuildInfo" ) ) );

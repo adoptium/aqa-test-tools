@@ -6,7 +6,8 @@ export default {
                 x: 0,
                 y: 0,
                 settings: {
-                    serverSelected: 'InternalJenkins'
+                    serverSelected: 'AdoptOpenJDK',
+                    title: "https://ci.adoptopenjdk.net/",
                 }
             },
             {
@@ -14,7 +15,8 @@ export default {
                 x: 0,
                 y: 1,
                 settings: {
-                    serverSelected: 'OpenJ9'
+                    serverSelected: 'OpenJ9',
+                    title: "https://ci.eclipse.org/openj9/",
                 }
             },
             {
@@ -22,7 +24,7 @@ export default {
                 x: 0,
                 y: 2,
                 settings: {
-                    serverSelected: 'AdoptOpenJDK'
+                    serverSelected: 'CustomJenkins',
                 }
             }
         ]
