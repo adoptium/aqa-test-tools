@@ -11,8 +11,9 @@ const getList = (selected, serverSelected, buildInfo) => {
     }
 }
 
+let buildInfoMap = null;
+
 export class BuildStatusSetting extends Component {
-    state = {};
     onChange = list => {
         const { selected, serverSelected } = this.props;
         this.props.onChange({
@@ -26,22 +27,12 @@ export class BuildStatusSetting extends Component {
         this.props.onChange({ serverSelected: obj.target.value });
     }
 
-    async componentDidUpdate() {
-        await this.updateData();
-    }
-
-    updateData = async () => {
-        const res = await fetch(`/api/getDashboardBuildInfo`, {
-            method: 'get'
-        });
-        const buildInfo = await res.json();
-        this.setState(buildInfo);
-    };
-
     render() {
         const { selected = {}, serverSelected } = this.props;
-        const { buildInfo } = this.state;
-        const obj = buildInfo[serverSelected] || [];
+        if (!buildInfoMap) {
+            return <div/>;
+        }
+        const obj = buildInfoMap[serverSelected] || [];
 
         const options = obj.builds.map(buildName => {
             return {
@@ -49,9 +40,9 @@ export class BuildStatusSetting extends Component {
             };
         });
 
-        const list = getList(selected, serverSelected, buildInfo);
+        const list = getList(selected, serverSelected, buildInfoMap);
         return <div style={{ maxWidth: 400 }}>
-            <ServerSelector servers={Object.keys(buildInfo)} serverSelected={serverSelected} onChange={this.onServerChange} />
+            <ServerSelector servers={Object.keys(buildInfoMap)} serverSelected={serverSelected} onChange={this.onServerChange} />
             {serverSelected && <Checkbox.Group options={options} value={list} onChange={this.onChange} />}
         </div>
     }
@@ -77,10 +68,10 @@ export default class BuildStatus extends Component {
 
     async componentDidMount() {
         await this.updateData();
-        // update every 30 secs
+        // update every 60 secs
         this.intervalId = setInterval(() => {
             this.updateData(true);
-        }, 30 * 1000);
+        }, 60 * 1000);
     }
 
     async componentDidUpdate() {
@@ -98,13 +89,13 @@ export default class BuildStatus extends Component {
         const res = await fetch(`/api/getDashboardBuildInfo`, {
             method: 'get'
         });
-        const buildInfo = await res.json();
-        const list = getList(selected, serverSelected, buildInfo);
+        buildInfoMap = await res.json();
+        const list = getList(selected, serverSelected, buildInfoMap);
         if (!list) {
             return;
         }
         await Promise.all(list.map(async buildName => {
-            const url = buildInfo[serverSelected].url;
+            const url = buildInfoMap[serverSelected].url;
             if (force || !this.state.builds[buildName]) {
                 const encodeUrl = encodeURIComponent(url);
                 const response = await fetch(`/api/getLastBuildInfo?url=${encodeUrl}&buildName=${buildName}`, {
@@ -131,8 +122,7 @@ export default class BuildStatus extends Component {
                     url: buildUrl,
                     buildNum
                 };
-                const builds = this.state.builds;
-                this.setState({ builds, buildInfo });
+                this.setState(this.state.builds);
             }
         }));
     }
@@ -142,19 +132,19 @@ export default class BuildStatus extends Component {
     }
 
     render() {
-        const { builds, filterDropdownVisible, searchText, buildInfo } = this.state;
+        const { builds, filterDropdownVisible, searchText } = this.state;
         const { selected = {}, serverSelected } = this.props;
-        const list = getList(selected, serverSelected, buildInfo);
+        const list = getList(selected, serverSelected, buildInfoMap);
         let data = [];
 
         if (builds && list) {
             list.map(listItem => {
                 const build = builds[listItem];
-                if (!build) return null;
+                if (!build || !build.url) return null;
 
                 //Set build.result value
                 let info = build.result;
-                info = (info === null ? "Cannot connect" : info).toLowerCase();
+                info = (info ? info : "Cannot connect").toLowerCase();
                 // change first char to upper case
                 info = info.replace(/^\w/, c => c.toUpperCase());
                 build.result = info;
@@ -175,6 +165,7 @@ export default class BuildStatus extends Component {
                 if (m !== null) {
                     javaImpl = m[1];
                 }
+
                 if (javaImpl === "n/a" && build.url.match(/openj9/i)) {
                     javaImpl = "j9";
                 }
@@ -275,7 +266,6 @@ export default class BuildStatus extends Component {
             onFilter: (value, record) => record.result.indexOf(value) === 0,
             sorter: (a, b) => a.result.localeCompare(b.result)
         }];
-
 
         function onChange(pagination, filters, sorter) {
             console.log('params', pagination, filters, sorter);
