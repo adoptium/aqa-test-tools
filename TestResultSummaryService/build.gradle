@@ -7,7 +7,7 @@
 *	1. put in project root
 *	2. check version numbers, OS (no x32 bit OS support)
 *	3. execute `gradle copyLibs` to get libraries locally (then you can proceed even without gradle)
-*	4. use from command line `gradle run` or with http://marketplace.eclipse.org/content/gradle Run As ->
+*	4. use from command line `gradle run` or with https://marketplace.eclipse.org/content/gradle Run As ->
 * Support for this template
 *	https://github.com/nodeclipse/nodeclipse-1/issues/
 * History
