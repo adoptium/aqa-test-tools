@@ -141,4 +141,4 @@ class BenchmarkMath {
         return v;
     }
 }
-module.exports = BenchmarkMath;
+export default BenchmarkMath;

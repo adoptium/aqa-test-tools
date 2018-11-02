@@ -24,7 +24,7 @@
     "react-jsx-highstock": "^2.0.3",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.17"
+    "react-scripts": "^2.1.1"
   },
   "scripts": {
     "start": "react-app-rewired start",
@@ -35,5 +35,11 @@
   "proxy": "http://localhost:3001",
   "devDependencies": {
     "react-app-rewired": "^1.5.2"
-  }
+  },
+  "browserslist": [
+    ">0.2%",
+    "not dead",
+    "not ie <= 11",
+    "not op_mini all"
+  ]
 }

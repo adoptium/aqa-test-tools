@@ -1,5 +1,5 @@
 import math from 'mathjs';
-const BenchmarkMath = require( './BenchmarkMath' );
+import BenchmarkMath from './BenchmarkMath';
 
 export default class JenkinsRunJSON {
     constructor(runJSON) {
