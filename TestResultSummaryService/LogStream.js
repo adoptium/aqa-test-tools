@@ -1,5 +1,5 @@
 const Promise = require( 'bluebird' );
-const got = require( 'got-2' );
+const got = require( 'got' );
 const url = require( 'url' );
 const { logger } = require( './Utils' );
 
