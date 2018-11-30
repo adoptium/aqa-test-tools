@@ -16,7 +16,7 @@ module.exports = function(app) {
     	var product = req.query.product;
     	
 		var getOptions = {
-				url: global.APP_DATA.builds_server_url + product + "/?full=1",
+				url: global.APP_DATA.builds_server_url + product,
 				auth: {
 					'user': global.perffarmUsername,
 					'pass': global.perffarmEspressoPwd,
