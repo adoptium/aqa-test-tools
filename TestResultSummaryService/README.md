@@ -60,3 +60,22 @@ service TestResultsSummaryService restart
 ```
 tail -f /var/log/TestResultsSummaryService.log
 ```
+
+## Configure File
+Credentials maybe needed for the server access (i.e., database, Jenkins, etc). In this case, please provide a `--configFile=<path to config json file>` when starting the server. The default value is  `--configFile=./trssConf.json` when using `npm start`.
+
+Config file example:
+```
+{
+	"https://exampleserver2.com": {
+		"user" : "abc@example.com",
+		"password" : "123"   <=== the value can be password or token
+	},
+	"https://exampleserver1.com": {
+		"user" : "xyz@example.com",
+		"password" : "456"
+	}
+}
+```
+
+If any server name matches with url in `DashboardBuildInfo.json` or domain in build monitoring list, credentials will be used when querying these servers.

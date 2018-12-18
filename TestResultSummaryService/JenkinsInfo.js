@@ -1,6 +1,7 @@
 const Promise = require('bluebird');
 const jenkinsapi = require('jenkins-api');
 const { logger } = require('./Utils');
+const ArgParser = require("./ArgParser");
 
 const options = { request: { timeout: 2000 } };
 
@@ -23,32 +24,55 @@ const retry = fn => {
 }
 
 class JenkinsInfo {
+
+    constructor(options) {
+        this.credentails = ArgParser.getConfig();
+    }
+
     async getAllBuilds(url, buildName) {
-        const jenkins = jenkinsapi.init(url, options);
+        const newUrl = this.addCredential(url);
+        const jenkins = jenkinsapi.init(newUrl, options);
         const all_builds = retry(jenkins.all_builds);
         const builds = await all_builds(buildName);
         return builds;
     }
 
     async getBuildOutput(url, buildName, buildNum) {
-        const jenkins = jenkinsapi.init(url, options);
+        const newUrl = this.addCredential(url);
+        const jenkins = jenkinsapi.init(newUrl, options);
         const console_output = retry(jenkins.console_output);
         const { body } = await console_output(buildName, buildNum);
         return body;
     }
 
     async getBuildInfo(url, buildName, buildNum) {
-        const jenkins = jenkinsapi.init(url, options);
+        const newUrl = this.addCredential(url);
+        const jenkins = jenkinsapi.init(newUrl, options);
         const build_info = retry(jenkins.build_info);
         const body = await build_info(buildName, buildNum);
         return body;
     }
 
     async getLastBuildInfo(url, buildName) {
-        const jenkins = jenkinsapi.init(url, options);
+        const newUrl = this.addCredential(url);
+        const jenkins = jenkinsapi.init(newUrl, options);
         const last_build_info = retry(jenkins.last_build_info);
         const body = await last_build_info(buildName);
         return body;
+    }
+
+    addCredential(url) {
+        if (this.credentails) {
+            if (this.credentails.hasOwnProperty(url)) {
+                const user = encodeURIComponent(this.credentails[url].user);
+                const password = encodeURIComponent(this.credentails[url].password);
+                const tokens = url.split("://");
+                if (tokens.length == 2 && user && password) {
+                    url = `${tokens[0]}://${user}:${password}@${tokens[1]}`;
+                }
+            }
+        }
+        return url;
     }
 }
 
