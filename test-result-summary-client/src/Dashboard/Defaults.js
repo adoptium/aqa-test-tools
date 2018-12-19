@@ -7,7 +7,7 @@ export default {
                 y: 0,
                 settings: {
                     serverSelected: 'AdoptOpenJDK',
-                    title: "https://ci.adoptopenjdk.net/",
+                    title: "https://ci.adoptopenjdk.net",
                 }
             },
             {
@@ -16,7 +16,7 @@ export default {
                 y: 1,
                 settings: {
                     serverSelected: 'OpenJ9',
-                    title: "https://ci.eclipse.org/openj9/",
+                    title: "https://ci.eclipse.org/openj9",
                 }
             },
             {

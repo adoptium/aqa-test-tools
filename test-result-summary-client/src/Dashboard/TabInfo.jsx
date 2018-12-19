@@ -9,7 +9,7 @@ import "./dashboard.css";
 const ReactGridLayout = WidthProvider( RGL );
 
 export default class TabInfo extends Component {
-    static VERSION = 6;
+    static VERSION = 7;
     constructor( props ) {
         super( props );
         const localKey = `dashboard-${props.tab}`;

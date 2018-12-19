@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1",
-    "start": "nodemon app.js"
+    "start": "nodemon app.js --configFile=./trssConf.json"
   },
   "repository": "",
   "keywords": [
