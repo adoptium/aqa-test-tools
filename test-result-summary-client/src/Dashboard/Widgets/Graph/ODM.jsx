@@ -56,63 +56,74 @@ export default class ODM extends Component {
 
     async updateData() {
         const { buildSelected } = this.props;
-        const buildName = encodeURIComponent( buildSelected );
-        const response = await fetch( `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
-            method: 'get'
-        } );
-        const results = await response.json();
-        const resultsByJDKBuild = {};
-        let globalThroughput = [];
-        let gtValues = [];
-        let std = [];
-        let mean = [];
-        let median = [];
+        let buildName;
 
-        // combine results having the same JDK build date
-        results.forEach(( t, i ) => {
-            if ( t.buildResult !== "SUCCESS" ) return;
+        const allDisplaySeries = {};
+        for (let key in map) {
+            let value = map[key];
+            buildName = encodeURIComponent(value);
 
-            // TODO: current code only considers one interation. This needs to be updated
-            if ( t.tests[0].testData && t.tests[0].testData.metrics && t.tests[0].testData.metrics.length > 0 ) {
-                const JDKBuildTimeConvert = t.tests[0].testData.jdkBuildDateUnixTime;
-                if ( !t.tests[0].testData.metrics[0].value
-                    || t.tests[0].testData.metrics[0].value.length === 0
-                    || t.tests[0].testData.metrics[0].name !== "Global Throughput" ) {
-                    return;
+            const response = await fetch(`/api/getBuildHistory?type=Perf&buildName=${buildName}&state=Done&limit=100&asc`, {
+                method: 'get'
+            });
+
+            const results = await response.json();
+            const resultsByJDKBuild = {};
+            let globalThroughput = [];
+            let gtValues = [];
+            let std = [];
+            let mean = [];
+            let median = [];
+
+            // combine results having the same JDK build date
+            results.forEach(( t, i ) => {
+                if ( t.buildResult !== "SUCCESS" ) return;
+
+                // TODO: current code only considers one interation. This needs to be updated
+                if ( t.tests[0].testData && t.tests[0].testData.metrics && t.tests[0].testData.metrics.length > 0 ) {
+                    const JDKBuildTimeConvert = t.tests[0].testData.jdkBuildDateUnixTime;
+                    if ( !t.tests[0].testData.metrics[0].value
+                        || t.tests[0].testData.metrics[0].value.length === 0
+                        || t.tests[0].testData.metrics[0].name !== "Global Throughput" ) {
+                        return;
+                    }
+                    resultsByJDKBuild[JDKBuildTimeConvert] = resultsByJDKBuild[JDKBuildTimeConvert] || [];
+                    resultsByJDKBuild[JDKBuildTimeConvert].push( {
+                        globalThroughput: t.tests[0].testData.metrics[0].value[0],
+                        additionalData: {
+                            testId: t.tests[0]._id,
+                            buildName: t.buildName,
+                            buildNum: t.buildNum,
+                            javaVersion: t.tests[0].testData.javaVersion,
+                        },
+                    } );
                 }
-                resultsByJDKBuild[JDKBuildTimeConvert] = resultsByJDKBuild[JDKBuildTimeConvert] || [];
-                resultsByJDKBuild[JDKBuildTimeConvert].push( {
-                    globalThroughput: t.tests[0].testData.metrics[0].value[0],
-                    additionalData: {
-                        testId: t.tests[0]._id,
-                        buildName: t.buildName,
-                        buildNum: t.buildNum,
-                        javaVersion: t.tests[0].testData.javaVersion,
-                    },
+            } );
+
+            math.sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
+                gtValues.push( math.mean( resultsByJDKBuild[k].map( x => x['globalThroughput'] ) ) );
+                globalThroughput.push( [Number( k ), math.mean( resultsByJDKBuild[k].map( x => x['globalThroughput'] ) ), resultsByJDKBuild[k].map( x => x['additionalData'] )] );
+
+                std.push( [Number( k ), math.std( gtValues )] );
+                mean.push( [Number( k ), math.mean( gtValues )] );
+                median.push( [Number( k ), math.median( gtValues )] );
+            } );
+
+            const series = { globalThroughput, std, mean, median };
+            const displaySeries = [];
+            for ( let key in series ) {
+                displaySeries.push( {
+                    visible: key === "globalThroughput",
+                    name: key,
+                    data: series[key],
+                    keys: ['x', 'y', 'additionalData']
                 } );
             }
-        } );
 
-        math.sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
-            gtValues.push( math.mean( resultsByJDKBuild[k].map( x => x['globalThroughput'] ) ) );
-            globalThroughput.push( [Number( k ), math.mean( resultsByJDKBuild[k].map( x => x['globalThroughput'] ) ), resultsByJDKBuild[k].map( x => x['additionalData'] )] );
-
-            std.push( [Number( k ), math.std( gtValues )] );
-            mean.push( [Number( k ), math.mean( gtValues )] );
-            median.push( [Number( k ), math.median( gtValues )] );
-        } );
-
-        const series = { globalThroughput, std, mean, median };
-        const displaySeries = [];
-        for ( let key in series ) {
-            displaySeries.push( {
-                visible: key === "globalThroughput",
-                name: key,
-                data: series[key],
-                keys: ['x', 'y', 'additionalData']
-            } );
+            allDisplaySeries[buildName] = displaySeries;
         }
-        this.setState( { displaySeries } );
+
+        this.setState( { displaySeries: allDisplaySeries[encodeURIComponent(buildSelected)], allDisplaySeries: allDisplaySeries } );
     }
 
     formatter = function() {
