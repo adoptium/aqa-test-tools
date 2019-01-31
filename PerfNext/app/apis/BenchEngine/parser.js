@@ -41,15 +41,35 @@ module.exports = function(app) {
     */
 	app.post('/api/benchengine/submit', function(req, res) {
 		var raw_definition = req.rawBody; //Raw XML to be parsed
-
-		parseDefinition(raw_definition, function(generatedOutput){
-
-			var setupScript = parseSetupScript(raw_definition, function(setupScript){
-
+		
+		// Split the received xml file to separate test and baseline scripts
+		var split_definition = raw_definition.split("<?xml");
+		
+		// Add in missing xml tag from previous split
+		var test_raw_definition = "<?xml" + split_definition[1];
+		
+			
+		// If interleave baseline unticked
+		if (split_definition.length < 3) {
+			var baseline_raw_defintion = null;	
+		} else {
+			var baseline_raw_definition = "<?xml" + split_definition[2];
+		}
+		parseDefinition(test_raw_definition, function(generatedOutput){
+			
+			var setupScript = parseSetupScript(test_raw_definition, function(setupScript){
+				
+				parseDefinition(baseline_raw_definition, function(generatedOutputbase){
+					var setupScriptbase = parseSetupScript(baseline_raw_definition, function(setupScriptbase){
 				//console.log('parser.js: setupScript: '+setupScript);
 				
 				var setupMachine=req.query.machine;
 				console.log('parser.js: setupMachine: '+setupMachine);
+				
+				// Parse iteration number from benchmark script
+				var iteration_ind = generatedOutput.indexOf("iterations = ");
+				var iteration_num = generatedOutput[iteration_ind + "iterations = ".length]
+				console.log("Total Iterations = " + iteration_num);
 				
 				var jenkinsAPI =  global.APP_DATA.jenkins_base + "/buildWithParameters?token=xYz@123&setupScript="+encodeURIComponent(setupScript)+'&setupMachine='+encodeURIComponent(setupMachine)+'&benchmarkScript='+encodeURIComponent(generatedOutput)+'&benchmarkMachine='+encodeURIComponent(req.query.machine);  
 
@@ -58,7 +78,7 @@ module.exports = function(app) {
 				//console.log('parser.js: Calling jenkinsAPI: '+jenkinsAPI);
 				
 				var jenkinsURL =  global.APP_DATA.jenkins_base + "/buildWithParameters"
-				var postBody = "token=xYz@123&setupScript="+encodeURIComponent(setupScript)+'&setupMachine='+encodeURIComponent(setupMachine)+'&benchmarkScript='+encodeURIComponent(generatedOutput)+'&benchmarkMachine='+encodeURIComponent(req.query.machine);  
+				var postBody = "token=xYz@123&setupScripttest="+encodeURIComponent(setupScript)+'&setupMachine='+encodeURIComponent(setupMachine)+'&benchmarkScripttest='+encodeURIComponent(generatedOutput)+'&benchmarkMachine='+encodeURIComponent(req.query.machine)+'&benchmarkScriptbaseline='+encodeURIComponent(generatedOutputbase)+'&setupScriptbaseline='+encodeURIComponent(setupScriptbase)+'&Iterations='+encodeURIComponent(iteration_num);  
 				
 				var jenkinsCrumbIssuer = global.APP_DATA.jenkins_root + '/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)';								
 				
@@ -114,7 +134,8 @@ module.exports = function(app) {
 							
 							console.log('parser.js: jenkinsBuildURL '+jenkinsBuildURL);
 							res.send(jenkinsBuildURL);
-						
+								});
+							});
 						});
 					});					
 				});		
@@ -141,6 +162,8 @@ function getJenkinsBuildURL(queueLocation, crumb, callback){
 			},
 	};
 	
+	// Adding a 5 second timeout before requesting the build url, jenkins does not schedule immediately
+	setTimeout(function() {
 	request.get(getOptions, function(error, response, body){
 		console.log('parser.js: getJenkinsBuildURL() Making POST request for submitting job');
 		console.log('parser.js: getJenkinsBuildURL() request error: '+error);
@@ -171,7 +194,8 @@ function getJenkinsBuildURL(queueLocation, crumb, callback){
 		
 		callback(jenkinsBuildURL);
 		
-	});	
+			});	
+	}, (5 * 1000));
 	
 	
 }
@@ -229,6 +253,11 @@ function getExtractedPackageName(result, packageURL)
  * */
 function parseSetupScript(raw_definition, callback){
 	console.log('parser.js: Entering parseSetupScript()');
+	if (!raw_definition) {
+				var setupScript = null;
+				callback(setupScript);
+			}
+	else {
 	parser.parseString(raw_definition, function (err, result) { //Convert XML to JSON
 
 //		var str = JSON.stringify(result);
@@ -338,11 +367,17 @@ function parseSetupScript(raw_definition, callback){
 		callback(setupScript);
 
 	});
+	}
 }
 
 function parseDefinition(raw_definition, callback){
 	console.log('parser.js: Entering parseDefinition()');
-	parser.parseString(raw_definition, function (err, result) { //Convert XML to JSON
+	
+		if (!raw_definition) {
+			var generatedOutput = null;
+			callback(generatedOutput);
+		} else {
+		parser.parseString(raw_definition, function (err, result) { //Convert XML to JSON
 
 		let benchmarkName = result.benchmarks.benchmark.$.name;
 		let benchmarkVariant = result.benchmarks.benchmark.$.variant;
@@ -376,11 +411,7 @@ function parseDefinition(raw_definition, callback){
 			generatedOutput += eval('`'+header+'`'); //Evaluate header params (${XXXXXX})
 			generatedOutput += '\n######### Generated Script #########\n';
 
-			if(iterations > 1){
-				generatedOutput += `for iteration in {1..${iterations}}` + '\n';
-				generatedOutput += 'do \n';
-				generatedOutput += "echo \"Start of iteration $iteration\" \n";
-			}
+			generatedOutput += `echo "iterations = ${iterations}"\n`;
 
 			generatedOutput += `echo ""\n`;
 			generatedOutput += `echo "${benchmarkJobDelimiter}"\n`;
@@ -401,11 +432,6 @@ function parseDefinition(raw_definition, callback){
 				generatedOutput += generateScriptCommands(result);
 			}			
 
-			if(iterations > 1){
-				generatedOutput += "echo \"End of iteration $iteration\" \n";
-				generatedOutput = generatedOutput + 'done'
-			}
-
 			fs.readFile('logo.txt', 'utf8', function(err, contents) {
 				generatedOutput = contents + '\n' +  generatedOutput;
 
@@ -413,6 +439,7 @@ function parseDefinition(raw_definition, callback){
 			});
 		});      		
 	});
+	}
 }
 
 function getHeader(callback){
