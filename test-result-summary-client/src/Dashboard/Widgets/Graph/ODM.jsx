@@ -42,6 +42,7 @@ export default class ODM extends Component {
 
     state = {
         displaySeries: [],
+        allDisplaySeries: {}
     };
 
     async componentDidMount() {
@@ -57,11 +58,10 @@ export default class ODM extends Component {
     async updateData() {
         const { buildSelected } = this.props;
         let buildName;
-
         const allDisplaySeries = {};
         for (let key in map) {
             let value = map[key];
-            buildName = encodeURIComponent(value);
+            buildName = encodeURIComponent(key);
 
             const response = await fetch(`/api/getBuildHistory?type=Perf&buildName=${buildName}&state=Done&limit=100&asc`, {
                 method: 'get'
@@ -142,6 +142,7 @@ export default class ODM extends Component {
 
     render() {
         const { displaySeries } = this.state;
+        console.log(displaySeries);
         return <div className="app">
             <HighchartsStockChart>
                 <Chart zoomType="x" />
