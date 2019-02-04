@@ -4,7 +4,7 @@ import {
     LineSeries, Navigator, RangeSelector, Tooltip
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
-import { Radio } from 'antd';
+import { Radio, Checkbox } from 'antd';
 import math from 'mathjs';
 import utils from './utils';
 
@@ -15,20 +15,31 @@ const map = {
     "Daily-ODM-zLinux": "Daily-ODM-pxz64 | 881-4way-Seg5FastpathRVEJB",
     "Daily-ODM-zOS": "Daily-ODM-pmz64 | 881-4way-Seg5FastpathRVEJB"
 };
+
+let display = {
+    "Daily-ODM": true,
+    "Daily-ODM-Linux-PPCLE64": false,
+    "Daily-ODM-openJ9": false,
+    "Daily-ODM-zLinux": false,
+    "Daily-ODM-zOS": false
+};
+
 export class ODMSetting extends Component {
     onChange = obj => {
-        this.props.onChange( { buildSelected: obj.target.value } );
+        display[obj[0]] = !display[obj[0]];
+        this.props.onChange( { buildSelected: obj[obj.length -1] } );
+        // When API ready => buildSelected: obj
     }
 
     render() {
         const { buildSelected } = this.props;
 
         return <div style={{ maxWidth: 400 }}>
-            <Radio.Group onChange={this.onChange} value={buildSelected}>
+            <Checkbox.Group onChange={this.onChange} values={map.keys} defaultValue={["Daily-ODM"]}>
                 {Object.keys( map ).map( key => {
-                    return <Radio key={key} value={key}>{map[key]}</Radio>;
+                    return <Checkbox key={key} value={key} checked={false}>{map[key]}</Checkbox>;
                 } )}
-            </Radio.Group>
+            </Checkbox.Group>
         </div>
     }
 }
@@ -56,6 +67,7 @@ export default class ODM extends Component {
     }
 
     async updateData() {
+        // when API ready => buildSelected will be list of builds
         const { buildSelected } = this.props;
         const buildName = encodeURIComponent( buildSelected );
         const response = await fetch( `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
