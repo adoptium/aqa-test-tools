@@ -72,7 +72,8 @@ export default class PlatForm extends Component {
         const resultsByJDKBuild = {};
         let globalThroughputs = {};
         let baseLine = [];
-        let baseValue = 5000;
+        let baseValue = 10000;
+        let scale = baseValue / 100;
 
         // combine results having the same JDK build date
         results.forEach(( t, i ) => {
@@ -103,13 +104,14 @@ export default class PlatForm extends Component {
                 }
             }
         } );
-
+        let baseLineData = [];
         Object.keys( resultsByJDKBuild ).forEach(( k, i ) => {
             if(!globalThroughputs[k]) {
                 globalThroughputs[k] = [];
             }
             math.sort(Object.keys(resultsByJDKBuild[k])).forEach((a, b) => {
-                globalThroughputs[k].push( [Number( a ), math.mean( resultsByJDKBuild[k][a].map( x => x['globalThroughput'] ) ), resultsByJDKBuild[k][a].map( x => x['additionalData'] )] );
+                globalThroughputs[k].push( [Number( a ), math.mean( resultsByJDKBuild[k][a].map( x => x['globalThroughput'] ) / scale), resultsByJDKBuild[k][a].map( x => x['additionalData'] )] );
+                baseLineData.push([Number( a ), 100]);
             });
         } );
 
@@ -122,6 +124,14 @@ export default class PlatForm extends Component {
                 keys: ['x', 'y', 'additionalData']
             } );
         }
+        
+        displaySeries.push({
+            visible: 'baseLine',
+            name: 'BaseLine',
+            data: baseLineData,
+            keys: ['x', 'y']
+        })
+
         this.setState( { displaySeries } );
     }
 
@@ -152,7 +162,7 @@ export default class PlatForm extends Component {
                 </XAxis>
 
                 <YAxis id="gt">
-                    <YAxis.Title>Global Throughput</YAxis.Title>
+                    <YAxis.Title>% of best-so-far (higer is better)</YAxis.Title>
                     {displaySeries.map( s => {
                         return <LineSeries {...s} id={s.name} key={s.name} />
                     } )}
