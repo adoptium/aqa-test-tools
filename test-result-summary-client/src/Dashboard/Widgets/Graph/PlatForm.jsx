@@ -6,6 +6,7 @@ import {
 import DateRangePickers from '../DateRangePickers';
 import { Radio } from 'antd';
 import math from 'mathjs';
+import utils from './utils';
 
 const map = {
     "Daily-ODM": "Daily-ODM-pxa64 | 881-4way-Seg5FastpathRVEJB",
@@ -139,11 +140,28 @@ export default class PlatForm extends Component {
         const x = new Date( this.x );
         if ( this.point.additionalData ) {
             let buildLinks = '';
+            let i = this.series.data.indexOf(this.point);
+            let prevPoint = i === 0 ? null : this.series.data[i - 1];
             this.point.additionalData.forEach(( xy, i ) => {
                 const { testId, buildName, buildNum } = xy;
-                buildLinks = buildLinks + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`
+                buildLinks = buildLinks + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
             } );
-            return `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )} <br/>Link to builds: ${buildLinks}`
+
+            let lengthThis = this.point.additionalData.length;
+            let lengthPrev = prevPoint ? prevPoint.additionalData.length : 0;
+
+            let javaVersion = this.point.additionalData[lengthThis - 1].javaVersion;
+            let prevJavaVersion = prevPoint ? prevPoint.additionalData[lengthPrev - 1].javaVersion : null;
+            let ret = `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )} <br/>Link to builds: ${buildLinks}`;
+
+            prevJavaVersion = utils.parseSha(prevJavaVersion, 'OpenJ9');
+            javaVersion = utils.parseSha(javaVersion, 'OpenJ9');
+
+            if (prevJavaVersion && javaVersion) {
+                let githubLink = `<a href="https://github.com/eclipse/openj9/compare/${prevJavaVersion}…${javaVersion}">Github Link </a>`;
+                ret += `<br/> Compare Builds: ${githubLink}`;
+            }
+            return ret;
         } else {
             return `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )}`
         }
