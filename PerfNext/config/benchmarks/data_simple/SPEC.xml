@@ -4,7 +4,7 @@
         <description>The full (compliant) 2.5 hour jbb2015GMR run which searches for the HBIR and then measures the full rt-curve, at 1% increments.</description>
         <properties>
             <scripts>
-                <sh dir="$benchmark_dir" file="run_multi.sh" pkgName="SPECjbb2015GMR"></sh>
+                <bash dir="$benchmark_dir" file="run_multi.sh" pkgName="SPECjbb2015GMR"></bash>
             </scripts>
                         
             <ENV>

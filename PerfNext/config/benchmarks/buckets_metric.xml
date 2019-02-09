@@ -15,7 +15,7 @@
 <buckets>
     <bucket name="Liberty" description="Liberty benchmarks">
         <benchmark name="DayTrader3">
-        	<metric metric="Throughput, JIT CPU total ms" name="LibertyDayTrader" variant="17dev-4way-LargeThreadPool"/>
+        	<metric metric="Throughput, JIT CPU total ms" name="LibertyDayTrader3" variant="17dev-4way-LargeThreadPool"/>
         	<metric metric="Startup: Footprint, Startup time, Adjusted Single Server Memory" name="LibertyStartupDT" variant="17dev-4way-0-256-qs"/>
         </benchmark>
         <benchmark name="TradeLite">
