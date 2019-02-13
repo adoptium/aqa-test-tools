@@ -25,6 +25,15 @@
 All passwords used in PerfNext should be put inside the file "credentials.json" under the PerfNext directory on any machine hosting this application. This file is listed in .gitignore so that it does not get pushed to GIT since it contains sensitive information. 
 This file should be updated whenever the required accounts' passwords are updated.
 
+## URLS
+All custom server urls should be specified in PerfNext/config/APP_DATA.json
+The urls required are the following:
+- "jenkins_base": "Link for jenkins pipeline to run the benchmark jobs, example: https://customJenkinsServer.com/view/performance/job/Example-Pipeline"
+- "jenkins_root": "Root link of jenkins, example: https://customJenkinsServer.com/"
+- "packages_base_url" : "Url of server containing benchmark packages, example: http://customServer.com/packages"
+- "builds_server_url": "Url of server containing the builds/sdks to run, example: https://customServer.com:8888/perl/secure/fetch/packages/"
+- "machine_list_url" : "Url to download machine info xml"
+
 ## Steps		    	 
 Execute the following commands after installing Node + npm and cloning the repository:
 ```
