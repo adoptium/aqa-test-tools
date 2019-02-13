@@ -6,10 +6,10 @@
     "start": "node app.js"
   },
   "dependencies": {
-    "body-parser": "^1.8.1",
-    "express": "^4.15.2",
+    "body-parser": "^1.18.3",
+    "express": "^4.16.4",
     "node-datetime": "^1.0.1",
-    "request": "^2.81.0",
+    "request": "^2.88.0",
     "xml2js": "^0.4.17",
     "xmldom": "^0.1.27"
   }
