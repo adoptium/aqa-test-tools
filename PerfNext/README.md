@@ -22,7 +22,7 @@
 * Access to [Runtimes Jenkins Instance](https://ci.adoptopenjdk.net/) (Not required for now)
 
 ## Passwords Requirements 
-All passwords used in PerfNext should be put inside the file "perfnext_passwords" under the PerfNext directory on any machine hosting this application. This file is listed in .gitignore so that it does not get pushed to GIT since it contains sensitive information. 
+All passwords used in PerfNext should be put inside the file "credentials.json" under the PerfNext directory on any machine hosting this application. This file is listed in .gitignore so that it does not get pushed to GIT since it contains sensitive information. 
 This file should be updated whenever the required accounts' passwords are updated.
 
 ## Steps		    	 

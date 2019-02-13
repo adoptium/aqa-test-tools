@@ -611,7 +611,7 @@ function populateArgumentsHelper(environmentVARs, envClassName, idToFind, isHW) 
 		envData.envVAR = envVAR;
 		envData.value = value;
 		
-		var size = value.length + 1;
+		var size = value.length + 50;
 		var inputClassName;
 		
 		if (isHW)

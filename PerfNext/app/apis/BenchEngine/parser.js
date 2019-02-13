@@ -263,8 +263,8 @@ function parseSetupScript(raw_definition, callback){
 		
 		var benchmarkExtractCmd = `unzip -q "${zipFilename}"`;
 
-		var buildUsername = '$PERFFARM_CMVC_USERNAME';
-		var buildPassword = '$PERFFARM_CMVC_PASSWORD';
+		var buildUsername = '$PERFFARM_W3_USERNAME';
+		var buildPassword = '$PERFFARM_W3_PASSWORD';
 		
 		if (buildURL.toLowerCase().indexOf("artifactory") >= 0)
 		{
@@ -377,7 +377,8 @@ function parseDefinition(raw_definition, callback){
 			generatedOutput += '\n######### Generated Script #########\n';
 
 			if(iterations > 1){
-				generatedOutput += `for iteration in {1..${iterations}}` + '\n';
+				generatedOutput += "iteration=0 \n";
+				generatedOutput += `while [ "$iteration" -lt ${iterations} ]` + '\n';
 				generatedOutput += 'do \n';
 				generatedOutput += "echo \"Start of iteration $iteration\" \n";
 			}
@@ -403,6 +404,7 @@ function parseDefinition(raw_definition, callback){
 
 			if(iterations > 1){
 				generatedOutput += "echo \"End of iteration $iteration\" \n";
+				generatedOutput += "iteration=$((iteration+1)) \n";
 				generatedOutput = generatedOutput + 'done'
 			}
 

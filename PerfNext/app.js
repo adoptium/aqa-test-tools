@@ -9,12 +9,11 @@ global.appRoot = path.resolve(__dirname);
 global.APP_DATA = JSON.parse(fs.readFileSync('config/APP_DATA.json', 'utf8'));
 
 /* Refer to PerfNext/README.md for Password Requirements */
-var pwdList = fs.readFileSync('perfnext_passwords', 'utf8');
-global.perffarmEspressoPwd = pwdList.split(' ')[0].substring(0, 8);
-global.jenkinsPwd = pwdList.split(' ')[1].substring(0, 8);
-global.perffarmUsername = '';
-global.jenkinsUsername = '';
-
+global.credentials = JSON.parse(fs.readFileSync('config/credentials.json', 'utf8'));
+global.perffarmUsername = global.credentials.builds_server.username;
+global.perffarmEspressoPwd = global.credentials.builds_server.password;
+global.jenkinsUsername = global.credentials.jenkins_server.username;
+global.jenkinsPwd = global.credentials.jenkins_server.password;
 
 //Middleware
 app.use(bodyParser.urlencoded({extended: false}));

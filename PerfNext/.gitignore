@@ -1,4 +1,6 @@
 node_modules
 /bin/
 /.apt_generated/
-perfnext_passwords
+credentials.json
+.README.md.html
+.DS_Store
