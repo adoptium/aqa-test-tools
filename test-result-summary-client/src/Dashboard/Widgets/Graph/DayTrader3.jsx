@@ -4,7 +4,7 @@ import {
     LineSeries, Navigator, RangeSelector, Tooltip
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
-import { Radio } from 'antd';
+import { Checkbox, Radio } from 'antd';
 import math from 'mathjs';
 import utils from './utils';
 
@@ -12,20 +12,30 @@ const map = {
     "Daily-Liberty-DayTrader3": "Daily-Liberty-DayTrader3-pxa64 | 9dev-4way-LargeThreadPool",
 };
 
+let display = {
+    "Daily-Liberty-DayTrader3": true,
+};
+
 export class DayTrader3Setting extends Component {
     onChange = obj => {
-        this.props.onChange( { buildSelected: obj.target.value } );
+        for (let i in display) {
+            display[i] = false;
+        }
+        for (let j in obj) {
+            display[obj[j]] = true;
+        }
+        this.props.onChange( { buildSelected: obj[obj.length -1] } );
     }
 
     render() {
         const { buildSelected } = this.props;
 
         return <div style={{ maxWidth: 400 }}>
-            <Radio.Group onChange={this.onChange} value={buildSelected}>
+            <Checkbox.Group onChange={this.onChange} values={map.keys} defaultValue={["Daily-Liberty-DayTrader3"]}>
                 {Object.keys( map ).map( key => {
-                    return <Radio key={key} value={key}>{map[key]}</Radio>;
+                    return <Checkbox key={key} value={key} checked={false}>{map[key]}</Checkbox>;
                 } )}
-            </Radio.Group>
+            </Checkbox.Group>
         </div>
     }
 }
@@ -54,6 +64,21 @@ export default class DayTrader3 extends Component {
     }
 
     async updateData() {
+        // TODO: Apply new API call when merging code to all build types
+        /*let buildsName = '';
+        for(let i in display) {
+            if (display[i]) {
+                buildsName += "buildName=" + i;
+                if(i !== display.length - 1) {
+                    buildsName += "&";
+                }
+            }
+        }
+        buildsName = buildsName.substring(0, buildsName.length - 1);
+        const response = await fetch( `/api/getBuildHistory?type=Perf&${buildsName}&status=Done&limit=100&asc`, {
+            method: 'get'
+        } );
+        */
         const { buildSelected } = this.props;
         const buildName = encodeURIComponent( buildSelected );
         const response = await fetch( `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
