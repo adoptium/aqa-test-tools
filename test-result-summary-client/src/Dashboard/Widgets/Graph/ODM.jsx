@@ -4,7 +4,7 @@ import {
     LineSeries, Navigator, RangeSelector, Tooltip
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
-import { Radio } from 'antd';
+import { Radio, Checkbox } from 'antd';
 import math from 'mathjs';
 import utils from './utils';
 
@@ -15,20 +15,35 @@ const map = {
     "Daily-ODM-zLinux": "Daily-ODM-pxz64 | 881-4way-Seg5FastpathRVEJB",
     "Daily-ODM-zOS": "Daily-ODM-pmz64 | 881-4way-Seg5FastpathRVEJB"
 };
+
+let display = {
+    "Daily-ODM": true,
+    "Daily-ODM-Linux-PPCLE64": false,
+    "Daily-ODM-openJ9": false,
+    "Daily-ODM-zLinux": false,
+    "Daily-ODM-zOS": false
+};
+
 export class ODMSetting extends Component {
     onChange = obj => {
-        this.props.onChange( { buildSelected: obj.target.value } );
+        for (let i in display) {
+            display[i] = false;
+        }
+        for (let j in obj) {
+            display[obj[j]] = true;
+        }
+        this.props.onChange( { buildSelected: obj[obj.length -1] } );
     }
 
     render() {
         const { buildSelected } = this.props;
 
         return <div style={{ maxWidth: 400 }}>
-            <Radio.Group onChange={this.onChange} value={buildSelected}>
+            <Checkbox.Group onChange={this.onChange} values={map.keys} defaultValue={["Daily-ODM"]}>
                 {Object.keys( map ).map( key => {
-                    return <Radio key={key} value={key}>{map[key]}</Radio>;
+                    return <Checkbox key={key} value={key} checked={false}>{map[key]}</Checkbox>;
                 } )}
-            </Radio.Group>
+            </Checkbox.Group>
         </div>
     }
 }
@@ -56,18 +71,28 @@ export default class ODM extends Component {
     }
 
     async updateData() {
+        // when API ready => buildSelected will be list of builds
+        let buildsName = '';
+        for(let i in display) {
+            if (display[i]) {
+                buildsName += "buildName=" + i;
+                if(i !== display.length - 1) {
+                    buildsName += "&";
+                }
+            }
+        }
+        buildsName = buildsName.substring(0, buildsName.length - 1);
         const { buildSelected } = this.props;
         const buildName = encodeURIComponent( buildSelected );
-        const response = await fetch( `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
+        const response = await fetch( `/api/getBuildHistory?type=Perf&${buildsName}&status=Done&limit=100&asc`, {
             method: 'get'
         } );
         const results = await response.json();
         const resultsByJDKBuild = {};
-        let globalThroughput = [];
-        let gtValues = [];
-        let std = [];
-        let mean = [];
-        let median = [];
+        let globalThroughputs = {};
+        let baseLine = [];
+        let baseValue = 10000;
+        let scale = baseValue / 100;
 
         // combine results having the same JDK build date
         results.forEach(( t, i ) => {
@@ -81,38 +106,51 @@ export default class ODM extends Component {
                     || t.tests[0].testData.metrics[0].name !== "Global Throughput" ) {
                     return;
                 }
-                resultsByJDKBuild[JDKBuildTimeConvert] = resultsByJDKBuild[JDKBuildTimeConvert] || [];
-                resultsByJDKBuild[JDKBuildTimeConvert].push( {
-                    globalThroughput: t.tests[0].testData.metrics[0].value[0],
-                    additionalData: {
-                        testId: t.tests[0]._id,
-                        buildName: t.buildName,
-                        buildNum: t.buildNum,
-                        javaVersion: t.tests[0].testData.javaVersion,
-                    },
-                } );
+                if(!resultsByJDKBuild[t.buildName]) {
+                    resultsByJDKBuild[t.buildName] = {};
+                }
+                if(JDKBuildTimeConvert) {
+                    resultsByJDKBuild[t.buildName][JDKBuildTimeConvert] = resultsByJDKBuild[JDKBuildTimeConvert] || [];
+                    resultsByJDKBuild[t.buildName][JDKBuildTimeConvert].push( {
+                        globalThroughput: t.tests[0].testData.metrics[0].value[0],
+                        additionalData: {
+                            testId: t.tests[0]._id,
+                            buildName: t.buildName,
+                            buildNum: t.buildNum,
+                            javaVersion: t.tests[0].testData.javaVersion,
+                        },
+                    } );
+                }
             }
         } );
-
-        math.sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
-            gtValues.push( math.mean( resultsByJDKBuild[k].map( x => x['globalThroughput'] ) ) );
-            globalThroughput.push( [Number( k ), math.mean( resultsByJDKBuild[k].map( x => x['globalThroughput'] ) ), resultsByJDKBuild[k].map( x => x['additionalData'] )] );
-
-            std.push( [Number( k ), math.std( gtValues )] );
-            mean.push( [Number( k ), math.mean( gtValues )] );
-            median.push( [Number( k ), math.median( gtValues )] );
+        let baseLineData = [];
+        Object.keys( resultsByJDKBuild ).forEach(( k, i ) => {
+            if(!globalThroughputs[k]) {
+                globalThroughputs[k] = [];
+            }
+            math.sort(Object.keys(resultsByJDKBuild[k])).forEach((a, b) => {
+                globalThroughputs[k].push( [Number( a ), math.mean( resultsByJDKBuild[k][a].map( x => x['globalThroughput'] ) / scale), resultsByJDKBuild[k][a].map( x => x['additionalData'] )] );
+                baseLineData.push([Number( a ), 100]);
+            });
         } );
 
-        const series = { globalThroughput, std, mean, median };
-        const displaySeries = [];
-        for ( let key in series ) {
+        const displaySeries = baseLine;
+        for ( let key in globalThroughputs ) {
             displaySeries.push( {
-                visible: key === "globalThroughput",
+                visible: key,
                 name: key,
-                data: series[key],
+                data: globalThroughputs[key],
                 keys: ['x', 'y', 'additionalData']
             } );
         }
+
+        displaySeries.push({
+            visible: 'baseLine',
+            name: 'BaseLine',
+            data: baseLineData,
+            keys: ['x', 'y']
+        })
+
         this.setState( { displaySeries } );
     }
 
