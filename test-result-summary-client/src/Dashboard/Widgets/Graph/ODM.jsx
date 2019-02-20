@@ -18,11 +18,13 @@ const map = {
 
 let display = {
     "Daily-ODM": true,
-    "Daily-ODM-Linux-PPCLE64": false,
-    "Daily-ODM-openJ9": false,
-    "Daily-ODM-zLinux": false,
-    "Daily-ODM-zOS": false
+    "Daily-ODM-Linux-PPCLE64": true,
+    "Daily-ODM-openJ9": true,
+    "Daily-ODM-zLinux": true,
+    "Daily-ODM-zOS": true
 };
+
+let baselineValue = 7000;
 
 export class ODMSetting extends Component {
     onChange = obj => {
@@ -91,8 +93,7 @@ export default class ODM extends Component {
         const resultsByJDKBuild = {};
         let globalThroughputs = {};
         let baseLine = [];
-        let baseValue = 10000;
-        let scale = baseValue / 100;
+        let scale = baselineValue / 100;
 
         // combine results having the same JDK build date
         results.forEach(( t, i ) => {
@@ -198,7 +199,7 @@ export default class ODM extends Component {
                 </XAxis>
 
                 <YAxis id="gt">
-                    <YAxis.Title>Global Throughput</YAxis.Title>
+                    <YAxis.Title>Global Throughput (% to baseline)</YAxis.Title>
                     {displaySeries.map( s => {
                         return <LineSeries {...s} id={s.name} key={s.name} />
                     } )}
