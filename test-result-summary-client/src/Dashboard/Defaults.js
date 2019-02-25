@@ -46,6 +46,11 @@ export default {
                 x: 0,
                 y: 6
             },
+            {
+                type: 'PlatForm',
+                x: 0,
+                y: 5
+            }
         ]
     }
 }
