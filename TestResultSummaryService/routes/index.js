@@ -23,6 +23,7 @@ app.get( '/getTestById', wrap( require( "./getTestById" ) ) );
 app.get( '/getTestBySearch', wrap( require( "./getTestBySearch" ) ) );
 app.get( '/getTestPerPlatform', wrap( require( "./getTestPerPlatform" ) ) );
 app.get( '/getTopLevelBuildNames', wrap( require( "./getTopLevelBuildNames" ) ) );
+app.get( '/getTotals', wrap( require( "./getTotals" ) ) );
 app.get( '/populateDB', wrap( require( "./populateDB" ) ) );
 
 
