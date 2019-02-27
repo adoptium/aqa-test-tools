@@ -39,6 +39,8 @@ export default class PerfCompare extends Component {
             testID: "",
         },
         selectedRuns: {
+            baselineServerURL: "",
+            testServerURL: "",
             baselineID: "",
             testID: "",
         },
@@ -96,6 +98,19 @@ export default class PerfCompare extends Component {
 
         const resBenchmarkRunsJson = await resBenchmarkRuns.json();
 
+        if(resBenchmarkRunsJson.error){
+           this.setState(
+                {
+                    submitStatus: 'none',
+                    displayAlert: {
+                        status: true,
+                        message: resBenchmarkRunsJson.error
+                    }
+                }
+            )
+            return
+       	}
+
         // Check if the benchmark and test data is valid
         let displayErrorMessage = "";
         if (resBenchmarkRunsJson === undefined || (Object.keys(resBenchmarkRunsJson).length === 0 && resBenchmarkRunsJson.constructor === Object) ||
@@ -103,7 +118,7 @@ export default class PerfCompare extends Component {
             displayErrorMessage = "Baseline and Test build not found. "
         }
         if (resBenchmarkRunsJson.baselineCSV.length <= 2) {
-            displayErrorMessage = "Baseline buiild not found. ";
+            displayErrorMessage = "Baseline build not found. ";
         }
         if (resBenchmarkRunsJson.testCSV.length <= 2) {
             displayErrorMessage += "Test build not found"
@@ -185,7 +200,7 @@ export default class PerfCompare extends Component {
         let displayErrorMessage = "";
         if (resBenchmarkBaselineJson === undefined || (Object.keys(resBenchmarkBaselineJson).length === 0 && resBenchmarkBaselineJson.constructor === Object) || 
                 resBenchmarkBaselineJson.testInfo === undefined) {
-            displayErrorMessage = "Baseline buiild not found. ";
+            displayErrorMessage = "Baseline build not found. ";
         }
         if (resBenchmarkTestJson === undefined || (Object.keys(resBenchmarkTestJson).length === 0 && resBenchmarkTestJson.constructor === Object) ||
                 resBenchmarkTestJson.testInfo === undefined) {
@@ -337,10 +352,10 @@ export default class PerfCompare extends Component {
             const [testSchemeWithHostWithPort, testBuildNum] = this.state.inputURL.testID.split("build_id=");
 
             // Check if the benchmark and test data is valid
-            if (baselineBuildNum === undefined || (baselineSchemeWithHostWithPort.substring(0,31) !== "http://perffarmServer")) {
+            if (baselineSchemeWithHostWithPort === undefined || baselineBuildNum === undefined) {
                 displayErrorMessage += "Invalid Baseline URL. "
             }
-            if (testBuildNum === undefined || (testSchemeWithHostWithPort.substring(0,31) !== "http://perffarmServer")) {
+            if (testSchemeWithHostWithPort === undefined || testBuildNum === undefined) {
                 displayErrorMessage += "Invalid Test URL. "
             }
 
@@ -360,6 +375,8 @@ export default class PerfCompare extends Component {
             await this.setState(
                 {
                     selectedRuns: {
+                        baselineServerURL: baselineSchemeWithHostWithPort,
+                        testServerURL: testSchemeWithHostWithPort,
                         baselineID: baselineBuildNum,
                         testID: testBuildNum,
                     }
