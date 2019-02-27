@@ -80,6 +80,56 @@ class Database {
         ] );
         return result;
     }
+
+    // ToDo: impl check can be added once we have impl stored
+    async getTotals(query) {
+        const url = query.url;
+        const buildName = query.buildName;
+        let buildNum = query.buildNum;
+        if (!url || !buildName || !buildNum) {
+            return { error: `Cannot find url ${url}, buildName ${buildName} or buildNum ${buildNum}` };
+        }
+
+        if (buildNum && parseInt(buildNum, 10)) {
+            buildNum = parseInt(buildNum, 10);
+        } else {
+            return { error: `invalid buildNum: ${buildNum}` };
+        }
+        let buildNameRegex = `Test.*`;
+        if (query.level) buildNameRegex = `${buildNameRegex}${query.level}..*`;
+        if (query.group) buildNameRegex = `${buildNameRegex}${query.group}-.*`;
+        if (query.platform) buildNameRegex = `${buildNameRegex}${query.platform}`;
+        const result = await this.aggregate([
+            { $match: { url, buildName, buildNum } },
+            {
+                $graphLookup: {
+                    from: "testResults",
+                    startWith: "$_id",
+                    connectFromField: "_id",
+                    connectToField: "parentId",
+                    as: "childBuilds",
+                }
+            },
+            {
+                $project: {
+                    "childBuilds": "$childBuilds"
+                }
+            },
+            { $unwind: "$childBuilds" },
+            { $match: { "childBuilds.buildName": { $regex: buildNameRegex } } },
+            {
+                $group: {
+                    _id: {},
+                    total: { $sum: "$childBuilds.testSummary.total" },
+                    executed: { $sum: "$childBuilds.testSummary.executed" },
+                    passed: { $sum: "$childBuilds.testSummary.passed" },
+                    failed: { $sum: "$childBuilds.testSummary.failed" },
+                    skipped: { $sum: "$childBuilds.testSummary.skipped" },
+                }
+            }
+        ]);
+        return result;
+    }
 }
 class TestResultsDB extends Database {
     constructor() {
