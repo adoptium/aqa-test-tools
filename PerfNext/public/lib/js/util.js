@@ -1,11 +1,13 @@
 //Data model to represent the UI info
 var benchmarkMeta;
 
-function populateMachines(data, isMainLauncher) {
+function populateMachines(isMainLauncher) {
 	console.log('util.js: Entering populateMachines()');
-    console.log(data);
-  
-	for (var key in data)
+	var cpuInfo = getCPUInfo();
+	machineList = getAllMatchingMachines(cpuInfo);
+	$("#machine-selection").empty();
+
+	for (var key in machineList)
 	{
 		//console.log('util.js: data[key]: '+key);
 		$('#machine-selection').append(`<option>${key}</option>`)
@@ -245,6 +247,82 @@ function getEspressoPlatform() {
 	
     }
     return platform;
+}
+
+/* Get the OS, cputype and bits to check against the master machine list */
+function getCPUInfo() {
+    console.log('Entering getCPUInfo()');
+
+    var platform = document.getElementById('dtextlabel').innerText;
+    console.log('platform: '+platform);
+
+    var cpuInfo = {};
+
+    const platformSplits = platform.split(" ");
+    if (platformSplits.length == 4 || platformSplits.length == 5) {
+    	cpuInfo.OS = platformSplits[0];
+    	cpuInfo.bits = platformSplits[platformSplits.length - 2];
+
+    	let cpuType = platformSplits[1];
+    	// Special Cases
+    	if (cpuType.startsWith("Intel")) {
+    		cpuType = platformSplits[2];
+    	} else if (cpuType.startsWith("AMD")) {
+    		cpuType += platformSplits[2].replace(/x/, '');
+    	} else if (cpuType.startsWith("z")) {
+    		cpuType += " " + platformSplits[2];
+    	}
+    	cpuInfo.cpuType = cpuType;
+    }
+    else {
+    	console.log('getCPUinfo() ERROR platform: '+ platform + ' does not match the required length');
+    }
+    return cpuInfo;
+}
+
+function getAllMatchingMachines(cpuInfo) {
+	console.log("Entering getAllMatchingMachines(cpuInfo)")
+	var allHosts = allmachinesInfo.getElementsByTagName("hosts")[0].childNodes.values();
+	var validMachines = {};
+	
+	for(const host of allHosts) {
+		if (host.id != null) {
+			var hostNode = host;
+			
+			var cpuMatch = false;
+			var bitsMatch = false;
+			var OSMatch = hostNode.getElementsByTagName('os')[0].getAttribute('type') == cpuInfo['OS'];
+			var jobGen = hostNode.getElementsByTagName('jobgenerator')[0].getAttribute('enabled') == "true";
+			
+			// Early exit if OS or jobGen is false
+			if (!OSMatch || !jobGen) {
+				continue;
+			}
+			var machineId = hostNode.getElementsByTagName('machine')[0].getAttribute('id');
+			var hostName = hostNode.getElementsByTagName('name')[0].innerHTML;
+			var machineNode = allmachinesInfo.querySelector('[id="' + machineId + '"]');
+			
+			var cpuTypeNodeList = machineNode.getElementsByTagName('cputype');
+			for (const cpuType of cpuTypeNodeList) {
+				if (cpuType.innerHTML == cpuInfo['cpuType']) {
+					cpuMatch = true;
+					break;
+				}
+			}
+			
+			var bitsNodeList = machineNode.getElementsByTagName('bits');
+			for (const bits of bitsNodeList) {
+				if (bits.innerHTML == cpuInfo['bits']) {
+					bitsMatch = true;
+					break;
+				}
+			}
+			if (cpuMatch && bitsMatch) {
+				validMachines[hostName] = hostNode.id;
+			}
+		}
+	}
+	return validMachines;
 }
 
 /* Returns the buildPath for AdoptOpenJDK builds: /<variant>/<build type>/<platform>/<build>/<data type> */

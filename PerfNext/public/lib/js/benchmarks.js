@@ -31,16 +31,11 @@ var OS, OS2;
 
 var isMainLauncher = true;
 
-$(function() {
-    $.get("/api/machines", function(data, status) {
-    	console.log('benchmarks.js: Calling populateMachines()');
-    	machineList = data;
-        populateMachines(data, isMainLauncher);
-    });
-    
+$(function() {    
     $.get("/api/machinesInfo", function(data, status) {
     	console.log('benchmarks.js: Got all machine info from /api/machinesInfo');
     	allmachinesInfo = data;
+    	populateMachines(isMainLauncher);
     	console.log('benchmarks.js: allmachinesInfo: '+allmachinesInfo);
     });
     
@@ -112,6 +107,7 @@ $('.OS-Type-Bit').click(function() {
     $('#dtextlabel')[0].innerHTML = `${OS.innerHTML} ${arch.innerHTML} ${bit}`;
     
     console.log('benchmarks.js: OS updated');
+    populateMachines(isMainLauncher);
     updateProduct(false);
     updateProduct(true);
     changeHWSpecificArguments();
