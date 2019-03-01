@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
-import { LocaleProvider, Table, Input } from 'antd';
+import { Table, Input } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
-import enUS from 'antd/lib/locale-provider/en_US';
 import { getParams } from '../utils/query';
 import Highlighter from 'react-highlight-words';
 import renderDuration from './Duration';
@@ -160,18 +159,16 @@ export default class DeepHistory extends Component {
             } );
         }
 
-        return <LocaleProvider locale={enUS}>
-            <div>
-                <TestBreadcrumb buildId={build._id} testId={testId} testName={testName} />
-                <Table
-                    columns={columns}
-                    dataSource={dataSource}
-                    bordered
-                    title={() => testName}
-                    pagination={{ pageSize: 50 }}
-                    onChange={this.handleChange}
-                />
-            </div>
-        </LocaleProvider>
+        return <div>
+            <TestBreadcrumb buildId={build._id} testId={testId} testName={testName} />
+            <Table
+                columns={columns}
+                dataSource={dataSource}
+                bordered
+                title={() => testName}
+                pagination={{ pageSize: 50 }}
+                onChange={this.handleChange}
+            />
+        </div>
     }
 }

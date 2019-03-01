@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
-import { LocaleProvider, Table } from 'antd';
-import enUS from 'antd/lib/locale-provider/en_US';
+import { Table } from 'antd';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
 
@@ -120,7 +119,7 @@ export default class TopLevelBuilds extends Component {
                 }
             }];
 
-            return (<LocaleProvider locale={enUS}>
+            return (
                 <div>
                     {Object.values(builds).map((urls, i) => {
                         return Object.values(urls).map((infos, i) => {
@@ -140,8 +139,7 @@ export default class TopLevelBuilds extends Component {
                             />
                         })
                     })}
-                </div>
-            </LocaleProvider>);
+                </div>);
         } else {
             return null;
         }
