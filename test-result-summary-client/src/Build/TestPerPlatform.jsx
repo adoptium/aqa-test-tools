@@ -1,9 +1,8 @@
 import React, { Component } from 'react';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
-import { LocaleProvider, Table, Input } from 'antd';
+import { Table, Input } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
-import enUS from 'antd/lib/locale-provider/en_US';
 import { getParams } from '../utils/query';
 import Highlighter from 'react-highlight-words';
 import renderDuration from './Duration';
@@ -152,18 +151,16 @@ export default class TestPerPlatform extends Component {
             } );
         }
 
-        return <LocaleProvider locale={enUS}>
-            <div>
-                <TestBreadcrumb buildId={buildId} testId={testId} testName={testName} />
-                <Table
-                    columns={columns}
-                    dataSource={dataSource}
-                    bordered
-                    title={() => this.state.testName}
-                    pagination={{ pageSize: 50 }}
-                    onChange={this.handleChange}
-                />
-            </div>
-        </LocaleProvider>
+        return <div>
+            <TestBreadcrumb buildId={buildId} testId={testId} testName={testName} />
+            <Table
+                columns={columns}
+                dataSource={dataSource}
+                bordered
+                title={() => this.state.testName}
+                pagination={{ pageSize: 50 }}
+                onChange={this.handleChange}
+            />
+        </div>
     }
 }

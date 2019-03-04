@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import TextFilter from '../utils/TextFilter';
-import { LocaleProvider, Table } from 'antd';
+import { Table } from 'antd';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
 import renderDuration from './Duration';
-import enUS from 'antd/lib/locale-provider/en_US';
 
 export default class TestTable extends Component {
     state = {
@@ -130,16 +129,14 @@ export default class TestTable extends Component {
 
         }
 
-        return <LocaleProvider locale={enUS}>
-            <div>
-                <Table
-                    columns={columns}
-                    dataSource={filteredData}
-                    bordered
-                    title={() => title}
-                    pagination={{ pageSize: 50 }}
-                />
-            </div>
-        </LocaleProvider>
+        return <div>
+            <Table
+                columns={columns}
+                dataSource={filteredData}
+                bordered
+                title={() => title}
+                pagination={{ pageSize: 50 }}
+            />
+        </div>
     }
 }

@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import { LocaleProvider, Table } from 'antd';
+import { Table } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { SearchOutput } from '../Search/';
-import enUS from 'antd/lib/locale-provider/en_US';
 import { Link } from 'react-router-dom';
 import { getParams, params } from '../utils/query';
 import BuildTable from "./BuildTable";
@@ -95,21 +94,18 @@ export default class BuildDetail extends Component {
             bcLink = ( <Link to={{ pathname: '/buildDetail', search: params( { parentId: parentId } ) }}>{parent[0].buildName}_#{parent[0].buildNum}</Link> );
         }
 
-        return <LocaleProvider locale={enUS}>
-            <div>
-                <TestBreadcrumb buildId={parentId} />
-                <SearchOutput buildId={parentId} />
-                <Table
-                    columns={parentBuildColumns}
-                    dataSource={parentBuildsDataSource}
-                    bordered
-                    title={() => buildName}
-                    pagination={false}
-                />
-                <br />
-                <BuildTable title={"Children builds"} buildData={childBuildsDataSource} />
-            </div>
-        </LocaleProvider>
-
+        return <div>
+            <TestBreadcrumb buildId={parentId} />
+            <SearchOutput buildId={parentId} />
+            <Table
+                columns={parentBuildColumns}
+                dataSource={parentBuildsDataSource}
+                bordered
+                title={() => buildName}
+                pagination={false}
+            />
+            <br />
+            <BuildTable title={"Children builds"} buildData={childBuildsDataSource} />
+        </div>
     }
 }
