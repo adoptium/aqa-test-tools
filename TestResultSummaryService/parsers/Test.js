@@ -1,5 +1,5 @@
 const Parser = require( './Parser' );
-const regex = /===============================================\r?\nRunning test (.*?) \.\.\.\r?\n===============================================\r?\n([\S\s]*?\1 Start Time\: .* Epoch Time \(ms\)\: (.*)[\s\S]*?\1_(.*?)\r?\n[\S\s]*?\1 Finish Time\: .* Epoch Time \(ms\)\: (.*))\r?\n/g;
+const regex = /.*?===============================================\r?\n.*?Running test (.*?) \.\.\.\r?\n.*?===============================================\r?\n.*?([\S\s]*?\1 Start Time\: .* Epoch Time \(ms\)\: (.*)[\s\S]*?\1_(.*?)\r?\n[\S\s]*?\1 Finish Time\: .* Epoch Time \(ms\)\: (.*))\r?\n/g;
 
 class TestExtractor {
     extract( str ) {
