@@ -3,14 +3,7 @@
 */
 var request = require('request');
 
-module.exports = function(app) {			
-    /*
-    * Retrieve a list of perf machines
-    */
-    app.get('/api/machines', function(req, res) {
-        res.sendFile(global.appRoot + '/config/machines.json');
-    });  
-    
+module.exports = function(app) {
     /*
      * Retrieve all the HW related info about all machines
      */
