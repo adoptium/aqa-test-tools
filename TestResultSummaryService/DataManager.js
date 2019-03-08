@@ -68,9 +68,11 @@ class DataManager {
         logger.debug( "update newData", update );
 
         if ( builds && builds.length > 0 ) {
+            let commonUrls = data.url.split("/job/")[0];
+            commonUrls = commonUrls.split("/view/")[0];
             builds.map( async b => {
                 const childBuild = {
-                    url: data.url,
+                    url: commonUrls + b.url,
                     buildName: b.buildName,
                     buildNameStr: b.buildNameStr,
                     buildNum: parseInt( b.buildNum, 10 ),

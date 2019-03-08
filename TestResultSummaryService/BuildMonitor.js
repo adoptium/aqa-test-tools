@@ -38,7 +38,7 @@ class BuildMonitor {
          * db.
          */
         const limit = Math.min(5, allBuilds.length);
-        const testResults = new TestResultsDB();
+        const testResults = new TestResultsDB();   
         for (let i = 0; i < limit; i++) {
             const buildNum = parseInt(allBuilds[i].id, 10);
             const buildsInDB = await testResults.getData({ url, buildName, buildNum }).toArray();
@@ -78,10 +78,10 @@ class BuildMonitor {
         } else if (buildUrl.includes("/job/")) {
             tokens = buildUrl.split(/\/job\//);
         }
-        if (tokens && tokens.length == 2) {
-            url = tokens[0];
-            const strs = tokens[1].split("/");
+        if (tokens && tokens.length > 1) {
+            const strs = tokens[tokens.length - 1].split("/");
             buildName = strs[strs.length - 1];
+            url = buildUrl.replace("/job/" + buildName, "");
         }
         return { buildName, url };
     }

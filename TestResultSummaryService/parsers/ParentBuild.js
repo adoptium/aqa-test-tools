@@ -3,7 +3,7 @@ const Parser = require( './Parser' );
 const regexOpenJ9 = /OPENJ9_SHA\s?:\s?(.*?)\r/;
 const regexOpenJdk = /OPENJDK_SHA\s?:\s?(.*?)\r/;
 const regexOmr = /OMR_SHA\s?:\s?(.*?)\r/;
-const regexBuilds = /(\[(.*?)\])?Starting building: (\S*?) ?#(\d*)/g;
+const regexBuilds = /(\[(.*?)\])?Starting building: (.*?) ?#(\d*)/g;
 
 class ParentBuild extends Parser {
     static canParse( buildName, output ) {
@@ -26,14 +26,22 @@ class ParentBuild extends Parser {
             buildData.omrSha = m[1];
         }
         regexBuilds.lastIndex = 0;
+        let allBuilds = [];
         while ( ( m = regexBuilds.exec( output ) ) !== null ) {
-            const buildName = m[3];
+            allBuilds = m[3].split(" » ");
+            const buildName = allBuilds[allBuilds.length - 1];
+            allBuilds.pop();
+            let url = allBuilds.join("/job/");
+            if (allBuilds.length > 1 && url.length > 0) {
+                url = "/job/" + url;
+            }
             const buildNameStr = m[1] ? m[1] : buildName;
             let type = "Build";
             if ( buildName.match( /^Test-/ ) ) {
                 type = "Test";
             }
             builds.push( {
+                url,
                 buildNameStr,
                 buildName,
                 buildNum: m[4],
