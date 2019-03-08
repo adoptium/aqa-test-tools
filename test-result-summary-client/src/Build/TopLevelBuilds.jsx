@@ -7,23 +7,23 @@ export default class TopLevelBuilds extends Component {
     state = {};
 
     async componentDidMount() {
-        await this.updateData( this.props.match.params.type );
+        await this.updateData(this.props.match.params.type);
         this.intervalId = setInterval(() => {
-            this.updateData( this.props.match.params.type );
-        }, 30 * 1000 );
+            this.updateData(this.props.match.params.type);
+        }, 5 * 60 * 1000);
 
     }
-    async componentWillReceiveProps( nextProps ) {
-        if ( nextProps.match.params.type !== this.props.match.params.type ) {
-            await this.updateData( nextProps.match.params.type );
+    async componentWillReceiveProps(nextProps) {
+        if (nextProps.match.params.type !== this.props.match.params.type) {
+            await this.updateData(nextProps.match.params.type);
         }
     }
 
     componentWillUnmount() {
-        clearInterval( this.intervalId );
+        clearInterval(this.intervalId);
     }
 
-    async updateData( type ) {
+    async updateData(type) {
         const builds = {};
 
         const response = await fetch(`/api/getTopLevelBuildNames?type=${type}`, {
@@ -40,7 +40,17 @@ export default class TopLevelBuilds extends Component {
             if (!builds[url]) {
                 builds[url] = {};
             }
-            builds[url][buildName] = res;
+
+            const allBuilds = await Promise.all(res.map(async build => {
+                build.totals = {};
+                const fetchBuild = await fetch(`/api/getTotals?buildName=${buildName}&url=${url}&buildNum=${build.buildNum}`, {
+                    method: 'get'
+                });
+                build.totals = await fetchBuild.json();
+                return build;
+            }));
+
+            builds[url][buildName] = allBuilds;
         }
         this.setState({ builds, type });
     }
@@ -48,35 +58,35 @@ export default class TopLevelBuilds extends Component {
     render() {
         const { builds, type } = this.state;
 
-        if ( builds && type ) {
-            const renderFvTestBuild = ( value, row, index ) => {
-                if ( value && value.buildNum ) {
+        if (builds && type) {
+            const renderFvTestBuild = (value, row, index) => {
+                if (value && value.buildNum) {
                     return <div>
-                        <Link to={{ pathname: '/buildDetail', search: params( { parentId: value._id } ) }}
-                            style={{ color: value.buildResult === "SUCCESS" ? "#2cbe4e" : ( value.buildResult === "FAILURE" ? "#f50" : "#DAA520" ) }}> Build #{value.buildNum}
+                        <Link to={{ pathname: '/buildDetail', search: params({ parentId: value._id }) }}
+                            style={{ color: value.buildResult === "SUCCESS" ? "#2cbe4e" : (value.buildResult === "FAILURE" ? "#f50" : "#DAA520") }}> Build #{value.buildNum}
                         </Link>
                     </div>
                 }
                 return null;
             };
 
-            const renderBuild = ( value, row, index ) => {
-                if ( value && value.buildNum ) {
+            const renderBuild = (value) => {
+                if (value && value.buildNum) {
                     let result = value.buildResult;
-                    if ( value.tests && value.tests.length > 0 ) {
+                    if (value.tests && value.tests.length > 0) {
                         result = value.tests[0].testResult;
-                        if ( value.tests[0]._id ) {
+                        if (value.tests[0]._id) {
                             return <div>
-                                <Link to={{ pathname: '/output/test', search: params( { id: value.tests[0]._id } ) }}
-                                    style={{ color: result === "PASSED" ? "#2cbe4e" : ( result === "FAILED" ? "#f50" : "#DAA520" ) }}>
+                                <Link to={{ pathname: '/output/test', search: params({ id: value.tests[0]._id }) }}
+                                    style={{ color: result === "PASSED" ? "#2cbe4e" : (result === "FAILED" ? "#f50" : "#DAA520") }}>
                                     Build #{value.buildNum}
                                 </Link>
                             </div>;
                         }
                     } else {
                         return <div>
-                            <Link to={{ pathname: '/output/all', search: params( { id: value._id } ) }}
-                                style={{ color: result === "SUCCESS" ? "#2cbe4e" : ( result === "FAILURE" ? "#f50" : "#DAA520" ) }}>
+                            <Link to={{ pathname: '/output/all', search: params({ id: value._id }) }}
+                                style={{ color: result === "SUCCESS" ? "#2cbe4e" : (result === "FAILURE" ? "#f50" : "#DAA520") }}>
                                 Build #{value.buildNum}
                             </Link>
                         </div>;
@@ -85,25 +95,63 @@ export default class TopLevelBuilds extends Component {
                 return null;
             };
 
-            const renderJenkinsLinks = ( { buildName, buildNum, buildUrl, url } ) => {
+            const renderJenkinsLinks = ({ buildName, buildNum, buildUrl, url }) => {
                 const blueOcean = `${url}/blue/organizations/jenkins/${buildName}/detail/${buildName}/${buildNum}`;
                 return <div><a href={buildUrl} target="_blank">{buildName} #{buildNum}</a><br /><a href={blueOcean} target="_blank">Blue Ocean</a></div>;
             };
+
+            const renderTotals = (value) => {
+                const totals = value.totals;
+                if (!totals) return <div>N/A</div>;
+
+                return <div>
+                    {renderResults(value, "Failed: ", totals.failed ? totals.failed : 0, "!SUCCESS", "(^Test.*|.*test_.*)")}
+                    {renderResults(value, "Passed: ", totals.passed ? totals.passed : 0, "SUCCESS", "(^Test.*|.*test_.*)")}
+                    <span>Skipped: {totals.skipped ? totals.skipped : 0} </span>
+                    {renderResults(value, "Total: ", totals.total ? totals.total : 0)}
+                </div>;
+            };
+
+            const renderBuildResults = (value) => {
+                return <div>
+                    {renderResults(value, "", "Failed Builds ", "!SUCCESS")}
+                </div>;
+            };
+
+            const renderResults = (build, label, link, buildResult, buildNameRegex) => {
+                if (build && build.buildNum) {
+                    return <span>
+                        {label}<Link to={{ pathname: '/buildDetail', search: params({ parentId: build._id, buildResult, buildNameRegex }) }}>{link} </Link>
+                    </span>;
+                }
+                return null;
+            };
+
 
             const columns = [{
                 title: 'Build',
                 dataIndex: 'build',
                 key: 'build',
                 render: type === "Perf" ? renderBuild : renderFvTestBuild,
-                sorter: ( a, b ) => {
-                    return a.key.localeCompare( b.key );
+                sorter: (a, b) => {
+                    return a.key.localeCompare(b.key);
                 }
+            }, {
+                title: 'Build Results',
+                dataIndex: 'totals',
+                key: 'totals',
+                render: renderBuildResults,
+            }, {
+                title: 'Test Results',
+                dataIndex: 'totals',
+                key: 'totals',
+                render: renderTotals,
             }, {
                 title: 'StartBy',
                 dataIndex: 'startBy',
                 key: 'startBy',
-                sorter: ( a, b ) => {
-                    return a.startBy.localeCompare( b.startBy );
+                sorter: (a, b) => {
+                    return a.startBy.localeCompare(b.startBy);
                 }
             }, {
                 title: 'Jenkins Link',
@@ -114,8 +162,8 @@ export default class TopLevelBuilds extends Component {
                 title: 'Date',
                 dataIndex: 'date',
                 key: 'date',
-                sorter: ( a, b ) => {
-                    return a.date.localeCompare( b.date );
+                sorter: (a, b) => {
+                    return a.date.localeCompare(b.date);
                 }
             }];
 
@@ -128,13 +176,13 @@ export default class TopLevelBuilds extends Component {
                                 build: info,
                                 date: info.timestamp ? new Date(info.timestamp).toLocaleString() : null,
                                 startBy: info.startBy ? info.startBy : null,
-                                jenkins: info
+                                jenkins: info,
+                                totals: info
                             }));
                             return <Table
                                 key={i}
                                 columns={columns}
                                 dataSource={buildInfo}
-                                bordered
                                 title={() => <div><b>{buildInfo[0].build.buildName}</b> in server {buildInfo[0].build.url}</div>}
                             />
                         })

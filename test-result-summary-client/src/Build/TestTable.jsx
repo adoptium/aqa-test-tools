@@ -117,7 +117,7 @@ export default class TestTable extends Component {
                         return res.testResult.indexOf( value ) === 0;
                     },
             });
-            columns.push(            {
+            columns.push({
                 title: 'Build',
                 dataIndex: 'build',
                 key: 'build',

@@ -95,10 +95,14 @@ class Database {
         } else {
             return { error: `invalid buildNum: ${buildNum}` };
         }
-        let buildNameRegex = `Test.*`;
+        let buildNameRegex = `^Test.*`;
+        // ToDo: this needs to updated once we finalize the build naming convention
+        if (buildName.match( /^openjdk/ )) buildNameRegex = `.*test_.*`;
+        
         if (query.level) buildNameRegex = `${buildNameRegex}${query.level}..*`;
         if (query.group) buildNameRegex = `${buildNameRegex}${query.group}-.*`;
         if (query.platform) buildNameRegex = `${buildNameRegex}${query.platform}`;
+
         const result = await this.aggregate([
             { $match: { url, buildName, buildNum } },
             {
@@ -128,7 +132,7 @@ class Database {
                 }
             }
         ]);
-        return result;
+        return result[0] || {};
     }
 }
 class TestResultsDB extends Database {

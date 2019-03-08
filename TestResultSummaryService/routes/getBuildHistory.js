@@ -1,6 +1,6 @@
 const { TestResultsDB, ObjectID } = require( '../Database' );
 module.exports = async ( req, res ) => {
-  const { limit = 5, asc = false, ...query } = req.query;
+  const { limit = 10, asc = false, ...query } = req.query;
   const sortData = {
     timestamp: asc ? 1 : -1
   };

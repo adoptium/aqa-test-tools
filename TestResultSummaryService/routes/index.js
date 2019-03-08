@@ -6,6 +6,7 @@ app.get( '/deleteBuildListById', wrap( require( "./deleteBuildListById" ) ) );
 app.get( '/deleteBuildsAndChildrenByFields', wrap( require( "./deleteBuildsAndChildrenByFields" ).default ) );
 app.get( '/deleteCollection', wrap( require( "./deleteCollection" ) ) );
 app.get( '/deleteUnusedOutput', wrap( require( "./deleteUnusedOutput" ) ) );
+app.get( '/getAllChildBuilds', wrap( require( "./getAllChildBuilds" ) ) );
 app.get( '/getAllTestsWithHistory', wrap( require( "./getAllTestsWithHistory" ) ) );
 app.get( '/getBuildHistory', wrap( require( "./getBuildHistory" ) ) );
 app.get( '/getBuildList', wrap( require( "./getBuildList" ) ) );
