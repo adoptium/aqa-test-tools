@@ -11,7 +11,12 @@ class BuildProcessor {
     async execute(task) {
         const { url, buildName, buildNum } = task;
         const jenkinsInfo = new JenkinsInfo();
-        const buildInfo = await jenkinsInfo.getBuildInfo(task.url, task.buildName, task.buildNum);
+        if (url && (url.endsWith("job") || url.endsWith("job/"))) {
+            let tokens = url.split("job");
+            tokens.pop();
+            url = tokens.join("job");
+        }
+        const buildInfo = await jenkinsInfo.getBuildInfo(url, buildName, buildNum);
 
         if (buildInfo) {
             if (buildInfo.code === 404) {
