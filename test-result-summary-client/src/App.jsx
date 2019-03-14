@@ -44,10 +44,9 @@ export default class App extends Component {
                             <SubMenu key="sub1" title={<span><Icon type="user" />Menu</span>}>
                                 <Menu.Item key="1"><Link to="/dashboard">Dashboard</Link></Menu.Item>
                                 <Menu.Item key="2"><Link to="/tests/Test">FV Test</Link></Menu.Item>
-                                <Menu.Item key="3"><Link to="/tests/JCK">JCK Test</Link></Menu.Item>
-                                <Menu.Item key="4"><Link to="/tests/Perf">Perf Test</Link></Menu.Item>
-                                <Menu.Item key="5"><Link to="/testCompare">Test Compare</Link></Menu.Item>
-                                <Menu.Item key="6"><Link to="/perfCompare">Perf Compare</Link></Menu.Item>
+                                <Menu.Item key="3"><Link to="/tests/Perf">Perf Test</Link></Menu.Item>
+                                <Menu.Item key="4"><Link to="/testCompare">Test Compare</Link></Menu.Item>
+                                <Menu.Item key="5"><Link to="/perfCompare">Perf Compare</Link></Menu.Item>
                             </SubMenu>
                         </Menu>
                     </Sider>
