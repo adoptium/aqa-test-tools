@@ -34,7 +34,12 @@ export default class Build extends Component {
                 ret.action = {
                     testId: test._id,
                 };
-                builds.forEach(( { tests, parentNum }, i ) => {
+                builds.forEach(({ tests, parentNum }, i) => {
+                    if (!tests) {
+                        return ret[i] = {
+                            testResult: 'N/A',
+                        };
+                    }
                     const found = tests.find( t => t.testName === test.testName );
                     if ( found ) {
                         const { testResult, _id } = found
