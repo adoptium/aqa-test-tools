@@ -29,8 +29,14 @@ class DataManager {
     }
 
     async updateOutput( data ) {
-        const { id, output } = data;
+        let { id, output } = data;
         const outputDB = new OutputDB();
+
+        //Due to 16M document size limit, only store last ~12M output
+        const size = 12 * 1024 * 1024;
+        if (output && output.length > size) {
+            output = output.substr(-size);
+        }
         if ( id ) {
             const result = await outputDB.update( { _id: new ObjectID( id ) }, { $set: { output } } );
             return id;
@@ -98,10 +104,12 @@ class DataManager {
             const testsObj = await Promise.all( tests.map( async ( { testOutput, ...test } ) => {
                 let testOutputId = null;
                 if ( testOutput ) {
-                    const status = await outputDB.populateDB( { output: testOutput } );
-                    if ( status && status.insertedCount === 1 ) {
-                        testOutputId = status.insertedIds[0];
-                    }
+                    const outputData = {
+                        id: null,
+                        output: testOutput,
+                    };
+                    // store output
+                    testOutputId = await this.updateOutput( outputData );
                 }
                 return {
                     _id: new ObjectID(),
