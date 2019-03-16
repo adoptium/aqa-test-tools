@@ -30,35 +30,41 @@ npm start
 
 ```
 cd to test-result-summary-client folder
-yarn install
+npm install
 npm start
 ``` 
 
 User can navigate at http://localhost:3000
-Note: database needs to be populated before any data can be view on the web page
+Note: 
+- Dashboard can be configured using DashboardBuildInfo.json
+- Database needs to be populated before any data can be view on the side menu
 
 
 ## Production server
 TBD
 
 ## Deployment Instructions
-- make sure you have LDAP account and can login to machine `TBD`
-(if not, please make sure you are in bluebird group)
-- if the change is in TestResultSummaryService (server), upload changed file under `/data/testci/TestResultSummaryService` in `TBD`
-- if new module is added, then run `npm install` on `TBD`
+- on TRSS production server machine, cd to source code folder and update the code
+```
+cd /home/jenkins/openjdk-test-tools
+git pull
+```
+
+- if new module is added, then run `npm ci`
 - if the change is in test-result-summary-client (react client), build client code
 ```
-cd testci/test-result-summary-client
-yarn build
+cd /home/jenkins/openjdk-test-tools/test-result-summary-client
+npm run build
 ```
-- upload the generated `build` folder under `/data/testci/` in `TBD`
+
 - restart the service
 ```
-service TestResultsSummaryService restart
+service TestResultSummaryService restart
 ```
+
 - log message can be found by using the following cmd
 ```
-tail -f /var/log/TestResultsSummaryService.log
+tail -f /var/log/TestResultSummaryService.log
 ```
 
 ## Configure File
@@ -69,11 +75,15 @@ Config file example:
 {
 	"https://exampleserver2.com": {
 		"user" : "abc@example.com",
-		"password" : "123"   <=== the value can be password or token
+		"password" : "123"   <=== the value can be token
 	},
 	"https://exampleserver1.com": {
 		"user" : "xyz@example.com",
 		"password" : "456"
+	},
+	"DB": {
+		"user" : "abc",
+		"password" : "789"
 	}
 }
 ```
