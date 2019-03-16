@@ -68,10 +68,10 @@ export default class BuildStatus extends Component {
 
     async componentDidMount() {
         await this.updateData();
-        // update every 60 secs
+        // update every 5 mins
         this.intervalId = setInterval(() => {
             this.updateData(true);
-        }, 60 * 1000);
+        }, 5 * 60 * 1000);
     }
 
     async componentDidUpdate() {

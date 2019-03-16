@@ -30,10 +30,20 @@ export default class BuildDetail extends Component {
     }
 
     async updateData() {
-        const { parentId } = getParams( this.props.location.search );
-        const fetchBuild = await fetch( `/api/getChildBuilds?parentId=${parentId}`, {
-            method: 'get'
-        } );
+        const { parentId, buildResult, buildNameRegex } = getParams( this.props.location.search );
+        let fetchBuild = {};
+        if (buildResult || buildNameRegex) {
+            const buildResultQuery = buildResult ? `&buildResult=${buildResult}` : "";
+            const buildNameRegexQuery = buildNameRegex ? `&buildNameRegex=${buildNameRegex}` : "";
+            fetchBuild = await fetch(`/api/getAllChildBuilds?parentId=${parentId}${buildResultQuery}${buildNameRegexQuery}`, {
+                method: 'get'
+            });
+        } else {
+            fetchBuild = await fetch(`/api/getChildBuilds?parentId=${parentId}`, {
+                method: 'get'
+            });
+        }
+       
         const builds = await fetchBuild.json();
         const fetchParentBuild = await fetch( `/api/getData?_id=${parentId} `, {
             method: 'get'
