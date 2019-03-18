@@ -14,6 +14,7 @@ import { SearchResult } from './Search/';
 import { Settings } from './Settings/';
 
 import './App.css';
+import  { ReactComponent as AdoptLogo } from './Adoptlogo.svg';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -22,15 +23,16 @@ export default class App extends Component {
     render() {
         return <LocaleProvider locale={enUS}>
             <Layout>
-                <Header className="header">
+                <Header className="header" style={{ background: '#152935' }}>
                     <div className="logo" />
                     <Menu
                         theme="dark"
                         mode="horizontal"
                         defaultSelectedKeys={['2']}
-                        style={{ lineHeight: '64px' }}
+                        style={{ lineHeight: '64px', background: '#152935' }}
                     >
-                        <Menu.Item key="1">Test Results Summary Service</Menu.Item>
+                    <Menu.Item key="1"><a href="https://adoptopenjdk.net/" style={{lineHeight: '250%'}}><AdoptLogo/></a></Menu.Item>
+                    <Menu.Item key="2"><Link to="/dashboard">Test Results Summary Service</Link></Menu.Item>
                     </Menu>
                 </Header>
                 <Layout>
