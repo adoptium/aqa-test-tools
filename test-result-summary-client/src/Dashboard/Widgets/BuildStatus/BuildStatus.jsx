@@ -142,6 +142,16 @@ export default class BuildStatus extends Component {
                 const build = builds[listItem];
                 if (!build || !build.url) return null;
 
+                //Set build platform value
+                let platform = "n/a";
+                if (build.buildName.startsWith("Test")) {
+                    let openj9Platform = build.buildName.split('-').slice(-2).join("-");
+                    platform = openj9Platform;
+                } else if (build.buildName.includes("openjdk")) {
+                    let adoptPlatform = build.buildName.split('_').slice(-2).reverse().join("_");
+                    platform = adoptPlatform;
+                } 
+
                 //Set build.result value
                 let info = build.result;
                 info = (info ? info : "Cannot connect").toLowerCase();
@@ -175,6 +185,7 @@ export default class BuildStatus extends Component {
 
                 data.push({
                     key: build.buildName + build.buildNum,
+                    platform,
                     jdk,
                     javaImpl,
                     ...build,
@@ -242,6 +253,11 @@ export default class BuildStatus extends Component {
             dataIndex: 'javaImpl',
             defaultSortOrder: 'descend',
             sorter: (a, b) => a.javaImpl.localeCompare(b.javaImpl)
+        }, {
+            title: 'Platform',
+            dataIndex: 'platform',
+            defaultSortOrder: 'descend',
+            sorter: (a, b) => a.platform.localeCompare(b.platform)
         }, {
             title: 'Result',
             dataIndex: 'result',
