@@ -96,7 +96,17 @@ export default class TopLevelBuilds extends Component {
             };
 
             const renderJenkinsLinks = ({ buildName, buildNum, buildUrl, url }) => {
-                const blueOcean = `${url}/blue/organizations/jenkins/${buildName}/detail/${buildName}/${buildNum}`;
+                // Temporarily support BlueOcean link under folders
+                let blueOcean;
+                if (`${url}`.includes("/jobs") || `${url}`.includes("/build-scripts")) {
+                    let urls = url.split("/job/");
+                    let basicUrl = urls.shift();
+                    urls.push(buildName);
+                    let newUrl = urls.join("%2F");
+                    blueOcean = `${basicUrl}/blue/organizations/jenkins/${newUrl}/detail/${buildName}/${buildNum}`;
+                } else {
+                    blueOcean = `${url}/blue/organizations/jenkins/${buildName}/detail/${buildName}/${buildNum}`;
+                }
                 return <div><a href={buildUrl} target="_blank">{buildName} #{buildNum}</a><br /><a href={blueOcean} target="_blank">Blue Ocean</a></div>;
             };
 
