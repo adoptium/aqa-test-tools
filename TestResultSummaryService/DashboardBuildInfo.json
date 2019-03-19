@@ -2,15 +2,13 @@
     "CustomJenkins": {
         "url": "https://customJenkinsServer",
         "builds": [
-            "Daily-ODM",
-            "Daily-SPECjbb2015",
-            "Daily-Liberty-DayTrader3",
-            "daily_openjdk8_j9_jcktest_x86-64_linux",
-            "daily_openjdk11_j9_jcktest_x86-64_linux"
+            "Test-sanity.functional-JDK8-linux_x86-64_cmprssptrs",
+            "Test-sanity.functional-JDK11-linux_x86-64_cmprssptrs",
+            "Test-sanity.functional-JDK11-win_x86-64_cmprssptrs"
         ],
         "default": [
-            "daily_openjdk8_j9_jcktest_x86-64_linux",
-            "daily_openjdk11_j9_jcktest_x86-64_linux"
+            "Test-sanity.functional-JDK8-linux_x86-64_cmprssptrs",
+            "Test-sanity.functional-JDK11-linux_x86-64_cmprssptrs"
         ]
     },
     "OpenJ9": {
