@@ -1,0 +1,437 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      https://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+-->
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+
+<xs:element name="machinelist" type="MachineListType"/>
+
+<!-- The root element of a machine list document. -->
+<xs:complexType name="MachineListType">
+	<xs:sequence>
+		<xs:element name="defaults" type="DefaultsType" minOccurs="0"/>
+		<xs:element name="template" type="TemplateType"/>
+		<xs:element name="machines" type="MachinesType"/>
+		<xs:element name="hosts" type="HostsType"/>
+	</xs:sequence>
+</xs:complexType>
+
+<!-- The list of machine entries -->
+<xs:complexType name="MachinesType">
+	<xs:sequence>
+		<xs:element name="machine" type="MachineType" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+</xs:complexType>
+
+<!-- The list of host entries -->
+<xs:complexType name="HostsType">
+	<xs:sequence>
+		<xs:element name="host" type="HostType" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+</xs:complexType>
+
+<!-- A container for the machine and host templates -->
+<xs:complexType name="TemplateType">
+	<xs:sequence>
+		<xs:element name="machine" type="MachineType"/>
+		<xs:element name="host" type="HostType"/>
+	</xs:sequence>
+</xs:complexType>
+
+<!-- Defaults countainer - allows known values for various parameters be
+     specified so they can be offered as options by editing tools. Typically
+     these parameters are ones that have functional meaning (for example, in
+     establishing the exact build type that is applicable to a machine). -->
+<xs:complexType name="DefaultsType">
+	<xs:all>
+		<xs:element name="ostypes">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="os" type="TypedString" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="cputypes">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="cputype" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="threadingtypes">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="threading" type="xs:string" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="bitcounts">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="bits" type="xs:integer" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="netspeeds">
+			<xs:complexType>
+				<xs:all>
+					<xs:element name="interface">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="speed" type="WithUnits" minOccurs="0" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:all>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="addresstypes">
+			<xs:complexType>
+				<xs:sequence>
+					<xs:element name="address" type="TypedString" minOccurs="0" maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="cpuspeeds">
+			<xs:complexType>
+				<xs:all>
+					<xs:element name="cpus">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="speed" type="WithUnits" minOccurs="0" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:all>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="memoryspeeds">
+			<xs:complexType>
+				<xs:all>
+					<xs:element name="memory">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="speed" type="WithUnits" minOccurs="0" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:all>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="memorysizes">
+			<xs:complexType>
+				<xs:all>
+					<xs:element name="memory">
+						<xs:complexType>
+							<xs:sequence>
+								<xs:element name="capacity" type="WithUnits" minOccurs="0" maxOccurs="unbounded"/>
+							</xs:sequence>
+						</xs:complexType>
+					</xs:element>
+				</xs:all>
+			</xs:complexType>
+		</xs:element>
+	</xs:all>
+</xs:complexType>
+
+<!-- A machine definition -->
+<xs:complexType name="MachineType">
+	<xs:all>
+		<xs:element name="name" type="xs:string"/>
+		<xs:element name="serial" type="xs:string"/>
+		<xs:element name="manufacturer" type="xs:string"/>
+		<xs:element name="model" type="xs:string"/>
+		<xs:element name="description" type="xs:string"/>
+		<xs:element name="location" type="LocationType"/>
+		<xs:element name="owners" type="OwnersType"/>
+		<xs:element name="architecture" type="ArchitectureType"/>
+		<xs:element name="hardware" type="HardwareType"/>
+	</xs:all>
+	<xs:attribute name="id" type="xs:integer"/>
+</xs:complexType>
+
+<!-- A host definition -->
+<xs:complexType name="HostType">
+	<xs:all>
+		<xs:element name="name" type="xs:string"/>
+		<xs:element name="domain" type="xs:string"/>
+		<xs:element name="machine" type="HostMachineType"/>
+		<xs:element name="os" type="TypedString"/>
+		<xs:element name="description" type="xs:string"/>
+		<xs:element name="addresses" type="AddressesType"/>
+		<xs:element name="axxon" type="AxxonType"/>
+		<xs:element name="jobgenerator" type="JobGeneratorType"/>
+		<xs:element name="STAF" type="STAFConfigType"/>
+	</xs:all>
+	<xs:attribute name="id" type="xs:integer"/>
+</xs:complexType>
+
+<!-- A reference within a host definition to a machine's id number -->
+<xs:complexType name="HostMachineType">
+	<xs:sequence/>
+	<xs:attribute name="id" type="xs:integer"/>
+</xs:complexType>
+
+<!-- A machine's architecture definition -->
+<xs:complexType name="ArchitectureType">
+	<xs:sequence>
+		<xs:element name="cpuvendor" type="xs:string"/>
+		<xs:element name="cpuname" type="xs:string"/>
+		<xs:element name="cputype" type="xs:string"/>
+		<xs:element name="bits" type="xs:integer"/>
+		<xs:element name="compatible" type="CompatibleArchitectureType" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+</xs:complexType>
+
+<!-- A compatible architecture definition -->
+<xs:complexType name="CompatibleArchitectureType">
+	<xs:all>
+		<xs:element name="cputype" type="xs:string"/>
+		<xs:element name="bits" type="xs:integer"/>
+	</xs:all>
+	<xs:attribute name="id" type="xs:integer"/>
+</xs:complexType>
+
+<!-- A machine's hardware definition -->
+<xs:complexType name="HardwareType">
+	<xs:all>
+		<xs:element name="cpus" type="CPUsType"/>
+		<xs:element name="fsbspeed" type="IntWithUnits"/>
+		<xs:element name="caches" type="CachesType"/>
+		<xs:element name="memory" type="MemoryType"/>
+		<xs:element name="network" type="NetworkType"/>
+	</xs:all>
+</xs:complexType>
+
+<xs:complexType name="CPUsType">
+	<xs:all>
+		<xs:element name="physical" type="xs:integer"/>
+		<xs:element name="logical" type="xs:integer"/>
+		<xs:element name="threading" type="xs:string"/>
+		<xs:element name="speed" type="FloatWithUnits"/>
+	</xs:all>
+</xs:complexType>
+
+<xs:complexType name="CachesType">
+	<xs:sequence>
+		<xs:element name="cache" minOccurs="0" maxOccurs="unbounded">
+			<xs:complexType>
+				<xs:simpleContent>
+					<xs:extension base="xs:integer">
+						<xs:attribute name="id" type="xs:integer"/>
+						<xs:attribute name="type" type="xs:string"/>
+						<xs:attribute name="units" type="xs:string"/>
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+		</xs:element>
+		<xs:element name="notes" type="xs:string"/>
+	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="OwnersType">
+	<xs:sequence>
+		<xs:element name="owner" type="TypedIdString" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="MemoryType">
+	<xs:all>
+		<xs:element name="speed" type="FloatWithUnits"/>
+		<xs:element name="capacity" type="IntWithUnits"/>
+	</xs:all>
+	<xs:attribute name="type" type="xs:string"/>
+</xs:complexType>
+
+<xs:complexType name="NetworkType">
+	<xs:sequence>
+		<xs:element name="interface" type="InterfaceType" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="InterfaceType">
+	<xs:all>
+		<xs:element name="port" type="xs:string"/>
+		<xs:element name="speed" type="IntWithUnits"/>
+	</xs:all>
+	<xs:attribute name="id" type="xs:integer"/>
+	<xs:attribute name="type" type="xs:string"/>
+</xs:complexType>
+
+<!-- A host's addresses definition. Each address has an 'interface' attribute
+     which refers to the 'id' attribute of a physical network interface on
+     the associated machine. -->
+<xs:complexType name="AddressesType">
+	<xs:sequence>
+		<xs:element name="address" minOccurs="0" maxOccurs="unbounded">
+			<xs:complexType>
+				<xs:simpleContent>
+					<xs:extension base="xs:string">
+						<xs:attribute name="id" type="xs:integer"/>
+						<xs:attribute name="hostname" type="xs:string"/>
+						<xs:attribute name="type" type="xs:string"/>
+						<xs:attribute name="interface" type="xs:integer"/>
+					</xs:extension>
+				</xs:simpleContent>
+			</xs:complexType>
+		</xs:element>
+	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="LocationType">
+	<xs:all>
+		<xs:element name="room" type="xs:string"/>
+		<xs:element name="site" type="xs:string"/>
+		<xs:element name="country" type="xs:string"/>
+	</xs:all>
+</xs:complexType>
+
+<!-- An element with a name attribute, containing string data -->
+<xs:complexType name="NamedString">
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<!-- An element with an id attribute, containing string data -->
+<xs:complexType name="IdString">
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+			<xs:attribute name="id" type="xs:integer"/>
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<!-- An element with id and name attributes, containing string data -->
+<xs:complexType name="NamedIdString">
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+			<xs:attribute name="id" type="xs:integer"/>
+			<xs:attribute name="name" type="xs:string"/>
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<!-- An element with a type attribute, containing string data -->
+<xs:complexType name="TypedString">
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+			<xs:attribute name="type" type="xs:string"/>
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<!-- An element with id and type attributes, containing string data -->
+<xs:complexType name="TypedIdString">
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+			<xs:attribute name="id" type="xs:integer"/>
+			<xs:attribute name="type" type="xs:string"/>
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<!-- An element with a units attribute, containing integer data -->
+<xs:complexType name="IntWithUnits">
+	<xs:simpleContent>
+		<xs:extension base="xs:integer">
+			<xs:attribute name="units" type="xs:string"/>
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<!-- An element with a units attribute, containing floating point data -->
+<xs:complexType name="FloatWithUnits">
+	<xs:simpleContent>
+		<xs:extension base="xs:float">
+			<xs:attribute name="units" type="xs:string"/>
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<!-- An element with a units attribute -->
+<xs:complexType name="WithUnits">
+	<xs:simpleContent>
+		<xs:extension base="xs:string">
+			<xs:attribute name="units" type="xs:string"/>
+		</xs:extension>
+	</xs:simpleContent>
+</xs:complexType>
+
+<xs:complexType name="AxxonType">
+	<xs:sequence>
+		<xs:element name="capabilities" type="AxxonCapabilitiesType"/>
+		<xs:element name="param" type="NamedIdString" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+	<xs:attribute name="enabled" type="xs:boolean"/>
+</xs:complexType>
+
+<xs:complexType name="AxxonCapabilitiesType">
+	<xs:sequence>
+		<xs:element name="capability" type="IdString" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="STAFConfigType">
+	<xs:all>
+		<xs:element name="entries" type="STAFEntryType"/>
+		<xs:element name="vars" type="STAFVarType"/>
+	</xs:all>
+	<xs:attribute name="trust" type="xs:boolean"/>
+</xs:complexType>
+
+<xs:complexType name="STAFVarType">
+	<xs:sequence>
+		<xs:element name="var" type="NamedIdString" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="STAFEntryType">
+	<xs:sequence>
+		<xs:element name="entry" type="IdString" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="JobGeneratorType">
+	<xs:all>
+		<xs:element name="staxcontroller" type="xs:string"/>
+		<xs:element name="capabilities" type="JGCapabilitiesType"/>
+		<xs:element name="restrictions" type="JGRestrictionsType"/>
+	</xs:all>
+	<xs:attribute name="enabled" type="xs:boolean"/>
+</xs:complexType>
+
+<xs:complexType name="JGCapabilitiesType">
+	<xs:sequence>
+		<xs:element name="capability" type="JGCapabilityType" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="JGRestrictionsType">
+	<xs:sequence>
+		<xs:element name="restriction" type="NamedIdString" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+</xs:complexType>
+
+<xs:complexType name="JGCapabilityType">
+	<xs:sequence>
+		<xs:element name="property" type="NamedIdString" minOccurs="0" maxOccurs="unbounded"/>
+	</xs:sequence>
+	<xs:attribute name="id" type="xs:integer"/>
+	<xs:attribute name="name" type="xs:string"/>
+	<xs:attribute name="bits" type="xs:string"/>
+</xs:complexType>
+
+</xs:schema>
