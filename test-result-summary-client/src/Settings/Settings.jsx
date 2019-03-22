@@ -209,7 +209,7 @@ export default class Settings extends Component {
                         this.state.data.length > 0 ?
                             (
                                 <Popconfirm title="Sure to delete?" onConfirm={() => this.onDelete( record.key )}>
-                                    <a href="#">Delete</a>
+                                    <Button>Delete</Button>
                                 </Popconfirm>
                             ) : null
                     );

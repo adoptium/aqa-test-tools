@@ -35,7 +35,7 @@ export default class TestTable extends Component {
             } else {
                 blueOcean = `${url}/blue/organizations/jenkins/${buildName}/detail/${buildName}/${buildNum}`;
             }
-            return <div><a href={buildUrl} target="_blank">{buildName} #{buildNum}</a><br /><a href={blueOcean} target="_blank">Blue Ocean</a></div>;
+            return <div><a href={buildUrl} target="_blank" rel="noopener noreferrer">{buildName} #{buildNum}</a><br /><a href={blueOcean} target="_blank" rel="noopener noreferrer">Blue Ocean</a></div>;
         };
 
         const renderBuildName = ( value, row, index ) => {

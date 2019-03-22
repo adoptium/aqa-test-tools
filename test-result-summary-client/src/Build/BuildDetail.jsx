@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { Table } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { SearchOutput } from '../Search/';
-import { Link } from 'react-router-dom';
-import { getParams, params } from '../utils/query';
+import { getParams } from '../utils/query';
 import BuildTable from "./BuildTable";
 
 export default class BuildDetail extends Component {
@@ -81,27 +80,23 @@ export default class BuildDetail extends Component {
             title: 'Build Info',
             dataIndex: 'buildInfo',
             key: 'buildInfo',
-            render: text => <a href="#">{text}</a>,
         }, {
             title: 'SHA',
             dataIndex: 'sha',
             key: 'sha',
-            render: text => <a href="#">{text}</a>,
         }];
         const parentBuildsDataSource = [];
         let buildName = '';
-        let bcLink = null;
-        if ( parent && parent[0] ) {
+        if (parent && parent[0]) {
             let i = 0;
-            for ( let key in parent[0].buildData ) {
-                parentBuildsDataSource.push( {
+            for (let key in parent[0].buildData) {
+                parentBuildsDataSource.push({
                     key: i++,
                     buildInfo: key,
                     sha: parent[0].buildData[key]
-                } );
+                });
             }
             buildName = parent[0].buildName;
-            bcLink = ( <Link to={{ pathname: '/buildDetail', search: params( { parentId: parentId } ) }}>{parent[0].buildName}_#{parent[0].buildNum}</Link> );
         }
 
         return <div>
