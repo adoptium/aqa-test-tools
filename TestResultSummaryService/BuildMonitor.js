@@ -72,15 +72,20 @@ class BuildMonitor {
 
         let url = null;
         let buildName = null;
-        let tokens = null;
+
+        //split based on / and buildName should be the last element
+        let tokens = buildUrl.split("/");
+        if (tokens && tokens.length > 1) {
+            buildName = tokens.pop();
+        }
+
         if (buildUrl.includes("/view/")) {
             tokens = buildUrl.split(/\/view\//);
+            // set url to domain only
+            if (tokens && tokens.length > 1) {
+                url = tokens[0];
+            }
         } else if (buildUrl.includes("/job/")) {
-            tokens = buildUrl.split(/\/job\//);
-        }
-        if (tokens && tokens.length > 1) {
-            const strs = tokens[tokens.length - 1].split("/");
-            buildName = strs[strs.length - 1];
             url = buildUrl.replace("/job/" + buildName, "");
         }
         return { buildName, url };
