@@ -62,14 +62,8 @@ class DataManager {
 
     async updateBuildWithOutput( data ) {
         logger.verbose( "updateBuildWithOutput", data.buildName, data.buildNum );
-        let { _id, buildName, output, ...newData } = data;
+        const { _id, buildName, output, ...newData } = data;
         const criteria = { _id: new ObjectID( _id ) };
-        // Temporarily limit the output size to be 40M
-        // until updated test parser logic
-        const size = 40 * 1024 * 1024;
-        if (output && output.length > size) {
-            output = output.substr(-size);
-        }
         const { builds, tests, build, ...value } = await this.parseOutput( buildName, output );
         const testResults = new TestResultsDB();
         const outputDB = new OutputDB();
@@ -141,7 +135,6 @@ class DataManager {
         const result = await testResults.getData( { url, buildName, buildNum } ).toArray();
         if ( result && result.length === 0 ) {
             const status = await testResults.populateDB( data );
-
             if ( status && status.insertedCount === 1 ) {
                 logger.debug( "createBuild", data.buildName, data.buildNum );
                 return status.insertedIds[0];
