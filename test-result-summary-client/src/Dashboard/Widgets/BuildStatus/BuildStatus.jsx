@@ -217,7 +217,7 @@ export default class BuildStatus extends Component {
             title: 'Build Name',
             dataIndex: 'buildName',
             render: (value, record) => {
-                return <a key={value} href={record.url} target="_blank">{value}</a>
+                return <a key={value} href={record.url} target="_blank" rel="noopener noreferrer">{value}</a>
             },
             filterDropdown: (
                 <div className="custom-filter-dropdown">

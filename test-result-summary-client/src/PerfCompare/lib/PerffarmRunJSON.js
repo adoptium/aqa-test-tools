@@ -16,7 +16,7 @@ export default class PerffarmRunJSON {
         // Find the indexes of the variant seperators
         for (let j = 0; j < this.parsedCSV.length; j++) {
             // Each variant is seperated by a 1 element array
-            if (this.parsedCSV[j].length == 1) {
+            if (this.parsedCSV[j].length === 1) {
                 variantIndex.push(j);
 
                 // The excel file is seperated into two portions, the upper showing the detailed
@@ -24,7 +24,7 @@ export default class PerffarmRunJSON {
                 // The seperation point is either:
                 //      two back to back arrays with length 1 OR
                 //      an array of length 1 followed by an array of length 2
-                if ((this.parsedCSV[j+1].length == 1) || (this.parsedCSV[j+1].length == 2)) {
+                if ((this.parsedCSV[j+1].length === 1) || (this.parsedCSV[j+1].length === 2)) {
                     break;
                 }
             }
