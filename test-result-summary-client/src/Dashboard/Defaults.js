@@ -15,15 +15,6 @@ export default {
                 x: 0,
                 y: 1,
                 settings: {
-                    serverSelected: 'OpenJ9',
-                    title: "https://ci.eclipse.org/openj9",
-                }
-            },
-            {
-                type: 'BuildStatus',
-                x: 0,
-                y: 2,
-                settings: {
                     serverSelected: 'CustomJenkins',
                 }
             }
