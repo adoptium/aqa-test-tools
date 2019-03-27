@@ -41,7 +41,7 @@ class BenchmarkParser extends Parser {
         const benchmarkIterator = BenchmarkParser.getBenchmarkIterator(output);
         let curItr = benchmarkIterator.next();
         let testIndex = 1;
-        let buildResults;
+        let buildResult;
         const tests = [];
 
         while (curItr.done !== true) {
@@ -158,17 +158,17 @@ class BenchmarkParser extends Parser {
 
         if ((tests.map(x=>x.testResult).indexOf("PASSED") > -1)) {
             if ((tests.map(x=>x.testResult).indexOf("FAILED") > -1)) {
-                buildResults = "PARTIAL-SUCCESS";
+                buildResult = "PARTIAL-SUCCESS";
             } else {
-                buildResults = "SUCCESS";
+                buildResult = "SUCCESS";
             }
         } else {
-            buildResults = "FAILURE";
+            buildResult = "FAILURE";
         }
 
         return {
             tests,
-            buildResults,
+            buildResult,
             machine: this.extractMachineInfo( output ),
             type: "Perf",
             startBy: this.extractStartedBy( output ),
