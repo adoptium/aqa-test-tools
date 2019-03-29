@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table } from 'antd';
+import { Icon, Table, Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
 
@@ -61,9 +61,20 @@ export default class TopLevelBuilds extends Component {
         if (builds && type) {
             const renderFvTestBuild = (value, row, index) => {
                 if (value && value.buildNum) {
+                    let icon = "";
+                    if (value.buildResult === "SUCCESS") {
+                        icon = <Icon type="check" style={{ fontSize: 16, color: '#43ed2d' }} />;
+                    } else if (value.buildResult == null) {
+                        icon = <Icon type="loading" style={{ fontSize: 16, color: '#43ed2d' }} />;
+                        value.buildResult = "PROGRESSING"
+                    } else if (value.buildResult === "FAILURE") {
+                        icon = <Icon type="close" style={{ fontSize: 16, color: '#f50' }} />;
+                    } else {
+                        icon = <Icon type="info" style={{ fontSize: 16, color: '#f50' }} />;
+                    }
                     return <div>
                         <Link to={{ pathname: '/buildDetail', search: params({ parentId: value._id }) }}
-                            style={{ color: value.buildResult === "SUCCESS" ? "#2cbe4e" : (value.buildResult === "FAILURE" ? "#f50" : "#DAA520") }}> Build #{value.buildNum}
+                            style={{ color: value.buildResult === "SUCCESS" ? "#2cbe4e" : (value.buildResult === "FAILURE" ? "#f50" : "#DAA520") }}>Build #{value.buildNum}  <Tooltip title={value.buildResult}>{icon}</Tooltip>
                         </Link>
                     </div>
                 }
@@ -194,6 +205,7 @@ export default class TopLevelBuilds extends Component {
                                 columns={columns}
                                 dataSource={buildInfo}
                                 title={() => <div><b>{buildInfo[0].build.buildName}</b> in server {buildInfo[0].build.url}</div>}
+                                pagination={{ pageSize: 5 }}
                             />
                         })
                     })}
