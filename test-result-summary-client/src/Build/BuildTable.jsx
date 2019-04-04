@@ -49,7 +49,11 @@ export default class TestTable extends Component {
                         style={{ color: resultColor }}> {value.buildName} </Link>;
                 }
             }
-            return <Link to={{ pathname: '/allTestsInfo', search: params( { buildId: value._id } ) }}
+            let limit = 5;
+            if ( value.type === "Perf") {
+                limit = 1;
+            }
+            return <Link to={{ pathname: '/allTestsInfo', search: params( { buildId: value._id, limit: limit } ) }}
                 style={{ color: resultColor }}> {value.buildName} </Link>;
         };
 

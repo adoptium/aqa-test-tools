@@ -96,9 +96,8 @@ export default class TopLevelBuilds extends Component {
                         }
                     } else {
                         return <div>
-                            <Link to={{ pathname: '/output/all', search: params({ id: value._id }) }}
-                                style={{ color: result === "SUCCESS" ? "#2cbe4e" : (result === "FAILURE" ? "#f50" : "#DAA520") }}>
-                                Build #{value.buildNum}
+                            <Link to={{ pathname: '/buildDetail', search: params( { parentId: value._id } ) }}
+                                style={{ color: result === "SUCCESS" ? "#2cbe4e" : ( result === "FAILURE" ? "#f50" : "#DAA520" ) }}> Build #{value.buildNum}
                             </Link>
                         </div>;
                     }
