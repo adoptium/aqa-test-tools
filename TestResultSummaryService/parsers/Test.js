@@ -1,32 +1,68 @@
 const Parser = require( './Parser' );
-const regex = /.*?===============================================\r?\n.*?Running test (.*?) \.\.\.\r?\n.*?===============================================\r?\n.*?([\S\s]*?\1 Start Time\: .* Epoch Time \(ms\)\: (.*)[\s\S]*?\1_(.*?)\r?\n[\S\s]*?\1 Finish Time\: .* Epoch Time \(ms\)\: (.*))\r?\n/g;
+const regexRunningTest = /.*?Running test (.*?) \.\.\.\r?/;
+const regexFinishTime = /.*?Finish Time\: .* Epoch Time \(ms\)\: (.*).*/;
+const regexStartTime = /.*?Start Time\: .* Epoch Time \(ms\)\: (.*).*/;
+const results = [];
 
 class TestExtractor {
-    extract( str ) {
-        const results = [];
-        let m;
-        regex.lastIndex = 0;
-        while ( ( m = regex.exec( str ) ) !== null ) {
-            // testResult can be PASSED/FAILED/SKIPPED
-            const testResult = m[4] === "PASSED" || m[4] === "SKIPPED";
-            results.push( {
-                testName: m[1],
-                testOutput: m[2],
-                testResult: m[4],
-                testData: null,
-                duration: (parseInt(m[5]) - parseInt(m[3])),
-                startTime: parseInt(m[3])
-            } );
-        }
-        //if failed before test execution, store the output
-        if ( results.length === 0 ) {
-            results.push( {
-                testName: "makefile generation and test compilation",
-                testOutput: str,
-                testResult: "FAILED",
-                testData: null
-            } );
-        }
+    extract ( str ) {
+        let m, testStr, testName, testResult, startTime, finishTime, testResultRegex;
+        const readline = require('readline');
+        const stream = require('stream');
+        let buf = new Buffer(str);
+        let bufferStream = new stream.PassThrough();
+        bufferStream.end(buf);
+        let rl = readline.createInterface({
+            input: bufferStream,
+        });
+        rl.on('line', function (line) {
+            if ((m = line.match(regexRunningTest)) !== null) {
+                testStr = "";
+                testName = m[1];
+                testResultRegex = new RegExp(testName + "_(.*)\r?");
+            }
+            if ((m = line.match(regexStartTime)) !== null) {
+                startTime = m[1];
+            }
+            if (testResultRegex && ((m = testResultRegex.exec(line)) !== null)) {
+                testResult = m[1];
+            }
+            if (testName) {
+                testStr += line + "\n";
+                if ((m = line.match(regexFinishTime)) !== null) {
+                    finishTime = m[1];
+                    results.push( {
+                        testName,
+                        testOutput: testStr,
+                        testResult,
+                        testData: null,
+                        duration: finishTime - startTime,
+                        startTime
+                    } );
+                    testName = null;
+                    testStr = null;
+                }
+            }
+        }).on('close', function() {
+            if (testStr) {
+                // test has been executed but not completed
+                results.push( {
+                    testName,
+                    testOutput: testStr,
+                    testResult: "FAILED",
+                    testData: null,
+                    startTime
+                } );
+            } else if (!results || results.length === 0) {
+                // No test has been executed after reading all test output. 
+                results.push( {
+                    testName: "makefile generation and test compilation",
+                    testOutput: str,
+                    testResult: "FAILED",
+                    testData: null
+                } );
+            }
+        })
         return {
             tests: results,
             type: "Test"
