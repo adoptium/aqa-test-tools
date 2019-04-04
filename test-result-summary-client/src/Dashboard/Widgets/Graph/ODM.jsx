@@ -4,25 +4,17 @@ import {
     LineSeries, Navigator, RangeSelector, Tooltip
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
-import { Radio, Checkbox } from 'antd';
+import { Radio } from 'antd';
 import math from 'mathjs';
 import utils from './utils';
 
 const map = {
-    "Daily-ODM": "Daily-ODM-pxa64 | 881-4way-Seg5FastpathRVEJB",
-    "Daily-ODM-Linux-PPCLE64": "Daily-ODM-pxl64 | 881-4way-Seg5FastpathRVEJB",
-    "Daily-ODM-openJ9": "Daily-ODM-openJ9-pxa64 | 881-4way-Seg5FastpathRVEJB",
-    "Daily-ODM-zLinux": "Daily-ODM-pxz64 | 881-4way-Seg5FastpathRVEJB",
-    "Daily-ODM-zOS": "Daily-ODM-pmz64 | 881-4way-Seg5FastpathRVEJB"
+    "Daily-ODM-all": "Daily-ODM Daily-ODM-Linux-PPCLE64 Daily-ODM-openJ9 Daily-ODM-zLinux Daily-ODM-zOS"
 };
 
 let display = {
-    "Daily-ODM": true,
-    "Daily-ODM-Linux-PPCLE64": true,
-    "Daily-ODM-openJ9": true,
-    "Daily-ODM-zLinux": true,
-    "Daily-ODM-zOS": true
-};
+    "Daily-ODM-all": true
+}
 
 let baselineValue = 7000;
 
@@ -41,17 +33,17 @@ export class ODMSetting extends Component {
         const { buildSelected } = this.props;
 
         return <div style={{ maxWidth: 400 }}>
-            <Checkbox.Group onChange={this.onChange} values={map.keys} defaultValue={["Daily-ODM"]}>
+            <Radio.Group onChange={this.onChange} values={map.keys} defaultValue={"Daily-ODM-all"}>
                 {Object.keys( map ).map( key => {
-                    return <Checkbox key={key} value={key} checked={false}>{map[key]}</Checkbox>;
+                    return <Radio key={key} value={key} checked={false}>{key}</Radio>;
                 } )}
-            </Checkbox.Group>
+            </Radio.Group>
         </div>
     }
 }
 
 export default class ODM extends Component {
-    static Title = props => map[props.buildSelected] || '';
+    static Title = props => props.buildSelected || '';
     static defaultSize = { w: 2, h: 4 }
     static Setting = ODMSetting;
     static defaultSettings = {
@@ -74,18 +66,9 @@ export default class ODM extends Component {
 
     async updateData() {
         // when API ready => buildSelected will be list of builds
-        let buildsName = '';
-        for(let i in display) {
-            if (display[i]) {
-                buildsName += "buildName=" + i;
-                if(i !== display.length - 1) {
-                    buildsName += "&";
-                }
-            }
-        }
-        buildsName = buildsName.substring(0, buildsName.length - 1);
         const { buildSelected } = this.props;
         const buildName = encodeURIComponent( buildSelected );
+        const buildsName = "buildName=" + map[buildName].split(" ").join("&buildName=");
         const response = await fetch( `/api/getBuildHistory?type=Perf&${buildsName}&status=Done&limit=100&asc`, {
             method: 'get'
         } );

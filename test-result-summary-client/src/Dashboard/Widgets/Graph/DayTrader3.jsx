@@ -65,21 +65,6 @@ export default class DayTrader3 extends Component {
     }
 
     async updateData() {
-        // TODO: Apply new API call when merging code to all build types
-        /*let buildsName = '';
-        for(let i in display) {
-            if (display[i]) {
-                buildsName += "buildName=" + i;
-                if(i !== display.length - 1) {
-                    buildsName += "&";
-                }
-            }
-        }
-        buildsName = buildsName.substring(0, buildsName.length - 1);
-        const response = await fetch( `/api/getBuildHistory?type=Perf&${buildsName}&status=Done&limit=100&asc`, {
-            method: 'get'
-        } );
-        */
         const { buildSelected } = this.props;
         const buildName = encodeURIComponent( buildSelected );
         const response = await fetch( `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
@@ -146,7 +131,7 @@ export default class DayTrader3 extends Component {
 
     formatter = function() {
         const x = new Date( this.x );
-	const CIstr = (typeof this.point.CI === 'undefined') ? ``: `CI = ${this.point.CI}`;
+        const CIstr = (typeof this.point.CI === 'undefined') ? ``: `CI = ${this.point.CI}`;
         if ( this.point.additionalData ) {
             let buildLinks = '';
             let i = this.series.data.indexOf(this.point);
