@@ -1,4 +1,4 @@
-class BenchmarkMath {
+class BenchmarkMathCalculation {
 
     // Taken from Perffarm/perfsite/benchmarks.php
     /*
@@ -141,4 +141,4 @@ class BenchmarkMath {
         return v;
     }
 }
-export default BenchmarkMath;
+module.exports = BenchmarkMathCalculation;
