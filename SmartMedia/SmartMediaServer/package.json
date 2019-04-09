@@ -1,0 +1,12 @@
+{
+  "name": "smart-media-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "Apache License Version 2.0",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "express": "^4.16.4"
+  }
+}
