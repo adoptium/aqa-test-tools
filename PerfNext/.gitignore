@@ -4,3 +4,4 @@ node_modules
 credentials.json
 .README.md.html
 .DS_Store
+APP_DATA.json
