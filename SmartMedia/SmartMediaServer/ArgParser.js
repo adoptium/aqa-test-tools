@@ -1,4 +1,5 @@
 const fs = require('fs');
+const Twitter = require('twitter');
 let _config;
 
 parse = () => {
@@ -19,4 +20,20 @@ getConfig = () => {
     return _config;
 }
 
-module.exports = { parse, getConfig };
+getGitConfig = () => {
+    if ((_config.git) && (_config.git.token)) {
+        return _config.git.token;
+    } else {
+        process.exit(console.error( "Cannot get cline git token, need to modify mediaConf.json"));
+    }
+}
+
+getTwitterConfig = () => {
+    if ((_config.twitter) && (_config.twitter.consumer_key) && (_config.twitter.consumer_secret) && (_config.twitter.access_token_key) && (_config.twitter.access_token_secret)) {
+            return new Twitter (_config.twitter);
+    } else {
+        process.exit(console.error("Cannot get client twitter token, need to modify mediaConf.json"));
+    }
+}
+
+module.exports = { parse, getConfig, getGitConfig, getTwitterConfig };
