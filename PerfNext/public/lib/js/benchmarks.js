@@ -49,7 +49,7 @@ $(function() {
 
         populateSelections(data); //Populate the selection UI with retrieved data
         
-        $.get("/api/getBenchmarks?isSimple=true", function(data, status) {
+        $.get("/api/getBenchmarks", function(data, status) {
             allBenchmarkInfo = data;
             console.log('benchmarks.js: allBenchmarkInfo: '+allBenchmarkInfo);
             $("#selected-benchmarks").on('mouseover', '.selected-benchmarks-entry', showMetricArguments); //When the user hovers over selected benchmark (Build Options tab)

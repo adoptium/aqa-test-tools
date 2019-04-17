@@ -16,7 +16,7 @@ $(function() {
 
     $.get("/api/getBuckets?isSimple=true", function(data, status) { //get benchmark suite data on page load
         populateSelections(data); //Populate the selection UI with retrieved data
-        $.get("/api/getBenchmarks?isSimple=true", function(data, status) {
+        $.get("/api/getBenchmarks", function(data, status) {
             allBenchmarkInfo = data;
         });
     });
