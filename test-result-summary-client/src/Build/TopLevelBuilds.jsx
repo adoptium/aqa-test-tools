@@ -62,11 +62,11 @@ export default class TopLevelBuilds extends Component {
             const renderFvTestBuild = (value, row, index) => {
                 if (value && value.buildNum) {
                     let icon = "";
-                    if (value.buildResult === "SUCCESS") {
-                        icon = <Icon type="check" style={{ fontSize: 16, color: '#43ed2d' }} />;
-                    } else if (value.buildResult == null) {
-                        icon = <Icon type="loading" style={{ fontSize: 16, color: '#43ed2d' }} />;
+                    if (value.status != "Done") {
+                        icon = <Icon type="loading" style={{ fontSize: 16, color: '#DAA520' }} />;
                         value.buildResult = "PROGRESSING"
+                    } else if (value.buildResult === "SUCCESS") {
+                        icon = <Icon type="check" style={{ fontSize: 16, color: '#2cbe4e' }} />;
                     } else if (value.buildResult === "FAILURE") {
                         icon = <Icon type="close" style={{ fontSize: 16, color: '#f50' }} />;
                     } else {
