@@ -6,6 +6,10 @@ const { logger } = require( './Utils' );
 
 const elapsed = [2 * 60, 5 * 60, 30 * 60];
 
+/*
+* EventHandler processes builds that have status != Done
+* Once all builds are in status Done, it delays the process based on the time in elapsed array
+*/
 class EventHandler {
 
     async processBuild() {

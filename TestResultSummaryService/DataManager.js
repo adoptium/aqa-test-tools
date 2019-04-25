@@ -53,11 +53,8 @@ class DataManager {
         logger.verbose( "updateBuild", data );
         const { _id, buildName, ...newData } = data;
         const criteria = { _id: new ObjectID( _id ) };
-        const update = {
-            ...newData
-        };
         const testResults = new TestResultsDB();
-        const result = await testResults.update( criteria, { $set: update } );
+        const result = await testResults.update( criteria, { $set: newData } );
     }
 
     async updateBuildWithOutput( data ) {
@@ -71,12 +68,10 @@ class DataManager {
             ...newData,
             ...value
         };
-        logger.debug( "update newData", update );
-
         if ( builds && builds.length > 0 ) {
             let commonUrls = data.url.split("/job/")[0];
             commonUrls = commonUrls.split("/view/")[0];
-            builds.map( async b => {
+            await Promise.all(builds.map( async b => {
                 const childBuild = {
                     url: commonUrls + b.url,
                     buildName: b.buildName,
@@ -87,7 +82,7 @@ class DataManager {
                     status: "NotDone"
                 };
                 const id = await this.createBuild( childBuild );
-            } );
+            } ));
 
             const outputData = {
                 id: data.buildOutputId ? data.buildOutputId : null,
@@ -99,7 +94,6 @@ class DataManager {
                 update.buildOutputId = outputId;
             }
             update.hasChildren = true;
-            const result = await testResults.update( criteria, { $set: update } );
         } else if ( tests && tests.length > 0 ) {
             const testsObj = await Promise.all( tests.map( async ( { testOutput, ...test } ) => {
                 let testOutputId = null;
@@ -119,13 +113,12 @@ class DataManager {
             } ) );
             update.tests = testsObj;
             update.hasChildren = false;
-            const result = await testResults.update( criteria, { $set: update } );
         } else if ( build === null ) {
             const buildOutputId = await this.updateOutput( { id: null, output } );
             update.buildOutputId = buildOutputId;
             update.hasChildren = false;
-            const result = await testResults.update( criteria, { $set: update } );
         }
+        const result = await testResults.update( criteria, { $set: update } );
     }
 
     // create build only if the build does not exist in database

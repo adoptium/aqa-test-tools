@@ -4,7 +4,7 @@ const LogStream = require('./LogStream');
 const Parsers = require(`./parsers/`);
 const ParentBuild = require(`./parsers/ParentBuild`);
 const ObjectID = require('mongodb').ObjectID;
-const { OutputDB } = require('./Database');
+const { TestResultsDB, OutputDB } = require('./Database');
 const { logger } = require('./Utils');
 
 class BuildProcessor {
@@ -73,7 +73,7 @@ class BuildProcessor {
                         buildResult: buildInfo.result,
                         buildUrl: buildInfo.url,
                         timestamp: buildInfo.timestamp,
-                        status: "Done",
+                        status: "CurrentBuildDone",
                     });
                 } else if (!task.timestamp || !task.buildUrl) {
                     await new DataManager().updateBuild({
@@ -91,7 +91,7 @@ class BuildProcessor {
                     task.buildUrl = buildInfo.url;
                     task.buildDuration = buildInfo.duration;
                     task.buildResult = buildInfo.result;
-                    task.status = "Done";
+                    task.status = "CurrentBuildDone";
 
                     output = await jenkinsInfo.getBuildOutput(task.url, task.buildName, task.buildNum);
                     task.output = output;
@@ -101,6 +101,16 @@ class BuildProcessor {
                         _id: task._id,
                         buildUrl: buildInfo.url,
                         timestamp: buildInfo.timestamp,
+                    });
+                }
+            } else if (task.status === "CurrentBuildDone") {
+                // If all child nodes are done, set current node status to Done
+                const testResultsDB = new TestResultsDB();
+                const childBuilds = await testResultsDB.getData({ parentId: task._id, status: { $ne: "Done" } }).toArray();
+                if (childBuilds.length === 0) {
+                    await new DataManager().updateBuild({
+                        _id: task._id,
+                        status: "Done"
                     });
                 }
             }
