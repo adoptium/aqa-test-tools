@@ -96,7 +96,8 @@ class BuildMonitor {
         const { buildName, url } = this.getBuildInfo(buildUrl);
         // keep only limited builds in DB and delete old builds
         const testResults = new TestResultsDB();
-        const allBuildsInDB = await testResults.getData({ url, buildName }).sort({ buildUrl: 1 }).toArray();
+        const allBuildsInDB = await testResults.getData({ url, buildName }).sort({ buildNum: 1 }).toArray();
+
         if (allBuildsInDB && allBuildsInDB.length > numBuildsToKeep) {
             const endIndex = Math.max(0, allBuildsInDB.length - numBuildsToKeep);
             await Promise.all(allBuildsInDB.slice(0, endIndex).map(async (build) => {
