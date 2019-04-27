@@ -6,6 +6,7 @@ const ParentBuild = require(`./parsers/ParentBuild`);
 const ObjectID = require('mongodb').ObjectID;
 const { TestResultsDB, OutputDB } = require('./Database');
 const { logger } = require('./Utils');
+const DataManagerPerf = require('./perf/DataManagerPerf');
 
 class BuildProcessor {
     async execute(task) {
@@ -108,6 +109,8 @@ class BuildProcessor {
                 const testResultsDB = new TestResultsDB();
                 const childBuilds = await testResultsDB.getData({ parentId: task._id, status: { $ne: "Done" } }).toArray();
                 if (childBuilds.length === 0) {
+                    // update "Perf" builds and their descendant builds with aggregated info.
+                    await new DataManagerPerf().updateBuildWithAggResult(task);
                     await new DataManager().updateBuild({
                         _id: task._id,
                         status: "Done"

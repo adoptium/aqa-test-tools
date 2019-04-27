@@ -206,6 +206,12 @@ export default class PerfCompare extends Component {
                 resBenchmarkTestJson.testInfo === undefined) {
             displayErrorMessage += "Test build not found"
         }
+        if (!resBenchmarkBaselineJson.testInfo || !resBenchmarkBaselineJson.testInfo[0].aggregateInfo || resBenchmarkBaselineJson.testInfo[0].aggregateInfo.length < 1 || resBenchmarkBaselineJson.testInfo[0].aggregateInfo[0].metrics.length === 0) {
+            displayErrorMessage += "Baseline build has no data. "
+        }
+        if (!resBenchmarkTestJson.testInfo || !resBenchmarkTestJson.testInfo[0].aggregateInfo || resBenchmarkTestJson.testInfo[0].aggregateInfo.length < 1 || resBenchmarkTestJson.testInfo[0].aggregateInfo[0].metrics.length === 0) {
+            displayErrorMessage += "Test build has no data. "
+        }
 
         // Data received is not valid
         if (displayErrorMessage !== "") {
@@ -234,6 +240,34 @@ export default class PerfCompare extends Component {
         let baselineRunJSON = new JenkinsRunJSON(resBenchmarkBaselineJson);
         let testRunJSON = new JenkinsRunJSON(resBenchmarkTestJson);
         
+        let parentIdBaseline, parentIdTest;
+        let childListBaselineJson, childListTestJson;
+        let childListBaselineJsonMetrics = [], childListTestJsonMetrics = [];
+
+        if ( resBenchmarkBaselineJson.testInfo[0].hasChildren === true ) {
+            parentIdBaseline = resBenchmarkBaselineJson.testInfo[0]._id;
+            const childListBaseline = await fetch( `/api/getChildBuilds?parentId=${parentIdBaseline}`, {
+                method: 'get'
+            } );
+            childListBaselineJson = await childListBaseline.json();
+            for ( let i = 0; i < childListBaselineJson.length; i++ ) {
+                if ( childListBaselineJson[i].tests && childListBaselineJson[i].tests.length > 0 ) {
+                    childListBaselineJsonMetrics.push (childListBaselineJson[i].tests[0].testData.metrics);
+                }
+            }
+        }
+        if ( resBenchmarkTestJson.testInfo[0].hasChildren === true ) {
+            parentIdTest = resBenchmarkTestJson.testInfo[0]._id;
+            const childListTest = await fetch( `/api/getChildBuilds?parentId=${parentIdTest}`, {
+                method: 'get'
+            } );
+            childListTestJson = await childListTest.json();
+            for ( let i = 0; i < childListTestJson.length; i++ ) {
+                if ( childListTestJson[i].tests && childListTestJson[i].tests.length > 0 ) {
+                    childListTestJsonMetrics.push (childListTestJson[i].tests[0].testData.metrics);
+                }
+            }
+        }
         baselineRunJSON.init(() => {
             this.setState(
                 {
@@ -248,6 +282,8 @@ export default class PerfCompare extends Component {
                         benchmarkRuns: {
                             benchmarkRunBaseline: baselineRunJSON,
                             benchmarkRunTest: testRunJSON,
+                            childBuildsListBaseline : childListBaselineJsonMetrics ? childListBaselineJsonMetrics : undefined,
+                            childBuildsListTest: childListTestJsonMetrics ? childListTestJsonMetrics : undefined,
                         },
                         progress: 60
                     }
@@ -430,33 +466,47 @@ export default class PerfCompare extends Component {
                 }
 
                 curMetricName = this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].name;
+                let childBuildBaselineData = {};
+                let childBuildTestData = {};
+                for ( let x = 0; x < this.state.benchmarkRuns.childBuildsListBaseline.length; x++ ) {
+                    childBuildBaselineData["ite " + (x + 1) ] = this.state.benchmarkRuns.childBuildsListBaseline[x][j].value;
+                }
+                for ( let y = 0; y < this.state.benchmarkRuns.childBuildsListTest.length; y++ ) {
+                    childBuildTestData["ite " + (y + 1) ] = this.state.benchmarkRuns.childBuildsListTest[y][j].value;
+                }
 
                 curRawValues = {
-                    "baseline": this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].value,
-                    "test": this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].value
+                    "baseline": {
+                        "overview": this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].value,
+                        "iteData": (this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].testsData === undefined) ? childBuildBaselineData : this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].testsData[j].value
+                     },
+                    "test": {
+                        "overview": this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].value,
+                        "iteData": (this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[i].testsData === undefined) ? childBuildTestData : this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[i].testsData[j].value
+                     }
                 };
 
                 try {
-                    curBaselineScore = math.round((this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].mean), 3);
+                    curBaselineScore = math.round((this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].value.mean), 3);
                 } catch (roundBaselineScoreError) {
                     curBaselineScore = "error";
                 }
-                
+
                 try {
-                    curTestScore = math.round((this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].mean), 3);
+                    curTestScore = math.round((this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].value.mean), 3);
                 } catch (roundTestScoreError) {
                     curTestScore = "error";
                 }
 
                 try {
-                    curBaselineCI = math.round((this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].ci), 3);
+                    curBaselineCI = math.round((this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].value.CI), 3);
                     curBaselineCI += "%";
                 } catch(e) {
                     curBaselineCI = "Not found";
                 }
 
                 try {
-                    curTestCI = math.round((this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].ci), 3);
+                    curTestCI = math.round((this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].value.CI), 3);
                     curTestCI += "%";
                 } catch(e) {
                     curTestCI = "Not found";
