@@ -4,7 +4,7 @@
 Project for logging test results and viewing history. Should be abstract enough for any build to log results to and present results in a personalized dashboard.
 
 ## Prerequisites
-* Node Version: 8.4.0 [Install Node](https://nodejs.org/en/download/)
+* Node Version: 11.4.0 [Install Node](https://nodejs.org/en/download/)
 * System Dependencies: npm (comes packaged with Node)
 * MongoDB 3.4 and above
 * Access to [Jenkins Instances](https://ci.adoptopenjdk.net)
@@ -89,3 +89,15 @@ Config file example:
 ```
 
 If any server name matches with url in `DashboardBuildInfo.json` or domain in build monitoring list, credentials will be used when querying these servers.
+
+##Build Status
+
+A build can have the following status in database:
+
+- `NotDone` - The inital state. The build is created in the database, but not all information is processed and stored.
+- `Streaming` - Special state. When enabled, the build will be processed while it is still running.
+- `CurrentBuildDone` - The current build is processed and all informaiton is stored in the database, but its child builds may not be done.
+- `Done` - The build and its child builds are processed and stored.
+
+## Plugins
+Plugins can be added. Please refer [Plugins ReadMe](./plugins/README.md) for implementation detail.
