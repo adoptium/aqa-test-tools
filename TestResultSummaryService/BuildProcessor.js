@@ -6,6 +6,7 @@ const ParentBuild = require(`./parsers/ParentBuild`);
 const ObjectID = require('mongodb').ObjectID;
 const { TestResultsDB, OutputDB } = require('./Database');
 const { logger } = require('./Utils');
+const plugins = require('./plugins');
 
 class BuildProcessor {
     async execute(task) {
@@ -113,6 +114,8 @@ class BuildProcessor {
                         status: "Done"
                     });
                 }
+
+                await plugins.onBuildDone(task, { testResultsDB, logger });
             }
         }
     }
