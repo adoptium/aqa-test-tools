@@ -2,12 +2,14 @@ const Parser = require( './Parser' );
 const BenchmarkMetricRouter = require( './BenchmarkMetricRouter' );
 const BenchmarkMetric = require( './BenchmarkMetric' );
 
+const BenchmarkMath = require( '../perf/BenchmarkMathCalculation' );
 const benchmarkDelimiterRegex = /[\r\n]\*\*\*\*\*\*\*\*\*\* START OF NEW TESTCI BENCHMARK JOB \*\*\*\*\*\*\*\*\*\*[\r\n]/;
 const benchmarkNameRegex = /[\r\n]Benchmark Name: (.*) Benchmark Variant: .*[\r\n]/;
 const benchmarkVariantRegex = /[\r\n]Benchmark Name: .* Benchmark Variant: (.*)[\r\n]/;
 const benchmarkProductRegex = /[\r\n]Benchmark Product: (.*)[\r\n]/;
 const javaVersionRegex = /(java version[\s\S]*JCL.*\n)/;
 const javaBuildDateRegex = /-(20[0-9][0-9][0-9][0-9][0-9][0-9])_/;
+const math = require('mathjs');
 
 class BenchmarkParser extends Parser {
 
@@ -43,6 +45,8 @@ class BenchmarkParser extends Parser {
         let testIndex = 1;
         let buildResult;
         const tests = [];
+        const aggregateInfo = [];
+        let childAggData = [];
 
         while (curItr.done !== true) {
 
@@ -152,6 +156,21 @@ class BenchmarkParser extends Parser {
                 benchmarkProduct: curBenchmarkProduct,
                 testData: curTestData
             } );
+            // collect info and make calculation based on the curTestData
+            if ( curTestData.metrics && curTestData.metrics.length > 0 ) {
+                for ( let { name, value } of curTestData.metrics ) {
+                    let childValue = value.filter( n => n );
+                    // in child Aggregate data, 'interation' is the number of valid values in each metric that iterates.
+                    childAggData.push({name: name, value: {mean: math.mean(childValue), max: math.max(childValue), min: math.min(childValue), median: math.median(childValue), stddev: math.std(childValue), CI: BenchmarkMath.confidence_interval(childValue), iteration: childValue.length}});
+                }
+            }
+            // add aggregate Info for database
+            aggregateInfo.push( {
+                benchmarkName: curBenchmarkName,
+                benchmarkVariant: curBenchmarkVariant,
+                benchmarkProduct: curBenchmarkProduct,
+                metrics: childAggData,
+            } );
 
             curItr = benchmarkIterator.next();
         }
@@ -168,6 +187,7 @@ class BenchmarkParser extends Parser {
 
         return {
             tests,
+            aggregateInfo,
             buildResult,
             machine: this.extractMachineInfo( output ),
             type: "Perf",

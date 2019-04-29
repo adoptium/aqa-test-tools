@@ -25,6 +25,7 @@
     "express": "^4.16.4",
     "got": "^9.6.0",
     "jenkins-api": "^0.3.1",
+    "mathjs": "^5.9.0",
     "mongodb": "^2.2.31",
     "request": "^2.88.0",
     "winston": "^2.4.4"

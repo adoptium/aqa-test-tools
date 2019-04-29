@@ -113,9 +113,9 @@ class BuildProcessor {
                         _id: task._id,
                         status: "Done"
                     });
+                    await plugins.onBuildDone(task, { testResultsDB, logger });
                 }
 
-                await plugins.onBuildDone(task, { testResultsDB, logger });
             }
         }
     }
