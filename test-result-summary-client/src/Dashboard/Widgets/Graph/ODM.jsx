@@ -6,26 +6,36 @@ import {
 import DateRangePickers from '../DateRangePickers';
 import { Radio } from 'antd';
 import math from 'mathjs';
+import utils from './utils';
 
 const map = {
-    "Daily-ODM": "Daily-ODM-pxa64 | 881-4way-Seg5FastpathRVEJB",
-    "Daily-ODM-Linux-PPCLE64": "Daily-ODM-pxl64 | 881-4way-Seg5FastpathRVEJB",
-    "Daily-ODM-openJ9": "Daily-ODM-openJ9-pxa64 | 881-4way-Seg5FastpathRVEJB",
-    "Daily-ODM-zLinux": "Daily-ODM-pxz64 | 881-4way-Seg5FastpathRVEJB",
-    "Daily-ODM-zOS": "Daily-ODM-pmz64 | 881-4way-Seg5FastpathRVEJB"
+    "Daily-ODM-all": "Daily-ODM Daily-ODM-Linux-PPCLE64 Daily-ODM-openJ9 Daily-ODM-zLinux Daily-ODM-zOS"
 };
+
+let display = {
+    "Daily-ODM-all": true
+}
+
+let baselineValue = 7000;
+
 export class ODMSetting extends Component {
     onChange = obj => {
-        this.props.onChange( { buildSelected: obj.target.value } );
+        for (let i in display) {
+            display[i] = false;
+        }
+        for (let j in obj) {
+            display[obj[j]] = true;
+        }
+        this.props.onChange( { buildSelected: obj[obj.length -1] } );
     }
 
     render() {
         const { buildSelected } = this.props;
 
         return <div style={{ maxWidth: 400 }}>
-            <Radio.Group onChange={this.onChange} value={buildSelected}>
+            <Radio.Group onChange={this.onChange} values={map.keys} defaultValue={"Daily-ODM-all"}>
                 {Object.keys( map ).map( key => {
-                    return <Radio key={key} value={key}>{map[key]}</Radio>;
+                    return <Radio key={key} value={key} checked={false}>{key}</Radio>;
                 } )}
             </Radio.Group>
         </div>
@@ -33,7 +43,7 @@ export class ODMSetting extends Component {
 }
 
 export default class ODM extends Component {
-    static Title = props => map[props.buildSelected] || '';
+    static Title = props => props.buildSelected || '';
     static defaultSize = { w: 2, h: 4 }
     static Setting = ODMSetting;
     static defaultSettings = {
@@ -55,18 +65,18 @@ export default class ODM extends Component {
     }
 
     async updateData() {
+        // when API ready => buildSelected will be list of builds
         const { buildSelected } = this.props;
         const buildName = encodeURIComponent( buildSelected );
-        const response = await fetch( `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
+        const buildsName = "buildName=" + map[buildName].split(" ").join("&buildName=");
+        const response = await fetch( `/api/getBuildHistory?type=Perf&${buildsName}&status=Done&limit=100&asc`, {
             method: 'get'
         } );
         const results = await response.json();
         const resultsByJDKBuild = {};
-        let globalThroughput = [];
-        let gtValues = [];
-        let std = [];
-        let mean = [];
-        let median = [];
+        let globalThroughputs = {};
+        let baseLine = [];
+        let scale = baselineValue / 100;
 
         // combine results having the same JDK build date
         results.forEach(( t, i ) => {
@@ -80,38 +90,51 @@ export default class ODM extends Component {
                     || t.tests[0].testData.metrics[0].name !== "Global Throughput" ) {
                     return;
                 }
-                resultsByJDKBuild[JDKBuildTimeConvert] = resultsByJDKBuild[JDKBuildTimeConvert] || [];
-                resultsByJDKBuild[JDKBuildTimeConvert].push( {
-                    globalThroughput: t.tests[0].testData.metrics[0].value[0],
-                    additionalData: {
-                        testId: t.tests[0]._id,
-                        buildName: t.buildName,
-                        buildNum: t.buildNum,
-                        javaVersion: t.tests[0].testData.javaVersion,
-                    },
-                } );
+                if(!resultsByJDKBuild[t.buildName]) {
+                    resultsByJDKBuild[t.buildName] = {};
+                }
+                if(JDKBuildTimeConvert) {
+                    resultsByJDKBuild[t.buildName][JDKBuildTimeConvert] = resultsByJDKBuild[JDKBuildTimeConvert] || [];
+                    resultsByJDKBuild[t.buildName][JDKBuildTimeConvert].push( {
+                        globalThroughput: t.tests[0].testData.metrics[0].value[0],
+                        additionalData: {
+                            testId: t.tests[0]._id,
+                            buildName: t.buildName,
+                            buildNum: t.buildNum,
+                            javaVersion: t.tests[0].testData.javaVersion,
+                        },
+                    } );
+                }
             }
         } );
-
-        math.sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
-            gtValues.push( math.mean( resultsByJDKBuild[k].map( x => x['globalThroughput'] ) ) );
-            globalThroughput.push( [Number( k ), math.mean( resultsByJDKBuild[k].map( x => x['globalThroughput'] ) ), resultsByJDKBuild[k].map( x => x['additionalData'] )] );
-
-            std.push( [Number( k ), math.std( gtValues )] );
-            mean.push( [Number( k ), math.mean( gtValues )] );
-            median.push( [Number( k ), math.median( gtValues )] );
+        let baseLineData = [];
+        Object.keys( resultsByJDKBuild ).forEach(( k, i ) => {
+            if(!globalThroughputs[k]) {
+                globalThroughputs[k] = [];
+            }
+            math.sort(Object.keys(resultsByJDKBuild[k])).forEach((a, b) => {
+                globalThroughputs[k].push( [Number( a ), math.mean( resultsByJDKBuild[k][a].map( x => x['globalThroughput'] ) / scale), resultsByJDKBuild[k][a].map( x => x['additionalData'] )] );
+                baseLineData.push([Number( a ), 100]);
+            });
         } );
 
-        const series = { globalThroughput, std, mean, median };
-        const displaySeries = [];
-        for ( let key in series ) {
+        const displaySeries = baseLine;
+        for ( let key in globalThroughputs ) {
             displaySeries.push( {
-                visible: key === "globalThroughput",
+                visible: key,
                 name: key,
-                data: series[key],
+                data: globalThroughputs[key],
                 keys: ['x', 'y', 'additionalData']
             } );
         }
+
+        displaySeries.push({
+            visible: 'baseLine',
+            name: 'BaseLine',
+            data: baseLineData,
+            keys: ['x', 'y']
+        })
+
         this.setState( { displaySeries } );
     }
 
@@ -119,11 +142,28 @@ export default class ODM extends Component {
         const x = new Date( this.x );
         if ( this.point.additionalData ) {
             let buildLinks = '';
+            let i = this.series.data.indexOf(this.point);
+            let prevPoint = i === 0 ? null : this.series.data[i - 1];
             this.point.additionalData.forEach(( xy, i ) => {
                 const { testId, buildName, buildNum } = xy;
-                buildLinks = buildLinks + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`
+                buildLinks = buildLinks + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
             } );
-            return `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )} <br/>Link to builds: ${buildLinks}`
+
+            let lengthThis = this.point.additionalData.length;
+            let lengthPrev = prevPoint ? prevPoint.additionalData.length : 0;
+
+            let javaVersion = this.point.additionalData[lengthThis - 1].javaVersion;
+            let prevJavaVersion = prevPoint ? prevPoint.additionalData[lengthPrev - 1].javaVersion : null;
+            let ret = `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )} <br/>Link to builds: ${buildLinks}`;
+
+            prevJavaVersion = utils.parseSha(prevJavaVersion, 'OpenJ9');
+            javaVersion = utils.parseSha(javaVersion, 'OpenJ9');
+
+            if (prevJavaVersion && javaVersion) {
+                let githubLink = `<a href="https://github.com/eclipse/openj9/compare/${prevJavaVersion}…${javaVersion}">Github Link </a>`;
+                ret += `<br/> Compare Builds: ${githubLink}`;
+            }
+            return ret;
         } else {
             return `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )}`
         }
@@ -142,7 +182,7 @@ export default class ODM extends Component {
                 </XAxis>
 
                 <YAxis id="gt">
-                    <YAxis.Title>Global Throughput</YAxis.Title>
+                    <YAxis.Title>Global Throughput (% to baseline)</YAxis.Title>
                     {displaySeries.map( s => {
                         return <LineSeries {...s} id={s.name} key={s.name} />
                     } )}
