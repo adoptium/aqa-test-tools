@@ -4,27 +4,39 @@ import {
     LineSeries, Navigator, RangeSelector, Tooltip
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
-import { Radio } from 'antd';
+import { Checkbox, Radio } from 'antd';
+import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
 import math from 'mathjs';
+import utils from './utils';
 
 const map = {
     "Daily-Liberty-DayTrader3": "Daily-Liberty-DayTrader3-pxa64 | 9dev-4way-LargeThreadPool",
 };
 
+let display = {
+    "Daily-Liberty-DayTrader3": true,
+};
+
 export class DayTrader3Setting extends Component {
     onChange = obj => {
-        this.props.onChange( { buildSelected: obj.target.value } );
+        for (let i in display) {
+            display[i] = false;
+        }
+        for (let j in obj) {
+            display[obj[j]] = true;
+        }
+        this.props.onChange( { buildSelected: obj[obj.length -1] } );
     }
 
     render() {
         const { buildSelected } = this.props;
 
         return <div style={{ maxWidth: 400 }}>
-            <Radio.Group onChange={this.onChange} value={buildSelected}>
+            <Checkbox.Group onChange={this.onChange} values={map.keys} defaultValue={["Daily-Liberty-DayTrader3"]}>
                 {Object.keys( map ).map( key => {
-                    return <Radio key={key} value={key}>{map[key]}</Radio>;
+                    return <Checkbox key={key} value={key} checked={false}>{map[key]}</Checkbox>;
                 } )}
-            </Radio.Group>
+            </Checkbox.Group>
         </div>
     }
 }
@@ -91,8 +103,13 @@ export default class DayTrader3 extends Component {
         } );
 
         math.sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
-            gtValues.push( math.mean( resultsByJDKBuild[k].map( x => x['globalThroughput'] ) ) );
-            globalThroughput.push( [Number( k ), math.mean( resultsByJDKBuild[k].map( x => x['globalThroughput'] ) ), resultsByJDKBuild[k].map( x => x['additionalData'] )] );
+	    let globalThroughputGroup = resultsByJDKBuild[k].map( x => x['globalThroughput'] );
+            gtValues.push( math.mean( globalThroughputGroup ) );
+            let myCi = 'N/A';
+            if (globalThroughputGroup.length > 1){
+              myCi = BenchmarkMath.confidence_interval(globalThroughputGroup);
+            }
+            globalThroughput.push( [Number( k ), math.mean( globalThroughputGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
 
             std.push( [Number( k ), math.std( gtValues )] );
             mean.push( [Number( k ), math.mean( gtValues )] );
@@ -106,7 +123,7 @@ export default class DayTrader3 extends Component {
                 visible: key === "globalThroughput",
                 name: key,
                 data: series[key],
-                keys: ['x', 'y', 'additionalData']
+                keys: ['x', 'y', 'additionalData', 'CI']
             } );
         }
         this.setState( { displaySeries } );
@@ -114,16 +131,33 @@ export default class DayTrader3 extends Component {
 
     formatter = function() {
         const x = new Date( this.x );
+        const CIstr = (typeof this.point.CI === 'undefined') ? ``: `CI = ${this.point.CI}`;
         if ( this.point.additionalData ) {
             let buildLinks = '';
+            let i = this.series.data.indexOf(this.point);
+            let prevPoint = i === 0 ? null : this.series.data[i - 1];
             this.point.additionalData.forEach(( xy, i ) => {
                 const { testId, buildName, buildNum } = xy;
-                buildLinks = buildLinks + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`
+                buildLinks = buildLinks + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
             } );
-            const { javaVersion } = this.point.additionalData[0];
-            return `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )} <pre>${javaVersion}</pre><br/>Link to builds: ${buildLinks}`
+
+            let lengthThis = this.point.additionalData.length;
+            let lengthPrev = prevPoint ? prevPoint.additionalData.length : 0;
+
+            let javaVersion = this.point.additionalData[lengthThis - 1].javaVersion;
+            let prevJavaVersion = prevPoint ? prevPoint.additionalData[lengthPrev - 1].javaVersion : null;
+            let ret = `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )} <pre>${javaVersion}</pre><br/>Link to builds: ${buildLinks}<br /> ${CIstr}`;
+
+            prevJavaVersion = utils.parseSha(prevJavaVersion, 'OpenJ9');
+            javaVersion = utils.parseSha(javaVersion, 'OpenJ9');
+
+            if (prevJavaVersion && javaVersion) {
+                let githubLink = `<a href="https://github.com/eclipse/openj9/compare/${prevJavaVersion}…${javaVersion}">Github Link </a>`;
+                ret += `<br/> Compare Builds: ${githubLink}`;
+            }
+            return ret;
         } else {
-            return `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )}`
+            return `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )}<br /> ${CIstr}`;
         }
     }
 

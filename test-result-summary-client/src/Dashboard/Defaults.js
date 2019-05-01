@@ -36,7 +36,7 @@ export default {
                 type: 'SPECjbb2015',
                 x: 0,
                 y: 6
-            },
+            }
         ]
     }
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Table } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { SearchOutput } from '../Search/';
-import { getParams } from '../utils/query';
+import { getParams, params } from '../utils/query';
 import BuildTable from "./BuildTable";
 
 export default class BuildDetail extends Component {
@@ -29,12 +29,10 @@ export default class BuildDetail extends Component {
     }
 
     async updateData() {
-        const { parentId, buildResult, buildNameRegex } = getParams( this.props.location.search );
+        const { parentId, buildResult, buildNameRegex } = getParams(this.props.location.search);
         let fetchBuild = {};
         if (buildResult || buildNameRegex) {
-            const buildResultQuery = buildResult ? `&buildResult=${buildResult}` : "";
-            const buildNameRegexQuery = buildNameRegex ? `&buildNameRegex=${buildNameRegex}` : "";
-            fetchBuild = await fetch(`/api/getAllChildBuilds?parentId=${parentId}${buildResultQuery}${buildNameRegexQuery}`, {
+            fetchBuild = await fetch(`/api/getAllChildBuilds${params({ buildResult, buildNameRegex, parentId })}`, {
                 method: 'get'
             });
         } else {
