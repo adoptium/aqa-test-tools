@@ -128,6 +128,7 @@ class Database {
                     executed: { $sum: "$childBuilds.testSummary.executed" },
                     passed: { $sum: "$childBuilds.testSummary.passed" },
                     failed: { $sum: "$childBuilds.testSummary.failed" },
+                    disabled: { $sum: "$childBuilds.testSummary.disabled" },
                     skipped: { $sum: "$childBuilds.testSummary.skipped" },
                 }
             }

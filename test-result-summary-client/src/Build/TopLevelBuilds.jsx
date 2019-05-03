@@ -127,6 +127,7 @@ export default class TopLevelBuilds extends Component {
                 return <div>
                     {renderResults(value, "Failed: ", totals.failed ? totals.failed : 0, "!SUCCESS", "(^Test.*|.*test_.*)")}
                     {renderResults(value, "Passed: ", totals.passed ? totals.passed : 0, "SUCCESS", "(^Test.*|.*test_.*)")}
+                    {renderResults(value, "Disabled: ", totals.disabled ? totals.disabled : 0, "!FAILURE", "(^Test.*|.*test_.*)")}
                     <span>Skipped: {totals.skipped ? totals.skipped : 0} </span>
                     {renderResults(value, "Total: ", totals.total ? totals.total : 0)}
                 </div>;

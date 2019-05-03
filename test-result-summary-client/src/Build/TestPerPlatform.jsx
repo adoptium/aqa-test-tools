@@ -128,6 +128,9 @@ export default class TestPerPlatform extends Component {
                 text: 'PASSED',
                 value: 'PASSED',
             }, {
+                text: 'DISABLED',
+                value: 'DISABLED',
+            }, {
                 text: 'SKIPPED',
                 value: 'SKIPPED',
             }],

@@ -32,15 +32,17 @@ class Parser {
         let passed = 0;
         let failed = 0;
         let skipped = 0;
-        const summaryRegex = /\S*\s*?TOTAL:\s*([0-9]*)\s*EXECUTED:\s*([0-9]*)\s*PASSED:\s*([0-9]*)\s*FAILED:\s*([0-9]*)\s*SKIPPED:\s*([0-9]*)\s*/;
+        let disabled = 0;
+        const summaryRegex = /\S*\s*?TOTAL:\s*([0-9]*)\s*EXECUTED:\s*([0-9]*)\s*PASSED:\s*([0-9]*)\s*FAILED:\s*([0-9]*)\s*DISABLED:\s*([0-9]*)\s*SKIPPED:\s*([0-9]*)\s*/;
         if ( ( m = summaryRegex.exec( output ) ) !== null ) {
             total = parseInt( m[1], 10 );
             executed = parseInt( m[2], 10 );
             passed = parseInt( m[3], 10 );
             failed = parseInt( m[4], 10 );
-            skipped = parseInt( m[5], 10 );
+            disabled = parseInt( m[5], 10 );
+            skipped = parseInt( m[6], 10 );
         }
-        return { total, executed, passed, failed, skipped };
+        return { total, executed, passed, failed, disabled, skipped };
     }
 
     extractStartedBy( output ) {
