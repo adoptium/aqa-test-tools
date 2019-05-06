@@ -64,7 +64,7 @@ export default class TestTable extends Component {
         const renderResultDetail = ( testSummary ) => {
             let resultDetail = "n/a";
             if ( testSummary ) {
-                resultDetail = `Failed: ${testSummary.failed} / Passed: ${testSummary.passed} / Executed: ${testSummary.executed} / Skipped: ${testSummary.skipped} / Total: ${testSummary.total}`;
+                resultDetail = `Failed: ${testSummary.failed} / Passed: ${testSummary.passed} / Executed: ${testSummary.executed} / Disabled: ${testSummary.disabled} / Skipped: ${testSummary.skipped} / Total: ${testSummary.total}`;
             }
             return resultDetail;
         }

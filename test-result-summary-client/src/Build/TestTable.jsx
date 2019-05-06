@@ -87,6 +87,9 @@ export default class TestTable extends Component {
                         text: 'PASSED',
                         value: 'PASSED',
                     }, {
+                        text: 'DISABLED',
+                        value: 'DISABLED',
+                    }, {
                         text: 'SKIPPED',
                         value: 'SKIPPED',
                     }],
@@ -108,6 +111,9 @@ export default class TestTable extends Component {
                     }, {
                         text: 'PASSED',
                         value: 'PASSED',
+                    }, {
+                        text: 'DISABLED',
+                        value: 'DISABLED',
                     }, {
                         text: 'SKIPPED',
                         value: 'SKIPPED',
