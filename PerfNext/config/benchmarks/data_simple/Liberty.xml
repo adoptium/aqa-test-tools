@@ -14,22 +14,10 @@
 				<property name="MEASURE_TIME">180</property>
 				<property name="WARMUP_TIME">180</property>
 				<property name="RESULTS_MACHINE">lowry1</property>
-				<property name="RESULTS_DIR">libertyResults-cleaned</property>
-				<property name="CLIENT">perfxposh10G</property>
-				<property name="CLIENT_WORK_DIR">/java/perffarm/liberty</property>
-				<property name="DB_MACHINE">perfxposh10G</property>
-				<property name="DB2_HOME">/home/db2inst1/</property>
-				<property name="DB_NAME">day30r</property>
-				<property name="DB_PORT">50000</property>
-				<property name="DB_USR_NAME">db2inst1</property>
-				<property name="SERVER_NAME">DayTrader3-$JDK</property>
-				<property name="LIBERTY_HOST">kermit10G</property>
-				<property name="SECOND_CLIENT"></property>
-				<property name="THIRD_CLIENT"></property>
+				<property name="RESULTS_DIR">libertyResults-cleaned</property>			
+				<property name="SERVER_NAME">DayTrader3-$JDK</property>				
 				<property name="PROFILING_TOOL"></property>
 				<property name="PROFILING_JAVA_OPTION"></property>
-				<property name="LIBERTY_PORT">9080</property>
-				<property name="AFFINITY">numactl --physcpubind=0,1,36,37 --membind=0</property>
 				<property name="LARGE_THREAD_POOL">true</property>
 				<property name="JMETER_LOC">/java/perffarm/JMeter/apache-jmeter-2.12/bin/jmeter</property>
 				<property name="JMETER_INSTANCES"></property>
@@ -46,7 +34,7 @@
 				<property name="NO_SETUP">false</property>
 				<property name="LAUNCH_SCRIPT">server</property>
 				<property name="LIBERTY_BINARIES_DIR">$RUN_DIR/libertyBinaries</property>
-				<property name="LIBERTY_VERSION">liberty17003</property>        	
+				<property name="LIBERTY_VERSION">liberty19002</property>        	
             </ENV>
         </properties>
         <iterations>1</iterations>
@@ -72,13 +60,11 @@
 				<property name="SCENARIO">TradeLite</property>
 				<property name="SERVER_NAME">tradeLiteServer-$JDK</property>
 				<property name="PETERFP">false</property>
-				<property name="AFFINITY">numactl --physcpubind=0,1,36,37 --membind=0</property>
 				<property name="RESULTS_MACHINE">lowry1</property>
 				<property name="RESULTS_DIR">libertyResults</property>
-				<property name="LIBERTY_HOST">kermit10G</property>
 				<property name="LAUNCH_SCRIPT">server</property>
 				<property name="LIBERTY_BINARIES_DIR">$RUN_DIR/libertyBinaries</property>
-				<property name="LIBERTY_VERSION">liberty17003</property>            	
+				<property name="LIBERTY_VERSION">liberty19002</property>            	
             </ENV>
         </properties>
         <iterations>1</iterations>
@@ -104,13 +90,11 @@
 				<property name="SCENARIO">DayTrader</property>
 				<property name="SERVER_NAME">LibertySUDTServer-$JDK</property>
 				<property name="PETERFP">false</property>
-				<property name="AFFINITY">numactl --physcpubind=0,1,36,37 --membind=0</property>
 				<property name="RESULTS_MACHINE">lowry1</property>
 				<property name="RESULTS_DIR">libertyResults</property>
-				<property name="LIBERTY_HOST">kermit10G</property>
 				<property name="LAUNCH_SCRIPT">server</property>
 				<property name="LIBERTY_BINARIES_DIR">$RUN_DIR/libertyBinaries</property>
-				<property name="LIBERTY_VERSION">liberty17003</property> 
+				<property name="LIBERTY_VERSION">liberty19002</property> 
 				<property name="WLP_SKIP_MAXPERMSIZE">1</property>            	
             </ENV>
         </properties>
@@ -137,13 +121,11 @@
 				<property name="SCENARIO">HugeEJB</property>
 				<property name="SERVER_NAME">HugeEJBServer-$JDK</property>
 				<property name="PETERFP">false</property>
-				<property name="AFFINITY">numactl --physcpubind=0,1,36,37 --membind=0</property>
 				<property name="RESULTS_MACHINE">lowry1</property>
 				<property name="RESULTS_DIR">libertyResults</property>
-				<property name="LIBERTY_HOST">kermit10G</property>
 				<property name="LAUNCH_SCRIPT">server</property>
 				<property name="LIBERTY_BINARIES_DIR">$RUN_DIR/libertyBinaries</property>
-				<property name="LIBERTY_VERSION">liberty17003</property>            	
+				<property name="LIBERTY_VERSION">liberty19002</property>            	
             </ENV>
         </properties>
         <iterations>1</iterations>
@@ -163,21 +145,9 @@
 	          <property name="WARMUP_TIME">180</property>
 	          <property name="RESULTS_MACHINE">lowry1</property>
 	          <property name="RESULTS_DIR">libertyResults-cleaned</property>
-	          <property name="CLIENT">perfxposh10G</property>
-	          <property name="CLIENT_WORK_DIR">/java/perffarm/liberty</property>
-	          <property name="DB_MACHINE">perfxposh10G</property>
-	          <property name="DB2_HOME">/home/db2inst1/</property>
-	          <property name="DB_NAME">day30r</property>
-	          <property name="DB_PORT">50000</property>
-	          <property name="DB_USR_NAME">db2inst1</property>
 	          <property name="SERVER_NAME">AcmeAir-$JDK</property>
-	          <property name="LIBERTY_HOST">kermit10G</property>
-	          <property name="SECOND_CLIENT"></property>
-	          <property name="THIRD_CLIENT"></property>
 	          <property name="PROFILING_TOOL"></property>
 	          <property name="PROFILING_JAVA_OPTION"></property>
-	          <property name="LIBERTY_PORT">9080</property>
-	          <property name="AFFINITY">numactl --physcpubind=0,1,36,37 --membind=0</property>
 	          <property name="LARGE_THREAD_POOL">false</property>
 	          <property name="JMETER_LOC">/java/perffarm/JMeter/apache-jmeter-2.12/bin/jmeter</property>
 	          <property name="JMETER_INSTANCES"></property>
@@ -193,7 +163,7 @@
 	          <property name="NO_SETUP">false</property>
 	          <property name="LAUNCH_SCRIPT">server</property>
 	          <property name="LIBERTY_BINARIES_DIR">$RUN_DIR/libertyBinaries</property>
-	          <property name="LIBERTY_VERSION">liberty17003</property>
+	          <property name="LIBERTY_VERSION">liberty19002</property>
 	        </ENV>
 	   </properties>
 	   <iterations>1</iterations>
@@ -219,13 +189,11 @@
 				<property name="SCENARIO">AcmeAir</property>
 				<property name="SERVER_NAME">AcmeAir-sufp-$JDK</property>
 				<property name="PETERFP">false</property>
-				<property name="AFFINITY">numactl --physcpubind=0,1,36,37 --membind=0</property>
 				<property name="RESULTS_MACHINE">lowry1</property>
 				<property name="RESULTS_DIR">libertyResults</property>
-				<property name="LIBERTY_HOST">kermit10G</property>
 				<property name="LAUNCH_SCRIPT">server</property>
 				<property name="LIBERTY_BINARIES_DIR">$RUN_DIR/libertyBinaries</property>
-				<property name="LIBERTY_VERSION">liberty17003</property>            	
+				<property name="LIBERTY_VERSION">liberty19002</property>            	
             </ENV>
         </properties>
         <iterations>1</iterations>
@@ -245,21 +213,9 @@
                 <property name="WARMUP_TIME">180</property>
                 <property name="RESULTS_MACHINE">lowry1</property>
                 <property name="RESULTS_DIR">libertyResults</property>
-                <property name="CLIENT">lnxdbperf</property>
-                <property name="CLIENT_WORK_DIR">/java/perffarm/liberty</property>
-                <property name="DB_MACHINE">lnxdbperf</property>
-                <property name="DB2_HOME">/home/db2inst1/</property>
-                <property name="DB_NAME">day30r</property>
-                <property name="DB_PORT">50000</property>
-                <property name="DB_USR_NAME">db2inst1</property>
                 <property name="SERVER_NAME">AcmeAir-pxa6480sr5-20170519_01</property>
-                <property name="LIBERTY_HOST">lnxcliperf</property>
-                <property name="SECOND_CLIENT"></property>
-                <property name="THIRD_CLIENT"></property>
                 <property name="PROFILING_TOOL"></property>
                 <property name="PROFILING_JAVA_OPTION"></property>
-                <property name="LIBERTY_PORT">9080</property>
-                <property name="AFFINITY">numactl --physcpubind=0,1,12,13 --membind=0</property>
                 <property name="LARGE_THREAD_POOL">true</property>
                 <property name="JMETER_LOC">/java/perffarm/Jmeter/bin/jmeter</property>
                 <property name="JMETER_INSTANCES"></property>
@@ -295,21 +251,10 @@
 				<property name="WARMUP_TIME">180</property>
 				<property name="RESULTS_MACHINE">lowry1</property>
 				<property name="RESULTS_DIR">libertyResults-cleaned</property>
-				<property name="CLIENT">perfxposh10G</property>
-				<property name="CLIENT_WORK_DIR">/java/perffarm/liberty</property>
-				<property name="DB_MACHINE">perfxposh10G</property>
-				<property name="DB2_HOME">/home/db2inst1/</property>
-				<property name="DB_NAME">day30r</property>
-				<property name="DB_PORT">50000</property>
-				<property name="DB_USR_NAME">db2inst1</property>
 				<property name="SERVER_NAME">DayTrader7-$JDK</property>
-				<property name="LIBERTY_HOST">kermit10G</property>
-				<property name="SECOND_CLIENT"></property>
-				<property name="THIRD_CLIENT"></property>
 				<property name="PROFILING_TOOL"></property>
 				<property name="PROFILING_JAVA_OPTION"></property>
 				<property name="LIBERTY_PORT">9080</property>
-				<property name="AFFINITY">numactl --physcpubind=0,1,36,37 --membind=0</property>
 				<property name="LARGE_THREAD_POOL">true</property>
 				<property name="JMETER_LOC">/java/perffarm/JMeter/apache-jmeter-2.12/bin/jmeter</property>
 				<property name="JMETER_INSTANCES"></property>
@@ -325,7 +270,7 @@
 				<property name="NO_SETUP">false</property>
 				<property name="LAUNCH_SCRIPT">server</property>
 				<property name="LIBERTY_BINARIES_DIR">$RUN_DIR/libertyBinaries</property>
-				<property name="LIBERTY_VERSION">liberty17003</property>        	
+				<property name="LIBERTY_VERSION">liberty19002</property>        	
             </ENV>
         </properties>
         <iterations>1</iterations>
@@ -351,13 +296,11 @@
 				<property name="SCENARIO">DayTrader7</property>
 				<property name="SERVER_NAME">LibertySUDT7Server-$JDK</property>
 				<property name="PETERFP">false</property>
-				<property name="AFFINITY">numactl --physcpubind=0,1,36,37 --membind=0</property>
 				<property name="RESULTS_MACHINE">lowry1</property>
 				<property name="RESULTS_DIR">libertyResults</property>
-				<property name="LIBERTY_HOST">kermit10G</property>
 				<property name="LAUNCH_SCRIPT">server</property>
 				<property name="LIBERTY_BINARIES_DIR">$RUN_DIR/libertyBinaries</property>
-				<property name="LIBERTY_VERSION">liberty17003</property> 
+				<property name="LIBERTY_VERSION">liberty19002</property> 
 				<property name="WLP_SKIP_MAXPERMSIZE">1</property>            	
             </ENV>
         </properties>

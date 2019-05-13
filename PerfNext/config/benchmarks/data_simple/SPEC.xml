@@ -11,14 +11,7 @@
                 <property name="JDK_OPTIONS">-Xaggressive -Dreflect.cache=boot -Dcom.ibm.enableClassCaching=true -Dcom.ibm.cacheLatestUserDefinedClassLoader=true -Dcom.ibm.crypto.provider.doAESInHardware=true -XtlhPrefetch -Xdump:java+system:events=user</property>
                 <property name="CTRL_OPTIONS"></property>
                 <property name="NO_GROUPS">2</property>
-                <property name="NO_INJECTORS">1</property>
-                <property name="HW_THREADS">56</property>
-                <property name="TI_OPTIONS">-Xms2g -Xmx2g -Xmn1500m -Xgcpolicy:gencon -Xlp -Xcompressedrefs</property>
-                <property name="BE_OPTIONS">-Xms24g -Xmx24g -Xmn20g -Xgcpolicy:gencon -Xlp -Xcompressedrefs</property>    
-                <property name="GRP1TXIAFF">numactl --cpunodebind=0 --membind=0</property>
-                <property name="GRP1BEAFF">numactl --cpunodebind=0 --membind=0</property>
-                <property name="GRP2TXIAFF">numactl --cpunodebind=1 --membind=1</property>
-                <property name="GRP2BEAFF">numactl --cpunodebind=1 --membind=1</property>        
+                <property name="NO_INJECTORS">1</property>        
             </ENV>
         </properties>
         <iterations>1</iterations>
