@@ -1,5 +1,4 @@
 const DataManager = require( '../DataManager' );
-const EventHandler = require( '../EventHandler' );
 const { logger } = require( '../Utils' );
 
 module.exports = async ( req, res ) => {

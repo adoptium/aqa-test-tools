@@ -5,7 +5,9 @@
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1",
-    "start": "nodemon app.js --configFile=./trssConf.json"
+    "startFrontend": "nodemon frontend.js --configFile=./trssConf.json",
+    "startBackend": "nodemon backend.js",
+    "start": "npm-run-all --parallel startFrontend startBackend"
   },
   "repository": "",
   "keywords": [
@@ -30,6 +32,7 @@
     "winston": "^2.4.4"
   },
   "devDependencies": {
-    "nodemon": "^1.18.10"
+    "nodemon": "^1.18.10",
+    "npm-run-all": "^4.1.5"
   }
 }
