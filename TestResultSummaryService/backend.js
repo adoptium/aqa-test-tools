@@ -1,6 +1,9 @@
 // Accept all certificates
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
+const ArgParser = require( './ArgParser' );
+ArgParser.parse();
+
 const EventHandler = require( './EventHandler' );
 
 setTimeout(() => {
