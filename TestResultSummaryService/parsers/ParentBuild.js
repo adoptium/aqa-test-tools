@@ -39,6 +39,8 @@ class ParentBuild extends Parser {
             let type = "Build";
             if ( buildName.match( /^Test-/ ) ) {
                 type = "Test";
+            } else if (buildName.match(/^PerfNext/)) {
+                type = "Perf";
             }
             builds.push( {
                 url,
