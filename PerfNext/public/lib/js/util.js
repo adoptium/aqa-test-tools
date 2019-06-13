@@ -540,6 +540,29 @@ function getMachineNode() {
 	return machineNode;
 }
 
+// Helper function for getCPUAffinity()
+function getChosenThreads(affinity, threadsPerCore) {
+	var threads ='';
+	
+	for(var i = 0; i < affinity; i++) {
+		threads += i*threadsPerCore + ',';
+	}
+	
+	return threads.slice(0, -1);
+}
+
+// Helper function for getCPUAffinity()
+function getWindowsThreads(affinity, smt) {
+	var binaryThreads;
+	if (smt) {
+		binaryThreads = '1'.repeat(affinity);
+	} else {
+		binaryThreads = '10'.repeat(affinity);
+	}
+	
+	return parseInt(binaryThreads, 2).toString(16).toUpperCase();
+}
+
 
 function getCPUAffinity() {
 
@@ -559,44 +582,34 @@ function getCPUAffinity() {
 	console.log('util.js: getCPUAffinity() isSMTMachine: '+isSMTMachine);
 	
 	var runSMT = document.getElementById('runSMT').checked;
-	var chosenNumCores = $('#machine-cpu-affinity').val().split(' ')[0];
+	var chosenNumThreads = $('#machine-cpu-affinity').val().split('-')[0];
 	
-	/* TODO: Read up more on these affinity tools for different platforms 
-	 * to verify if we're calculating these correctly 
-	 * Numactl: Verified
-	 * Taskset: Need to check the case for SMT
-	 * Execrset: Need to check the case for SMT and formula 
-	 * Windows Affinity: Add other cases beside 4 & 8
+	/* Numactl: Verified
+	 * Taskset: Verified
+	 * Execrset/ppcle: Verified
+	 * Windows Affinity: Verified
 	 * zOS Affinity: User can manually enter the name of the script, that's on the Jenkins machine path*/
-	var numactlCMD, tasksetCMD, execrsetCMD, windowsCMD, zosCMD;
+	var numactlCMD, tasksetCMD, execrsetCMD, windowsCMD, ppcleCMD, zosCMD;
 	
-	tasksetCMD = 'taskset -c 0-'+(chosenNumCores-1);
-	execrsetCMD = 'execrset -c 0-'+((chosenNumCores*4)-1)+' -e';
-	windowsCMD = 'cmd /C start /B /WAIT /AFFINITY ';
-	zosCMD = '';
+	//zosCMD = '';
 	
-	if (chosenNumCores == 4)
-		{
-		windowsCMD += 'F';
-		}
-	else if (chosenNumCores == 8)
-		{
-		windowsCMD += 'FF';
-		}
-	else
-		{
-		console.log('util.js: getCPUAffinity() Need to read up more on Windows Affinity');
-		}
-
 	if (runSMT)
 		{
 		console.log('util.js: getCPUAffinity() runSMT is checked');
-		numactlCMD = 'numactl --physcpubind=0-'+((chosenNumCores/2)-1)+','+(numPhysicalCpus)+'-'+(numPhysicalCpus+(chosenNumCores/2)-1)+' --membind=0';
+		numactlCMD = 'numactl --physcpubind=0-'+((chosenNumThreads/2)-1)+','+(numPhysicalCpus)+'-'+(numPhysicalCpus+(chosenNumThreads/2)-1)+' --membind=0';	
+		tasksetCMD = 'taskset -c 0-'+(chosenNumThreads-1);
+		execrsetCMD = 'execrset -c 0-'+((chosenNumThreads*4)-1)+' -e';
+		windowsCMD = 'cmd /C start /B /WAIT /AFFINITY ' + getWindowsThreads(chosenNumThreads, true);
+		ppcleCMD = 'numactl --physcpubind=0-'+(chosenNumThreads*4-1)+' --membind=0';
 		}
 	else
 		{
 		console.log('util.js: getCPUAffinity() runSMT is NOT checked');
-		numactlCMD = 'numactl --physcpubind=0-'+(chosenNumCores-1)+' --membind=0';
+		numactlCMD = 'numactl --physcpubind=0-'+(chosenNumThreads-1)+' --membind=0';
+		execrsetCMD = 'execrset -c '+getChosenThreads(chosenNumThreads, 8)+' -e';
+		windowsCMD = 'cmd /C start /B /WAIT /AFFINITY ' + getWindowsThreads(chosenNumThreads, false);
+		tasksetCMD = 'taskset -c '+ getChosenThreads(chosenNumThreads, 2);
+		ppcleCMD = 'numactl --physcpubind='+getChosenThreads(chosenNumThreads, 8)+' --membind=0';
 		}
 	
 	
@@ -616,10 +629,10 @@ function getCPUAffinity() {
 		affCmd = execrsetCMD;
 		break;
 	case 'xp':
-		affCmd = numactlCMD;
+		affCmd = ppcleCMD;
 		break;
 	case 'xl':
-		affCmd = numactlCMD;
+		affCmd = ppcleCMD;
 		break;
 	case 'xz':
 		affCmd = tasksetCMD;
@@ -640,15 +653,22 @@ function insertCapabilityEnvVars(capabilityName, hwEnvClassName, idToFind) {
 	
 	var hostNode = getHostNode() ;
 	
-	//Will match all ids starting with the capabilityName
-	var capabilityNode = hostNode.querySelector('[name^="' + capabilityName + '"]');
-	var envVARs = 0;
-	if (capabilityNode)
-	{
-		envVARs = capabilityNode.children;
-		console.log("util.js insertCapabilityEnvVars capabilityNode envVARs.length: "+envVARs.length); 
-	}
+	var capabilities = hostNode.querySelectorAll('capability');
 	
+	var envVARs = 0;
+	var machineCapability;
+	
+	for (const capability of capabilities) {
+		machineCapability = capability.getAttribute('name');
+		// Ignore any lowercase capabilities as well as benchmark variant. Only the name is relevant, example: 'LIBERTY', 'SPECJBB2015' 
+		// Example: LibertyDayTrader3 would be matched to machine capability 'LIBERTY' as hardware variables do not depend on variant of benchmark being run
+		if (machineCapability && capabilityName.toUpperCase().indexOf(machineCapability) >= 0){ 
+			envVARs = capability.children;
+			console.log("util.js insertCapabilityEnvVars capabilityNode envVARs.length: "+envVARs.length);
+			break;
+		}
+	}
+
 	if (envVARs.length > 0)
 	{
 		return populateArgumentsHelper(envVARs, hwEnvClassName, idToFind, true);
@@ -656,12 +676,10 @@ function insertCapabilityEnvVars(capabilityName, hwEnvClassName, idToFind) {
 	
 }
 
-function insertCPUAffinity(hwEnvClassName, idToFind) {
+// Function to insert an environment variable given a name and a value
+function insertEnvVar(envClassName, idToFind, envVAR, value) {
 	
-	console.log('util.js: Entering insertCPUAffinity()');
-	
-	var envVAR = 'CPU_AFFINITY';
-	var value = getCPUAffinity();
+	console.log('util.js: Entering insertEnvVar()', envVAR);
 
 	var id = 'ENV-' + envVAR;
 	envData = {};
@@ -672,7 +690,7 @@ function insertCPUAffinity(hwEnvClassName, idToFind) {
 	
 	var size = value.length + 1;
 	
-	$('#'+idToFind).append('<tr class='+ hwEnvClassName +'><td style="padding-left: 30px">' + envVAR + '</td><td><input id=' + id + ' type="text" class="hw-env-input" style="background-color: transparent; border:none" size="' + size + '"value="' + value + '"></input></td></tr>');
+	$('#'+idToFind).append('<tr class='+ envClassName +'><td style="padding-left: 30px">' + envVAR + '</td><td><input id=' + id + ' type="text" class="hw-env-input" style="background-color: transparent; border:none" size="' + size + '"value="' + value + '"></input></td></tr>');
 	
 }
 
@@ -727,13 +745,17 @@ function populateHWSpecificArguments(name, variant) {
 	{		
 		console.log("util.js: populateMachineSpecificArguments() Machine exists in machine database");
 		
-		insertCPUAffinity(hwEnvClassName, idToFind);
+		insertEnvVar(hwEnvClassName, idToFind, 'CPU_AFFINITY', getCPUAffinity());
 		
-		var chosenNumCores = $('#machine-cpu-affinity').val().split(' ')[0];
-		var affinityCapabilityName = chosenNumCores+'way';
-		console.log("util.js: populateMachineSpecificArguments() chosenNumCores: "+chosenNumCores); 
+		var machineNode = getMachineNode();
+		var numPhysicalCpus = parseInt(machineNode.getElementsByTagName('physical')[0].innerHTML);
+		var numLogicalCpus = parseInt(machineNode.getElementsByTagName('logical')[0].innerHTML);
+		
+		
+		var NumThreads = $('#machine-cpu-affinity').val().split('-')[0] * (numLogicalCpus/numPhysicalCpus) / 2;
+		console.log("util.js: populateMachineSpecificArguments() NumThreads: "+NumThreads); 
 
-		insertCapabilityEnvVars(affinityCapabilityName, hwEnvClassName, idToFind);
+		insertEnvVar(hwEnvClassName, idToFind, 'NUM_THREADS', NumThreads);
 		insertCapabilityEnvVars(name, hwEnvClassName, idToFind);
 	}
 	else

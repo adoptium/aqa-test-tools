@@ -20,8 +20,6 @@
 				<property name="MAXHEAPSIZE">-Xmx1024m</property>
 				<property name="TENUREDSIZE"></property>
 				<property name="NURSERYSIZE"></property>
-				<property name="MULTITHREAD">4</property>
-				<property name="CPUAFFINITY">numactl --physcpubind=0,1,28,29 --membind=0</property>
             </ENV>
         </properties>
         <iterations>1</iterations>
@@ -46,8 +44,6 @@
 				<property name="MAXHEAPSIZE">-Xmx1024m</property>
 				<property name="TENUREDSIZE"></property>
 				<property name="NURSERYSIZE"></property>
-				<property name="MULTITHREAD">4</property>
-				<property name="CPUAFFINITY">numactl --physcpubind=0,1,28,29 --membind=0</property>
             </ENV>
         </properties>
         <iterations>1</iterations>
