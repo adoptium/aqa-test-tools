@@ -76,6 +76,7 @@ export default class TopLevelBuilds extends Component {
                         <Link to={{ pathname: '/buildDetail', search: params({ parentId: value._id }) }}
                             style={{ color: value.buildResult === "SUCCESS" ? "#2cbe4e" : (value.buildResult === "FAILURE" ? "#f50" : "#DAA520") }}>Build #{value.buildNum}  <Tooltip title={value.buildResult}>{icon}</Tooltip>
                         </Link>
+                        <br/>{renderPublishName(value)}
                     </div>
                 }
                 return null;
@@ -96,8 +97,8 @@ export default class TopLevelBuilds extends Component {
                         }
                     } else {
                         return <div>
-                            <Link to={{ pathname: '/buildDetail', search: params( { parentId: value._id } ) }}
-                                style={{ color: result === "SUCCESS" ? "#2cbe4e" : ( result === "FAILURE" ? "#f50" : "#DAA520" ) }}> Build #{value.buildNum}
+                            <Link to={{ pathname: '/buildDetail', search: params({ parentId: value._id }) }}
+                                style={{ color: result === "SUCCESS" ? "#2cbe4e" : (result === "FAILURE" ? "#f50" : "#DAA520") }}> Build #{value.buildNum}
                             </Link>
                         </div>;
                     }
@@ -148,6 +149,11 @@ export default class TopLevelBuilds extends Component {
                 return null;
             };
 
+            const renderPublishName = ({ buildParams = [] }) => {
+                const param = buildParams.find(param => param.name === "overridePublishName");
+                if (param)
+                    return param.value;
+            };
 
             const columns = [{
                 title: 'Build',
