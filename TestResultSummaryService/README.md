@@ -41,7 +41,7 @@ Note:
 
 
 ## Production server
-TBD
+https://trss.adoptopenjdk.net/
 
 ## Deployment Instructions
 - on TRSS production server machine, cd to source code folder and update the code
@@ -59,12 +59,14 @@ npm run build
 
 - restart the service
 ```
-service TestResultSummaryService restart
+sudo service TRSSFrontend restart
+sudo service TRSSBackend restart
 ```
 
 - log message can be found by using the following cmd
 ```
-tail -f /var/log/TestResultSummaryService.log
+tail -f /var/log/TRSSFrontend.log
+tail -f /var/log/TRSSBackend.log
 ```
 
 ## Configure File
