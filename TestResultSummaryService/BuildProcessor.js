@@ -30,6 +30,7 @@ class BuildProcessor {
                 await new DataManager().updateBuild(task);
                 return;
             }
+            task.buildParams = jenkinsInfo.getBuildParams(buildInfo);
             let output = "";
             if (task.status === "Streaming") {
                 let startPtr = 0;
@@ -102,6 +103,7 @@ class BuildProcessor {
                         _id: task._id,
                         buildUrl: buildInfo.url,
                         timestamp: buildInfo.timestamp,
+                        buildParams : task.buildParams
                     });
                 }
             } else if (task.status === "CurrentBuildDone") {

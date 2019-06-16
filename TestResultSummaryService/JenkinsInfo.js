@@ -74,6 +74,19 @@ class JenkinsInfo {
         }
         return url;
     }
+
+    getBuildParams(buildInfo) {
+        let params = null;
+        if (buildInfo && buildInfo.actions) {
+            for (let action of buildInfo.actions) {
+                if (action.parameters && action.parameters.length > 0) {
+                    params = action.parameters;
+                    break;
+                }
+            }
+        }
+        return params;
+    }
 }
 
 module.exports = JenkinsInfo;
