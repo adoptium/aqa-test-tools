@@ -18,8 +18,8 @@ var request = require('request');
 module.exports = function(app) {
 
 	/*
-    * API to generate test script from XML Benchmark definition.     
-    * 
+    * API to generate test script from XML Benchmark definition.
+    *
     * Params: XML definition
     */
 	app.post('/api/benchengine/generatescript', function(req, res) {
@@ -35,145 +35,82 @@ module.exports = function(app) {
 
 
 	/*
-    * API to generate test script and submit it on Jenkins.     
-    * 
+    * API to generate test script and submit it on Jenkins.
+    *
     * Params: XML definition
     */
 	app.post('/api/benchengine/submit', function(req, res) {
-		var raw_definition = req.rawBody; //Raw XML to be parsed
+		var rawDefinition = req.rawBody; //Raw XML to be parsed
 
-		parseDefinition(raw_definition, function(generatedOutput){
+		// Split the received xml file to separate test and baseline scripts
+		var splitDefinition = rawDefinition.split("<?xml");
 
-			var setupScript = parseSetupScript(raw_definition, function(setupScript){
+		// Add in missing xml tag from previous split, index 0 is an empty string.
+		var testRawDefinition = "<?xml" + splitDefinition[1];
 
-				//console.log('parser.js: setupScript: '+setupScript);
-				
-				var setupMachine=req.query.machine;
-				console.log('parser.js: setupMachine: '+setupMachine);
-				
-				var jenkinsAPI =  global.APP_DATA.jenkins_base + "/buildWithParameters?token=xYz@123&setupScript="+encodeURIComponent(setupScript)+'&setupMachine='+encodeURIComponent(setupMachine)+'&benchmarkScript='+encodeURIComponent(generatedOutput)+'&benchmarkMachine='+encodeURIComponent(req.query.machine);  
 
-				console.log(`the selected machine is ${req.query.machine}`);
-
-				//console.log('parser.js: Calling jenkinsAPI: '+jenkinsAPI);
-				
-				var jenkinsURL =  global.APP_DATA.jenkins_base + "/buildWithParameters"
-				var postBody = "token=xYz@123&setupScript="+encodeURIComponent(setupScript)+'&setupMachine='+encodeURIComponent(setupMachine)+'&benchmarkScript='+encodeURIComponent(generatedOutput)+'&benchmarkMachine='+encodeURIComponent(req.query.machine);  
-				
-				var jenkinsCrumbIssuer = global.APP_DATA.jenkins_root + '/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)';								
-				
-				var crumb;
-				
-				var getOptions = {
-						url: jenkinsCrumbIssuer,
-						auth: {
-							'user': global.jenkinsUsername,
-							'pass': global.jenkinsPwd,
-						}
-				};
-				
-				request.get(getOptions, function(error, response, body){
-					console.log('parser.js: Making GET request for Jenkins Crumb');
-					console.log('parser.js: request error: '+error);
-					console.log('parser.js: request response: '+response);
-					console.log('parser.js: request body: '+body); //Example: Jenkins-Crumb:0b91d58bb62f79cda34a1b7144a6530b
-
-					crumb = body.split(':')[1]; //Example: 0b91d58bb62f79cda34a1b7144a6530b
-					console.log('parser.js: request crumb: '+crumb+' crumb.length: '+crumb.length);					
-
-					var postOptions = {
-							url: jenkinsURL,
-							headers: {
-								'content-type': 'application/x-www-form-urlencoded', 
-								'Jenkins-Crumb': crumb
-							},
-							auth: {
-								'user': global.jenkinsUsername,
-								'pass': global.jenkinsPwd,
-							},
-							body: postBody
-					};					
-					
-					request.post(postOptions, function(error, response, body){
-						console.log('parser.js: Making POST request for submitting job');
-						console.log('parser.js: request error: '+error);
-						console.log('parser.js: request response: '+response);
-						console.log('parser.js: request body: '+body);
-						
-						/* Note: Don't delete the commented lines since they will be helpful in debugging. */
-						//var str = JSON.stringify(response);
-						//console.log('parser.js: str: '+str);
-						
-						var queueLocation = response.headers.location;
-						console.log('parser.js: queueLocation: '+queueLocation);
-						
-						//Prints out JSON object in a nicely formatted and readable format
-						//console.log(JSON.stringify(response, null, 4));
-
-						getJenkinsBuildURL(queueLocation, crumb, function(jenkinsBuildURL){				
-							
-							console.log('parser.js: jenkinsBuildURL '+jenkinsBuildURL);
-							res.send(jenkinsBuildURL);
-						
-						});
-					});					
-				});		
-			});
-		});
+		// If interleave baseline unticked
+		if (splitDefinition.length < 3) {
+			var baselineRawDefinition = null;
+		} else {
+			var baselineRawDefinition = "<?xml" + splitDefinition[2];
+		}
+		generateScripts(testRawDefinition, baselineRawDefinition, req, res, jenkinsSubmit);
 	});
 }
 
 function getJenkinsBuildURL(queueLocation, crumb, callback){
 
 	console.log('parser.js: Entering getJenkinsBuildURL()');
-	
+
 	var jenkinsBuildURL;
 	var jenkinsURL = queueLocation + '/api/json?pretty=true'
 	var getOptions = {
 			url: jenkinsURL,
 			headers: {
-				'content-type': 'application/x-www-form-urlencoded', 
+				'content-type': 'application/x-www-form-urlencoded',
 				'Jenkins-Crumb': crumb
 			},
 			auth: {
 				'user': global.jenkinsUsername,
-				'pass': global.jenkinsPwd,
+				'pass': global.jenkinsToken,
 			},
 	};
-	
-	request.get(getOptions, function(error, response, body){
-		console.log('parser.js: getJenkinsBuildURL() Making POST request for submitting job');
-		console.log('parser.js: getJenkinsBuildURL() request error: '+error);
-		
-		/* Note: Both response and body are strings and not JSON objects 
-		 * unlike in our previous requests. response also has the 
-		 * same body along with some other info such as header */
-		
-		//console.log('parser.js: getJenkinsID() request response: '+response); 
-		//console.log('parser.js: getJenkinsID() request body: '+body);
-		
-		//Convert body from string to JSON object
-		var bodyObject = JSON.parse(body); 
-		if (bodyObject.executable)
-			{
-			console.log("parser.js: getJenkinsBuildURL() Build has been scheduled by Jenkins.");
-			jenkinsBuildURL = bodyObject.executable.url;
-			}
-		else
-			{
-			console.log("parser.js: getJenkinsBuildURL() Build hasn't been scheduled by Jenkins yet since bodyObject.executable is NULL");
-			
-			/* Since we don't have the build URL, return the URL to the Jenkins Project instead */
-			jenkinsBuildURL = global.APP_DATA.jenkins_base;
-			}		
 
-		console.log('parser.js: getJenkinsBuildURL() jenkinsBuildURL '+jenkinsBuildURL);
-		
-		callback(jenkinsBuildURL);
-		
-	});	
-	
-	
+	// Adding a 5 second timeout before requesting the build url, jenkins does not schedule immediately
+	setTimeout(function() {
+		request.get(getOptions, function(error, response, body){
+			console.log('parser.js: getJenkinsBuildURL() Making POST request for submitting job');
+			console.log('parser.js: getJenkinsBuildURL() request error: '+error);
+
+			/* Note: Both response and body are strings and not JSON objects
+		 	* unlike in our previous requests. response also has the
+		 	* same body along with some other info such as header */
+
+			//console.log('parser.js: getJenkinsID() request response: '+response);
+			//console.log('parser.js: getJenkinsID() request body: '+body);
+
+			//Convert body from string to JSON object
+			var bodyObject = JSON.parse(body);
+			if (bodyObject.executable)
+				{
+				console.log("parser.js: getJenkinsBuildURL() Build has been scheduled by Jenkins.");
+				jenkinsBuildURL = bodyObject.executable.url;
+				}
+			else
+				{
+				console.log("parser.js: getJenkinsBuildURL() Build hasn't been scheduled by Jenkins yet since bodyObject.executable is NULL");
+
+				/* Since we don't have the build URL, return the URL to the Jenkins Project instead */
+				jenkinsBuildURL = global.APP_DATA.jenkins_base;
+				}
+
+			console.log('parser.js: getJenkinsBuildURL() jenkinsBuildURL '+jenkinsBuildURL);
+
+			callback(jenkinsBuildURL);
+
+		});
+	}, (5 * 1000));
 }
 
 function getPackageType(packageURL)
@@ -198,30 +135,42 @@ function getPackageType(packageURL)
 	}
 	console.log("getPackageType() packageType:"+packageType);
 	return packageType;
-	
+
 }
 
 function getExtractedPackageName(result, packageURL)
 {
 	console.log("util.js: Entering getExtractedPackageName()");
 	var packageName;
-	
+
 	var isCustomBuild = (result.benchmarks.benchmark.isCustomBuild == "true");
 	console.log('parser.js: getExtractedPackageName() isCustomBuild: '+isCustomBuild);
-	
+
 	if (isCustomBuild)
 	{
 		var packageType = getPackageType(packageURL);
 		console.log("parser.js: getExtractedPackageName() It's a custom build");
     	var packageURLSplits = packageURL.split('/');
-    	packageName = packageURLSplits[packageURLSplits.length - 1].replace(packageType,''); 
+    	packageName = packageURLSplits[packageURLSplits.length - 1].replace(packageType,'');
 	}
 	else
 	{
-		packageName = result.benchmarks.benchmark.buildName;			
+		packageName = result.benchmarks.benchmark.buildName;
 	}
-	console.log('parser.js: getExtractedPackageName() packageName: '+packageName);	
+	console.log('parser.js: getExtractedPackageName() packageName: '+packageName);
 	return packageName;
+}
+// Generate benchmark and setup scripts for benchmark run and submit to jenkins
+function generateScripts(testRawDefinition, baselineRawDefinition, req, res, callback){
+	parseDefinition(testRawDefinition, function(generatedOutput) {
+		parseDefinition(baselineRawDefinition, function(generatedOutputBaseline) {
+			parseSetupScript(testRawDefinition, function(setupScript) {
+				parseSetupScript(baselineRawDefinition, function(setupScriptBaseline) {
+					callback(generatedOutput, generatedOutputBaseline, setupScript, setupScriptBaseline, req, res);
+				});
+			});
+		});
+	});
 }
 
 /* TODO: Cleanup this function after both the setup and benchmark scripts are finalized.
@@ -229,61 +178,66 @@ function getExtractedPackageName(result, packageURL)
  * */
 function parseSetupScript(raw_definition, callback){
 	console.log('parser.js: Entering parseSetupScript()');
+	if (!raw_definition) {
+				var setupScript = null;
+				callback(setupScript);
+			}
+	else {
 	parser.parseString(raw_definition, function (err, result) { //Convert XML to JSON
 
 //		var str = JSON.stringify(result);
 //		console.log('parser.js: parseSetupScript() str: '+str);
-		
+
 		var benchmarkName = result.benchmarks.benchmark.$.name;
 		var benchmarkVariant = result.benchmarks.benchmark.$.variant;
-		console.log('parser.js: parseSetupScript() benchmarkName: '+benchmarkName+' benchmarkVariant: '+benchmarkVariant);	
-		
+		console.log('parser.js: parseSetupScript() benchmarkName: '+benchmarkName+' benchmarkVariant: '+benchmarkVariant);
+
 		var buildCompressionType;
 		var buildExtractCmd = '';
 		var buildSetupCmds = '';
-		
+
 		var platform = result.benchmarks.benchmark.platform;
 		console.log('parser.js: parseSetupScript() platform: '+platform);
-		
-		var scriptType = Object.keys(result.benchmarks.benchmark.properties.scripts)[0];	
+
+		var scriptType = Object.keys(result.benchmarks.benchmark.properties.scripts)[0];
 		var iterations = result.benchmarks.benchmark.iterations;
-		
+
 		//Need to be defined before evaluating Header script below
 		var buildURL = result.benchmarks.benchmark.build;
 		console.log('parser.js: parseSetupScript() buildURL: '+buildURL);
-		
+
 		var buildName = getExtractedPackageName(result, buildURL);
-		
+
 		var pkgName = result.benchmarks.benchmark.properties.scripts[scriptType].$.pkgName;
-		console.log('parser.js: parseSetupScript() pkgName: '+pkgName);		
-		
+		console.log('parser.js: parseSetupScript() pkgName: '+pkgName);
+
 		var script = 'setup.sh';
-		var packageURL = global.APP_DATA.packages_base_url + `/${pkgName}_Package.zip`;					
+		var packageURL = global.APP_DATA.packages_base_url + `/${pkgName}_Package.zip`;
 		var zipFilename = packageURL.substring(packageURL.lastIndexOf('/')+1);
-		
+
 		var benchmarkExtractCmd = `unzip -q "${zipFilename}"`;
 
 		var buildUsername = '$PERFFARM_W3_USERNAME';
 		var buildPassword = '$PERFFARM_W3_PASSWORD';
-		
+
 		if (buildURL.toLowerCase().indexOf("artifactory") >= 0)
 		{
 			console.log("parser.js: parseSetupScript() It's an Artifactory Build");
-			
+
 			buildUsername = '$JTCTSTSL_ARTIFACTORY_USERNAME';
-			buildPassword = '$JTCTSTSL_ARTIFACTORY_PASSWORD';			
+			buildPassword = '$JTCTSTSL_ARTIFACTORY_PASSWORD';
 		}
 		else
 		{
 			console.log("parser.js: parseSetupScript() It's NOT an Artifactory Build");
-		}	
-		
+		}
+
 		if (buildURL.toLowerCase().indexOf("adoptopenjdk") >= 0)
 		{
 			console.log("parser.js: parseSetupScript() It's an AdoptOpenJDK Build");
-			
+
 			platform = platform.substring(1, 5);
-			
+
 			if (platform == 'wa64')
 			{
 				buildCompressionType = '.zip';
@@ -302,13 +256,13 @@ function parseSetupScript(raw_definition, callback){
 		else
 		{
 			platform = platform.substring(1, 3);
-			
+
 			if (platform == 'mz')
 			{
 				packageURL = global.APP_DATA.packages_base_url + `/${pkgName}_Package.pax.Z`;
 				zipFilename = packageURL.substring(packageURL.lastIndexOf('/')+1);
 				benchmarkExtractCmd = `pax -r -f "${zipFilename}"`;
-				
+
 				buildSetupCmds += `curl -knOs -u ${buildUsername}:${buildPassword} ${buildURL}` + '\n\t';
 				buildSetupCmds += `filename=$(basename "${buildURL}")` + '\n\t';
 				buildSetupCmds += `mkdir -p $SDK` + '\n\t';
@@ -324,7 +278,7 @@ function parseSetupScript(raw_definition, callback){
 				buildSetupCmds += `unzip -q "$filename" -d ${buildName}` + '\n\t';
 				buildSetupCmds += `chmod -R 755 ${buildName}`;
 			}
-			
+
 			var streamName = result.benchmarks.benchmark.streamName;
 			if (streamName == 'OpenJ9')
 			{
@@ -332,89 +286,163 @@ function parseSetupScript(raw_definition, callback){
 				buildSetupCmds += '\n\t' + `mv ${buildName}/jdk ${buildName}/sdk`;
 			}
 		}
-		
+
 		var setupFile = fs.readFileSync(script, 'utf8');
 		var setupScript = eval('`'+setupFile+'`'); //Evaluate script params (${XXXXXX})
 		callback(setupScript);
 
 	});
+	}
 }
 
 function parseDefinition(raw_definition, callback){
 	console.log('parser.js: Entering parseDefinition()');
-	parser.parseString(raw_definition, function (err, result) { //Convert XML to JSON
+	// raw_definition will be null if baseline build is not checked
+	if (!raw_definition) {
+		var generatedOutput = null;
+		callback(generatedOutput);
+	} else {
+		parser.parseString(raw_definition, function (err, result) { //Convert XML to JSON
 
-		let benchmarkName = result.benchmarks.benchmark.$.name;
-		let benchmarkVariant = result.benchmarks.benchmark.$.variant;
+			let benchmarkName = result.benchmarks.benchmark.$.name;
+			let benchmarkVariant = result.benchmarks.benchmark.$.variant;
 
-		//Need to be defined before evaluating Header script below
-		var buildURL = result.benchmarks.benchmark.build;
-		console.log('parser.js: parseDefinition() buildURL: '+buildURL);
-		
-		var scriptType = Object.keys(result.benchmarks.benchmark.properties.scripts)[0];	
-		console.log('parser.js: parseDefinition() scriptType: '+scriptType);
-		
-		var pkgName = result.benchmarks.benchmark.properties.scripts[scriptType].$.pkgName;
-		
-		console.log('parser.js: parseDefinition() pkgName: '+pkgName);
-		var packageURL = global.APP_DATA.packages_base_url + `/${pkgName}_Package.zip`;
+			//Need to be defined before evaluating Header script below
+			var buildURL = result.benchmarks.benchmark.build;
+			console.log('parser.js: parseDefinition() buildURL: '+buildURL);
 
-		console.log('parser.js: parseDefinition() packageURL: '+packageURL);
-		
-		var buildName = getExtractedPackageName(result, buildURL);
-		
-		var zipFilename = packageURL.substring(packageURL.lastIndexOf('/')+1);
-		let iterations = result.benchmarks.benchmark.iterations;
+			var scriptType = Object.keys(result.benchmarks.benchmark.properties.scripts)[0];
+			console.log('parser.js: parseDefinition() scriptType: '+scriptType);
 
-		// Changes to this delimiter affect TestResultSummaryService's BenchmarkParser class.
-		// Please confirm any delimiter changes
-		let benchmarkJobDelimiter = "********** START OF NEW TESTCI BENCHMARK JOB **********";
+			var pkgName = result.benchmarks.benchmark.properties.scripts[scriptType].$.pkgName;
 
-		getHeader(function (header){
+			console.log('parser.js: parseDefinition() pkgName: '+pkgName);
+			var packageURL = global.APP_DATA.packages_base_url + `/${pkgName}_Package.zip`;
 
-			var generatedOutput = generateDate();
-			generatedOutput += eval('`'+header+'`'); //Evaluate header params (${XXXXXX})
-			generatedOutput += '\n######### Generated Script #########\n';
+			console.log('parser.js: parseDefinition() packageURL: '+packageURL);
 
-			if(iterations > 1){
-				generatedOutput += "iteration=0 \n";
-				generatedOutput += `while [ "$iteration" -lt ${iterations} ]` + '\n';
-				generatedOutput += 'do \n';
-				generatedOutput += "echo \"Start of iteration $iteration\" \n";
-			}
+			var buildName = getExtractedPackageName(result, buildURL);
 
-			generatedOutput += `echo ""\n`;
-			generatedOutput += `echo "${benchmarkJobDelimiter}"\n`;
-			generatedOutput += `echo "Benchmark Name: ${benchmarkName} Benchmark Variant: ${benchmarkVariant}"\n`;
-			generatedOutput += `echo "Benchmark Product: ${buildName}"\n`;
-			generatedOutput += `echo ""\n`;
-			generatedOutput += generateENV(result);
-			generatedOutput += '\n## HW Specific Environment Vars ##\n';
-			generatedOutput += generateHWENV(result);
-			generatedOutput += '\n';
-			
-			if (scriptType == 'java')
-			{
-				generatedOutput += generateJavaRunCommands(result);
-			}
-			else
-			{
-				generatedOutput += generateScriptCommands(result);
-			}			
+			var zipFilename = packageURL.substring(packageURL.lastIndexOf('/')+1);
+			let iterations = result.benchmarks.benchmark.iterations;
 
-			if(iterations > 1){
-				generatedOutput += "echo \"End of iteration $iteration\" \n";
-				generatedOutput += "iteration=$((iteration+1)) \n";
-				generatedOutput = generatedOutput + 'done'
-			}
+			// Changes to this delimiter affect TestResultSummaryService's BenchmarkParser class.
+			// Please confirm any delimiter changes
+			let benchmarkJobDelimiter = "********** START OF NEW TESTCI BENCHMARK JOB **********";
 
-			fs.readFile('logo.txt', 'utf8', function(err, contents) {
-				generatedOutput = '#!/bin/bash +x \n' + contents + '\n' +  generatedOutput;
+			getHeader(function (header){
 
-				callback(generatedOutput);
+				var generatedOutput = generateDate();
+				generatedOutput += eval('`'+header+'`'); //Evaluate header params (${XXXXXX})
+				generatedOutput += '\n######### Generated Script #########\n';
+
+				generatedOutput += `echo "iterations = ${iterations}"\n`;
+
+				generatedOutput += `echo ""\n`;
+				generatedOutput += `echo "${benchmarkJobDelimiter}"\n`;
+				generatedOutput += `echo "Benchmark Name: ${benchmarkName} Benchmark Variant: ${benchmarkVariant}"\n`;
+				generatedOutput += `echo "Benchmark Product: ${buildName}"\n`;
+				generatedOutput += `echo ""\n`;
+				generatedOutput += generateENV(result);
+				generatedOutput += '\n## HW Specific Environment Vars ##\n';
+				generatedOutput += generateHWENV(result);
+				generatedOutput += '\n';
+
+				if (scriptType == 'java')
+				{
+					generatedOutput += generateJavaRunCommands(result);
+				}
+				else
+				{
+					generatedOutput += generateScriptCommands(result);
+				}
+
+				fs.readFile('logo.txt', 'utf8', function(err, contents) {
+					generatedOutput = '#!/bin/bash +x \n' + contents + '\n' +  generatedOutput;
+
+					callback(generatedOutput);
+				});
 			});
-		});      		
-	});
+		});
+	}
+}
+// Submit benchmark run request to jenkins
+function jenkinsSubmit(generatedOutput, generatedOutputBaseline, setupScript, setupScriptBaseline, req, res) {
+	var setupMachine=req.query.machine;
+	console.log('parser.js: setupMachine: '+setupMachine);
+
+	// Parse iteration number from benchmark script
+	var iterationStart = generatedOutput.indexOf("iterations = ") + "iterations = ".length;
+	var iterationEnd = generatedOutput.indexOf('"', iterationStart);
+	var iterationNum = generatedOutput.substring(iterationStart, iterationEnd);
+	console.log("Total Iterations = " + iterationNum);
+
+	var jenkinsAPI =  global.APP_DATA.jenkins_base + "/buildWithParameters?token=xYz@123&setupScript="+encodeURIComponent(setupScript)+'&setupMachine='+encodeURIComponent(setupMachine)+'&benchmarkScript='+encodeURIComponent(generatedOutput)+'&benchmarkMachine='+encodeURIComponent(req.query.machine);
+
+	console.log(`the selected machine is ${req.query.machine}`);
+
+	//console.log('parser.js: Calling jenkinsAPI: '+jenkinsAPI);
+
+	var jenkinsURL =  global.APP_DATA.jenkins_base + "/buildWithParameters"
+	var postBody = "token=xYz@123&setupScripttest="+encodeURIComponent(setupScript)+'&setupMachine='+encodeURIComponent(setupMachine)+'&benchmarkScripttest='+encodeURIComponent(generatedOutput)+'&benchmarkMachine='+encodeURIComponent(req.query.machine)+'&benchmarkScriptbaseline='+encodeURIComponent(generatedOutputBaseline)+'&setupScriptbaseline='+encodeURIComponent(setupScriptBaseline)+'&Iterations='+encodeURIComponent(iterationNum);
+
+	var jenkinsCrumbIssuer = global.APP_DATA.jenkins_root + '/crumbIssuer/api/xml?xpath=concat(//crumbRequestField,":",//crumb)';
+
+	var crumb;
+
+	var getOptions = {
+			url: jenkinsCrumbIssuer,
+			auth: {
+				'user': global.jenkinsUsername,
+				'pass': global.jenkinsToken,
+			}
+	};
+
+	request.get(getOptions, function(error, response, body){
+		console.log('parser.js: Making GET request for Jenkins Crumb');
+		console.log('parser.js: request error: '+error);
+		console.log('parser.js: request response: '+response);
+		console.log('parser.js: request body: '+body); //Example: Jenkins-Crumb:0b91d58bb62f79cda34a1b7144a6530b
+
+		crumb = body.split(':')[1]; //Example: 0b91d58bb62f79cda34a1b7144a6530b
+		console.log('parser.js: request crumb: '+crumb+' crumb.length: '+crumb.length);
+
+		var postOptions = {
+				url: jenkinsURL,
+				headers: {
+					'content-type': 'application/x-www-form-urlencoded',
+					'Jenkins-Crumb': crumb
+				},
+				auth: {
+					'user': global.jenkinsUsername,
+					'pass': global.jenkinsToken,
+				},
+				body: postBody
+		};
+
+		request.post(postOptions, function(error, response, body){
+			console.log('parser.js: Making POST request for submitting job');
+			console.log('parser.js: request error: '+error);
+			console.log('parser.js: request response: '+response);
+			console.log('parser.js: request body: '+body);
+
+			/* Note: Don't delete the commented lines since they will be helpful in debugging. */
+			//var str = JSON.stringify(response);
+			//console.log('parser.js: str: '+str);
+
+			var queueLocation = response.headers.location;
+			console.log('parser.js: queueLocation: '+queueLocation);
+
+			//Prints out JSON object in a nicely formatted and readable format
+			//console.log(JSON.stringify(response, null, 4));
+
+			getJenkinsBuildURL(queueLocation, crumb, function(jenkinsBuildURL){
+
+				console.log('parser.js: jenkinsBuildURL '+jenkinsBuildURL);
+				res.send(jenkinsBuildURL);
+					});
+				});
+			});
 }
 
 function getHeader(callback){
@@ -427,7 +455,7 @@ function getHeader(callback){
 function generateDate(){
 	console.log('parser.js: Entering generateDate()');
 	var dt = dateTime.create();
-	var formatted = dt.format('Y-m-d H:M'); 
+	var formatted = dt.format('Y-m-d H:M');
 	return '# ' + formatted + '\n';
 }
 
@@ -437,8 +465,8 @@ function generateENV(result){
     var ENVString = '';
     for (var property in ENV){
 	    var envVar = ENV[property].$.name;
-	    var envVal = ENV[property]._ ? ENV[property]._ : '';        
-	    
+	    var envVal = ENV[property]._ ? ENV[property]._ : '';
+
 	    ENVString += `export ${envVar}="${envVal}"\n`;
 	}
 
@@ -451,8 +479,8 @@ function generateHWENV(result){
     var ENVString = '';
     for (var property in HW_ENV){
 	    var envVar = HW_ENV[property].$.name;
-	    var envVal = HW_ENV[property]._ ? HW_ENV[property]._ : '';        
-	    
+	    var envVal = HW_ENV[property]._ ? HW_ENV[property]._ : '';
+
 	    ENVString += `export ${envVar}="${envVal}"\n`;
 	}
 
@@ -461,10 +489,10 @@ function generateHWENV(result){
 
 function insertSpecificCommands(result){
 	console.log('parser.js: Entering insertSpecificCommands()');
-	
+
 	var benchmarkName = result.benchmarks.benchmark.$.name;
 	var platform = result.benchmarks.benchmark.platform.substring(1, 3);
-	
+
 	var command = '';
 	if (benchmarkName == 'ILOG_WODM' && platform == 'mz')
 	{
@@ -477,7 +505,7 @@ function insertSpecificCommands(result){
 function generateScriptCommands(result){
 
 	console.log('parser.js: Entering generateScriptCommands()');
-	
+
 	var scripts = result.benchmarks.benchmark.properties.scripts;
  	var commandString = '';
 
@@ -517,14 +545,14 @@ function generateScriptCommands(result){
 function generateJavaRunCommands(result){
 
 	console.log('parser.js: Entering generateJavaRunCommands()');
-	
+
 	var scripts = result.benchmarks.benchmark.properties.scripts;
-	
+
 	var buildName = result.benchmarks.benchmark.buildName;
 	console.log('parser.js: generateJavaRunCommands() buildName: '+buildName);
-	
+
 	var jdkDir="$WORKSPACE/../../sdks";
-	
+
  	var commandString = '';
 
     for (var script in scripts){

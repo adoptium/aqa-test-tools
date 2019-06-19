@@ -1028,20 +1028,17 @@ function submitJobHelper(key, isBaseline) {
     
     var benchmarkName = selectedBenchmarks[key].name + '-' + selectedBenchmarks[key].variant;
     
-    if (isBaseline)
-    	{
-    	benchmarkName += ' (Baseline Build)';
-    	}
-    else
-    	{
-    	benchmarkName += ' (Test Build)';
-    	}
-    
     console.log("submitJob() selectedBenchmarks[key].name: "+selectedBenchmarks[key].name);
     console.log("submitJob() selectedBenchmarks[key].variant: "+selectedBenchmarks[key].variant);
 
 	var requestAPI = "/api/benchengine/submit?machine=" + $('#machine-selection').val();
-	var jobData = parseJob(selectedBenchmarks[key], isBaseline);
+	var jobData = parseJob(selectedBenchmarks[key], false);
+	
+	// If interleaving add the baseline job information to the xml file
+	if (isBaseline) {
+    	var baselineData = parseJob(selectedBenchmarks[key], true);
+    	jobData = jobData + baselineData;
+    }
 
 	/* TODO: Need to add '#notification' to the html page since it's not there currently, hence 
 	 * we don't get the result whether we were able to submit the job successfully or not. */
@@ -1092,7 +1089,7 @@ function displayJenkinsBuildURL() {
 	for (i = 0; i < numKeys; i++) 
 	{
 		key = buildKeys[i];
-		$('#submitJobModalBody').append('<h4 class="jenkins-build-url"><span>'+key+': '+'</span><br /><a href="'+jenkinsBuilds[key]+'" target="_blank">'+jenkinsBuilds[key]+'</a></h4>');
+		$('#submitJobModalBody').append('<h4 class="jenkins-build-url"><span>This link below is the Jenkins GrandParent Build URL. Please copy the Jenkins Parent Build URLs found in the console log of the GrandParent Build if you want to use Perf Compare</span><br /><span>'+key+': '+'</span><br /><a href="'+jenkinsBuilds[key]+'" target="_blank">'+jenkinsBuilds[key]+'</a></h4>');
 	}
 	
 }
@@ -1112,7 +1109,7 @@ function submitJob() {
 		console.log('submitJob(): Inside ajaxStart');			
 	});
 	
-	$('#submit-console-output').html('Submitting Jobs to Jenkins. Please wait for Jenkin Build URLs to be generated...');
+	$('#submit-console-output').html('Submitting Jobs to Jenkins. Please wait (up to 5 seconds) for Jenkins Build URLs to be generated...');
 	
 	for (var key in selectedBenchmarks)
 	{
@@ -1121,7 +1118,6 @@ function submitJob() {
 			if (document.getElementById('RunBaseline').checked)
 				{
 				console.log('util.js: RunBaseline is checked');
-				submitJobHelper(key, false);
 				submitJobHelper(key, true);
 				}
 			else

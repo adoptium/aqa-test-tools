@@ -14,6 +14,7 @@ global.perffarmUsername = global.credentials.builds_server.username;
 global.perffarmEspressoPwd = global.credentials.builds_server.password;
 global.jenkinsUsername = global.credentials.jenkins_server.username;
 global.jenkinsPwd = global.credentials.jenkins_server.password;
+global.jenkinsToken = global.credentials.jenkins_server.jenkinsToken;
 
 //Middleware
 app.use(bodyParser.urlencoded({extended: false}));
