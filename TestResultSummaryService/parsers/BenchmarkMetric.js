@@ -48,6 +48,15 @@ const BenchmarkMetricRegex = {
                 regexRepeat: false
             }
         ]
+    },
+    AcmeAirNodejs: {
+        metrics: [
+            {
+                name: "Throughput",
+                regex: /Throughput: (\d*\.?\d*)/, //Example: "Throughput: 3554.1"
+                regexRepeat: false
+            }
+        ]
     }
 }
 
