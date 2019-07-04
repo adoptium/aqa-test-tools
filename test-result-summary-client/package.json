@@ -24,12 +24,15 @@
     "react-jsx-highcharts": "^3.5.0",
     "react-jsx-highstock": "^3.5.0",
     "react-router": "^5.0.0",
-    "react-router-dom": "^5.0.0"
+    "react-router-dom": "^5.0.0",
+    "snyk": "^1.189.0"
   },
   "scripts": {
     "start": "react-app-rewired start",
     "build": "react-app-rewired build",
-    "test": "react-app-rewired test --env=jsdom"
+    "test": "react-app-rewired test --env=jsdom",
+    "snyk-protect": "snyk protect",
+    "prepare": "npm run snyk-protect"
   },
   "proxy": "http://localhost:3001",
   "devDependencies": {
@@ -41,5 +44,6 @@
     "not dead",
     "not ie <= 11",
     "not op_mini all"
-  ]
+  ],
+  "snyk": true
 }
