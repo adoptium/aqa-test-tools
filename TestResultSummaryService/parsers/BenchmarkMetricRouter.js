@@ -18,6 +18,9 @@ const BenchmarkMetricRouter = {
     },
     "SPECjbb2015": {
         "multi_2grp_gencon": "SPECjbb2015"
+    },
+    "AcmeAirNodejs": {
+        "1grp" : "AcmeAirNodejs"
     }
 }
 
