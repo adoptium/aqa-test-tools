@@ -29,10 +29,10 @@ export default class BuildDetail extends Component {
     }
 
     async updateData() {
-        const { parentId, buildResult, buildNameRegex } = getParams(this.props.location.search);
+        const { parentId, buildResult, testSummaryResult, buildNameRegex } = getParams(this.props.location.search);
         let fetchBuild = {};
-        if (buildResult || buildNameRegex) {
-            fetchBuild = await fetch(`/api/getAllChildBuilds${params({ buildResult, buildNameRegex, parentId })}`, {
+        if (testSummaryResult || buildNameRegex || buildResult) {
+            fetchBuild = await fetch(`/api/getAllChildBuilds${params({ buildResult, testSummaryResult, buildNameRegex, parentId })}`, {
                 method: 'get'
             });
         } else {

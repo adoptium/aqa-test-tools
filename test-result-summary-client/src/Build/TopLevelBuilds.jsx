@@ -126,10 +126,10 @@ export default class TopLevelBuilds extends Component {
                 if (!totals) return <div>N/A</div>;
 
                 return <div>
-                    {renderResults(value, "Failed: ", totals.failed ? totals.failed : 0, "!SUCCESS", "(^Test.*|.*test_.*)")}
-                    {renderResults(value, "Passed: ", totals.passed ? totals.passed : 0, "SUCCESS", "(^Test.*|.*test_.*)")}
-                    {renderResults(value, "Disabled: ", totals.disabled ? totals.disabled : 0, "!FAILURE", "(^Test.*|.*test_.*)")}
-                    <span>Skipped: {totals.skipped ? totals.skipped : 0} </span>
+                    {renderResults(value, "Failed: ", totals.failed ? totals.failed : 0, undefined, "failed", "(^Test.*|.*test_.*)")}
+                    {renderResults(value, "Passed: ", totals.passed ? totals.passed : 0, undefined, "passed", "(^Test.*|.*test_.*)")}
+                    {renderResults(value, "Disabled: ", totals.disabled ? totals.disabled : 0, undefined, "disabled", "(^Test.*|.*test_.*)")}
+                    {renderResults(value, "Skipped: ", totals.skipped ? totals.skipped : 0, undefined,"skipped", "(^Test.*|.*test_.*)")}
                     {renderResults(value, "Total: ", totals.total ? totals.total : 0)}
                 </div>;
             };
@@ -140,10 +140,10 @@ export default class TopLevelBuilds extends Component {
                 </div>;
             };
 
-            const renderResults = (build, label, link, buildResult, buildNameRegex) => {
+            const renderResults = (build, label, link, buildResult, testSummaryResult, buildNameRegex) => {
                 if (build && build.buildNum) {
                     return <span>
-                        {label}<Link to={{ pathname: '/buildDetail', search: params({ parentId: build._id, buildResult, buildNameRegex }) }}>{link} </Link>
+                        {label}<Link to={{ pathname: '/buildDetail', search: params({ parentId: build._id, buildResult, testSummaryResult, buildNameRegex }) }}>{link} </Link>
                     </span>;
                 }
                 return null;
