@@ -2,32 +2,32 @@
     "CustomJenkins": {
         "url": "https://customJenkinsServer",
         "builds": [
-            "Test-sanity.functional-JDK8-linux_x86-64_cmprssptrs",
-            "Test-sanity.functional-JDK11-linux_x86-64_cmprssptrs",
-            "Test-sanity.functional-JDK11-win_x86-64_cmprssptrs"
+            "Test_openjdk8_j9_sanity.functional_x86-64_linux",
+            "Test_openjdk11_j9_sanity.functional_x86-64_linux",
+            "Test_openjdk11_j9_sanity.functional_x86-64_windows"
         ],
         "default": [
-            "Test-sanity.functional-JDK8-linux_x86-64_cmprssptrs",
-            "Test-sanity.functional-JDK11-linux_x86-64_cmprssptrs"
+            "Test_openjdk8_j9_sanity.functional_x86-64_linux",
+            "Test_openjdk11_j9_sanity.functional_x86-64_linux"
         ]
     },
     "AdoptOpenJDK": {
         "url": "https://ci.adoptopenjdk.net",
         "builds": [
-            "openjdk8_hs_openjdktest_x86-64_linux",
-            "openjdk8_hs_openjdktest_x86-64_macos",
-            "openjdk8_j9_openjdktest_x86-64_linux",
-            "openjdk11_hs_openjdktest_aarch64_linux",
-            "openjdk11_hs_openjdktest_x86-64_linux",
-            "openjdk11_j9_openjdktest_x86-64_linux",
-            "openjdk11_hs_systemtest_ppc64le_linux",
-            "openjdk11_hs_systemtest_x86-64_linux"
+            "Test_openjdk8_hs_sanity.openjdk_x86-64_linux",
+            "Test_openjdk8_hs_sanity.openjdk_x86-64_mac",
+            "Test_openjdk8_j9_sanity.openjdk_x86-64_linux",
+            "Test_openjdk11_hs_sanity.openjdk_aarch64_linux",
+            "Test_openjdk11_hs_sanity.openjdk_x86-64_linux",
+            "Test_openjdk11_j9_sanity.openjdk_x86-64_linux",
+            "Test_openjdk8_hs_sanity.system_ppc64le_linux",
+            "Test_openjdk8_hs_sanity.system_x86-64_linux"
         ],
         "default": [
-            "openjdk8_j9_openjdktest_x86-64_linux",
-            "openjdk8_hs_openjdktest_x86-64_linux",
-            "openjdk11_hs_openjdktest_x86-64_linux",
-            "openjdk11_j9_openjdktest_x86-64_linux"
+            "Test_openjdk8_j9_sanity.openjdk_x86-64_linux",
+            "Test_openjdk8_hs_sanity.openjdk_x86-64_linux",
+            "Test_openjdk11_j9_sanity.openjdk_x86-64_linux",
+            "Test_openjdk11_hs_sanity.openjdk_x86-64_linux"
         ]
     }
 }
