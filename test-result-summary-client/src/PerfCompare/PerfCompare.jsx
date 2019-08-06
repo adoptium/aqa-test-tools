@@ -5,6 +5,7 @@ import { stringify } from 'qs';
 import PerffarmRunJSON from './lib/PerffarmRunJSON';
 import JenkinsRunJSON from './lib/JenkinsRunJSON';
 import benchmarkVariantsInfo from './lib/benchmarkVariantsInfo';
+import { getParams } from '../utils/query';
 import './PerfCompare.css';
 
 const perfCompareColumns = [{
@@ -59,8 +60,14 @@ export default class PerfCompare extends Component {
         }
     };
 
-    componentDidMount() {
-
+    async componentDidMount() {
+    	let inputURL = {}
+        const urlData = getParams(window.location.search);
+        for (let url in urlData) {
+        	inputURL[url] = urlData[url];
+        }
+        await this.setState({inputURL: inputURL});
+        this.handleParseInputURL();
     }
 
     handleChange(event) {

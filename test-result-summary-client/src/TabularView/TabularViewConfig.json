@@ -1,0 +1,7 @@
+{
+    "jdkVersion" : "openjdk8", 
+    "jvmType" : "j9", 
+    "testSdkResource" : "nightly", 
+    "baselineSdkResource" : "releases",
+    "jenkinsServer" : "https://CustomJenkinsServer.company.com"
+}
