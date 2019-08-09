@@ -76,7 +76,8 @@ export default class TopLevelBuilds extends Component {
                         <Link to={{ pathname: '/buildDetail', search: params({ parentId: value._id }) }}
                             style={{ color: value.buildResult === "SUCCESS" ? "#2cbe4e" : (value.buildResult === "FAILURE" ? "#f50" : "#DAA520") }}>Build #{value.buildNum}  <Tooltip title={value.buildResult}>{icon}</Tooltip>
                         </Link>
-                        <br/>{renderPublishName(value)}
+
+                        <br />{renderPublishName(value)}
                     </div>
                 }
                 return null;
@@ -125,13 +126,18 @@ export default class TopLevelBuilds extends Component {
                 const totals = value.totals;
                 if (!totals) return <div>N/A</div>;
 
-                return <div>
-                    {renderResults(value, "Failed: ", totals.failed ? totals.failed : 0, undefined, "failed", "^Test.*")}
-                    {renderResults(value, "Passed: ", totals.passed ? totals.passed : 0, undefined, "passed", "^Test.*")}
-                    {renderResults(value, "Disabled: ", totals.disabled ? totals.disabled : 0, undefined, "disabled", "^Test.*")}
-                    {renderResults(value, "Skipped: ", totals.skipped ? totals.skipped : 0, undefined,"skipped", "^Test.*")}
-                    {renderResults(value, "Total: ", totals.total ? totals.total : 0)}
-                </div>;
+                return <>
+                    <Link to={{ pathname: '/resultGrid', search: params({ parentId: value._id }) }}
+                        style={{ color: value.buildResult === "SUCCESS" ? "#2cbe4e" : (value.buildResult === "FAILURE" ? "#f50" : "#DAA520") }}>Grid
+                    </Link>
+                    <div>
+                        {renderResults(value, "Failed: ", totals.failed ? totals.failed : 0, undefined, "failed", "^Test.*")}
+                        {renderResults(value, "Passed: ", totals.passed ? totals.passed : 0, undefined, "passed", "^Test.*")}
+                        {renderResults(value, "Disabled: ", totals.disabled ? totals.disabled : 0, undefined, "disabled", "^Test.*")}
+                        {renderResults(value, "Skipped: ", totals.skipped ? totals.skipped : 0, undefined, "skipped", "^Test.*")}
+                        {renderResults(value, "Total: ", totals.total ? totals.total : 0)}
+                    </div>
+                </>;
             };
 
             const renderBuildResults = (value) => {
