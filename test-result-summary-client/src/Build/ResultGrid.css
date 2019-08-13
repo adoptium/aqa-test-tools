@@ -1,0 +1,66 @@
+.wrapper {
+    display: grid;
+    grid-auto-columns: max-content;
+    overflow-x: auto;
+    max-width: calc(100vw - 300px);
+}
+
+.platform-header {
+    margin-top: 36px;
+    margin-bottom: 4px;
+    display: flex;
+    align-items: center;
+}
+
+.jdk-version-header {
+    margin-left: 16px;
+    text-align: center;
+}
+
+.jdk-version-header, .platform-header {
+    font-size: 18px;
+    background-color: rgb(247, 247, 247);
+}
+
+.jdk-impl {
+    font-size: 16px;
+    text-align: center;
+    color: rgb(140, 140, 140);
+}
+
+.nested-wrapper {
+    display: grid;
+    grid-auto-columns: max-content;
+}
+
+.nested-wrapper.padding {
+    padding-left: 12px;
+}
+
+.box {
+    border-radius: 4px;
+    padding: 4px 20px;
+}
+
+.cell {
+    color: #fff;
+    border-radius: 4px;
+    padding: 4px;
+    margin: 4px;
+    width: 24px;
+    height: 24px;
+    text-align: center;
+    background-color: rgb(247, 247, 247);
+}
+
+.cell.SUCCESS {
+    background-color: rgb(44, 190, 78);
+}
+
+.cell.UNSTABLE {
+    background-color: rgb(218, 165, 32);
+}
+
+.cell.FAILURE {
+    background-color: rgb(255, 85, 0);
+}
