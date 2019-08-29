@@ -20,6 +20,8 @@ app.get( '/getOutputByTestInfo', wrap( require( "./getOutputByTestInfo" ) ) );
 app.get( '/getTestInfoByBuildInfo', wrap( require( "./getTestInfoByBuildInfo" ) ) );
 app.get( '/getParents', wrap( require( "./getParents" ) ) );
 app.get( '/getPerffarmRunCSV', wrap( require( "./getPerffarmRunCSV" ) ) );
+app.get( '/getTabularData', wrap( require( "./getTabularData" ) ) );
+app.get( '/getTabularDropdown', wrap( require( "./getTabularDropdown" ) ) );
 app.get( '/getTestById', wrap( require( "./getTestById" ) ) );
 app.get( '/getTestBySearch', wrap( require( "./getTestBySearch" ) ) );
 app.get( '/getTestPerPlatform', wrap( require( "./getTestPerPlatform" ) ) );

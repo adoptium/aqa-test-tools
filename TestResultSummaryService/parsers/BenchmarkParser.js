@@ -6,6 +6,7 @@ const benchmarkDelimiterRegex = /[\r\n]\*\*\*\*\*\*\*\*\*\* START OF NEW TESTCI 
 const benchmarkNameRegex = /[\r\n]Benchmark Name: (.*) Benchmark Variant: .*[\r\n]/;
 const benchmarkVariantRegex = /[\r\n]Benchmark Name: .* Benchmark Variant: (.*)[\r\n]/;
 const benchmarkProductRegex = /[\r\n]Benchmark Product: (.*)[\r\n]/;
+const productResourceRegex = /[\r\n]Product Resource: (.*)[\r\n]/;
 const javaVersionRegex = /(java version[\s\S]*JCL.*\n)/;
 const javaBuildDateRegex = /-(20[0-9][0-9][0-9][0-9][0-9][0-9])_/;
 
@@ -56,6 +57,7 @@ class BenchmarkParser extends Parser {
             let curMetricValue = null;
             let curJavaBuildDate = null;
             let curJavaVersion = null;
+            let curProductResource = null;
             let isValid = true;
             let curTestData = {};
 
@@ -87,6 +89,10 @@ class BenchmarkParser extends Parser {
             // Parse benchmark product
             if ( ( curRegexResult = benchmarkProductRegex.exec( curItr.value ) ) !== null ) {
                 curBenchmarkProduct = curRegexResult[1];
+            }
+            
+            if ( ( curRegexResult = productResourceRegex.exec( curItr.value ) ) !== null ) {
+                curProductResource = curRegexResult[1];
             }
 
             if ( isValid ) {
@@ -150,7 +156,8 @@ class BenchmarkParser extends Parser {
                 benchmarkName: curBenchmarkName,
                 benchmarkVariant: curBenchmarkVariant,
                 benchmarkProduct: curBenchmarkProduct,
-                testData: curTestData
+                testData: curTestData,
+                sdkResource: curProductResource,
             } );
 
             curItr = benchmarkIterator.next();
