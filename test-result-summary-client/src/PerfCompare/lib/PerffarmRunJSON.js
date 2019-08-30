@@ -82,9 +82,9 @@ export default class PerffarmRunJSON {
 
                 // Confidence Interval is always 4 indices above the next variant seperator
                 try {
-                    curMetricObject["ci"] = (this.parsedCSV[indexOfCI][m]) * 100;
+                    curMetricObject["CI"] = (this.parsedCSV[indexOfCI][m]) * 100;
                 } catch(e) {
-                    curMetricObject["ci"] = null;
+                    curMetricObject["CI"] = null;
                 }
 
                 curVariantObject.metrics.push(curMetricObject);

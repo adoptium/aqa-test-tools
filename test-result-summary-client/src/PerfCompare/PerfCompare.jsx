@@ -3,30 +3,10 @@ import { Form, Input, Button, Radio, Row, Table, Divider, Progress, Alert } from
 import math from 'mathjs';
 import { stringify } from 'qs';
 import PerffarmRunJSON from './lib/PerffarmRunJSON';
-import JenkinsRunJSON from './lib/JenkinsRunJSON';
+import ExtractRelevantJenkinsTestResults from './lib/ExtractRelevantJenkinsTestResults';
 import benchmarkVariantsInfo from './lib/benchmarkVariantsInfo';
 import { getParams } from '../utils/query';
 import './PerfCompare.css';
-
-const perfCompareColumns = [{
-        title: 'Metric (units)',
-        dataIndex: 'metric',
-        }, {
-        title: 'Baseline Score',
-        dataIndex: 'baselineScore',
-        }, {
-        title: 'Baseline CI',
-        dataIndex: 'baselineCI',
-        }, {
-        title: 'Test Score',
-        dataIndex: 'testScore',
-        }, {
-        title: 'Test CI',
-        dataIndex: 'testCI',
-        }, {
-        title: 'Diff',
-        dataIndex: 'diff',
-    }];
 
 const buildTypeExampleURL = {
     Jenkins: "https://customJenkinsServer/view/PerfTests/job/Daily-Liberty-Startup/1/",
@@ -182,6 +162,24 @@ export default class PerfCompare extends Component {
         })
     }
 
+    async getChildrenRawMetricsData ( buildJson ) {
+        const jenkinsRawData = [];
+        if ( buildJson.testInfo[0].hasChildren === true ) {
+            let parentIdBuild = buildJson.testInfo[0]._id;
+            let childListBuild = await fetch( `/api/getChildBuilds?parentId=${parentIdBuild}`, {
+                method: 'get'
+            } );
+            let childListBuildJson = await childListBuild.json();
+            for ( let i = 0; i < childListBuildJson.length; i++ ) {
+                //get all the raw metrics data from children builds
+                if ( childListBuildJson[i].tests && childListBuildJson[i].tests.length > 0 ) {
+                    jenkinsRawData.push (childListBuildJson[i].tests[0].testData.metrics);
+                }
+            }
+            return jenkinsRawData;
+        }
+    }
+
     handleGetJenkinsRuns = async () => {
 
         this.setState(
@@ -200,22 +198,37 @@ export default class PerfCompare extends Component {
             method: 'get'
         } );
 
-        let resBenchmarkBaselineJson = await baselineBuildTestInfo.json();
-        let resBenchmarkTestJson = await testBuildTestInfo.json();
+        let baselineTestResultsJson = await baselineBuildTestInfo.json();
+        let testTestResultsJson = await testBuildTestInfo.json();
 
-        // Check if the benchmark and test data is valid
+        // Check if the given builds are valid
         let displayErrorMessage = "";
-        if (resBenchmarkBaselineJson === undefined || (Object.keys(resBenchmarkBaselineJson).length === 0 && resBenchmarkBaselineJson.constructor === Object) || 
-                resBenchmarkBaselineJson.testInfo === undefined) {
+        let hasData;
+        if (baselineTestResultsJson === undefined || (Object.keys(baselineTestResultsJson).length === 0 && baselineTestResultsJson.constructor === Object) || 
+        baselineTestResultsJson.testInfo === undefined) {
             displayErrorMessage = "Baseline build not found. ";
         }
-        if (resBenchmarkTestJson === undefined || (Object.keys(resBenchmarkTestJson).length === 0 && resBenchmarkTestJson.constructor === Object) ||
-                resBenchmarkTestJson.testInfo === undefined) {
-            displayErrorMessage += "Test build not found"
+        if (testTestResultsJson === undefined || (Object.keys(testTestResultsJson).length === 0 && testTestResultsJson.constructor === Object) ||
+        testTestResultsJson.testInfo === undefined) {
+            displayErrorMessage += "Test build not found";
+        }
+        // Check if the aggregate info is valid
+        if (displayErrorMessage === "") {
+            try {
+                hasData = baselineTestResultsJson.testInfo[0].aggregateInfo.length > 0;
+            } catch (e) {
+                displayErrorMessage += "Baseline build has no data. ";
+            }
+    
+            try {
+                hasData = testTestResultsJson.testInfo[0].aggregateInfo.length > 0;
+            } catch (e) {
+                displayErrorMessage += "Test build has no data. ";
+            }
         }
 
         // Data received is not valid
-        if (displayErrorMessage !== "") {
+        if (hasData === true && displayErrorMessage !== "") {
             this.setState(
                 {
                     inputURL: {
@@ -238,9 +251,11 @@ export default class PerfCompare extends Component {
             return
         }
 
-        let baselineRunJSON = new JenkinsRunJSON(resBenchmarkBaselineJson);
-        let testRunJSON = new JenkinsRunJSON(resBenchmarkTestJson);
-        
+        let baselineRunJSON = new ExtractRelevantJenkinsTestResults(baselineTestResultsJson);
+        let testRunJSON = new ExtractRelevantJenkinsTestResults(testTestResultsJson);
+        let childrenBuildRawDataBaseline = await this.getChildrenRawMetricsData(baselineTestResultsJson);
+        let childrenBuildRawDataTest = await this.getChildrenRawMetricsData(testTestResultsJson);
+
         baselineRunJSON.init(() => {
             this.setState(
                 {
@@ -255,6 +270,8 @@ export default class PerfCompare extends Component {
                         benchmarkRuns: {
                             benchmarkRunBaseline: baselineRunJSON,
                             benchmarkRunTest: testRunJSON,
+                            childrenBuildRawDataBaseline,
+                            childrenBuildRawDataTest,
                         },
                         progress: 60
                     }
@@ -284,17 +301,22 @@ export default class PerfCompare extends Component {
             let baselineBuildURL, testBuildURL;
             let baselineURLScheme, baselineHostWithPort, baselineBuildName, baselineBuildNum;
             let testURLScheme, testHostWithPort, testBuildName, testBuildNum;
-
-            const baselineBuildURLSplit = this.state.inputURL.baselineID.split("/");
-            const testBuildURLSplit = this.state.inputURL.testID.split("/");
+            let baselineBuildURLSplit, testBuildURLSplit;
+            if (this.state.inputURL.baselineID && this.state.inputURL.testID) {
+                baselineBuildURLSplit = this.state.inputURL.baselineID.split("/");
+                testBuildURLSplit = this.state.inputURL.testID.split("/");
+            }
             
             // Find the index for the top level "job" path in the Jenkins URLs given.
             // This is to support comparing the following equivalent Jenkins job URLs:
             // https://customJenkinsServer/view/PerfTests/job/Daily-Liberty-DayTrader3/155/
             // https://customJenkinsServer/job/Daily-Liberty-DayTrader3/155/
 
-            const jenkinsTopLevelJobIndexBaseline= baselineBuildURLSplit.indexOf("job");
-            const jenkinsTopLevelJobIndexTest= testBuildURLSplit.indexOf("job");
+            let jenkinsTopLevelJobIndexBaseline, jenkinsTopLevelJobIndexTest;
+            if (baselineBuildURLSplit && testBuildURLSplit){
+                jenkinsTopLevelJobIndexBaseline= baselineBuildURLSplit.indexOf("job");
+                jenkinsTopLevelJobIndexTest= testBuildURLSplit.indexOf("job");
+            }
 
             try {
                 baselineURLScheme = baselineBuildURLSplit[0];
@@ -408,66 +430,79 @@ export default class PerfCompare extends Component {
         // Only compare variants that are in the baseline run
         for (let i = 0; i < this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants.length; i++) {
             // Must match the benchmark and variant names
+            let parsedVariantsBaseline = this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i];
             curMatchingTestVariantIndex = this.state.benchmarkRuns.benchmarkRunTest.parsedVariants.map(x =>
-                x.benchmark + "!@#$%DELIMIT%$#@!" + x.variant).indexOf(this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].benchmark +
-                "!@#$%DELIMIT%$#@!" + this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].variant);
-            
+                x.benchmark + "!@#$%DELIMIT%$#@!" + x.variant).indexOf(parsedVariantsBaseline.benchmark +
+                "!@#$%DELIMIT%$#@!" + parsedVariantsBaseline.variant);
+            let parsedVariantsTest = this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex];
             // Benchmark variant was not found in Test run, skip it
             if (curMatchingTestVariantIndex === -1) {
                 continue;
             }
 
             curVariantData = {};
-            curVariantData["benchmark"] = this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].benchmark;
-            curVariantData["variant"] = this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].variant;
-            curVariantData["baselineProduct"] = this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].product;
-            curVariantData["testProduct"] = this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].product;
+            curVariantData["benchmark"] = parsedVariantsBaseline.benchmark;
+            curVariantData["variant"] = parsedVariantsBaseline.variant;
+            curVariantData["baselineProduct"] = parsedVariantsBaseline.product;
+            curVariantData["testProduct"] = parsedVariantsTest.product;
             curVariantData["summary"] = "";
+            curVariantData["baselineMachine"] = parsedVariantsBaseline.machine;
+            curVariantData["testMachine"] = parsedVariantsTest.machine;
 
             curMetricTable = [];
-            for (let j = 0; j < this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics.length; j++) {
+            for (let j = 0; j < parsedVariantsBaseline.metrics.length; j++) {
                 
                 // Must match the baseline metric name
-                curMatchingTestMetricIndex = this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics.map(x =>
-                    x.name).indexOf(this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].name);
+                curMatchingTestMetricIndex = parsedVariantsTest.metrics.map(x =>
+                    x.name).indexOf(parsedVariantsBaseline.metrics[j].name);
 
                 // Metric was not found in Test run, skip it
                 if (curMatchingTestMetricIndex === -1) {
                     continue;
                 }
 
-                curMetricName = this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].name;
-
-                curRawValues = {
-                    "baseline": this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].value,
-                    "test": this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].value
-                };
-
-                try {
-                    curBaselineScore = math.round((this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].mean), 3);
-                } catch (roundBaselineScoreError) {
-                    curBaselineScore = "error";
+                // get the raw values for master nodes.
+                curMetricName = parsedVariantsBaseline.metrics[j].name;
+                let childBuildBaselineData = {};
+                let childBuildTestData = {};
+                // getting the raw value for j metric of the x child
+                if ( this.state.benchmarkRuns.childrenBuildRawDataBaseline && this.state.benchmarkRuns.childrenBuildRawDataBaseline.length > 0){
+                    for ( let x = 0; x < this.state.benchmarkRuns.childrenBuildRawDataBaseline.length; x++ ) {
+                        childBuildBaselineData["child " + (x + 1) ] = this.state.benchmarkRuns.childrenBuildRawDataBaseline[x][j].value;
+                    }
                 }
-                
-                try {
-                    curTestScore = math.round((this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].mean), 3);
-                } catch (roundTestScoreError) {
-                    curTestScore = "error";
+                if (this.state.benchmarkRuns.childrenBuildRawDataTest && this.state.benchmarkRuns.childrenBuildRawDataTest.length > 0){
+                    for ( let y = 0; y < this.state.benchmarkRuns.childrenBuildRawDataTest.length; y++ ) {
+                        childBuildTestData["child " + (y + 1) ] = this.state.benchmarkRuns.childrenBuildRawDataTest[y][j].value;
+                    }
+                }
+   
+                if ( this.state.buildType === "Jenkins") {
+                    // raw values displaying: master jobs diplay all their children raw values, and child jobs diplay their own raw values.
+                    curRawValues = {
+                        "baseline": {
+                            "Overview": parsedVariantsBaseline.metrics[j].value,
+                            "Raw Data": (parsedVariantsBaseline.testsData === undefined) ? childBuildBaselineData : this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].testsData[j].value
+                         },
+                        "test": {
+                            "Overview": parsedVariantsTest.metrics[curMatchingTestMetricIndex].value,
+                            "Raw Data": (parsedVariantsTest.testsData === undefined) ? childBuildTestData : parsedVariantsTest.testsData[j].value
+                         }
+                    };
+                } else {
+                    // perffarm builds
+                    let runBaseline = this.state.benchmarkRuns.benchmarkRunBaseline;
+                    let runTest = this.state.benchmarkRuns.benchmarkRunTest
+                    curRawValues = {
+                        "baseline": runBaseline.parsedVariants[i].metrics[j].value,
+                        "test": runTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].value
+                    };
                 }
 
-                try {
-                    curBaselineCI = math.round((this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i].metrics[j].ci), 3);
-                    curBaselineCI += "%";
-                } catch(e) {
-                    curBaselineCI = "Not found";
-                }
-
-                try {
-                    curTestCI = math.round((this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex].metrics[curMatchingTestMetricIndex].ci), 3);
-                    curTestCI += "%";
-                } catch(e) {
-                    curTestCI = "Not found";
-                }
+                curBaselineScore = parsedVariantsBaseline.metrics[j].value.mean;
+                curBaselineCI = parsedVariantsBaseline.metrics[j].value.CI;
+                curTestScore = parsedVariantsTest.metrics[j].value.mean;
+                curTestCI = parsedVariantsTest.metrics[j].value.CI;
 
                 // Get the metric's units
                 try {
@@ -493,23 +528,21 @@ export default class PerfCompare extends Component {
                 // If a metric's higherbetter value is not found, defaults to higher = better.
                 try {
                     if (curHigherBetter || curHigherBetter === undefined) {
-                        curDiff = math.round((((curTestScore / curBaselineScore)) * 100), 3);
+                        curDiff = curTestScore / curBaselineScore;
                     } else {
-                        curDiff = math.round((((curBaselineScore / curTestScore)) * 100), 3);
+                        curDiff = curBaselineScore / curTestScore;
                     }
 
                     // Row colours based on improvement or regression
                     if (curHigherBetter === undefined) {
                         curColor = 'caution';
-                    } else if (curDiff > 100) {
+                    } else if (curDiff > 1) {
                         curColor = 'improvement';
-                    } else if (curDiff < 100) {
+                    } else if (curDiff < 1) {
                         curColor = 'regression';
                     } else {
                         curColor = 'nochange';
                     }
-
-                    curDiff += "%";
                 } catch (roundDiffError) {
                     curDiff = "error";
                     curColor = 'caution';
@@ -543,6 +576,46 @@ export default class PerfCompare extends Component {
 
     render() {
         if (this.state.submitStatus === "done") {
+            const formatNumbers = (value) => {
+                if (value && typeof value == 'number') {
+                    return <div>{math.round(value,3)}</div>;
+                }
+                else {
+                    return <div>error</div>;
+                }
+            }
+            const formatNumbersWithPercentage = (value) => {
+                if (value && typeof value == 'number') {
+                    return <div>{math.round(value*100,3)}%</div>;
+                }
+                else {
+                    return <div>error</div>;
+                }
+            }
+            const perfCompareColumns = [{
+                title: 'Metric (units)',
+                dataIndex: 'metric',
+                }, {
+                title: 'Baseline Score',
+                dataIndex: 'baselineScore',
+                render: formatNumbers,
+                }, {
+                title: 'Baseline CI',
+                dataIndex: 'baselineCI',
+                render: formatNumbersWithPercentage,
+                }, {
+                title: 'Test Score',
+                dataIndex: 'testScore',
+                render: formatNumbers,
+                }, {
+                title: 'Test CI',
+                dataIndex: 'testCI',
+                render: formatNumbersWithPercentage,
+                }, {
+                title: 'Diff',
+                dataIndex: 'diff',
+                render: formatNumbersWithPercentage,
+            }];
 
             let baselineRunID, testRunID;
             if ((Array.isArray(this.state.selectedRuns.baselineID) && Array.isArray(this.state.selectedRuns.testID)) &&
@@ -562,9 +635,13 @@ export default class PerfCompare extends Component {
                         Variant: {x.variant}
                     </h3>
 
-                    Baseline Product: {x.baselineProduct}
+                    Baseline Product: {x.baselineProduct} 
                     <Divider type="vertical" />
-                    Test Product: {x.testProduct}<br />
+                    Baseline Machine: {x.baselineMachine}
+                    <Divider type="vertical" />
+                    Test Product: {x.testProduct}
+                    <Divider type="vertical" />
+                    Test Machine: {x.testMachine}<br />
                     
                     <Table
                         bordered
