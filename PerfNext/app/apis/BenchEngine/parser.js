@@ -409,7 +409,7 @@ function parseDefinition(raw_definition, callback){
 			}
 
 			fs.readFile('logo.txt', 'utf8', function(err, contents) {
-				generatedOutput = contents + '\n' +  generatedOutput;
+				generatedOutput = '#!/bin/bash +x \n' + contents + '\n' +  generatedOutput;
 
 				callback(generatedOutput);
 			});
