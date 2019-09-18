@@ -51,6 +51,10 @@
     height: 24px;
     text-align: center;
     background-color: rgb(247, 247, 247);
+
+    align-items: center;
+    justify-content: center;
+    display: flex;
 }
 
 .cell.SUCCESS {
