@@ -200,10 +200,14 @@ export default class TopLevelBuilds extends Component {
                 }
             }];
 
+            const order = (a, b) => {
+                const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
+                return collator.compare(a[0].buildName, b[0].buildName);
+            }
             return (
                 <div>
                     {Object.values(builds).map((urls, i) => {
-                        return Object.values(urls).map((infos, i) => {
+                        return Object.values(urls).sort(order).map((infos, i) => {
                             const buildInfo = infos.map(info => ({
                                 key: info.buildUrl,
                                 build: info,
@@ -219,7 +223,7 @@ export default class TopLevelBuilds extends Component {
                                 title={() => <div><b>{buildInfo[0].build.buildName}</b> in server {buildInfo[0].build.url}</div>}
                                 pagination={{ pageSize: 5 }}
                             />
-                        })
+                        });
                     })}
                 </div>);
         } else {
