@@ -27,7 +27,6 @@ class BenchmarkParser extends Parser {
         if (!(Array.isArray(splitOutput)) || splitOutputLength === 1) {
             return null;
         }
-
         return {
             next: function() {
                 return index < splitOutputLength ?
@@ -50,7 +49,7 @@ class BenchmarkParser extends Parser {
             let curBenchmarkName = null;
             let curBenchmarkVariant = null;
             let curBenchmarkProduct = null;
-            let curBenchmarkNamedRouted = null;
+            let curBenchVariant = null;
             let curMetric = null;
             let curSearchString = null;
             let curRegexResult = null;
@@ -97,44 +96,36 @@ class BenchmarkParser extends Parser {
 
             if ( isValid ) {
 
-                curBenchmarkNamedRouted = BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant];
-
+                curBenchVariant = BenchmarkMetric[BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]];	
+                curSearchString = curItr.value;
+                
+                // if outerregex is undefined, all runs should be measured. Parse metrics in every run
+                // if outerregex is defined, any runs before outerregex will be ignored. Parse metrics in warm runs only 
+                if (curBenchVariant.outerRegex !== undefined) {
+                	if ( ( curRegexResult = curBenchVariant.outerRegex.exec( curSearchString ) ) !== null ) {
+                        // index 0 contains entire text (curItr.value)
+                        // index 1 contains text after the outer regex
+                        curSearchString = curRegexResult[1];
+                    } 
+                }
+                
                 // Parse metric values
                 curTestData["metrics"] = [];
-                for ( let i = 0; i < BenchmarkMetric[curBenchmarkNamedRouted]["metrics"].length; i++ ) {
-                    curMetric = BenchmarkMetric[curBenchmarkNamedRouted]["metrics"][i].name;
-                    curSearchString = curItr.value;
+                for ( let i = 0; i < curBenchVariant["metrics"].length; i++ ) {
 
-                    // metric values will be found within the result of the outer regex
-                    if (BenchmarkMetric[curBenchmarkNamedRouted]["metrics"][i].outerRegex !== undefined) {
-                        if ( ( curRegexResult = BenchmarkMetric[curBenchmarkNamedRouted]["metrics"][i].outerRegex.exec( curSearchString ) ) !== null ) {
-                            curSearchString = curRegexResult[1];
-                        } else {
-                            // No result for outer regex, skip this metric
-                            continue;
-                        }
-                    }
-
-                    // multiple metric values are present
-                    if (BenchmarkMetric[curBenchmarkNamedRouted]["metrics"][i].regexRepeat === true) {
-                        curMetricValue = [];
-                        curRegexResult = BenchmarkMetric[curBenchmarkNamedRouted]["metrics"][i].regex.exec( curSearchString )
-
-                        while (curRegexResult !== null ) {
-                            curMetricValue.push(parseFloat(curRegexResult[1]));
-                            curRegexResult = BenchmarkMetric[curBenchmarkNamedRouted]["metrics"][i].regex.exec( curSearchString );
-                        }
-
-                    // single metric value
-                    } else {
-                        if ( ( curRegexResult = BenchmarkMetric[curBenchmarkNamedRouted]["metrics"][i].regex.exec( curSearchString ) ) !== null ) {
-                            curMetricValue = [parseFloat(curRegexResult[1])];
-                        }
-                    }
-
-                    curTestData["metrics"].push({name: curMetric, value: curMetricValue})
-                }
-
+                    curMetric = curBenchVariant["metrics"][i];  
+                    /*	Parse all values for single metric from result to an array
+                     *  e.g 
+                     *  Liberty Startup =>
+                     *  curRegexResult = ['startup time in ms 32',32,'startup time in ms 41',41, x 6] 
+                     *  Liberty Throughput =>
+                     *  curRegexResult = ['<metric type="throughput">32<\/data>',32]
+                     */
+                    curRegexResult = curSearchString.split(curMetric.regex);
+                    //collect only the capture groups from the regex array
+                    curMetricValue = curRegexResult.filter ( (value,index) => (index %2 == 1) ? parseFloat(value):null);
+                    curTestData["metrics"].push({name: curMetric.name, value: curMetricValue});
+                }     
                 // Parse Java version
                 if ( ( curRegexResult = javaVersionRegex.exec( curItr.value ) ) !== null ) {
                     curJavaVersion = curRegexResult[1];
