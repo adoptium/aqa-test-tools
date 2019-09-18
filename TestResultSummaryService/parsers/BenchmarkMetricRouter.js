@@ -18,7 +18,8 @@ const BenchmarkMetricRouter = {
         "17dev-4way-0-256-qs": "LibertyStartup"
     },
     "ILOG_WODM": {
-        "881-4way-Seg5FastpathRVEJB": "ILOG_WODM"
+        "881-4way-Seg5FastpathRVEJB": "ILOG_WODM",
+        "881-4way-Seg300RulesFastpathRVEJB": "ILOG_WODM"
     },
     "SPECjbb2015": {
         "multi_2grp_gencon": "SPECjbb2015"

@@ -5,11 +5,11 @@ const ObjectID = require( 'mongodb' ).ObjectID;
 class DataManagerAggregate {
     static aggDataCollect(childBuild) {
         const benchmarkMetricsCollection = {};
-        let name, variant, product;
+        let name, variant, jdkBuildDate;
         if (Array.isArray(childBuild.tests) && childBuild.tests.length > 0 ) {
             name = childBuild.tests[0].benchmarkName;
             variant = childBuild.tests[0].benchmarkVariant;
-            product = childBuild.tests[0].benchmarkProduct;
+            jdkBuildDate = childBuild.tests[0].jdkDate;
             for ( let {testData} of childBuild.tests){
                 if ( Array.isArray(testData.metrics) ) {
                     for ( let {name, value} of testData.metrics ){
@@ -22,12 +22,12 @@ class DataManagerAggregate {
                 }
             }
         }
-        return {name, variant, product, benchmarkMetricsCollection};
+        return {name, variant, jdkBuildDate, benchmarkMetricsCollection};
     }
 
-    static async updateBuildWithAggregateInfo(id, testResultsDB, name, variant, product, metricsCollection) {
+    static async updateBuildWithAggregateInfo(id, testResultsDB, name, variant, jdkBuildDate, metricsCollection) {
         // calculate the aggregate data
-        if (name != null && variant != null && product != null && metricsCollection != null) {
+        if (name != null && variant != null && jdkBuildDate != null && metricsCollection != null) {
             const aggData = [];
             const aggregateInfo = [];
             Object.keys( metricsCollection ).forEach( function(key) {
@@ -51,7 +51,7 @@ class DataManagerAggregate {
             aggregateInfo.push({
                 benchmarkName: name,
                 benchmarkVariant: variant,
-                benchmarkProduct: product,
+                jdkDate: jdkBuildDate,
                 metrics: aggData
             });
             const criteria = { _id: new ObjectID( id ) };
