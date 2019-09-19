@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { params, getParams } from '../utils/query';
 import { Icon, Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
+import Checkboxes from './Checkboxes';
 import './ResultGrid.css';
 
 const hcjdkImpls = ["j9", "hs", "Upstream"];
@@ -28,7 +29,7 @@ class Cell extends Component {
                                 <div>
                                     {target} <br />
                                     Result Summary: N/A <br />
-                                    <a href={groups[group].buildUrl} target="_blank">Jenkins Link</a>
+                                    <a href={groups[group].buildUrl} target="_blank" rel="noopener noreferrer">Jenkins Link</a>
                                 </div>
                             );
                         } else {
@@ -38,7 +39,7 @@ class Cell extends Component {
                                     Result Summary: {Object.keys(groups[group].testSummary).map((key) => {
                                         return <div>{key}: {groups[group].testSummary[key]}</div>;
                                     })}
-                                    <a href={groups[group].buildUrl} target="_blank">Jenkins Link</a>
+                                    <a href={groups[group].buildUrl} target="_blank" rel="noopener noreferrer">Jenkins Link</a>
                                 </div>
                             );
                         }
@@ -64,20 +65,29 @@ class Cell extends Component {
 }
 class Block extends Component {
     render() {
-        const { data } = this.props;
+        const { data = {}, selectedJdkImpls } = this.props;
+
         return <div className="nested-wrapper">
-            {hcjdkImpls.map((jdkImpl, x) => {
+            {selectedJdkImpls.map((jdkImpl, x) => {
                 return <>
                     <div className="box jdk-impl" style={{ gridColumn: x + 1, gridRow: 1 }}>{jdkImpl}</div>
                     <div style={{ gridColumn: x + 1, gridRow: 2 }}><Cell data={data[jdkImpl]} /></div>
                 </>
             })}
         </div>;
+
     }
 }
 
 export default class ResultGrid extends Component {
-    state = {};
+    state = {
+        selectedPlatforms: [],
+        allPlatforms: [],
+        selectedJdkVersions: [],
+        allJdkVersions: [],
+        selectedJdkImpls: [],
+        allJdkImpls: [],
+    };
     async componentDidMount() {
         await this.updateData();
     }
@@ -94,49 +104,67 @@ export default class ResultGrid extends Component {
         });
 
         const builds = await fetchBuild.json();
-        this.setState({ builds });
+        const regex = /^Test_openjdk(\d+)_(\w+)_(\w+).(.+?)_(.+?)(_(Nightly|Personal))?$/;
+        const buildMap = {};
+        let jdkVersionOpts = [];
+        builds.map((build, i) => {
+            const tokens = build.buildName.match(regex);
+            if (tokens.length > 5) {
+                let [_, jdkVersion, jdkImpl, level, group, platform] = tokens;
+
+                buildMap[platform] = buildMap[platform] || {};
+                buildMap[platform][jdkVersion] = buildMap[platform][jdkVersion] || {};
+                buildMap[platform][jdkVersion][jdkImpl] = buildMap[platform][jdkVersion][jdkImpl] || {};
+                buildMap[platform][jdkVersion][jdkImpl][level] = buildMap[platform][jdkVersion][jdkImpl][level] || {};
+                buildMap[platform][jdkVersion][jdkImpl][level][group] = buildMap[platform][jdkVersion][jdkImpl][level][group] || {};
+
+                jdkVersionOpts.push(jdkVersion);
+
+                buildMap[platform][jdkVersion][jdkImpl][level][group] = {
+                    buildResult: build.buildResult,
+                    testSummary: build.testSummary,
+                    buildUrl: build.buildUrl,
+                    buildId: build._id
+                };
+            }
+        });
+        const platformOpts = Object.keys(buildMap).sort();
+        jdkVersionOpts = [...new Set(jdkVersionOpts)].sort((a, b) => { return a - b });
+        const jdkImplOpts = hcjdkImpls;
+        this.setState({
+            buildMap,
+            selectedPlatforms: platformOpts,
+            allPlatforms: platformOpts,
+            selectedJdkVersions: jdkVersionOpts,
+            allJdkVersions: jdkVersionOpts,
+            selectedJdkImpls: jdkImplOpts,
+            allJdkImpls: jdkImplOpts
+        });
     }
 
     render() {
-        const { builds } = this.state;
+        const { buildMap, selectedPlatforms, allPlatforms, selectedJdkVersions, allJdkVersions, selectedJdkImpls, allJdkImpls } = this.state;
 
-        if (builds) {
-            const regex = /^Test_openjdk(\d+)_(\w+)_(\w+).(.+?)_(.+?)(_(Nightly|Personal))?$/;
-            const buildMap = {};
+        if (buildMap) {
+            return <div>
+                <Checkboxes name="Platforms" onChange={selectedPlatforms => this.setState({ selectedPlatforms })} value={selectedPlatforms} options={allPlatforms} />
+                <Checkboxes name="JDK Versions" onChange={selectedJdkVersions => this.setState({ selectedJdkVersions })} value={selectedJdkVersions} options={allJdkVersions} />
+                <Checkboxes name="JDK Impls" onChange={selectedJdkImpls => this.setState({ selectedJdkImpls })} value={selectedJdkImpls} options={allJdkImpls} />
 
-            builds.map((build, i) => {
-                const tokens = build.buildName.match(regex);
-                if (tokens.length > 5) {
-                    let [_, jdkVersion, jdkImpl, level, group, platform] = tokens;
-
-                    buildMap[platform] = buildMap[platform] || {};
-                    buildMap[platform][jdkVersion] = buildMap[platform][jdkVersion] || {};
-                    buildMap[platform][jdkVersion][jdkImpl] = buildMap[platform][jdkVersion][jdkImpl] || {};
-                    buildMap[platform][jdkVersion][jdkImpl][level] = buildMap[platform][jdkVersion][jdkImpl][level] || {};
-                    buildMap[platform][jdkVersion][jdkImpl][level][group] = buildMap[platform][jdkVersion][jdkImpl][level][group] || {};
-
-                    buildMap[platform][jdkVersion][jdkImpl][level][group] = {
-                        buildResult: build.buildResult,
-                        testSummary: build.testSummary,
-                        buildUrl: build.buildUrl,
-                        buildId: build._id
-                    };
-                }
-            });
-
-            return <div className="wrapper">
-                {Object.keys(buildMap).map((platform, y) => {
-                    const jdkVersions = buildMap[platform];
-                    return <>
-                        {Object.keys(jdkVersions).map((version, x) => {
-                            return <>
-                                <div className="box jdk-version-header" style={{ gridColumn: x + 2, gridRow: 1 }}>JDK {version}</div>
-                                <div style={{ gridColumn: x + 2, gridRow: y + 2 }}><Block data={jdkVersions[version]} /></div>
-                            </>
-                        })}
-                        <div className="box platform-header" style={{ gridColumn: 1, gridRow: y + 2 }}>{platform}</div>
-                    </>
-                })}
+                <div className="wrapper">
+                    {selectedPlatforms.map((platform, y) => {
+                        const jdkVersions = buildMap[platform];
+                        return <>
+                            {selectedJdkVersions.map((version, x) => {
+                                return <>
+                                    <div className="box jdk-version-header" style={{ gridColumn: x + 2, gridRow: 1 }}>JDK {version}</div>
+                                    <div style={{ gridColumn: x + 2, gridRow: y + 2 }}><Block data={jdkVersions[version]} selectedJdkImpls={selectedJdkImpls} /></div>
+                                </>
+                            })}
+                            <div className="box platform-header" style={{ gridColumn: 1, gridRow: y + 2 }}>{platform}</div>
+                        </>
+                    })}
+                </div>
             </div>;
         } else {
             return null;
