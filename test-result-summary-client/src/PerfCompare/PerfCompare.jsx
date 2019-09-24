@@ -577,7 +577,7 @@ export default class PerfCompare extends Component {
     render() {
         if (this.state.submitStatus === "done") {
             const formatNumbers = (value) => {
-                if (value && typeof value == 'number') {
+                if (typeof value == 'number') {
                     return <div>{math.round(value,3)}</div>;
                 }
                 else {
@@ -585,7 +585,7 @@ export default class PerfCompare extends Component {
                 }
             }
             const formatNumbersWithPercentage = (value) => {
-                if (value && typeof value == 'number') {
+                if (typeof value == 'number') {
                     return <div>{math.round(value*100,3)}%</div>;
                 }
                 else {

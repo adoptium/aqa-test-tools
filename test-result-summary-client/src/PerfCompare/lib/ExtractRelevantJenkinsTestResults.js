@@ -22,7 +22,7 @@ export default class ExtractRelevantJenkinsTestResults {
                 // new variant
                 if (parsedVariantsCommon[curVariantObjectId] === undefined) {
                     parsedVariantsCommon[curVariantObjectId] = {
-                        jdkDate: aggregateInfo.jdkDate,
+                        jdkDate: testInfo.jdkDate,
                         benchmark: aggregateInfo.benchmarkName,
                         variant: aggregateInfo.benchmarkVariant,
                         machine: testInfo.machine,

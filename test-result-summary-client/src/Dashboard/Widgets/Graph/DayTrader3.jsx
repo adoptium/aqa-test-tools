@@ -83,7 +83,7 @@ export default class DayTrader3 extends Component {
             if ( t.buildResult !== "SUCCESS" ) return;
             // TODO: current code only considers one interation. This needs to be updated
             if ( t.tests[0].testData && t.tests[0].testData.metrics && t.tests[0].testData.metrics.length > 0 ) {
-                const jdkDate = t.tests[0].jdkDate;
+                const jdkDate = t.jdkDate;
                 if ( !t.tests[0].testData.metrics[0].value
                     || t.tests[0].testData.metrics[0].value.length === 0
                     || t.tests[0].testData.metrics[0].name !== "Throughput" ) {

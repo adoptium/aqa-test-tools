@@ -5,11 +5,10 @@ const ObjectID = require( 'mongodb' ).ObjectID;
 class DataManagerAggregate {
     static aggDataCollect(childBuild) {
         const benchmarkMetricsCollection = {};
-        let name, variant, jdkBuildDate;
+        let name, variant;
         if (Array.isArray(childBuild.tests) && childBuild.tests.length > 0 ) {
             name = childBuild.tests[0].benchmarkName;
             variant = childBuild.tests[0].benchmarkVariant;
-            jdkBuildDate = childBuild.tests[0].jdkDate;
             for ( let {testData} of childBuild.tests){
                 if ( Array.isArray(testData.metrics) ) {
                     for ( let {name, value} of testData.metrics ){
@@ -22,22 +21,28 @@ class DataManagerAggregate {
                 }
             }
         }
-        return {name, variant, jdkBuildDate, benchmarkMetricsCollection};
+        return {name, variant, benchmarkMetricsCollection};
     }
 
-    static async updateBuildWithAggregateInfo(id, testResultsDB, name, variant, jdkBuildDate, metricsCollection) {
+    static async updateBuildWithAggregateInfo(hasChildren, id, testResultsDB, benchmarkName, benchmarkVariant, jdkDate, javaVersion, metricsCollection) {
         // calculate the aggregate data
-        if (name != null && variant != null && jdkBuildDate != null && metricsCollection != null) {
+        
+        /* added validAggregateInfo as a new variable in database for saving the checking time on aggregateInfo array in Perf Compare and Dashboard display, etc..
+         * Expecting at least one valid metric value in the aggregateInfo, requiring all benchmarkName, benchmarkVariant, jdkDate and metrics[0]. 
+         * Also metrics[0] data should have name and all relevant data under value array such as mean, max and statistical info.
+        */
+           let validAggregateInfo = false;
+        const aggregateInfo = [];
+        if (benchmarkName != null && benchmarkVariant != null && jdkDate != null && javaVersion != null && metricsCollection != null) {
             const aggData = [];
-            const aggregateInfo = [];
             Object.keys( metricsCollection ).forEach( function(key) {
                 if (Array.isArray(metricsCollection[key]) && metricsCollection[key].length > 0 ){
-                    const mean = math.mean(metricsCollection[key]);
-                    const max = math.max(metricsCollection[key]);
-                    const min = math.min(metricsCollection[key]);
-                    const median = math.median(metricsCollection[key]);
-                    const stddev = math.std(metricsCollection[key]);
-                    const CI = BenchmarkMath.confidence_interval(metricsCollection[key]);
+                    const mean = math.round(math.mean(metricsCollection[key]), 3);
+                    const max = math.round(math.max(metricsCollection[key]), 3);
+                    const min = math.round(math.min(metricsCollection[key]), 3);
+                    const median = math.round(math.median(metricsCollection[key]), 3);
+                    const stddev = math.round(math.std(metricsCollection[key]), 3);
+                    const CI = math.round(BenchmarkMath.confidence_interval(metricsCollection[key]), 3);
                     aggData.push({
                         name: key, 
                         value: { 
@@ -45,17 +50,24 @@ class DataManagerAggregate {
                             validIterations: metricsCollection[key].length
                         }
                     });
+                    validAggregateInfo = true;
                 }
             })
-            //add aggregate info for each node and update it in database
+            //add aggregate info for each node and update it in both parent and child node database
             aggregateInfo.push({
-                benchmarkName: name,
-                benchmarkVariant: variant,
-                jdkDate: jdkBuildDate,
+                benchmarkName,
+                benchmarkVariant,
                 metrics: aggData
             });
-            const criteria = { _id: new ObjectID( id ) };
-            const result = await testResultsDB.update( criteria, { $set: {aggregateInfo} } );    
+        }
+        const criteria = { _id: new ObjectID( id ) };
+        await testResultsDB.update( criteria, { $set: {aggregateInfo} } );
+        await testResultsDB.update( criteria, { $set: {validAggregateInfo} } );
+            
+        //update jdkDate and javaVersion for parent node in the database 
+        if (hasChildren){
+            await testResultsDB.update( criteria, { $set: {jdkDate} } );
+            await testResultsDB.update( criteria, { $set: {javaVersion}} );
         }
     }
 }

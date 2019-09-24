@@ -4,6 +4,22 @@ class Parser {
     }
 
     static canParse() { return false; }
+    
+    exactJavaVersion(output) {
+        const javaVersionRegex = /((openjdk|java) version[\s\S]*JCL.*\n|(openjdk|java) version[\s\S]*Server VM.*\n)/;
+        const javaBuildDateRegex = /-(20[0-9][0-9][0-9][0-9][0-9][0-9])/;
+        let curRegexResult = null;
+        let javaVersion, jdkDate;
+        if ( ( curRegexResult = javaVersionRegex.exec( output ) ) !== null ) {
+            javaVersion = curRegexResult[1];
+        }
+        curRegexResult = null;
+        // parse jdk date from javaVersion
+        if ( ( curRegexResult = javaBuildDateRegex.exec( javaVersion ) ) !== null ) {
+                jdkDate = curRegexResult[1];
+        }
+        return { javaVersion, jdkDate };
+    }
 
     extractArtifact( output ) {
         let m;
