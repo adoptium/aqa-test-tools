@@ -443,8 +443,8 @@ export default class PerfCompare extends Component {
             curVariantData = {};
             curVariantData["benchmark"] = parsedVariantsBaseline.benchmark;
             curVariantData["variant"] = parsedVariantsBaseline.variant;
-            curVariantData["baselineProduct"] = parsedVariantsBaseline.product;
-            curVariantData["testProduct"] = parsedVariantsTest.product;
+            curVariantData["baselineJdkDate"] = parsedVariantsBaseline.jdkDate;
+            curVariantData["testJdkDate"] = parsedVariantsTest.jdkDate;
             curVariantData["summary"] = "";
             curVariantData["baselineMachine"] = parsedVariantsBaseline.machine;
             curVariantData["testMachine"] = parsedVariantsTest.machine;
@@ -635,11 +635,11 @@ export default class PerfCompare extends Component {
                         Variant: {x.variant}
                     </h3>
 
-                    Baseline Product: {x.baselineProduct} 
+                    Baseline JDK Date: {x.baselineJdkDate} 
                     <Divider type="vertical" />
                     Baseline Machine: {x.baselineMachine}
                     <Divider type="vertical" />
-                    Test Product: {x.testProduct}
+                    Test JDK Date: {x.testJdkDate}
                     <Divider type="vertical" />
                     Test Machine: {x.testMachine}<br />
                     

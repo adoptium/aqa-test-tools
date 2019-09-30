@@ -84,7 +84,7 @@ export default class ODM extends Component {
 
             // TODO: current code only considers one interation. This needs to be updated
             if ( t.tests[0].testData && t.tests[0].testData.metrics && t.tests[0].testData.metrics.length > 0 ) {
-                const JDKBuildTimeConvert = t.tests[0].testData.jdkBuildDateUnixTime;
+                const jdkDate = t.tests[0].jdkDate;
                 if ( !t.tests[0].testData.metrics[0].value
                     || t.tests[0].testData.metrics[0].value.length === 0
                     || t.tests[0].testData.metrics[0].name !== "Global Throughput" ) {
@@ -93,15 +93,15 @@ export default class ODM extends Component {
                 if(!resultsByJDKBuild[t.buildName]) {
                     resultsByJDKBuild[t.buildName] = {};
                 }
-                if(JDKBuildTimeConvert) {
-                    resultsByJDKBuild[t.buildName][JDKBuildTimeConvert] = resultsByJDKBuild[JDKBuildTimeConvert] || [];
-                    resultsByJDKBuild[t.buildName][JDKBuildTimeConvert].push( {
+                if(jdkDate) {
+                    resultsByJDKBuild[t.buildName][jdkDate] = resultsByJDKBuild[jdkDate] || [];
+                    resultsByJDKBuild[t.buildName][jdkDate].push( {
                         globalThroughput: t.tests[0].testData.metrics[0].value[0],
                         additionalData: {
                             testId: t.tests[0]._id,
                             buildName: t.buildName,
                             buildNum: t.buildNum,
-                            javaVersion: t.tests[0].testData.javaVersion,
+                            javaVersion: t.tests[0].javaVersion,
                         },
                     } );
                 }

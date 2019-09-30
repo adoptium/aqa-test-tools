@@ -2,13 +2,13 @@ const Parser = require( './Parser' );
 const BenchmarkMetricRouter = require( './BenchmarkMetricRouter' );
 const BenchmarkMetric = require( './BenchmarkMetric' );
 
-const benchmarkDelimiterRegex = /[\r\n]\*\*\*\*\*\*\*\*\*\* START OF NEW TESTCI BENCHMARK JOB \*\*\*\*\*\*\*\*\*\*[\r\n]/;
-const benchmarkNameRegex = /[\r\n]Benchmark Name: (.*) Benchmark Variant: .*[\r\n]/;
-const benchmarkVariantRegex = /[\r\n]Benchmark Name: .* Benchmark Variant: (.*)[\r\n]/;
-const benchmarkProductRegex = /[\r\n]Benchmark Product: (.*)[\r\n]/;
-const productResourceRegex = /[\r\n]Product Resource: (.*)[\r\n]/;
-const javaVersionRegex = /(java version[\s\S]*JCL.*\n)/;
-const javaBuildDateRegex = /-(20[0-9][0-9][0-9][0-9][0-9][0-9])_/;
+const benchmarkDelimiterRegex = /\*\*\*\*\*\*\*\*\*\* START OF NEW TESTCI BENCHMARK JOB \*\*\*\*\*\*\*\*\*\*[\r\n]/;
+const benchmarkNameRegex = /Benchmark Name: (.*) Benchmark Variant: .*[\r\n]/;
+const benchmarkVariantRegex = /Benchmark Name: .* Benchmark Variant: (.*)[\r\n]/;
+const productResourceRegex = /Product Resource: (.*)[\r\n]/;
+//TODO: Remove Jenkins timestamps from being collected
+const javaVersionRegex = /((openjdk|java) version[\s\S]*JCL.*\n|(openjdk|java) version[\s\S]*Server VM.*\n)/;
+const javaBuildDateRegex = /-(20[0-9][0-9][0-9][0-9][0-9][0-9])/;
 
 class BenchmarkParser extends Parser {
 
@@ -48,13 +48,12 @@ class BenchmarkParser extends Parser {
 
             let curBenchmarkName = null;
             let curBenchmarkVariant = null;
-            let curBenchmarkProduct = null;
             let curBenchVariant = null;
             let curMetric = null;
             let curSearchString = null;
             let curRegexResult = null;
             let curMetricValue = null;
-            let curJavaBuildDate = null;
+            let curJdkDate = null;
             let curJavaVersion = null;
             let curProductResource = null;
             let isValid = true;
@@ -85,9 +84,13 @@ class BenchmarkParser extends Parser {
                 isValid = false;
             }
 
-            // Parse benchmark product
-            if ( ( curRegexResult = benchmarkProductRegex.exec( curItr.value ) ) !== null ) {
-                curBenchmarkProduct = curRegexResult[1];
+            // Parse Java version
+            if ( ( curRegexResult = javaVersionRegex.exec( curItr.value ) ) !== null ) {
+                curJavaVersion = curRegexResult[1];
+            }
+
+            if ( ( curRegexResult = javaBuildDateRegex.exec( curJavaVersion ) ) !== null ) {
+                curJdkDate = curRegexResult[1];
             }
             
             if ( ( curRegexResult = productResourceRegex.exec( curItr.value ) ) !== null ) {
@@ -99,12 +102,12 @@ class BenchmarkParser extends Parser {
                 curBenchVariant = BenchmarkMetric[BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]];	
                 curSearchString = curItr.value;
                 
-                // if outerregex is undefined, all runs should be measured. Parse metrics in every run
-                // if outerregex is defined, any runs before outerregex will be ignored. Parse metrics in warm runs only 
+                // if outerRegex is undefined, all runs should be measured. Parse metrics in every run
+                // if outerRegex is defined, any runs before outerRegex will be ignored. Parse metrics in warm runs only 
                 if (curBenchVariant.outerRegex !== undefined) {
                 	if ( ( curRegexResult = curBenchVariant.outerRegex.exec( curSearchString ) ) !== null ) {
                         // index 0 contains entire text (curItr.value)
-                        // index 1 contains text after the outer regex
+                        // index 1 contains text after the outerRegex
                         curSearchString = curRegexResult[1];
                     } 
                 }
@@ -126,18 +129,6 @@ class BenchmarkParser extends Parser {
                     curMetricValue = curRegexResult.filter ( (value,index) => (index %2 == 1) ? parseFloat(value):null);
                     curTestData["metrics"].push({name: curMetric.name, value: curMetricValue});
                 }     
-                // Parse Java version
-                if ( ( curRegexResult = javaVersionRegex.exec( curItr.value ) ) !== null ) {
-                    curJavaVersion = curRegexResult[1];
-                } else {
-                    curJavaVersion = "benchmarkProduct: " + curBenchmarkProduct;
-                }
-                curTestData["javaVersion"] = curJavaVersion;
-
-                if ( ( curRegexResult = javaBuildDateRegex.exec( curJavaVersion ) ) !== null ) {
-                    curJavaBuildDate = curRegexResult[1];
-                }
-                curTestData["jdkBuildDateUnixTime"] = this.convertBuildDateToUnixTime( curJavaBuildDate );
             }
 
             tests.push( {
@@ -146,9 +137,10 @@ class BenchmarkParser extends Parser {
                 testIndex: testIndex++,
                 benchmarkName: curBenchmarkName,
                 benchmarkVariant: curBenchmarkVariant,
-                benchmarkProduct: curBenchmarkProduct,
-                testData: curTestData,
+                jdkDate: curJdkDate,
                 sdkResource: curProductResource,
+                javaVersion: curJavaVersion,
+                testData: curTestData,                
             } );
 
             curItr = benchmarkIterator.next();

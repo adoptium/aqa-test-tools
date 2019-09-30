@@ -11,11 +11,12 @@ module.exports = async ( req, res ) => {
         {
             $match: query
         },
+        {$unwind: "$tests"},
         {$group :
-       {
+        {
           _id:0,
           buildNames: {$addToSet: '$buildName'},
-          sdkResource: {$addToSet: '$sdkResource'},
+          sdkResource: {$addToSet: '$tests.sdkResource'},
           buildServer: {$addToSet: '$url'},
     }}
     ] );

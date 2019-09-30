@@ -137,7 +137,7 @@ export default class TabularView extends Component {
        }
         // Check if default exists in these dropdown options, if not use 1st index in dropdown options
         if (revertToDefault) {
-            if (dropdownValues.indexOf(defaultValue > -1)) {
+            if (dropdownValues.indexOf(defaultValue) > -1) {
                 this.setState({[dropdownName]: defaultValue});
             }
             else {
@@ -156,7 +156,7 @@ export default class TabularView extends Component {
         /*
         Each database entry should contain a pipeline name (buildName) which contains the JDK Version and JVM Type.
         sdkResource in the form of null, releases, nightly, customized or upstream
-        date is in the benchmarkProduct field and in the form of YYYYMMDD
+        date is in the jdkDate field and in the form of YYYYMMDD
         Default values are defined in TabularViewConfig.json. Add the optional Jenkins server otherwise will default to first option
         */
         this.generateDropdown('testJdkVersion', this.state.tabularDropdown['jdkVersion'], this.state.defaultValues.jdkVersion);
@@ -351,13 +351,13 @@ export default class TabularView extends Component {
             column.accessor = d => d.platformsSpecificData[platform];
             // Each cell needs to display the comparison by default, on hover displays further details
             column.Cell = props => <Tooltip title={<div >
-                Raw Test Score: {this.handleProp(props.value, 'testScore')} <br/> 
+                Test Raw Score: {this.handleProp(props.value, 'testScore')} <br/> 
                 Test CI: {this.handleProp(props.value, 'testCI')}  <br/>
-                Test JDK: {this.handleProp(props.value, 'testJdk')}	<br/> 
+                Test JDK Date: {this.handleProp(props.value, 'testJdkDate')}	<br/> 
                 Test Sdk Resource: {this.handleProp(props.value, 'testSdkResource')}	<br/> 
-                Raw Baseline Score: {this.handleProp(props.value, 'baselineScore')} <br/> 
-                Basline CI: {this.handleProp(props.value, 'baselineCI')}  <br/>
-                Baseline JDK: {this.handleProp(props.value, 'baselineJdk')} <br/>
+                Baseline Raw Score: {this.handleProp(props.value, 'baselineScore')} <br/> 
+                Baseline CI: {this.handleProp(props.value, 'baselineCI')}  <br/>
+                Baseline JDK Date: {this.handleProp(props.value, 'baselineJdkDate')} <br/>
                 Baseline Sdk Resource: {this.handleProp(props.value, 'baselineSdkResource')}
                 </div> }>
                 <span onClick={() => this.handleLink(this.handleProp(props.value, 'buildUrl'))}> {this.handleProp(props.value, 'relativeComparison')} % <br/> {this.handleCI(this.handleProp(props.value, 'totalCI'), this.handleProp(props.value, 'relativeComparison'))} </span></Tooltip>;
@@ -457,8 +457,7 @@ export default class TabularView extends Component {
     handleEntry(testResultObject, metric, type) {
         if (type === 'test') {
             return {testScore: testResultObject.aggregateInfo[0].metrics[metric].value.mean, 
-                testJdkDate: testResultObject.aggregateInfo[0].benchmarkProduct.split("-")[1],
-                testJdk: testResultObject.aggregateInfo[0].benchmarkProduct,
+                testJdkDate: testResultObject.aggregateInfo[0].jdkDate,
                 testCI: testResultObject.aggregateInfo[0].metrics[metric].value.CI,
                 testSdkResource: testResultObject.sdkResource,
                 testBuildUrl: testResultObject.buildUrl,
@@ -466,8 +465,7 @@ export default class TabularView extends Component {
             };
         } else {
             return {baselineScore: testResultObject.aggregateInfo[0].metrics[metric].value.mean, 
-                baselineJdkDate: testResultObject.aggregateInfo[0].benchmarkProduct.split("-")[1],
-                baselineJdk: testResultObject.aggregateInfo[0].benchmarkProduct,
+                baselineJdkDate: testResultObject.aggregateInfo[0].jdkDate,
                 baselineCI: testResultObject.aggregateInfo[0].metrics[metric].value.CI,
                 baselineSdkResource: testResultObject.sdkResource,
                 baselineBuildUrl: testResultObject.buildUrl,

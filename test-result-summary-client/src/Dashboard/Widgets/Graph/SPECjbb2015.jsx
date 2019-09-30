@@ -107,7 +107,7 @@ export default class SPECjbb2015 extends Component {
 
             // TODO: current code only considers one interation. This needs to be updated
             if ( t.tests[0].testData && t.tests[0].testData.metrics && t.tests[0].testData.metrics.length === 2 ) {
-                const JDKBuildTimeConvert = t.tests[0].testData.jdkBuildDateUnixTime;
+                const jdkDate = t.tests[0].jdkDate;
                 let maxjOPS = null;
                 let criticaljOPS = null;
                 for ( let i = 0; i < t.tests[0].testData.metrics.length; i++ ) {
@@ -121,15 +121,15 @@ export default class SPECjbb2015 extends Component {
                 if ( !maxjOPS || !criticaljOPS ) {
                     return;
                 }
-                resultsByJDKBuild[JDKBuildTimeConvert] = resultsByJDKBuild[JDKBuildTimeConvert] || [];
-                resultsByJDKBuild[JDKBuildTimeConvert].push( {
+                resultsByJDKBuild[jdkDate] = resultsByJDKBuild[jdkDate] || [];
+                resultsByJDKBuild[jdkDate].push( {
                     maxjOPS,
                     criticaljOPS,
                     additionalData: {
                         testId: t.tests[0]._id,
                         buildName: t.buildName,
                         buildNum: t.buildNum,
-                        javaVersion: t.tests[0].testData.javaVersion,
+                        javaVersion: t.tests[0].javaVersion,
                     },
                 } );
             }

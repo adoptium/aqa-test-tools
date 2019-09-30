@@ -2,7 +2,7 @@ const { TestResultsDB, ObjectID } = require( '../Database' );
 
 function exceedDate(jdkDate) {
     return function(element) {
-       return parseInt(element.aggregateInfo[0].benchmarkProduct.slice(-8)) <= parseInt(jdkDate);
+    	return parseInt(element.aggregateInfo[0].jdkDate) <= parseInt(jdkDate);
     }
 }
 
@@ -48,16 +48,16 @@ module.exports = async ( req, res ) => {
         let benchmarkQuery;
         // Return all entries that match the current benchmark and platform
         for (item in platforms) {
-            benchmarkQuery = {$and: [{ buildName: { $regex : platforms[item] }, sdkResource: sdkResourceQuery}, { aggregateInfo: { $elemMatch: { benchmarkName: benchmarks[benchmarkIndex] }}}
+            benchmarkQuery = {$and: [{ buildName: { $regex : platforms[item] }}, { tests: { $elemMatch: { sdkResource: sdkResourceQuery }}}, { aggregateInfo: { $elemMatch: { benchmarkName: benchmarks[benchmarkIndex] }}}
             ] };
             const result = await db.getData(benchmarkQuery).toArray();
 
             // Remove all entries whose build date exceeds the chosen date
             const exceedFilter = result.filter(exceedDate(req.query.jdkDate));
             // Setting the latest build date from the available dates
-            const latestDate = Math.max.apply(Math, exceedFilter.map(function(o) { return parseInt(o.aggregateInfo[0].benchmarkProduct.slice(-8)); }));
+            const latestDate = Math.max.apply(Math, exceedFilter.map(function(o) { return parseInt(o.aggregateInfo[0].jdkDate); }));
             // Remove all runs that are not the latest
-            const dateFilter = exceedFilter.filter(entry => parseInt(entry.aggregateInfo[0].benchmarkProduct.slice(-8)) === latestDate);
+            const dateFilter = exceedFilter.filter(entry => parseInt(entry.aggregateInfo[0].jdkDate) === latestDate);
             const latest = Math.max.apply(Math, dateFilter.map(function(o) { return o.timestamp; }));
             // Keep the latest build with the latest timestamp
             const latestRun = dateFilter.find(function(o){ return o.timestamp == latest; })
