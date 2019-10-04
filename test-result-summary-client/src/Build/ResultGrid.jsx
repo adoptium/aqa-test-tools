@@ -23,11 +23,13 @@ class Cell extends Component {
                                 <Tooltip title={target}><Icon type="stop" /></Tooltip>
                             </div>
                         }
+                        const result = groups[group].buildResult;
                         let element = "";
                         if (!groups[group].testSummary) {
                             element = (
                                 <div>
                                     {target} <br />
+                                    Build Result: {result} <br />
                                     Result Summary: N/A <br />
                                     <a href={groups[group].buildUrl} target="_blank" rel="noopener noreferrer">Jenkins Link</a>
                                 </div>
@@ -36,6 +38,7 @@ class Cell extends Component {
                             element = (
                                 <div>
                                     Test Target: {target} <br />
+                                    Build Result: {result} <br />
                                     Result Summary: {Object.keys(groups[group].testSummary).map((key) => {
                                         return <div>{key}: {groups[group].testSummary[key]}</div>;
                                     })}
@@ -44,17 +47,24 @@ class Cell extends Component {
                             );
                         }
                         let icon = "";
-                        const result = groups[group].buildResult;
                         if (result === "SUCCESS") {
-                            icon = <Icon type="check" style={{ color: "white" }} />;
+                            icon = <Icon type="check-circle" style={{ color: "white" }} />;
                         } else if (result === "UNSTABLE") {
-                            icon = <Icon type="info" style={{ color: "white" }} />;
+                            icon = <Icon type="warning" style={{ color: "white" }} />;
+                        } else if (result === "ABORT") {
+                            icon = <Icon type="minus-circle" style={{ color: "white" }} />;
                         } else {
-                            icon = <Icon type="close" style={{ color: "white" }} />;
+                            icon = <Icon type="exclamation-circle" style={{ color: "white" }} />;
+                        }
+                        let linkInfo = "";
+                        if (groups[group].hasChildren) {
+                            linkInfo = <Link to={{ pathname: '/buildDetail', search: params({ parentId: groups[group].buildId }) }}>{icon}</Link>
+                        } else {
+                            linkInfo = <Link to={{ pathname: '/allTestsInfo', search: params({ buildId: groups[group].buildId, limit: 5 }) }}>{icon}</Link>;
                         }
                         return <div className={`cell ${result}`} style={{ gridColumn: x + 1, gridRow: y + 1 }}>
                             <Tooltip title={<div>{element}</div>}>
-                                <Link to={{ pathname: '/allTestsInfo', search: params({ buildId: groups[group].buildId, limit: 5 }) }}>{icon}</Link>
+                                {linkInfo}
                             </Tooltip>
                         </div>
                     })}
@@ -120,12 +130,27 @@ export default class ResultGrid extends Component {
 
                 jdkVersionOpts.push(jdkVersion);
 
-                buildMap[platform][jdkVersion][jdkImpl][level][group] = {
-                    buildResult: build.buildResult,
-                    testSummary: build.testSummary,
-                    buildUrl: build.buildUrl,
-                    buildId: build._id
-                };
+                // If there are multiple builds for one key, then this is a parallel build
+                // For parallel build, we only store the parent build info
+                if (Object.keys(buildMap[platform][jdkVersion][jdkImpl][level][group]).length !== 0) {
+                    if (build.hasChildren) {
+                        buildMap[platform][jdkVersion][jdkImpl][level][group] = {
+                            buildResult: build.buildResult,
+                            testSummary: build.testSummary,
+                            buildUrl: build.buildUrl,
+                            buildId: build._id,
+                            hasChildren: build.hasChildren
+                        };
+                    }
+                } else {
+                    buildMap[platform][jdkVersion][jdkImpl][level][group] = {
+                        buildResult: build.buildResult,
+                        testSummary: build.testSummary,
+                        buildUrl: build.buildUrl,
+                        buildId: build._id,
+                        hasChildren: build.hasChildren
+                    };
+                }
             }
         });
         const platformOpts = Object.keys(buildMap).sort();
