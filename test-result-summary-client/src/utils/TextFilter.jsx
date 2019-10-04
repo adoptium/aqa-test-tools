@@ -23,7 +23,7 @@ export default class TextFilter extends Component {
         return ( <div className="custom-filter-dropdown">
             <Input
                 ref={e => e && e.focus()}
-                placeholder="Search name"
+                placeholder="Search"
                 onChange={this.onChange}
             />
         </div> );

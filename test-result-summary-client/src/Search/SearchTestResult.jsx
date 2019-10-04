@@ -23,7 +23,9 @@ export default class SearchResult extends Component {
                 action: { testId: element._id },
                 result: { testResult: element.testResult, testId: element._id },
                 build: { buildName: element.buildName },
-                duration: element.duration
+                duration: element.duration,
+                machine: element.machine,
+                sortMachine: element.machine,
             }
             return ret;
         } );

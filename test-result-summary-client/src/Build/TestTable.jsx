@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import TextFilter from '../utils/TextFilter';
-import { Table } from 'antd';
+import { Table, Input } from 'antd';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
 import renderDuration from './Duration';
+import Highlighter from 'react-highlight-words';
 
 export default class TestTable extends Component {
     state = {
@@ -71,6 +72,15 @@ export default class TestTable extends Component {
             sorter: ( a, b ) => {
                 return a.duration - b.duration;
             },
+        },
+        {
+            title: 'Machine',
+            dataIndex: 'machine',
+            key: 'machine',
+            sorter: ( a, b ) => {
+                return a.sortMachine.localeCompare( b.sortMachine );
+            },
+            filterDropdown: <TextFilter dataIndex={"machine"} dataSource={testData} handleFilterChange={this.handleFilterChange} />
         }];
         if (parents) {
             columns.push(...parents.map(( parent, i ) => {
@@ -134,7 +144,7 @@ export default class TestTable extends Component {
             });
 
         }
-
+        
         return <div>
             <Table
                 columns={columns}
