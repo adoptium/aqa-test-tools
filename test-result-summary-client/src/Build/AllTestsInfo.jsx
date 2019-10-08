@@ -30,6 +30,8 @@ export default class Build extends Component {
                     sortName: test.testName,
                     testName: test.testName,
                     duration: test.duration,
+                    machine: builds[0].machine,
+                    sortMachine: builds[0].machine,
                 };
                 ret.action = {
                     testId: test._id,

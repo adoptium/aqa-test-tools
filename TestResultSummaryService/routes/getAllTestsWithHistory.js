@@ -16,7 +16,8 @@ module.exports = async ( req, res ) => {
                 parentId: 1,
                 buildName: 1,
                 buildNum: 1,
-                tests: 1
+                tests: 1,
+                machine: 1
             }
         },
         // { $unwind: "$tests" }

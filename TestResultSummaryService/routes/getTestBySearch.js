@@ -4,8 +4,7 @@ module.exports = async ( req, res ) => {
     const testResultsDB = new TestResultsDB();
     const outputDB = new OutputDB();
 
-    
-    const build = await testResultsDB.getSpecificData( { _id: new ObjectID( buildId ) }, { _id: 1, buildName: 1, buildNum: 1, buildResult: 1, buildUrl: 1, type: 1, hasChildren: 1, tests: 1, buildOutputId: 1, timestamp: 1, url: 1, testSummary: 1 } );
+    const build = await testResultsDB.getSpecificData( { _id: new ObjectID( buildId ) }, { _id: 1, buildName: 1, buildNum: 1, buildResult: 1, buildUrl: 1, type: 1, hasChildren: 1, tests: 1, buildOutputId: 1, timestamp: 1, url: 1, testSummary: 1, machine: 1 } );
 
     const allOutputIds = await searchOutputId( build[0] );
 
@@ -47,6 +46,7 @@ module.exports = async ( req, res ) => {
 };
 
 searchOutputId = async ( build ) => {
+
     const testResultsDB = new TestResultsDB();
     let rt = {buildOutputIds: {}, testOutputIds: {}};
     if ( build.buildOutputId ) {
@@ -55,11 +55,11 @@ searchOutputId = async ( build ) => {
     if ( !build.hasChildren ) {
         if ( build.tests ) {
             build.tests.forEach( test => {
-                rt.testOutputIds[test.testOutputId] = { _id: test._id, buildName: build.buildName, buildNum: build.buildNum, testName: test.testName, testResult: test.testResult, duration: test.duration };
+                rt.testOutputIds[test.testOutputId] = { _id: test._id, buildName: build.buildName, buildNum: build.buildNum, testName: test.testName, testResult: test.testResult, duration: test.duration, machine: build.machine };
             } );
         }
     } else {
-        let builds = await testResultsDB.getSpecificData( { parentId: new ObjectID( build._id ) }, { _id: 1, buildName: 1, buildNum: 1, buildResult: 1, buildUrl: 1, type: 1, hasChildren: 1, tests: 1, buildOutputId: 1, timestamp: 1, url: 1, testSummary: 1 } );
+        let builds = await testResultsDB.getSpecificData( { parentId: new ObjectID( build._id ) }, { _id: 1, buildName: 1, buildNum: 1, buildResult: 1, buildUrl: 1, type: 1, hasChildren: 1, tests: 1, buildOutputId: 1, timestamp: 1, url: 1, testSummary: 1, machine: 1  } );
         await Promise.all( builds.map( async ( b ) => {
             let res = await searchOutputId(b);
             if ( res.testOutputIds ) {
