@@ -17,6 +17,7 @@ app.get( '/getHistoryPerTest', wrap( require( "./getHistoryPerTest" ) ) );
 app.get( '/getLastBuildInfo', wrap( require( "./getLastBuildInfo" ) ) );
 app.get( '/getOutputById', wrap( require( "./getOutputById" ) ) );
 app.get( '/getOutputByTestInfo', wrap( require( "./getOutputByTestInfo" ) ) );
+app.get( '/getTestAvgDuration', wrap( require( "./getTestAvgDuration" ) ) );
 app.get( '/getTestInfoByBuildInfo', wrap( require( "./getTestInfoByBuildInfo" ) ) );
 app.get( '/getParents', wrap( require( "./getParents" ) ) );
 app.get( '/getPerffarmRunCSV', wrap( require( "./getPerffarmRunCSV" ) ) );
