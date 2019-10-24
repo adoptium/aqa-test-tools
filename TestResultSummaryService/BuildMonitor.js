@@ -22,7 +22,8 @@ class BuildMonitor {
 
         const jenkinsInfo = new JenkinsInfo();
         const allBuilds = await jenkinsInfo.getAllBuilds(url, buildName);
-        if (!allBuilds) {
+        if (!Array.isArray(allBuilds)) {
+            logger.error("allBuilds:", allBuilds);
             logger.error("BuildMonitor: Cannot find the build ", buildUrl);
             return;
         }

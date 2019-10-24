@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "antd": "^3.23.3",
+    "antd": "^3.24.2",
     "classnames": "^2.2.6",
-    "codemirror": "^5.48.2",
+    "codemirror": "^5.49.2",
     "highcharts": "^7.2.0",
     "highstock-release": "^6.0.4",
     "history": "^4.10.1",
@@ -14,17 +14,17 @@
     "mergely": "^4.0.11",
     "moment": "^2.24.0",
     "npm-check": "^5.9.0",
-    "qs": "^6.8.0",
-    "react": "^16.9.0",
-    "react-day-picker": "^7.3.2",
-    "react-dom": "^16.9.0",
+    "qs": "^6.9.0",
+    "react": "^16.11.0",
+    "react-day-picker": "^7.4.0",
+    "react-dom": "^16.11.0",
     "react-grid-layout": "^0.16.6",
-    "react-highcharts": "^16.0.2",
+    "react-highcharts": "^16.1.0",
     "react-highlight-words": "^0.16.0",
     "react-jsx-highcharts": "^3.6.1",
     "react-jsx-highstock": "^3.6.1",
-    "react-router": "^5.0.1",
-    "react-router-dom": "^5.0.1",
+    "react-router": "^5.1.2",
+    "react-router-dom": "^5.1.2",
     "react-table": "^6.10.0"
   },
   "scripts": {
@@ -34,8 +34,8 @@
   },
   "proxy": "http://localhost:3001",
   "devDependencies": {
-    "react-app-rewired": "^2.1.3",
-    "react-scripts": "^3.1.1"
+    "react-app-rewired": "^2.1.4",
+    "react-scripts": "^3.2.0"
   },
   "browserslist": [
     ">0.2%",
