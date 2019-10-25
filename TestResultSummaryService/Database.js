@@ -2,11 +2,12 @@ const { MongoClient, ObjectID } = require( 'mongodb' );
 const ArgParser = require("./ArgParser");
 
 const credential = ArgParser.getConfigDB() === null ? "" : `${ArgParser.getConfigDB().user}:${ArgParser.getConfigDB().password}@`;
-const url = 'mongodb://' + credential + 'localhost:27017/exampleDb';
+const url = 'mongodb://' + credential + 'localhost:27017/';
 
 let db;
 ( async function() {
-    db = await MongoClient.connect( url );
+    const dbConnect = await MongoClient.connect( url );
+    db = dbConnect.db("exampleDb");
     await db.createCollection( 'testResults' );
     await db.createCollection( 'output' );
 } )()
