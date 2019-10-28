@@ -17,7 +17,11 @@ export default class Build extends Component {
 
     async updateData() {
         const { buildId, limit } = getParams( this.props.location.search );
-        const fetchBuild = await fetch( `/api/getAllTestsWithHistory?buildId=${buildId}&limit=${limit}`, {
+        let limitParam = "";
+        if (limit) {
+            limitParam = `&limit=${limit}`;
+        }
+        const fetchBuild = await fetch( `/api/getAllTestsWithHistory?buildId=${buildId}${limitParam}`, {
             method: 'get'
         } );
         const builds = await fetchBuild.json();
