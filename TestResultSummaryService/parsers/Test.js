@@ -21,6 +21,8 @@ class Test extends Parser {
     }
 
     async extract(str) {
+        const preTest = "Pre Test";
+        const postTest = "Post Test";
         let m, testStr, testName, testResult, startTime, finishTime, testResultRegex;
         const results = [];
         const readline = require('readline');
@@ -32,8 +34,22 @@ class Test extends Parser {
             input: bufferStream,
         });
 
+        let nonTestStr = "";
+        let preTestDone = false;
+        let postTestDone = false;
         for await (const line of rl) {
             if ((m = line.match(regexRunningTest)) !== null) {
+                if (!preTestDone) {
+                    results.push({
+                        testName: preTest,
+                        testOutput: nonTestStr,
+                        testResult: "PASSED",
+                        testData: null
+                    });
+                    nonTestStr = "";
+                    preTestDone = true;
+                }
+
                 testStr = "";
                 testName = m[1];
                 testResultRegex = new RegExp(testName + "_(.*)\r?");
@@ -59,7 +75,11 @@ class Test extends Parser {
                     });
                     testName = null;
                     testStr = null;
-
+                    nonTestStr = "";
+                }
+            } else {
+                if (!preTestDone || !postTestDone) {
+                    nonTestStr += line + "\n";
                 }
             }
         }
@@ -76,9 +96,16 @@ class Test extends Parser {
         } else if (!results || results.length === 0) {
             // No test has been executed after reading all test output. 
             results.push({
-                testName: "makefile generation and test compilation",
+                testName: preTest,
                 testOutput: str,
                 testResult: "FAILED",
+                testData: null
+            });
+        } else if (!postTestDone) {
+            results.push({
+                testName: postTest,
+                testOutput: nonTestStr,
+                testResult: nonTestStr.match(/Finished: (SUCCESS|UNSTABLE|ABORTED)/) ? "PASSED" : "FAILED",
                 testData: null
             });
         }
