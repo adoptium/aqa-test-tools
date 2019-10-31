@@ -1,8 +1,8 @@
 const { MongoClient, ObjectID } = require( 'mongodb' );
 const ArgParser = require("./ArgParser");
 
-const credential = ArgParser.getConfigDB() === null ? "" : `${ArgParser.getConfigDB().user}:${ArgParser.getConfigDB().password}@`;
-const url = 'mongodb://' + credential + 'localhost:27017/';
+const credential = ArgParser.getConfigDB() === null ? "" : `${encodeURIComponent(ArgParser.getConfigDB().user)}:${encodeURIComponent(ArgParser.getConfigDB().password)}@`;
+const url = 'mongodb://' + credential + 'localhost:27017/exampleDb';
 
 let db;
 ( async function() {
