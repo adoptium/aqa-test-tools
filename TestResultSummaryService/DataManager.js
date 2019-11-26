@@ -57,17 +57,21 @@ class DataManager {
         const result = await testResults.update( criteria, { $set: newData } );
     }
 
-    async updateBuildWithOutput( data ) {
-        logger.verbose( "updateBuildWithOutput", data.buildName, data.buildNum );
-        const { _id, buildName, output, ...newData } = data;
-        const criteria = { _id: new ObjectID( _id ) };
-        const { builds, tests, build, ...value } = await this.parseOutput( buildName, output );
+    async updateBuildWithOutput(data) {
+        logger.verbose("updateBuildWithOutput", data.buildName, data.buildNum);
+        const { _id, buildName, output, rootBuildId, ...newData } = data;
+        const criteria = { _id: new ObjectID(_id) };
+        const { builds, tests, build, ...value } = await this.parseOutput(buildName, output);
         const testResults = new TestResultsDB();
         const outputDB = new OutputDB();
         let update = {
             ...newData,
             ...value
         };
+        if (!rootBuildId) {
+            const rootBuildId = await testResults.getRootBuildId(_id);
+            update.rootBuildId = new ObjectID(rootBuildId);
+        }
         if ( builds && builds.length > 0 ) {
             let commonUrls = data.url.split("/job/")[0];
             commonUrls = commonUrls.split("/view/")[0];
@@ -77,6 +81,7 @@ class DataManager {
                     buildName: b.buildName,
                     buildNameStr: b.buildNameStr,
                     buildNum: parseInt( b.buildNum, 10 ),
+                    rootBuildId: rootBuildId ? rootBuildId : update.rootBuildId,
                     parentId: _id,
                     type: b.type,
                     status: "NotDone"
