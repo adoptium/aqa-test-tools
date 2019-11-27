@@ -2,6 +2,7 @@ const app = require( 'express' ).Router();
 const wrap = fn => ( req, res ) => fn( req, res ).catch( console.error.bind( console ) );
 
 app.get( '/compareTests', wrap( require( "./compareTests" ) ) );
+app.get( '/compareTestDuration', wrap( require( "./compareTestDuration" ) ) );
 app.get( '/deleteBuildListById', wrap( require( "./deleteBuildListById" ) ) );
 app.get( '/deleteBuildsAndChildrenByFields', wrap( require( "./deleteBuildsAndChildrenByFields" ).default ) );
 app.get( '/deleteCollection', wrap( require( "./deleteCollection" ) ) );

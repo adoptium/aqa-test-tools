@@ -133,6 +133,87 @@ class Database {
         ]);
         return result[0] || {};
     }
+
+    async getRootBuildId(id) {
+        const _id = new ObjectID(id);
+        const info = { _id };
+        const result = await this.aggregate([
+            { $match: info },
+            {
+                $graphLookup: {
+                    from: "testResults",
+                    startWith: "$parentId",
+                    connectFromField: "parentId",
+                    connectToField: "_id",
+                    as: "buildHierarchy",
+                }
+            },
+        ]);
+
+        if (result && result.length > 0) {
+            if (result[0].buildHierarchy && result[0].buildHierarchy.length > 0) {
+                return result[0].buildHierarchy[0]._id;
+            }
+            // if no result or no build hierarchy, this is a root build. Set rootBuildId = _id
+            return id;
+        }
+        return -1;
+    }
+
+    async getAvgDuration(info) {
+        const { matchQuery={}, testName, platform, jdkVersion, impl, level, group, limit = 500 } = info;
+        let buildNameRegex = `^Test.*`;
+        if (jdkVersion) buildNameRegex = `${buildNameRegex}_openjdk${jdkVersion}.*`;
+        if (impl) buildNameRegex = `${buildNameRegex}${impl}_.*`;
+        if (level) buildNameRegex = `${buildNameRegex}${level}..*`;
+        if (group) buildNameRegex = `${buildNameRegex}${group}_.*`;
+        if (platform) buildNameRegex = `${buildNameRegex}${platform}.*`;
+
+        matchQuery.buildName = { $regex: buildNameRegex };
+
+        // the aggregate order is important. Please change with caution
+        const aggregateQuery = [
+            { $match: matchQuery },
+            { $sort: { 'timestamp': -1 } },
+            { $limit: parseInt(limit, 10) },
+            { $unwind: "$tests" }
+        ];
+
+        if (testName) {
+            let testNameRegex = `.*${testName}.*`;
+            const testNameQuery = {
+                $match: {
+                    "tests.testName": { $regex: testNameRegex }
+                }
+            };
+            aggregateQuery.push(testNameQuery);
+        }
+
+        const projectQuery = {
+            $project: {
+                _id: 1,
+                buildName: 1,
+                buildNum: 1,
+                machine: 1,
+                buildUrl: 1,
+                "tests.testName": 1,
+                "tests.duration": 1,
+            }
+        };
+
+        const groupQuery = {
+            $group: {
+                _id: "$tests.testName",
+                avgDuration: { $avg: "$tests.duration" }
+            },
+        };
+
+        aggregateQuery.push(projectQuery);
+        aggregateQuery.push(groupQuery);
+        aggregateQuery.push({ $sort: { 'avgDuration': -1 } });
+        const result = await this.aggregate(aggregateQuery);
+        return result;
+    }
 }
 class TestResultsDB extends Database {
     constructor() {

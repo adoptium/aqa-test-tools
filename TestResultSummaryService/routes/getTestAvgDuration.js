@@ -24,58 +24,9 @@ const { TestResultsDB } = require('../Database');
  */
 
 module.exports = async (req, res) => {
-    const { testName, platform, jdkVersion, impl, level, group, limit = 500, bucketCount = 1 } = req.query;
-
-    let buildNameRegex = `^Test.*`;
-    if (jdkVersion) buildNameRegex = `${buildNameRegex}_openjdk${jdkVersion}.*`;
-    if (impl) buildNameRegex = `${buildNameRegex}${impl}_.*`;
-    if (level) buildNameRegex = `${buildNameRegex}${level}..*`;
-    if (group) buildNameRegex = `${buildNameRegex}${group}_.*`;
-    if (platform) buildNameRegex = `${buildNameRegex}${platform}`;
-
-    // the query order in aggregateQuery is important. Please change with caution
-    const aggregateQuery = [
-        { $match: { "buildName": { $regex: buildNameRegex } } },
-        { $sort: { 'timestamp': -1 } },
-        { $limit: parseInt(limit, 10) },
-        { $unwind: "$tests" }
-    ];
-
-    if (testName) {
-        let testNameRegex = `.*${testName}.*`;
-        const testNameQuery = {
-            $match: {
-                "tests.testName": { $regex: testNameRegex }
-            }
-        };
-        aggregateQuery.push(testNameQuery);
-    }
-
-    const projectQuery = {
-        $project: {
-            _id: 1,
-            buildName: 1,
-            buildNum: 1,
-            machine: 1,
-            buildUrl: 1,
-            "tests.testName": 1,
-            "tests.duration": 1,
-        }
-    };
-
-    const groupQuery = {
-        $group: {
-            _id: "$tests.testName",
-            avgDuration: { $avg: "$tests.duration" }
-        },
-    };
-
-    aggregateQuery.push(projectQuery);
-    aggregateQuery.push(groupQuery);
-    aggregateQuery.push({ $sort: { 'avgDuration': -1 } });
-
+    const { bucketCount = 1 } = req.query;
     const db = new TestResultsDB();
-    const result = await db.aggregate(aggregateQuery);
+    const result = await db.getAvgDuration(req.query);
 
     if (!result) {
         res.send(result);
