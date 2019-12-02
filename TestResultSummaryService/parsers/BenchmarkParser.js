@@ -49,8 +49,9 @@ class BenchmarkParser extends Parser {
             let curMetric = null;
             let curSearchString = null;
             let curRegexResult = null;
-            let curMetricValue = null;
+            let curMetricValues = null;
             let curProductResource = null;
+            let curRegex = null;
             let isValid = true;
             let curTestData = {};
 
@@ -75,7 +76,7 @@ class BenchmarkParser extends Parser {
             // Benchmark should have at least one metric to parse with
             } else if (!BenchmarkMetric[BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]]
             || !BenchmarkMetric[BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]]["metrics"]
-            || !(Array.isArray(BenchmarkMetric[BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]]["metrics"]))) {
+            || Object.keys(BenchmarkMetric[BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]]["metrics"]).length === 0) {
                 isValid = false;
             }
     
@@ -100,9 +101,11 @@ class BenchmarkParser extends Parser {
                 
                 // Parse metric values
                 curTestData["metrics"] = [];
-                for ( let i = 0; i < curBenchVariant["metrics"].length; i++ ) {
+                let curMetricList = Object.keys(curBenchVariant["metrics"]);
+                for ( let i = 0; i < curMetricList.length; i++ ) {
 
-                    curMetric = curBenchVariant["metrics"][i];  
+                    curMetric = curMetricList[i];
+                    curRegex = curBenchVariant["metrics"][curMetric]["regex"];  
                     /*	Parse all values for single metric from result to an array
                      *  e.g 
                      *  Liberty Startup =>
@@ -110,11 +113,18 @@ class BenchmarkParser extends Parser {
                      *  Liberty Throughput =>
                      *  curRegexResult = ['<metric type="throughput">32<\/data>',32]
                      */
-                    curRegexResult = curSearchString.split(curMetric.regex);
+                    curRegexResult = curSearchString.split(curRegex);
                     //collect only the capture groups from the regex array
-                    curRegexResult = curRegexResult.filter ( (value,index) => (index %2 == 1) );
-                    curMetricValue = curRegexResult.map(parseFloat);
-                    curTestData["metrics"].push({name: curMetric.name, value: curMetricValue});
+                    curRegexResult = curRegexResult.filter( (value,index) => (index %2 === 1));
+                    curMetricValues = curRegexResult.map(parseFloat);
+                    /* Metrics such as JITCPU total in LibertyThroughput and geomean_GCA in CryptoBB, 
+                     * require aggregate function to be applied. 
+                     * e.g JIT CPU total values are collected as [ 0,0,300,200,20 ] but we display 520 as the JITCPU total  
+                     */
+                    if(typeof curBenchVariant["metrics"][curMetric]["funcName"] != "undefined" && curMetricValues.length != 0) {
+                        curMetricValues = [curBenchVariant["metrics"][curMetric]["funcName"](curMetricValues)];
+                    }
+                    curTestData["metrics"].push({name: curMetric, value: curMetricValues});
                 }     
             }
 

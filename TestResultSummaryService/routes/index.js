@@ -9,6 +9,7 @@ app.get( '/deleteCollection', wrap( require( "./deleteCollection" ) ) );
 app.get( '/deleteUnusedOutput', wrap( require( "./deleteUnusedOutput" ) ) );
 app.get( '/getAllChildBuilds', wrap( require( "./getAllChildBuilds" ) ) );
 app.get( '/getAllTestsWithHistory', wrap( require( "./getAllTestsWithHistory" ) ) );
+app.get( '/getParserProps', wrap ( require ("./getParserProps") )) ;
 app.get( '/getBuildHistory', wrap( require( "./getBuildHistory" ) ) );
 app.get( '/getBuildList', wrap( require( "./getBuildList" ) ) );
 app.get( '/getChildBuilds', wrap( require( "./getChildBuilds" ) ) );

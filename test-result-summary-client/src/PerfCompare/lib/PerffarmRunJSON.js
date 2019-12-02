@@ -75,16 +75,18 @@ export default class PerffarmRunJSON {
             }
             
             for (let m = indexOfFirstMetric; m < this.parsedCSV[variantIndex[k]+1].length; m++) {
-                curMetricObject = {};
+                //Jenkins result object has format of {name:*** value: {mean:***,ci:***}}
+                //value:{} is used to reduce duplicate code in perfCompare by matching the result object of perffarm to jenkins result object
+                curMetricObject = {"value":{}};
                 curMetricObject["name"] = this.parsedCSV[variantIndex[k]+1][m];
                 // Mean is always 6 indices above the next variant seperator
-                curMetricObject["mean"] = this.parsedCSV[indexOfMean][m];
+                curMetricObject["value"]["mean"] = this.parsedCSV[indexOfMean][m];
 
                 // Confidence Interval is always 4 indices above the next variant seperator
                 try {
-                    curMetricObject["CI"] = (this.parsedCSV[indexOfCI][m]) * 100;
+                    curMetricObject["value"]["CI"] = (this.parsedCSV[indexOfCI][m]);
                 } catch(e) {
-                    curMetricObject["CI"] = null;
+                    curMetricObject["value"]["CI"] = null;
                 }
 
                 curVariantObject.metrics.push(curMetricObject);

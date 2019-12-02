@@ -4,9 +4,9 @@ import math from 'mathjs';
 import { stringify } from 'qs';
 import PerffarmRunJSON from './lib/PerffarmRunJSON';
 import ExtractRelevantJenkinsTestResults from './lib/ExtractRelevantJenkinsTestResults';
-import benchmarkVariantsInfo from './lib/benchmarkVariantsInfo';
 import { getParams } from '../utils/query';
 import './PerfCompare.css';
+import { getParserProps, getMetricProps } from '../utils/perf';
 
 const buildTypeExampleURL = {
     Jenkins: "https://customJenkinsServer/view/PerfTests/job/Daily-Liberty-Startup/1/",
@@ -424,7 +424,7 @@ export default class PerfCompare extends Component {
             }
         )
         let curAllVariantData = [];
-        let curVariantData, curMetricTable, curMatchingTestVariantIndex, curMatchingTestMetricIndex;
+        let curVariantData, curMetricTable, curMatchingTestVariantIndex, curMatchingTestMetricIndex, metricProps;
         let curMetricName, curBaselineScore, curTestScore, curRawValues, curDiff, curBaselineCI, curTestCI, curColor, curMetricUnits, curHigherBetter;
 
         // Only compare variants that are in the baseline run
@@ -450,6 +450,7 @@ export default class PerfCompare extends Component {
             curVariantData["testMachine"] = parsedVariantsTest.machine;
 
             curMetricTable = [];
+
             for (let j = 0; j < parsedVariantsBaseline.metrics.length; j++) {
                 
                 // Must match the baseline metric name
@@ -505,22 +506,27 @@ export default class PerfCompare extends Component {
                 curTestCI = parsedVariantsTest.metrics[j].value.CI;
 
                 // Get the metric's units
+                // get BenchmarkRouter & Metric files from server
+                let parserProps = await getParserProps();
+                // get metric Properties (regex & higherbetter & units) using current benchmark information
+                let metricProps = getMetricProps(parserProps, curVariantData["benchmark"], curVariantData["variant"], curMetricName);
                 try {
-                    curMetricUnits = benchmarkVariantsInfo[curVariantData["benchmark"]][curVariantData["variant"]][curMetricName]["units"];
+                    curMetricUnits = metricProps["units"];
                 } catch (metricNotFoundError) {
-                    curMetricUnits = "";
+                    curMetricUnits = "";    
                     // TODO: TOGGLE CONTINUE TO DISPLAY METRICS WHICH WE DON'T TRACK
                     continue;
                 }
-
-                // Check if a higher value for this metric means a better score
+ 
+                // Check if a higher value for this metric means a better score 
                 try {
-                    if (benchmarkVariantsInfo[curVariantData["benchmark"]][curVariantData["variant"]][curMetricName]["higherbetter"] === "t") {
+                    if (metricProps["higherbetter"]) {
                         curHigherBetter = true;
                     } else {
                         curHigherBetter = false;
                     }
                 } catch (higherBetterNotFoundError) {
+
                     curHigherBetter = undefined;
                 }
 
