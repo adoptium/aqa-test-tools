@@ -2,7 +2,7 @@ const { TestResultsDB, ObjectID } = require( '../Database' );
 
 function exceedDate(jdkDate) {
     return function(element) {
-    	return parseInt(element.aggregateInfo[0].jdkDate) <= parseInt(jdkDate);
+    	return parseInt(element.jdkDate) <= parseInt(jdkDate);
     }
 }
 
@@ -55,9 +55,9 @@ module.exports = async ( req, res ) => {
             // Remove all entries whose build date exceeds the chosen date
             const exceedFilter = result.filter(exceedDate(req.query.jdkDate));
             // Setting the latest build date from the available dates
-            const latestDate = Math.max.apply(Math, exceedFilter.map(function(o) { return parseInt(o.aggregateInfo[0].jdkDate); }));
+            const latestDate = Math.max.apply(Math, exceedFilter.map(function(o) { return parseInt(o.jdkDate); }));
             // Remove all runs that are not the latest
-            const dateFilter = exceedFilter.filter(entry => parseInt(entry.aggregateInfo[0].jdkDate) === latestDate);
+            const dateFilter = exceedFilter.filter(entry => parseInt(entry.jdkDate) === latestDate);
             const latest = Math.max.apply(Math, dateFilter.map(function(o) { return o.timestamp; }));
             // Keep the latest build with the latest timestamp
             const latestRun = dateFilter.find(function(o){ return o.timestamp == latest; })

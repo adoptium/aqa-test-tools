@@ -107,7 +107,7 @@ export default class SPECjbb2015 extends Component {
 
             // TODO: current code only considers one interation. This needs to be updated
             if ( t.tests[0].testData && t.tests[0].testData.metrics && t.tests[0].testData.metrics.length === 2 ) {
-                const jdkDate = t.tests[0].jdkDate;
+                const jdkDate = t.jdkDate;
                 let maxjOPS = null;
                 let criticaljOPS = null;
                 for ( let i = 0; i < t.tests[0].testData.metrics.length; i++ ) {

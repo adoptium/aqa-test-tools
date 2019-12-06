@@ -9,14 +9,14 @@ import math from 'mathjs';
 import utils from './utils';
 
 const map = {
-    "Daily-ODM-all": "Daily-ODM Daily-ODM-Linux-PPCLE64 Daily-ODM-openJ9 Daily-ODM-zLinux Daily-ODM-zOS"
+    "Daily-ODM-all": "PerfNext-ODM-Child PerfNext-ODM-Parent Daily-ODM Daily-ODM-Linux-PPCLE64 Daily-ODM-openJ9 Daily-ODM-zLinux Daily-ODM-zOS"
 };
 
 let display = {
     "Daily-ODM-all": true
 }
 
-let baselineValue = 7000;
+let baselineValue = 9000;
 
 export class ODMSetting extends Component {
     onChange = obj => {
@@ -80,31 +80,35 @@ export default class ODM extends Component {
 
         // combine results having the same JDK build date
         results.forEach(( t, i ) => {
-            if ( t.buildResult !== "SUCCESS" ) return;
-
+            if ( t.buildResult !== "SUCCESS" || !t.validAggregateInfo) return;
             // TODO: current code only considers one interation. This needs to be updated
-            if ( t.tests[0].testData && t.tests[0].testData.metrics && t.tests[0].testData.metrics.length > 0 ) {
-                const jdkDate = t.tests[0].jdkDate;
-                if ( !t.tests[0].testData.metrics[0].value
-                    || t.tests[0].testData.metrics[0].value.length === 0
-                    || t.tests[0].testData.metrics[0].name !== "Global Throughput" ) {
+            for ( let element of t.aggregateInfo ) {
+                const jdkDate = t.jdkDate;
+                if ( !t.validAggregateInfo || element.metrics[0].name !== "Global Throughput" ) {
                     return;
                 }
                 if(!resultsByJDKBuild[t.buildName]) {
                     resultsByJDKBuild[t.buildName] = {};
                 }
-                if(jdkDate) {
-                    resultsByJDKBuild[t.buildName][jdkDate] = resultsByJDKBuild[jdkDate] || [];
-                    resultsByJDKBuild[t.buildName][jdkDate].push( {
-                        globalThroughput: t.tests[0].testData.metrics[0].value[0],
-                        additionalData: {
-                            testId: t.tests[0]._id,
-                            buildName: t.buildName,
-                            buildNum: t.buildNum,
-                            javaVersion: t.tests[0].javaVersion,
-                        },
-                    } );
-                }
+                resultsByJDKBuild[t.buildName][jdkDate] = resultsByJDKBuild[jdkDate] || [];
+                resultsByJDKBuild[t.buildName][jdkDate].push( {
+                    globalThroughput: element.metrics[0].value["mean"],
+                    additionalData: {
+                        mean: element.metrics[0].value["mean"],
+                        max: element.metrics[0].value["max"],
+                        min: element.metrics[0].value["min"],
+                        median: element.metrics[0].value["median"],
+                        stddev: element.metrics[0].value["stddev"],
+                        CI: element.metrics[0].value["CI"],
+                        validIterations: element.metrics[0].value["validIterations"],
+                        testId: (Array.isArray(t.tests) && t.tests.length > 0) ? t.tests[0]._id : null,
+                        hasChildren: t.hasChildren,
+                        parentId:t._id,
+                        buildName: t.buildName,
+                        buildNum: t.buildNum,
+                        javaVersion: t.javaVersion,
+                    },
+                } );
             }
         } );
         let baseLineData = [];
@@ -138,23 +142,34 @@ export default class ODM extends Component {
         this.setState( { displaySeries } );
     }
 
+
     formatter = function() {
-        const x = new Date( this.x );
+        const x = this.x;
         if ( this.point.additionalData ) {
             let buildLinks = '';
             let i = this.series.data.indexOf(this.point);
             let prevPoint = i === 0 ? null : this.series.data[i - 1];
             this.point.additionalData.forEach(( xy, i ) => {
-                const { testId, buildName, buildNum } = xy;
-                buildLinks = buildLinks + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
+                const { testId, parentId, buildName, buildNum, hasChildren } = xy;
+                let childBuildLinks = '' + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
+                let parentBuildLinks = '' + ` <a href="/buildDetail?parentId=${parentId}">${buildName} #${buildNum}</a>`
+                buildLinks = hasChildren ? parentBuildLinks : childBuildLinks;
             } );
 
             let lengthThis = this.point.additionalData.length;
             let lengthPrev = prevPoint ? prevPoint.additionalData.length : 0;
-
-            let javaVersion = this.point.additionalData[lengthThis - 1].javaVersion;
+            
+            let point = this.point.additionalData[lengthThis - 1];
+            let javaVersion = point.javaVersion;
             let prevJavaVersion = prevPoint ? prevPoint.additionalData[lengthPrev - 1].javaVersion : null;
-            let ret = `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )} <br/>Link to builds: ${buildLinks}`;
+            let mean = point.mean;
+            let max = point.max;
+            let min = point.min;
+            let median = point.median;
+            let stddev = point.stddev;
+            let CI = point.CI;
+            let validIterations = point.validIterations;
+            let ret = `Test vs Baseline: ${math.round(this.y, 3)}%<br/> Build: ${x} <br/>Link to builds: ${ buildLinks }<br/>mean: ${mean}<br/>max: ${max}<br/>min: ${min}<br/>median: ${median}<br/>stddev: ${stddev}<br/>CI: ${CI}<br/>validIterations: ${validIterations}`;
 
             prevJavaVersion = utils.parseSha(prevJavaVersion, 'OpenJ9');
             javaVersion = utils.parseSha(javaVersion, 'OpenJ9');
@@ -165,7 +180,7 @@ export default class ODM extends Component {
             }
             return ret;
         } else {
-            return `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )}`
+            return `Baseline percentage: ${this.y}%<br/> Baseline mean: ${baselineValue}</br> Build: ${x}`
         }
     }
 
