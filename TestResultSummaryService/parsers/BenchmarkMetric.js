@@ -83,6 +83,22 @@ const BenchmarkMetricRegex = {
             },
         }
     },
+    BumbleBench: {
+        metrics: {
+            "Score":{
+                //Example: ArrayListSortComparatorBench score: 2757481.000000 (2.757M 1483.0%)
+                regex: /ArrayListSort[\s\S\n]*? score: ?(\d*\.?\d*)/,
+                higherbetter: true,
+                units: "iterations/batch",
+            },
+            "Uncertainty":{
+                //Example: uncertainty:   0.8%
+                regex:/uncertainty:[\[ ]{3,}]?(\d*\.?\d*)/,
+                higherbetter: false,
+                units: "%",
+            },
+        }
+    },
     ILOG_WODM: {
         metrics: {
             "Global Throughput":{

@@ -7,10 +7,13 @@ class DataManagerAggregate {
         const benchmarkMetricsCollection = {};
         let name, variant;
         if (Array.isArray(childBuild.tests) && childBuild.tests.length > 0 ) {
-            name = childBuild.tests[0].benchmarkName;
-            variant = childBuild.tests[0].benchmarkVariant;
-            for ( let {testData} of childBuild.tests){
-                if ( Array.isArray(testData.metrics) ) {
+            for ( let {benchmarkName, benchmarkVariant, testData} of childBuild.tests){
+                //define the first time benchmarkName and benchmarkVariant for name, variant.
+                if (benchmarkName && benchmarkVariant && !name && !variant) {
+                    name = benchmarkName;
+                    variant = benchmarkVariant;
+                }
+                if ( benchmarkName === name && benchmarkVariant === variant && testData && Array.isArray(testData.metrics) ) {
                     for ( let {name, value} of testData.metrics ){
                         benchmarkMetricsCollection[name] = benchmarkMetricsCollection[name] || [];
                         if ( Array.isArray(value) ) {
