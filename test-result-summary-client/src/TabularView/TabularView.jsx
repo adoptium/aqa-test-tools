@@ -7,9 +7,8 @@ import PropTypes from 'prop-types';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { getParams } from '../utils/query';
 import 'react-day-picker/lib/style.css';
-import benchmarkVariantsInfo from '../PerfCompare/lib/benchmarkVariantsInfo';
 import tabularViewConfig from './TabularViewConfig';
-
+import { getParserProps, getMetricProps } from '../utils/perf';
 // Pull property panel from Collapse, so you do not have to write Collapse.Panel each time
 const { Panel } = Collapse;
 // Pull property SHOW_PARENT from TreeSelect, so you do not have to write TreeSelect.SHOW_PARENT each time
@@ -515,11 +514,11 @@ export default class TabularView extends Component {
         }
     }
 
-    populateCompTable() {
+    populateCompTable(parserProps) {
     	// Each entry is a combination of the data in testData and baselineData, same format two fields benchmarkName and platforms
     	// Now platform entries contain information from both the testJdk and the baselineJdk
         const newArray = [];
-
+        var metricProps;
         this.state.testData.forEach(function (testDataObject) {
             let consolidatedDataObject = {};
             let benchmark = testDataObject.benchmarkNVM.split(",")[0];
@@ -529,8 +528,11 @@ export default class TabularView extends Component {
             consolidatedDataObject.benchmarkNVM = testDataObject.benchmarkNVM;
 
             let higherBetter;
+            
+            //get BenchmarkRouter & Metric files from server
+            metricProps = getMetricProps(parserProps, benchmark, variant, metric);
             try {
-                if (benchmarkVariantsInfo[benchmark][variant][metric]["higherbetter"] === "t") {
+                if (metricProps["higherbetter"]) {
                     higherBetter = true;
                 } else {
                     higherBetter = false;
@@ -538,6 +540,7 @@ export default class TabularView extends Component {
             } catch (higherBetterNotFoundError) {
                 higherBetter = true;
             }
+
 
             let matchingDataObject = this.state.baselineData.find( s => s.benchmarkNVM == testDataObject.benchmarkNVM );
             // Baseline data contains information for the benchmark, comparison possible
@@ -621,7 +624,9 @@ export default class TabularView extends Component {
         }
         this.setState({platformFilter: platformFilter});
         this.populateTable(info, type);
-        this.populateCompTable();
+        
+        let parserProps = await getParserProps();
+        this.populateCompTable(parserProps);
     }
 
     render() {
