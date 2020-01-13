@@ -44,14 +44,14 @@ export default class App extends Component {
                             defaultOpenKeys={['sub1']}
                             style={{ height: '100%', borderRight: 0 }}
                         >
-                            <SubMenu key="sub1" title={<span><Icon type="user" />Menu</span>}>
-                                <Menu.Item key="1"><Link to="/dashboard">Dashboard</Link></Menu.Item>
-                                <Menu.Item key="2"><Link to="/tests/Test">FV Test</Link></Menu.Item>
-                                <Menu.Item key="3"><Link to="/tests/Perf">Perf Test</Link></Menu.Item>
-                                <Menu.Item key="4"><Link to="/testCompare">Test Compare</Link></Menu.Item>
-                                <Menu.Item key="5"><Link to="/perfCompare">Perf Compare</Link></Menu.Item>
-                                <Menu.Item key="6"><Link to="/tabularView">Tabular View</Link></Menu.Item>
+                            <Menu.Item key="1"><Link to="/tests/Test">By Pipeline</Link></Menu.Item>
+                            <Menu.Item key="2"><Link to="/testCompare">Test Compare</Link></Menu.Item>
+                            <SubMenu key="3" title={<span>Perf Related</span>}>
+                                <Menu.Item key="sub1"><Link to="/tests/Perf">Perf Test</Link></Menu.Item>
+                                <Menu.Item key="sub2"><Link to="/perfCompare">Perf Compare</Link></Menu.Item>
+                                <Menu.Item key="sub3"><Link to="/tabularView">Tabular View</Link></Menu.Item>
                             </SubMenu>
+                            <Menu.Item key="4"><Link to="/dashboard">Dashboard</Link></Menu.Item>
                         </Menu>
                     </Sider>
                     <Layout style={{ padding: '0 24px 24px' }}>
