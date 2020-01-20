@@ -39,6 +39,7 @@ export default class Build extends Component {
                 };
                 ret.action = {
                     testId: test._id,
+                    testName: test.testName,
                 };
                 builds.forEach(({ tests, parentNum }, i) => {
                     if (!tests) {

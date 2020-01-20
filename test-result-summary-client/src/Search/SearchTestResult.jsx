@@ -20,7 +20,7 @@ export default class SearchResult extends Component {
                 key: element._id,
                 sortName: element.testName,
                 testName: element.testName,
-                action: { testId: element._id },
+                action: { testId: element._id, testName: element.testName },
                 result: { testResult: element.testResult, testId: element._id },
                 build: { buildName: element.buildName },
                 duration: element.duration,
