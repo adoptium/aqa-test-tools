@@ -31,7 +31,7 @@ app.get( '/getTestPerPlatform', wrap( require( "./getTestPerPlatform" ) ) );
 app.get( '/getTopLevelBuildNames', wrap( require( "./getTopLevelBuildNames" ) ) );
 app.get( '/getTotals', wrap( require( "./getTotals" ) ) );
 app.get( '/populateDB', wrap( require( "./populateDB" ) ) );
-
+app.get( '/updateComments', wrap( require( "./updateComments" ) ) );
 
 app.post( '/getParentSpecificData', wrap( require( "./getParentSpecificData" ) ) );
 app.post( '/getSpecificData', wrap( require( "./getSpecificData" ) ) );
