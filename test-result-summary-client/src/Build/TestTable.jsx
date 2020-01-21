@@ -36,15 +36,18 @@ export default class TestTable extends Component {
             </div>;
         };
 
-        const renderAction = ( { testId } ) => {
+        const renderAction = ( { testId, testName } ) => {
+            const issueUrl = `https://github.com/eclipse/openj9/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+${testName}`
             return <span>
                 <Link to={{ pathname: '/testPerPlatform', search: params( { testId } ) }}>
                     All Platforms
-                        </Link>
+                </Link>
                 <span className="ant-divider" />
                 <Link to={{ pathname: '/deepHistory', search: params( { testId } ) }}>
                     Deep History
-                        </Link>
+                </Link>
+                <span className="ant-divider" />
+                <a href={issueUrl} target="_blank" rel="noopener noreferrer">Possible Issues</a>
             </span>
         }
 
