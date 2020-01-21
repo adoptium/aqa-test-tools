@@ -15,7 +15,7 @@ export default class BuildDetail extends Component {
         await this.updateData();
         this.intervalId = setInterval(() => {
             this.updateData();
-        }, 30 * 1000 );
+        }, 10 * 1000 );
     }
 
     async componentDidUpdate( prevProps ) {
@@ -70,7 +70,8 @@ export default class BuildDetail extends Component {
                 jenkinsBuild: { buildName: builds[i].buildName, buildNum: builds[i].buildNum, buildUrl: builds[i].buildUrl, url: builds[i].url },
                 result: { _id: builds[i]._id, buildResult: builds[i].buildResult },
                 resultDetail: builds[i].testSummary,
-                date: builds[i].timestamp ? new Date( builds[i].timestamp ).toLocaleString() : null
+                date: builds[i].timestamp ? new Date( builds[i].timestamp ).toLocaleString() : null,
+                comments: builds[i].comments
             } );
         }
 
