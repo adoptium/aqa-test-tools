@@ -151,11 +151,14 @@ class BenchmarkParser extends Parser {
             buildResult = "FAILURE";
         }
         const { javaVersion, jdkDate } = this.exactJavaVersion( output );
+        const { nodeVersion, nodeRunDate} = this.exactNodeVersion( output );
 
         return {
             tests,
             jdkDate,
             javaVersion,
+            nodeRunDate,
+            nodeVersion,
             buildResult,
             machine: this.extractMachineInfo( output ),
             type: "Perf",

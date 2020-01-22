@@ -24,7 +24,7 @@ class DataManagerAggregate {
         return {name, variant, benchmarkMetricsCollection};
     }
 
-    static async updateBuildWithAggregateInfo(hasChildren, id, testResultsDB, benchmarkName, benchmarkVariant, jdkDate, javaVersion, metricsCollection) {
+    static async updateBuildWithAggregateInfo(hasChildren, id, testResultsDB, benchmarkName, benchmarkVariant, jdkDate, javaVersion, nodeRunDate, nodeVersion, metricsCollection) {
         // calculate the aggregate data
         
         /* added validAggregateInfo as a new variable in database for saving the checking time on aggregateInfo array in Perf Compare and Dashboard display, etc..
@@ -33,7 +33,7 @@ class DataManagerAggregate {
         */
            let validAggregateInfo = false;
         const aggregateInfo = [];
-        if (benchmarkName != null && benchmarkVariant != null && jdkDate != null && javaVersion != null && metricsCollection != null) {
+        if (benchmarkName && benchmarkVariant && ((nodeRunDate && nodeVersion )|| (javaVersion && jdkDate)) && metricsCollection) {
             const aggData = [];
             Object.keys( metricsCollection ).forEach( function(key) {
                 if (Array.isArray(metricsCollection[key]) && metricsCollection[key].length > 0 ){
@@ -61,13 +61,11 @@ class DataManagerAggregate {
             });
         }
         const criteria = { _id: new ObjectID( id ) };
-        await testResultsDB.update( criteria, { $set: {aggregateInfo} } );
-        await testResultsDB.update( criteria, { $set: {validAggregateInfo} } );
-            
         //update jdkDate and javaVersion for parent node in the database 
-        if (hasChildren){
-            await testResultsDB.update( criteria, { $set: {jdkDate} } );
-            await testResultsDB.update( criteria, { $set: {javaVersion}} );
+        if (hasChildren) {
+            await testResultsDB.update( criteria, { $set: {aggregateInfo , validAggregateInfo , jdkDate , javaVersion , nodeRunDate , nodeVersion}} );
+        } else {
+            await testResultsDB.update( criteria, { $set: {aggregateInfo, validAggregateInfo}} );
         }
     }
 }
