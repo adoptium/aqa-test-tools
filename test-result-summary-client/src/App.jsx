@@ -41,7 +41,7 @@ export default class App extends Component {
                         <Menu
                             mode="inline"
                             defaultSelectedKeys={['1']}
-                            defaultOpenKeys={['sub1']}
+                            defaultOpenKeys={['3']}
                             style={{ height: '100%', borderRight: 0 }}
                         >
                             <Menu.Item key="1"><Link to="/tests/Test">By Pipeline</Link></Menu.Item>
@@ -57,7 +57,7 @@ export default class App extends Component {
                     <Layout style={{ padding: '0 24px 24px' }}>
                         <ErrorBoundary>
                             <Content style={{ background: '#fff', padding: 24, margin: 0, minHeight: 280 }}>
-                                <Route exact path="/" component={Dashboard} />
+                                <Route exact path="/" component={TopLevelBuilds} />
                                 <Route path="/admin/settings" component={Settings} />
                                 <Route path="/dashboard" component={Dashboard} />
                                 <Route path="/tests/:type" component={TopLevelBuilds} />

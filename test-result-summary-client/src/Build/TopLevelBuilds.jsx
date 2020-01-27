@@ -25,7 +25,7 @@ export default class TopLevelBuilds extends Component {
 
     async updateData(type) {
         const builds = {};
-
+        if (!type) type = "Test";
         const response = await fetch(`/api/getTopLevelBuildNames?type=${type}`, {
             method: 'get'
         });
