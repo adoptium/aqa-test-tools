@@ -4,7 +4,7 @@ import {
     LineSeries, Navigator, RangeSelector, Tooltip
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
-import { Checkbox, Radio } from 'antd';
+import { Checkbox } from 'antd';
 import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
 import math from 'mathjs';
 import utils from './utils';
@@ -29,8 +29,6 @@ export class DayTrader3Setting extends Component {
     }
 
     render() {
-        const { buildSelected } = this.props;
-
         return <div style={{ maxWidth: 400 }}>
             <Checkbox.Group onChange={this.onChange} values={map.keys} defaultValue={["Daily-Liberty-DayTrader3"]}>
                 {Object.keys( map ).map( key => {

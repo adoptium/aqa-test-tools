@@ -424,7 +424,7 @@ export default class PerfCompare extends Component {
             }
         )
         let curAllVariantData = [];
-        let curVariantData, curMetricTable, curMatchingTestVariantIndex, curMatchingTestMetricIndex, metricProps;
+        let curVariantData, curMetricTable, curMatchingTestVariantIndex, curMatchingTestMetricIndex;
         let curMetricName, curBaselineScore, curTestScore, curRawValues, curDiff, curBaselineCI, curTestCI, curColor, curMetricUnits, curHigherBetter;
 
         // Only compare variants that are in the baseline run

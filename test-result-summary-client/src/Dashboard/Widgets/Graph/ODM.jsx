@@ -30,8 +30,6 @@ export class ODMSetting extends Component {
     }
 
     render() {
-        const { buildSelected } = this.props;
-
         return <div style={{ maxWidth: 400 }}>
             <Radio.Group onChange={this.onChange} values={map.keys} defaultValue={"Daily-ODM-all"}>
                 {Object.keys( map ).map( key => {
