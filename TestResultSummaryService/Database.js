@@ -1,84 +1,84 @@
-const { MongoClient, ObjectID } = require( 'mongodb' );
+const { MongoClient, ObjectID } = require('mongodb');
 const ArgParser = require("./ArgParser");
 
 const credential = ArgParser.getConfigDB() === null ? "" : `${encodeURIComponent(ArgParser.getConfigDB().user)}:${encodeURIComponent(ArgParser.getConfigDB().password)}@`;
 const url = 'mongodb://' + credential + 'localhost:27017/exampleDb';
 
 let db;
-( async function() {
-    const dbConnect = await MongoClient.connect( url );
+(async function () {
+    const dbConnect = await MongoClient.connect(url);
     db = dbConnect.db("exampleDb");
-    await db.createCollection( 'testResults' );
-    await db.createCollection( 'output' );
-} )()
+    await db.createCollection('testResults');
+    await db.createCollection('output');
+})()
 
 class Database {
-    populateDB( data ) {
-        return this.col.insert( data );
+    populateDB(data) {
+        return this.col.insert(data);
     }
 
-    getData( query, fields = {} ) {
-        return this.col.find( query, fields );
+    getData(query, fields = {}) {
+        return this.col.find(query, fields);
     }
-    
-    findOne( query, fields = {} ) {
-        return this.col.findOne( query, fields );
+
+    findOne(query, fields = {}) {
+        return this.col.findOne(query, fields);
     }
 
     dropCollection() {
         return this.col.drop();
     }
 
-    aggregate( array ) {
-        return this.col.aggregate( array ).toArray();
+    aggregate(array) {
+        return this.col.aggregate(array).toArray();
     }
 
-    distinct( field, query ) {
-        return this.col.distinct( field, query );
+    distinct(field, query) {
+        return this.col.distinct(field, query);
     }
 
-    update( criteria, update, options = {} ) {
-        return this.col.update( criteria, update, options );
+    update(criteria, update, options = {}) {
+        return this.col.update(criteria, update, options);
     }
 
-    deleteMany( fields ) {
-        return this.col.deleteMany( fields );
+    deleteMany(fields) {
+        return this.col.deleteMany(fields);
     }
 
-    deleteOne( fields ) {
-        return this.col.deleteOne( fields );
+    deleteOne(fields) {
+        return this.col.deleteOne(fields);
     }
 
-    async getSpecificData( query, specification ) {
-        if ( query.buildNum ) query.buildNum = parseInt( query.buildNum, 10 );
-        if ( query._id ) query._id = new ObjectID( query._id );
-        if ( query.parentId ) query.parentId = new ObjectID( query.parentId );
-        if ( query["tests._id"] ) query["tests._id"] = new ObjectID( query["tests._id"] );
-        const result = await this.aggregate( [
+    async getSpecificData(query, specification) {
+        if (query.buildNum) query.buildNum = parseInt(query.buildNum, 10);
+        if (query._id) query._id = new ObjectID(query._id);
+        if (query.parentId) query.parentId = new ObjectID(query.parentId);
+        if (query["tests._id"]) query["tests._id"] = new ObjectID(query["tests._id"]);
+        const result = await this.aggregate([
             {
                 $match: query,
             },
             {
                 $project: specification,
             },
-        ] );
+        ]);
         return result;
     }
 
-    async getTestById( testId ) {
-        const result = await this.aggregate( [
+    async getTestById(testId) {
+        const result = await this.aggregate([
             {
                 $match: {
-                    "tests._id": new ObjectID( testId )
+                    "tests._id": new ObjectID(testId)
                 }
             },
             { $unwind: "$tests" },
             {
                 $match: {
-                    "tests._id": new ObjectID( testId )
+                    "tests._id": new ObjectID(testId)
                 }
             }
-        ] );
+        ]);
         return result;
     }
 
@@ -86,23 +86,31 @@ class Database {
     async getTotals(query) {
         const url = query.url;
         const buildName = query.buildName;
+        let id = query.id;
         let buildNum = query.buildNum;
-        if (!url || !buildName || !buildNum) {
-            return { error: `Cannot find url ${url}, buildName ${buildName} or buildNum ${buildNum}` };
+        let matchQuery = {};
+        if (id) {
+            const _id = new ObjectID(id);
+            matchQuery = { _id };
+        } else if (url && buildName && buildNum) {
+            if (buildNum && parseInt(buildNum, 10)) {
+                buildNum = parseInt(buildNum, 10);
+            } else {
+                return { error: `invalid buildNum: ${buildNum}` };
+            }
+            matchQuery = { url, buildName, buildNum };
+        } else {
+            return { error: `Cannot find id ${id}, url ${url}, buildName ${buildName} or buildNum ${buildNum}` };
         }
 
-        if (buildNum && parseInt(buildNum, 10)) {
-            buildNum = parseInt(buildNum, 10);
-        } else {
-            return { error: `invalid buildNum: ${buildNum}` };
-        }
+
         let buildNameRegex = `^Test.*`;
         if (query.level) buildNameRegex = `${buildNameRegex}${query.level}..*`;
         if (query.group) buildNameRegex = `${buildNameRegex}${query.group}-.*`;
         if (query.platform) buildNameRegex = `${buildNameRegex}${query.platform}`;
 
         const result = await this.aggregate([
-            { $match: { url, buildName, buildNum } },
+            { $match: matchQuery },
             {
                 $graphLookup: {
                     from: "testResults",
@@ -161,7 +169,7 @@ class Database {
     }
 
     async getAvgDuration(info) {
-        const { matchQuery={}, testName, platform, jdkVersion, impl, level, group, limit = 500 } = info;
+        const { matchQuery = {}, testName, platform, jdkVersion, impl, level, group, limit = 500 } = info;
         let buildNameRegex = `^Test.*`;
         if (jdkVersion) buildNameRegex = `${buildNameRegex}_openjdk${jdkVersion}.*`;
         if (impl) buildNameRegex = `${buildNameRegex}${impl}_.*`;
@@ -218,21 +226,21 @@ class Database {
 class TestResultsDB extends Database {
     constructor() {
         super();
-        this.col = db.collection( 'testResults' );
+        this.col = db.collection('testResults');
     }
 }
 
 class OutputDB extends Database {
     constructor() {
         super();
-        this.col = db.collection( 'output' );
+        this.col = db.collection('output');
     }
 }
 
 class BuildListDB extends Database {
     constructor() {
         super();
-        this.col = db.collection( 'buildList' );
+        this.col = db.collection('buildList');
     }
 }
 

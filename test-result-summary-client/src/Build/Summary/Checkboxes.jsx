@@ -3,7 +3,7 @@ import { Checkbox } from 'antd';
 import { isEqual } from 'lodash';
 const CheckboxGroup = Checkbox.Group;
 
-export default class ResultGrid extends Component {
+export default class Checkboxes extends Component {
     render() {
         const { name, options = [], value = [], onChange } = this.props;
         const allChecked = isEqual(options, value);

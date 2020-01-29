@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Icon, Table, Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
-
+import BuildLink from './BuildLink';
 export default class TopLevelBuilds extends Component {
     state = {};
 
@@ -13,7 +13,8 @@ export default class TopLevelBuilds extends Component {
         }, 5 * 60 * 1000);
 
     }
-    async componentWillReceiveProps(nextProps) {
+
+    async componentDidUpdate(nextProps) {
         if (nextProps.match.params.type !== this.props.match.params.type) {
             await this.updateData(nextProps.match.params.type);
         }
@@ -124,35 +125,25 @@ export default class TopLevelBuilds extends Component {
 
             const renderTotals = (value) => {
                 const totals = value.totals;
-                if (!totals) return <div>N/A</div>;
-
+                if (!totals || !value._id) return <div>N/A</div>;
                 return <>
-                    <Link to={{ pathname: '/resultGrid', search: params({ parentId: value._id }) }}
+                    <Link to={{ pathname: '/resultSummary', search: params({ parentId: value._id }) }}
                         style={{ color: value.buildResult === "SUCCESS" ? "#2cbe4e" : (value.buildResult === "FAILURE" ? "#f50" : "#DAA520") }}>Grid
                     </Link>
                     <div>
-                        {renderResults(value, "Failed: ", totals.failed ? totals.failed : 0, undefined, "failed", "^Test.*")}
-                        {renderResults(value, "Passed: ", totals.passed ? totals.passed : 0, undefined, "passed", "^Test.*")}
-                        {renderResults(value, "Disabled: ", totals.disabled ? totals.disabled : 0, undefined, "disabled", "^Test.*")}
-                        {renderResults(value, "Skipped: ", totals.skipped ? totals.skipped : 0, undefined, "skipped", "^Test.*")}
-                        {renderResults(value, "Total: ", totals.total ? totals.total : 0)}
+                        <BuildLink id={value._id} label="Failed: " link={totals.failed ? totals.failed : 0} testSummaryResult="failed" buildNameRegex="^Test.*"/>
+                        <BuildLink id={value._id} label="Passed: " link={totals.passed ? totals.passed : 0} testSummaryResult="passed" buildNameRegex="^Test.*"/>
+                        <BuildLink id={value._id} label="Disabled: " link={totals.disabled ? totals.disabled : 0} testSummaryResult="disabled" buildNameRegex="^Test.*"/>
+                        <BuildLink id={value._id} label="Skipped: " link={totals.skipped ? totals.skipped : 0} testSummaryResult="skipped" buildNameRegex="^Test.*"/>
+                        <BuildLink id={value._id} label="Total: " link={totals.total ? totals.total : 0} testSummaryResult="total" buildNameRegex="^Test.*"/>
                     </div>
                 </>;
             };
 
             const renderBuildResults = (value) => {
                 return <div>
-                    {renderResults(value, "", "Failed Builds ", "!SUCCESS")}
+                    <BuildLink id={value._id} link="Failed Builds " buildResult="!SUCCESS" />
                 </div>;
-            };
-
-            const renderResults = (build, label, link, buildResult, testSummaryResult, buildNameRegex) => {
-                if (build && build.buildNum) {
-                    return <span>
-                        {label}<Link to={{ pathname: '/buildDetail', search: params({ parentId: build._id, buildResult, testSummaryResult, buildNameRegex }) }}>{link} </Link>
-                    </span>;
-                }
-                return null;
             };
 
             const renderPublishName = ({ buildParams = [] }) => {

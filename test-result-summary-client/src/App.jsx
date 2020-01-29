@@ -10,7 +10,7 @@ import { Output } from './Build/Output/';
 import { TestCompare } from './TestCompare/';
 import { PerfCompare } from './PerfCompare/';
 import { TabularView } from './TabularView/';
-import { AllTestsInfo, BuildDetail, DeepHistory, TestPerPlatform, TopLevelBuilds, ResultGrid } from './Build/';
+import { AllTestsInfo, BuildDetail, DeepHistory, TestPerPlatform, TopLevelBuilds, ResultSummary } from './Build/';
 import { SearchResult } from './Search/';
 import { Settings } from './Settings/';
 
@@ -70,7 +70,7 @@ export default class App extends Component {
                                 <Route path="/allTestsInfo" component={AllTestsInfo} />
                                 <Route path="/testPerPlatform" component={TestPerPlatform} />
                                 <Route path="/searchResult" component={SearchResult} />
-                                <Route path="/resultGrid" component={ResultGrid} />
+                                <Route path="/resultSummary" component={ResultSummary} />
                             </Content>
                         </ErrorBoundary>
                     </Layout>
