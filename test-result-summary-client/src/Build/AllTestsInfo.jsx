@@ -84,7 +84,7 @@ export default class Build extends Component {
         return <div>
             <TestBreadcrumb buildId={buildId} />
             <SearchOutput buildId={buildId} />
-            <TestTable title={"Tests"} testData={testData} parents={parents} />
+            <TestTable title={"Tests"} testData={testData} parents={parents} buildId={buildId} />
         </div>
     }
 }

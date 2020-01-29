@@ -11,7 +11,7 @@ function _cleanParams(query) {
 };
 
 module.exports = async ( req, res ) => {
-  const { limit = 10, asc = false, ...query } = req.query;
+  const { limit = 30, asc = false, ...query } = req.query;
   const sortData = {
     timestamp: asc ? 1 : -1
   };
