@@ -1,10 +1,9 @@
 import React, { Component } from 'react';
 import TextFilter from '../utils/TextFilter';
-import { Table, Input } from 'antd';
+import { Table } from 'antd';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
 import renderDuration from './Duration';
-import Highlighter from 'react-highlight-words';
 
 export default class TestTable extends Component {
     state = {

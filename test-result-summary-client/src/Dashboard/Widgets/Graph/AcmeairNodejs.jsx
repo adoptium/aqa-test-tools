@@ -6,7 +6,6 @@ import {
 import DateRangePickers from '../DateRangePickers';
 import { Radio } from 'antd';
 import math from 'mathjs';
-import utils from './utils';
 
 const map = {
     "AcmeairNodejs": "PerfNext-master-node-perf PerfNext-master-latest12-perf"
@@ -30,8 +29,6 @@ export class AcemeairNodejsSetting extends Component {
     }
 
     render() {
-        const { buildSelected } = this.props;        
-
         return <div style={{ maxWidth: 400 }}>
             <Radio.Group onChange={this.onChange} values={map.keys} defaultValue={["AcmeairNodejs"]}>
                 {Object.keys( map ).map( key => {
@@ -141,7 +138,6 @@ export default class AcemeairNodejs extends Component {
         const x = this.x;
         if ( this.point.additionalData ) {
             let buildLinks = '';
-            const i = this.series.data.indexOf(this.point);
             this.point.additionalData.forEach(( xy, i ) => {
                 const { testId, parentId, buildName, buildNum, hasChildren } = xy;
                 const childBuildLinks = '' + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;

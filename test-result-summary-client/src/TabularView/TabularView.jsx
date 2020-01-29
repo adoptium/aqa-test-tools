@@ -387,7 +387,7 @@ export default class TabularView extends Component {
     }
     // Show a warning if the confidence interval exceeds the regression. Closer look at data is necessary to confirm regression.
     handleCI(totalCI, relativeComparison) {
-        if (relativeComparison == 100 || relativeComparison == 0 || relativeComparison === "N/A") {return;}
+        if (relativeComparison === 100 || relativeComparison === 0 || relativeComparison === "N/A") {return;}
         else if (totalCI * 100 < (Math.abs(relativeComparison - 100) + 0.7)) {return;} 
         else {
             return <Icon type="warning" />;
@@ -491,7 +491,7 @@ export default class TabularView extends Component {
 
                 for (const currentDataObject in newArray) {
                 	// If benchmark already exists append to it
-                    if (newArray[currentDataObject].benchmarkNVM == benchmarkNVM) {
+                    if (newArray[currentDataObject].benchmarkNVM === benchmarkNVM) {
                         found = true;
                         newArray[currentDataObject].platformsSpecificData[platform] = this.handleEntry(testResultsObject, metric, type);
                         break;
@@ -542,7 +542,7 @@ export default class TabularView extends Component {
             }
 
 
-            let matchingDataObject = this.state.baselineData.find( s => s.benchmarkNVM == testDataObject.benchmarkNVM );
+            let matchingDataObject = this.state.baselineData.find( s => s.benchmarkNVM === testDataObject.benchmarkNVM );
             // Baseline data contains information for the benchmark, comparison possible
             if (matchingDataObject != null) {
             Object.keys(testDataObject.platformsSpecificData).forEach(function(platform) {
@@ -573,7 +573,7 @@ export default class TabularView extends Component {
         // Loop through baseline table and the newly created array to fill the gaps in comparison table
         this.state.baselineData.forEach(function (baselineDataObject) {
 
-            let matchingDataObject = newArray.find( s => s.benchmarkNVM == baselineDataObject.benchmarkNVM );
+            let matchingDataObject = newArray.find( s => s.benchmarkNVM === baselineDataObject.benchmarkNVM );
             if (matchingDataObject != null) {
                 Object.keys(baselineDataObject.platformsSpecificData).forEach(function(platform) {
                     if (!(matchingDataObject.platformsSpecificData.hasOwnProperty(platform))) {

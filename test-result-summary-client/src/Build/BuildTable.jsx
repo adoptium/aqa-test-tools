@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Table, Form, Input, Icon } from 'antd';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
-import nl2br from 'react-nl2br';
 
 const { TextArea } = Input;
 export default class BuildTable extends Component {
