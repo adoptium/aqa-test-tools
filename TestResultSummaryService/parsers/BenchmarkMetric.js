@@ -109,7 +109,7 @@ const BenchmarkMetricRegex = {
             }
         }
     },
-    AcmeAir: {
+    AcmeAirNodejs: {
         metrics: {
             "Throughput":{
                 //Example: Throughput: 3554.1
