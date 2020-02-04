@@ -48,7 +48,7 @@ module.exports = async ( req, res ) => {
         let benchmarkQuery;
         // Return all entries that match the current benchmark and platform
         for (item in platforms) {
-            benchmarkQuery = {$and: [{ buildName: { $regex : platforms[item] }}, { tests: { $elemMatch: { sdkResource: sdkResourceQuery }}}, { aggregateInfo: { $elemMatch: { benchmarkName: benchmarks[benchmarkIndex] }}}
+            benchmarkQuery = {$and: [{ buildName: { $regex : platforms[item] }}, { tests: { $elemMatch: { benchmarkName: benchmarks[benchmarkIndex] }}}, { aggregateInfo: { $elemMatch: { benchmarkName: benchmarks[benchmarkIndex] }}}
             ] };
             const result = await db.getData(benchmarkQuery).toArray();
 
