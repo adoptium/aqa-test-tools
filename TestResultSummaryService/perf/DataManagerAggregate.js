@@ -4,71 +4,101 @@ const ObjectID = require( 'mongodb' ).ObjectID;
 
 class DataManagerAggregate {
     static aggDataCollect(childBuild) {
-        const benchmarkMetricsCollection = {};
-        let name, variant;
+        let aggRawMetricValues = {};
         if (Array.isArray(childBuild.tests) && childBuild.tests.length > 0 ) {
             for ( let {benchmarkName, benchmarkVariant, testData} of childBuild.tests){
-                //define the first time benchmarkName and benchmarkVariant for name, variant.
-                if (benchmarkName && benchmarkVariant && !name && !variant) {
-                    name = benchmarkName;
-                    variant = benchmarkVariant;
-                }
-                if ( benchmarkName === name && benchmarkVariant === variant && testData && Array.isArray(testData.metrics) ) {
+                if (benchmarkName && benchmarkVariant && testData && Array.isArray(testData.metrics) && testData.metrics.length > 0){
+                    // Example: Jenkins build (running 2 benchmarks with 2 iterations) in this order: Benchmark_1, Benchmark_2, Benchmark_1, Benchmark_2.
+                    let name_variant_key = benchmarkName+"&&"+benchmarkVariant;//use benchmarkName and benchmarkVariant to make a unique name_variant key
+                    /**
+                     * Check aggRawMetricValues JSON object and see if it could include an existing name_variant key,
+                     * If yes, we should concatenate our raw value collections to the end of the existing name_variant value
+                     * Otherwise, we should create a new object.
+                     */
+                    aggRawMetricValues[name_variant_key] = aggRawMetricValues[name_variant_key] || {};
                     for ( let {name, value} of testData.metrics ){
-                        benchmarkMetricsCollection[name] = benchmarkMetricsCollection[name] || [];
+                        aggRawMetricValues[name_variant_key][name] = aggRawMetricValues[name_variant_key][name] || [];
                         if ( Array.isArray(value) ) {
-                            benchmarkMetricsCollection[name] = benchmarkMetricsCollection[name].concat(value);
+                            aggRawMetricValues[name_variant_key][name] = aggRawMetricValues[name_variant_key][name].concat(value);
                         }
-                        benchmarkMetricsCollection[name] = benchmarkMetricsCollection[name].filter (n => n);
+                        aggRawMetricValues[name_variant_key][name] = aggRawMetricValues[name_variant_key][name].filter (n => n);
                     }
                 }
             }
         }
-        return {name, variant, benchmarkMetricsCollection};
+        return aggRawMetricValues;
     }
 
-    static async updateBuildWithAggregateInfo(hasChildren, id, testResultsDB, benchmarkName, benchmarkVariant, jdkDate, javaVersion, nodeRunDate, nodeVersion, metricsCollection) {
+    static async updateBuildWithAggregateInfo(hasChildren, id, testResultsDB, jdkDate, javaVersion, nodeRunDate, nodeVersion, aggRawMetricValues) {
         // calculate the aggregate data
-        
-        /* added validAggregateInfo as a new variable in database for saving the checking time on aggregateInfo array in Perf Compare and Dashboard display, etc..
-         * Expecting at least one valid metric value in the aggregateInfo, requiring all benchmarkName, benchmarkVariant, jdkDate and metrics[0]. 
-         * Also metrics[0] data should have name and all relevant data under value array such as mean, max and statistical info.
+
+        /*
+         * Add validAggregateInfo here as a new variable in database for saving checking time on aggregateInfo array in Perf Compare and Dashboard display, etc..
+         * Expecting at least one valid metric value in the aggregateInfo, requiring all benchmarkName, benchmarkVariant, jdkDate and metrics[0] valid.
+         * Also metrics[0] data should have name and all relevant data under statValues and rawValues arrays.
         */
-           let validAggregateInfo = false;
+        let validAggregateInfo = true;
         const aggregateInfo = [];
-        if (benchmarkName && benchmarkVariant && ((nodeRunDate && nodeVersion )|| (javaVersion && jdkDate)) && metricsCollection) {
-            const aggData = [];
-            Object.keys( metricsCollection ).forEach( function(key) {
-                if (Array.isArray(metricsCollection[key]) && metricsCollection[key].length > 0 ){
-                    const mean = math.round(math.mean(metricsCollection[key]), 3);
-                    const max = math.round(math.max(metricsCollection[key]), 3);
-                    const min = math.round(math.min(metricsCollection[key]), 3);
-                    const median = math.round(math.median(metricsCollection[key]), 3);
-                    const stddev = math.round(math.std(metricsCollection[key]), 3);
-                    const CI = math.round(BenchmarkMath.confidence_interval(metricsCollection[key]), 3);
-                    aggData.push({
-                        name: key, 
-                        value: { 
-                            mean, max, min, median, stddev, CI,
-                            validIterations: metricsCollection[key].length
-                        }
-                    });
-                    validAggregateInfo = true;
-                }
-            })
-            //add aggregate info for each node and update it in both parent and child node database
-            aggregateInfo.push({
-                benchmarkName,
-                benchmarkVariant,
-                metrics: aggData
+        let benchmarkName, benchmarkVariant;
+        if(((jdkDate && javaVersion) || (nodeRunDate && nodeVersion)) && aggRawMetricValues && Object.keys(aggRawMetricValues).length > 0) {
+            Object.keys( aggRawMetricValues ).forEach( function(name_variant)  {
+                benchmarkName = name_variant.split("&&")[0];
+                benchmarkVariant = name_variant.split("&&")[1];
+                const metrics = [];
+                let benchmarkMetricsCollection = aggRawMetricValues[name_variant];
+                Object.keys( benchmarkMetricsCollection ).forEach( function(key) {
+                    if (Array.isArray(benchmarkMetricsCollection[key]) && benchmarkMetricsCollection[key].length > 0 ){
+                        const mean = math.round(math.mean(benchmarkMetricsCollection[key]), 3);
+                        const max = math.round(math.max(benchmarkMetricsCollection[key]), 3);
+                        const min = math.round(math.min(benchmarkMetricsCollection[key]), 3);
+                        const median = math.round(math.median(benchmarkMetricsCollection[key]), 3);
+                        const stddev = math.round(math.std(benchmarkMetricsCollection[key]), 3);
+                        const CI = math.round(BenchmarkMath.confidence_interval(benchmarkMetricsCollection[key]), 3);
+                        metrics.push({
+                            name: key,
+                            statValues: {
+                                mean, max, min, median, stddev, CI,
+                                validIterations: benchmarkMetricsCollection[key].length
+                            },
+                            rawValues: benchmarkMetricsCollection[key]
+                        });
+                    }
+                })
+                //add aggregate info for each node and update it in both parent and child node database
+                aggregateInfo.push({
+                    benchmarkName,
+                    benchmarkVariant,
+                    metrics
+                });
             });
+            //identify if the aggregateinfo is valid, save duplicate checks in front end usage.
+            if (!(Array.isArray(aggregateInfo) && aggregateInfo.length > 0)) {
+                validAggregateInfo = false;
+            } else {
+                for(let {benchmarkName, benchmarkVariant, metrics} of aggregateInfo){
+                    if(!(benchmarkName && benchmarkVariant && Array.isArray(metrics) && metrics.length > 0)){
+                        validAggregateInfo = false;
+                    } else {
+                        for(let{name, statValues} of metrics) {
+                            if (!(name && Object.keys(statValues).length > 0 && statValues.validIterations > 0)) {
+                                validAggregateInfo = false;
+                            }
+                        }
+                    }
+                }
+            }
         }
         const criteria = { _id: new ObjectID( id ) };
-        //update jdkDate and javaVersion for parent node in the database 
-        if (hasChildren) {
-            await testResultsDB.update( criteria, { $set: {aggregateInfo , validAggregateInfo , jdkDate , javaVersion , nodeRunDate , nodeVersion}} );
-        } else {
-            await testResultsDB.update( criteria, { $set: {aggregateInfo, validAggregateInfo}} );
+        await testResultsDB.update( criteria, { $set: {aggregateInfo, validAggregateInfo} } );
+
+        //update jdkDate/nodeRunDate and javaVersion/nodeVersion for parent node in the database
+        if (hasChildren){
+            if (jdkDate && javaVersion) {
+                await testResultsDB.update( criteria, { $set: {jdkDate, javaVersion} } );
+            }
+            if (nodeRunDate && nodeVersion) {
+                await testResultsDB.update( criteria, { $set: {nodeRunDate, nodeVersion} } );
+            }
         }
     }
 }
