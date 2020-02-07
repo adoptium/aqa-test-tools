@@ -3,15 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
-    "antd": "^3.25.2",
+    "antd": "^3.26.7",
     "classnames": "^2.2.6",
-    "codemirror": "^5.49.2",
+    "codemirror": "^5.51.0",
     "highcharts": "^7.2.1",
+    "highcharts-react-official": "^2.2.2",
     "highstock-release": "^6.0.4",
     "history": "^4.10.1",
     "jquery": "^3.4.1",
     "mathjs": "^5.10.3",
-    "mergely": "^4.0.11",
+    "mergely": "^4.0.15",
     "moment": "^2.24.0",
     "npm-check": "^5.9.0",
     "qs": "^6.9.1",
@@ -26,7 +27,7 @@
     "react-nl2br": "^0.6.0",
     "react-router": "^5.1.2",
     "react-router-dom": "^5.1.2",
-    "react-table": "^6.10.0"
+    "react-table": "^6.11.5"
   },
   "scripts": {
     "start": "react-app-rewired start",

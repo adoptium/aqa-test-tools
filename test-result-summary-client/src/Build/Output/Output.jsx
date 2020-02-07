@@ -16,7 +16,7 @@ export default class Output extends Component {
     async componentDidMount() {
         await this.updateData( this.props.match.params.outputType );
     }
-    async componentWillReceiveProps( nextProps ) {
+    async componentDidUpdate( nextProps ) {
         if ( nextProps.match.params.outputType !== this.props.match.params.outputType ) {
             await this.updateData( nextProps.match.params.outputType );
         }
