@@ -6,7 +6,7 @@ Project for logging test results and viewing history. Should be abstract enough 
 ## Prerequisites
 * Node Version: 11.4.0 [Install Node](https://nodejs.org/en/download/)
 * System Dependencies: npm (comes packaged with Node)
-* MongoDB 3.4 and above
+* MongoDB 4.0.6 and above
 * Access to [Jenkins Instances](https://ci.adoptopenjdk.net)
 
 ## Local run/development steps
