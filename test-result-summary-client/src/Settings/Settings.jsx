@@ -158,6 +158,14 @@ export default class Settings extends Component {
         }
     }
 
+    handleStreamingClick = ( record, e ) => {
+        const { data } = this.state;
+        if ( data && data.length > record.key ) {
+            data[record.key].streaming = e.key;
+            this.setState( data );
+        }
+    }
+
     render() {
         const { data } = this.state;
         if ( data ) {
@@ -191,6 +199,24 @@ export default class Settings extends Component {
                     );
                 }
             }, {
+                title: 'Streaming',
+                dataIndex: 'streaming',
+                render: ( text, record ) => {
+                    const menu = (
+                        <Menu onClick={this.handleStreamingClick.bind( null, record )}>
+                            <Menu.Item key="No">No</Menu.Item>
+                            <Menu.Item key="Yes">Yes</Menu.Item>
+                        </Menu>
+                    );
+                    return (
+                        <Dropdown overlay={menu}>
+                            <Button style={{ marginLeft: 8 }}>
+                                {text ? text : "No"} <Icon type="down" />
+                            </Button>
+                        </Dropdown>
+                    );
+                }
+            },{
                 title: '# of Builds to Keep ',
                 dataIndex: 'numBuildsToKeep',
                 render: ( text, record ) => {
