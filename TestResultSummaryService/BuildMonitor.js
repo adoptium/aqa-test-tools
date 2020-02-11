@@ -8,7 +8,7 @@ const { deleteBuildsAndChildrenByFields } = require('./routes/deleteBuildsAndChi
 
 class BuildMonitor {
     async execute(task) {
-        let { buildUrl, type, numBuildsToKeep } = task;
+        let { buildUrl, type, streaming } = task;
         if (!buildUrl || !type) {
             logger.error("BuildMonitor: Invalid buildUrl and/or type", buildUrl, type);
             return;
@@ -39,16 +39,16 @@ class BuildMonitor {
          * db.
          */
         const limit = Math.min(5, allBuilds.length);
-        const testResults = new TestResultsDB();   
+        const testResults = new TestResultsDB();
         for (let i = 0; i < limit; i++) {
             const buildNum = parseInt(allBuilds[i].id, 10);
             const buildsInDB = await testResults.getData({ url, buildName, buildNum }).toArray();
             if (!buildsInDB || buildsInDB.length === 0) {
                 let status = "NotDone";
-                // Turn off streaming
-                // if ( allBuilds[i].result === null ) {
-                // status = "Streaming";
-                // }
+                if (streaming === "Yes" && allBuilds[i].result === null) {
+                    status = "Streaming";
+                    logger.info(`Set build ${url} ${buildName} ${buildNum} status to Streaming `);
+                }
                 const buildData = {
                     url,
                     buildName,
@@ -93,7 +93,7 @@ class BuildMonitor {
     }
 
     async deleteOldBuilds(task) {
-        let { buildUrl, type, numBuildsToKeep } = task;
+        let { buildUrl, numBuildsToKeep } = task;
         const { buildName, url } = this.getBuildInfo(buildUrl);
         // keep only limited builds in DB and delete old builds
         const testResults = new TestResultsDB();
