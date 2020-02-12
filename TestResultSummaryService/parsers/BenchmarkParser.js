@@ -1,11 +1,9 @@
 const Parser = require( './Parser' );
-const BenchmarkMetricRouter = require( './BenchmarkMetricRouter' );
-const BenchmarkMetric = require( './BenchmarkMetric' );
-
 const benchmarkDelimiterRegex = /\*\*\*\*\*\*\*\*\*\* START OF NEW TESTCI BENCHMARK JOB \*\*\*\*\*\*\*\*\*\*[\r\n]/;
 const benchmarkNameRegex = /Benchmark Name: (.*) Benchmark Variant: .*[\r\n]/;
 const benchmarkVariantRegex = /Benchmark Name: .* Benchmark Variant: (.*)[\r\n]/;
 const productResourceRegex = /Product Resource: (.*)[\r\n]/;
+const Utils = require('./Utils');
 
 class BenchmarkParser extends Parser {
 
@@ -45,15 +43,9 @@ class BenchmarkParser extends Parser {
 
             let curBenchmarkName = null;
             let curBenchmarkVariant = null;
-            let curBenchVariant = null;
-            let curMetric = null;
-            let curSearchString = null;
             let curRegexResult = null;
-            let curMetricValues = null;
             let curProductResource = null;
-            let curRegex = null;
             let isValid = true;
-            let curTestData = {};
 
             // Parse benchmark name
             if ( ( curRegexResult = benchmarkNameRegex.exec( curItr.value ) ) !== null ) {
@@ -61,73 +53,24 @@ class BenchmarkParser extends Parser {
             } else {
                 isValid = false;
             }
-
             // Parse benchmark variant
             if ( ( curRegexResult = benchmarkVariantRegex.exec( curItr.value ) ) !== null ) {
                 curBenchmarkVariant = curRegexResult[1];
             } else {
                 isValid = false;
             }
-
-            if (!BenchmarkMetricRouter[curBenchmarkName]) {
-                isValid = false;
-            } else if (!BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]) {
-                isValid = false;
-            // Benchmark should have at least one metric to parse with
-            } else if (!BenchmarkMetric[BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]]
-            || !BenchmarkMetric[BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]]["metrics"]
-            || Object.keys(BenchmarkMetric[BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]]["metrics"]).length === 0) {
-                isValid = false;
-            }
-    
+            // Parse product resource
             if ( ( curRegexResult = productResourceRegex.exec( curItr.value ) ) !== null ) {
                 curProductResource = curRegexResult[1];
+            } else {
+                isValid = false;
             }
-
-            if ( isValid ) {
-
-                curBenchVariant = BenchmarkMetric[BenchmarkMetricRouter[curBenchmarkName][curBenchmarkVariant]];	
-                curSearchString = curItr.value;
-                
-                // if outerRegex is undefined, all runs should be measured. Parse metrics in every run
-                // if outerRegex is defined, any runs before outerRegex will be ignored. Parse metrics in warm runs only 
-                if (curBenchVariant.outerRegex !== undefined) {
-                	if ( ( curRegexResult = curBenchVariant.outerRegex.exec( curSearchString ) ) !== null ) {
-                        // index 0 contains entire text (curItr.value)
-                        // index 1 contains text after the outerRegex
-                        curSearchString = curRegexResult[1];
-                    } 
-                }
-                
-                // Parse metric values
-                curTestData["metrics"] = [];
-                let curMetricList = Object.keys(curBenchVariant["metrics"]);
-                for ( let i = 0; i < curMetricList.length; i++ ) {
-
-                    curMetric = curMetricList[i];
-                    curRegex = curBenchVariant["metrics"][curMetric]["regex"];  
-                    /*	Parse all values for single metric from result to an array
-                     *  e.g 
-                     *  Liberty Startup =>
-                     *  curRegexResult = ['startup time in ms 32',32,'startup time in ms 41',41, x 6] 
-                     *  Liberty Throughput =>
-                     *  curRegexResult = ['<metric type="throughput">32<\/data>',32]
-                     */
-                    curRegexResult = curSearchString.split(curRegex);
-                    //collect only the capture groups from the regex array
-                    curRegexResult = curRegexResult.filter( (value,index) => (index %2 === 1));
-                    curMetricValues = curRegexResult.map(parseFloat);
-                    /* Metrics such as JITCPU total in LibertyThroughput and geomean_GCA in CryptoBB, 
-                     * require aggregate function to be applied. 
-                     * e.g JIT CPU total values are collected as [ 0,0,300,200,20 ] but we display 520 as the JITCPU total  
-                     */
-                    if(typeof curBenchVariant["metrics"][curMetric]["funcName"] != "undefined" && curMetricValues.length != 0) {
-                        curMetricValues = [curBenchVariant["metrics"][curMetric]["funcName"](curMetricValues)];
-                    }
-                    curTestData["metrics"].push({name: curMetric, value: curMetricValues});
-                }     
+            // Parse test Data
+            let {testData} = Utils.parseOutput(curBenchmarkName, curBenchmarkVariant, curItr.value);
+            if (!testData) {
+                isValid = false;
             }
-
+            
             tests.push( {
                 testOutput: curItr.value,
                 testResult: isValid ? "PASSED" : "FAILED",
@@ -135,21 +78,13 @@ class BenchmarkParser extends Parser {
                 benchmarkName: curBenchmarkName,
                 benchmarkVariant: curBenchmarkVariant,
                 sdkResource: curProductResource,
-                testData: curTestData,                
+                testData,                
             } );
 
             curItr = benchmarkIterator.next();
         }
 
-        if ((tests.map(x=>x.testResult).indexOf("PASSED") > -1)) {
-            if ((tests.map(x=>x.testResult).indexOf("FAILED") > -1)) {
-                buildResult = "PARTIAL-SUCCESS";
-            } else {
-                buildResult = "SUCCESS";
-            }
-        } else {
-            buildResult = "FAILURE";
-        }
+        buildResult = Utils.perfBuildResult(tests);
         const { javaVersion, jdkDate } = this.exactJavaVersion( output );
         const { nodeVersion, nodeRunDate} = this.exactNodeVersion( output );
 

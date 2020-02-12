@@ -66,6 +66,18 @@ const BenchmarkMetricRouter = {
         "17dev-4way-LargeThreadPool": "LibertyDTThroughput",
         "17dev-4way-LargeThreadPoolwarm": "LibertyDTThroughput"
     },
+    "OpenLibertyStartupDT7": {
+        "0": "LibertyStartup"
+    },
+    "bumbleBench-ArrayListSortCollectionsBench": {
+        "0": "BumbleBench"
+    },
+    "bumbleBench-ArrayListSortComparatorBench": {
+        "0": "BumbleBench"
+    },
+    "bumbleBench-ArrayListSortLambdaBench": {
+        "0": "BumbleBench"
+    },
     "SPECjbb2015GMR": {
         "multi_2grp_gencon": "SPECjbb2015"
     },

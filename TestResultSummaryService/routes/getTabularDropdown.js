@@ -16,7 +16,7 @@ module.exports = async ( req, res ) => {
         {
           _id:0,
           buildNames: {$addToSet: '$buildName'},
-          sdkResource: {$addToSet: '$tests.sdkResource'},
+          sdkResource: {$addToSet: '$sdkResource'},
           buildServer: {$addToSet: '$url'},
     }}
     ] );

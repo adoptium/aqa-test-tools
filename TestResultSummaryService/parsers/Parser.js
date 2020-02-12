@@ -4,22 +4,26 @@ class Parser {
     }
 
     static canParse() { return false; }
-    
-    exactJavaVersion(output) {
-        const javaVersionRegex = /((openjdk|java) version[\s\S]*JCL.*\n|(openjdk|java) version[\s\S]*Server VM.*\n)/;
-        const javaBuildDateRegex = /-(20[0-9][0-9][0-9][0-9][0-9][0-9])/;
-        let curRegexResult = null;
-        let javaVersion, jdkDate;
 
+    exactJavaVersion(output) {
+        const javaVersionRegex = /(((openjdk|java) version[\s\S]*?)(JCL.*)|((openjdk|java) version[\s\S]*?)(Server VM.*))/;
+        const javaBuildDateRegex = /-(20[0-9][0-9][0-9][0-9][0-9][0-9])/;
+        const sdkResourceRegex = /.*?SDK_RESOURCE\=(.*)[\r\n]/;
+        let curRegexResult = null;
+        let javaVersion, jdkDate, sdkResource;
         if ( ( curRegexResult = javaVersionRegex.exec( output ) ) !== null ) {
             javaVersion = curRegexResult[1];
+        }
+        curRegexResult = null;
+        if ( ( curRegexResult = sdkResourceRegex.exec( output) ) != null) {
+            sdkResource = curRegexResult[1];
         }
         curRegexResult = null;
         // parse jdk date from javaVersion
         if ( ( curRegexResult = javaBuildDateRegex.exec( javaVersion ) ) !== null ) {
             jdkDate = curRegexResult[1];
         }
-        return { javaVersion, jdkDate };
+        return { javaVersion, jdkDate, sdkResource };
     }
 
     exactNodeVersion(output) {

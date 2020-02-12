@@ -2,6 +2,8 @@ const Parser = require('./Parser');
 const regexRunningTest = /.*?Running test (.*?) \.\.\.\r?/;
 const regexFinishTime = /.*?Finish Time\: .* Epoch Time \(ms\)\: (.*).*/;
 const regexStartTime = /.*?Start Time\: .* Epoch Time \(ms\)\: (.*).*/;
+const TestBenchmarkParser = require( `./TestBenchmarkParser`);
+const Utils = require(`./Utils`);
 
 class Test extends Parser {
     static canParse(buildName, output) {
@@ -13,6 +15,10 @@ class Test extends Parser {
     }
     async parse(output) {
         const tests = await this.extract(output);
+        const {javaVersion, jdkDate, sdkResource} = this.exactJavaVersion(output);
+        tests.javaVersion = javaVersion;
+        tests.jdkDate = jdkDate;
+        tests.sdkResource = sdkResource;
         tests.machine = this.extractMachineInfo(output);
         tests.testSummary = this.extractTestSummary(output);
         tests.startBy = this.extractStartedBy(output);
@@ -24,7 +30,7 @@ class Test extends Parser {
         const preTest = "Pre Test";
         const postTest = "Post Test";
         let m, testStr, testName, testResult, startTime, finishTime, testResultRegex;
-        const results = [];
+        let results = [];
         const readline = require('readline');
         const stream = require('stream');
         let buf = new Buffer(str);
@@ -109,9 +115,18 @@ class Test extends Parser {
                 testData: null
             });
         }
+
+        let buildResult = null;
+        const isPerf = results.some(res => TestBenchmarkParser.canParse(res.testName));
+        if (isPerf) {
+            results = TestBenchmarkParser.parsePerf(results);
+            buildResult =  Utils.perfBuildResult(results);
+        }
+
         return {
             tests: results,
-            type: "Test"
+            ...buildResult && {buildResult},
+            type: isPerf ? "Perf" : "Test"
         };
     }
 }
