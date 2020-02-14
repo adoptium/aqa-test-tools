@@ -10,7 +10,7 @@ import TestBreadcrumb from '../TestBreadcrumb';
 const hcvalues = {
     hcjdkImpls: ["j9", "hs", "Upstream"],
     hclevels: ["sanity", "extended", "special"],
-    hcgroups: ["functional", "openjdk", "system", "external", "perf"]
+    hcgroups: ["functional", "openjdk", "system", "external", "perf", "jck"]
 }
 
 export default class ResultSummary extends Component {
