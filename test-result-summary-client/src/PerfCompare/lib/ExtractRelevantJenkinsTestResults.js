@@ -9,25 +9,20 @@ export default class ExtractRelevantJenkinsTestResults {
 
         let parsedVariantsCommon = {};
         let curVariantObjectId = null;
-        let testInfo = this.runJSON.testInfo[0];
-        if (Array.isArray(testInfo.aggregateInfo) && testInfo.aggregateInfo.length > 0) {
-            for (let aggregateInfo of testInfo.aggregateInfo) {
-                if (aggregateInfo.benchmarkName && aggregateInfo.benchmarkVariant) {
-                    curVariantObjectId = aggregateInfo.benchmarkName + "!@#$%DELIMIT%$#@!" + aggregateInfo.benchmarkVariant;
-                } else {
-                    // invalid benchmark name and/or variant. Skipping it.
-                    continue;
+        const {jdkDate, machine, aggregateInfo} = this.runJSON.testInfo[0];
+        if (Array.isArray(aggregateInfo) && aggregateInfo.length > 0 ) {
+            for (let {benchmarkName, benchmarkVariant, metrics} of aggregateInfo) {
+                if (benchmarkName && benchmarkVariant) {
+                    curVariantObjectId = benchmarkName + "!@#$%DELIMIT%$#@!" + benchmarkVariant;
                 }
-
                 // new variant
-                if (parsedVariantsCommon[curVariantObjectId] === undefined) {
+                if (!parsedVariantsCommon[curVariantObjectId]) {
                     parsedVariantsCommon[curVariantObjectId] = {
-                        jdkDate: testInfo.jdkDate,
-                        benchmark: aggregateInfo.benchmarkName,
-                        variant: aggregateInfo.benchmarkVariant,
-                        machine: testInfo.machine,
-                        metrics: aggregateInfo.metrics,
-                        testsData: (testInfo.tests === undefined) ? undefined : testInfo.tests[0].testData.metrics
+                        jdkDate,
+                        benchmarkName,
+                        benchmarkVariant,
+                        machine,
+                        metrics,
                     };
                     this.parsedVariants.push(parsedVariantsCommon[curVariantObjectId]);
                 }
