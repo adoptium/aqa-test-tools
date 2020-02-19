@@ -453,22 +453,22 @@ export default class TabularView extends Component {
         }
     }
     // Enter values in the proper fields before saving to the test/baseline array
-    handleEntry(testResultObject, metric, type) {
+    handleEntry(index, testResultObject, metric, type) {
         if (type === 'test') {
-            return {testScore: testResultObject.aggregateInfo[0].metrics[metric].value.mean, 
-                testJdkDate: testResultObject.aggregateInfo[0].jdkDate,
-                testCI: testResultObject.aggregateInfo[0].metrics[metric].value.CI,
+            return {testScore: testResultObject.aggregateInfo[index].metrics[metric].statValues.mean, 
+                testJdkDate: testResultObject.jdkDate,
+                testCI: testResultObject.aggregateInfo[index].metrics[metric].statValues.CI,
                 testSdkResource: testResultObject.sdkResource,
                 testBuildUrl: testResultObject.buildUrl,
-                relativeComparison: testResultObject.aggregateInfo[0].metrics[metric].value.mean
+                relativeComparison: testResultObject.aggregateInfo[index].metrics[metric].statValues.mean
             };
         } else {
-            return {baselineScore: testResultObject.aggregateInfo[0].metrics[metric].value.mean, 
-                baselineJdkDate: testResultObject.aggregateInfo[0].jdkDate,
-                baselineCI: testResultObject.aggregateInfo[0].metrics[metric].value.CI,
+            return {baselineScore: testResultObject.aggregateInfo[index].metrics[metric].statValues.mean, 
+                baselineJdkDate: testResultObject.jdkDate,
+                baselineCI: testResultObject.aggregateInfo[index].metrics[metric].statValues.CI,
                 baselineSdkResource: testResultObject.sdkResource,
                 baselineBuildUrl: testResultObject.buildUrl,
-                relativeComparison: testResultObject.aggregateInfo[0].metrics[metric].value.mean
+                relativeComparison: testResultObject.aggregateInfo[index].metrics[metric].statValues.mean
             };
 
         }
@@ -484,28 +484,32 @@ export default class TabularView extends Component {
         let found = false;
 
         data.forEach(function (testResultsObject) {
-            platform = testResultsObject.buildName.split("_").slice(4).join('_');
-            for (const metric in testResultsObject.aggregateInfo[0].metrics) {
-                found = false;
-                benchmarkNVM = testResultsObject.aggregateInfo[0].benchmarkName + ',' + testResultsObject.aggregateInfo[0].benchmarkVariant + "," + testResultsObject.aggregateInfo[0].metrics[metric].name;
-
-                for (const currentDataObject in newArray) {
-                	// If benchmark already exists append to it
-                    if (newArray[currentDataObject].benchmarkNVM === benchmarkNVM) {
-                        found = true;
-                        newArray[currentDataObject].platformsSpecificData[platform] = this.handleEntry(testResultsObject, metric, type);
-                        break;
+            platform = testResultsObject.buildName
+            let aggregateIndex = 0;
+            for(; aggregateIndex < testResultsObject.aggregateInfo.length; aggregateIndex++) {
+                for (const metric in testResultsObject.aggregateInfo[aggregateIndex].metrics) {
+                    found = false;
+                    benchmarkNVM = testResultsObject.aggregateInfo[aggregateIndex].benchmarkName + ',' + testResultsObject.aggregateInfo[aggregateIndex].benchmarkVariant + "," + testResultsObject.aggregateInfo[aggregateIndex].metrics[metric].name;
+    
+                    for (const currentDataObject in newArray) {
+                        // If benchmark already exists append to it
+                        if (newArray[currentDataObject].benchmarkNVM == benchmarkNVM) {
+                            found = true;
+                            newArray[currentDataObject].platformsSpecificData[platform] = this.handleEntry(aggregateIndex, testResultsObject, metric, type);
+                            break;
+                        }
+                    }
+                   // Create a new entry if benchmark name does not exist
+                    if (!found) {
+                        dataObject = {};
+                        dataObject.platformsSpecificData = {};
+                        dataObject.benchmarkNVM = testResultsObject.aggregateInfo[aggregateIndex].benchmarkName + ',' + testResultsObject.aggregateInfo[aggregateIndex].benchmarkVariant + ',' + testResultsObject.aggregateInfo[aggregateIndex].metrics[metric].name;
+                        dataObject.platformsSpecificData[platform] = this.handleEntry(aggregateIndex, testResultsObject, metric, type);
+                        newArray.push(dataObject);	
                     }
                 }
-               // Create a new entry if benchmark name does not exist
-                if (!found) {
-                    dataObject = {};
-                    dataObject.platformsSpecificData = {};
-                    dataObject.benchmarkNVM = testResultsObject.aggregateInfo[0].benchmarkName + ',' + testResultsObject.aggregateInfo[0].benchmarkVariant + ',' + testResultsObject.aggregateInfo[0].metrics[metric].name;
-                    dataObject.platformsSpecificData[platform] = this.handleEntry(testResultsObject, metric, type);
-                    newArray.push(dataObject);	
-                }
             }
+            
         }.bind(this));
         if (type === 'test') {
             this.setState({testData:newArray});
@@ -612,8 +616,7 @@ export default class TabularView extends Component {
                 } );
         }
         const info = await tabularData.json();
-        const platformArray = [...new Set([...this.state.platforms,...(info.pop().map(platform => platform.split("_").slice(4).join('_')))])];
-
+        const platformArray = [...new Set([...this.state.platforms,...(info.pop())])];
         this.setState({platforms:platformArray});
 
         this.generateColumns(this.state.platforms);
