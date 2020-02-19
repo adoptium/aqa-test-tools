@@ -11,7 +11,7 @@ const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
 export default class TestTable extends Component {
     state = {
         filteredData: [],
-        buildData: {}
+        buildData: undefined
     };
 
 
@@ -73,14 +73,19 @@ export default class TestTable extends Component {
                 </Link>
                 <span className="ant-divider" />
                 <a href={issueUrl} target="_blank" rel="noopener noreferrer">Possible Issues</a>
-                <span className="ant-divider" />
+
                 {gitIssue(row)}
             </span>
         }
 
         const gitIssue = (value) => {
+            if (!buildData) return;
             const { key, testName, duration } = value;
-            const testResult = value[0].testResult;
+
+            let testResult = "N/A";
+            if (value && value[0]) {
+                testResult = value[0].testResult;
+            }
             const { _id, buildName, buildUrl, machine, timestamp } = buildData;
             const buildStartTime = moment(timestamp).format(DAY_FORMAT);
 
@@ -100,7 +105,10 @@ export default class TestTable extends Component {
 
 
             const urlParams = params({ title, body });
-            return <Tooltip title="Create new issue at https://github.com/AdoptOpenJDK/openjdk-tests"><a href={`https://github.com/AdoptOpenJDK/openjdk-tests/issues/new${urlParams}`} target="_blank" rel="noopener noreferrer"><Icon type="github" /></a></Tooltip>;
+            return <span>
+                <span className="ant-divider" />
+                <Tooltip title="Create new issue at https://github.com/AdoptOpenJDK/openjdk-tests"><a href={`https://github.com/AdoptOpenJDK/openjdk-tests/issues/new${urlParams}`} target="_blank" rel="noopener noreferrer"><Icon type="github" /></a></Tooltip>
+                </span>;
         };
 
         let columns = [{
