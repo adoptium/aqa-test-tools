@@ -53,15 +53,14 @@ export default class ResultSummary extends Component {
         });
 
         const builds = await fetchBuild.json();
-        const regex = /^Test_openjdk(\d+|Next)_(\w+)_(\w+).(.+?)_(.+?)(_(Nightly|Personal))?$/i;
+        const regex = /^Test_openjdk(\d+|next)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl)?)(_.+)?$/i;
         const buildMap = {};
         let jdkVersionOpts = [];
         builds.map((build, i) => {
-            const tokens = build.buildName.match(regex);
+            const buildName = build.buildName.toLowerCase();
+            const tokens = buildName.match(regex);
             if (Array.isArray(tokens) && tokens.length > 5) {
-                let [_, jdkVersion, jdkImpl, level, group, platform] = tokens;
-                // handle jdkVersion is a string (i.e., Next or next)
-                jdkVersion = jdkVersion.toLowerCase();
+                const [_, jdkVersion, jdkImpl, level, group, platform] = tokens;
 
                 buildMap[platform] = buildMap[platform] || {};
                 buildMap[platform][jdkVersion] = buildMap[platform][jdkVersion] || {};
