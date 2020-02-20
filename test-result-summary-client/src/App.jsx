@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
-import { LocaleProvider, Layout, Menu } from 'antd';
+import { ConfigProvider, Layout, Menu } from 'antd';
 import enUS from 'antd/lib/locale-provider/en_US';
 
 import { Dashboard } from './Dashboard/';
@@ -22,7 +22,7 @@ const { Header, Content, Sider } = Layout;
 
 export default class App extends Component {
     render() {
-        return <LocaleProvider locale={enUS}>
+        return <ConfigProvider locale={enUS}>
             <Layout>
                 <Header className="header" style={{ background: '#152935' }}>
                     <div className="logo" />
@@ -76,6 +76,6 @@ export default class App extends Component {
                     </Layout>
                 </Layout>
             </Layout>
-        </LocaleProvider>
+        </ConfigProvider>
     }
 }
