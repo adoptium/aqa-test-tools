@@ -47,7 +47,6 @@ export default class PerfCompare extends Component {
         	inputURL[url] = urlData[url];
         }
         await this.setState({inputURL: inputURL});
-        this.handleParseInputURL();
     }
 
     handleChange(event) {
@@ -601,9 +600,9 @@ export default class PerfCompare extends Component {
             let generatedTables = this.state.allVariantData.map( (x,i) => 
                 <div key={i}>
                     <h3>
-                        Benchmark: {x.benchmarkName}
+                        Benchmark: {x.benchmark}
                         <Divider type="vertical" />
-                        Variant: {x.benchmarkVariant}
+                        Variant: {x.variant}
                     </h3>
 
                     Baseline JDK Date: {x.baselineJdkDate} 
