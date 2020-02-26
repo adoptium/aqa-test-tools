@@ -2,7 +2,7 @@ const DataManager = require('./DataManager');
 const JenkinsInfo = require('./JenkinsInfo');
 const ObjectID = require('mongodb').ObjectID;
 const Promise = require('bluebird');
-const { TestResultsDB } = require('./Database');
+const { TestResultsDB, AuditLogsDB } = require('./Database');
 const { logger } = require('./Utils');
 const { deleteBuildsAndChildrenByFields } = require('./routes/deleteBuildsAndChildrenByFields');
 
@@ -59,7 +59,15 @@ class BuildMonitor {
                     type: type === "FVT" ? "Test" : type,
                     status,
                 };
-                await new DataManager().createBuild(buildData);
+                const _id = await new DataManager().createBuild(buildData);
+                await new AuditLogsDB().insertAuditLogs({
+                    action: "[createBuild]",
+                    _id,
+                    url,
+                    buildName,
+                    buildNum,
+                    status,
+                });
             } else {
                 break;
             }
@@ -105,6 +113,13 @@ class BuildMonitor {
                 await deleteBuildsAndChildrenByFields({ _id: build._id });
             }));
         }
+    }
+
+    async deleteOldAuditLogs(numDaysToKeep = 60) {
+        let date = new Date();
+        date.setDate(date.getDate() - parseInt(numDaysToKeep, 10));
+        const auditLogs = new AuditLogsDB();
+        await auditLogs.deleteMany({ "timestamp": { $lt: new Date(date) } });
     }
 }
 module.exports = BuildMonitor;

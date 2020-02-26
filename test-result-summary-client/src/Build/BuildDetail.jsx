@@ -15,7 +15,7 @@ export default class BuildDetail extends Component {
         await this.updateData();
         this.intervalId = setInterval(() => {
             this.updateData();
-        }, 10 * 1000 );
+        }, 5 * 60 * 1000 );
     }
 
     async componentDidUpdate( prevProps ) {
