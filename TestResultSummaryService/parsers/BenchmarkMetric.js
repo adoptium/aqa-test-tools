@@ -123,6 +123,15 @@ const BenchmarkMetricRegex = {
             },
         }
     },
+    IdleMicrobenchmark: {
+        metrics: {
+            "ACTIVE MAX":{
+                regex: /ACTIVE MAX:\s?(\d+.?\d+)/,
+                higherbetter: true,
+                units: "req/sec"
+            },            
+        }
+    },
     ILOG_WODM: {
         metrics: {
             "Global Throughput":{
