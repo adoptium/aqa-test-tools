@@ -534,7 +534,7 @@ export default class TabularView extends Component {
             let higherBetter;
             
             //get BenchmarkRouter & Metric files from server
-            metricProps = getMetricProps(parserProps, benchmark, variant, metric);
+            metricProps = getMetricProps(parserProps, benchmark, metric);
             try {
                 if (metricProps["higherbetter"]) {
                     higherBetter = true;

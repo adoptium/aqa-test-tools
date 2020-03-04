@@ -473,7 +473,7 @@ export default class PerfCompare extends Component {
                 // get BenchmarkRouter & Metric files from server
                 let parserProps = await getParserProps();
                 // get metric Properties (regex & higherbetter & units) using current benchmark information
-                let metricProps = getMetricProps(parserProps, curVariantData["benchmark"], curVariantData["variant"], curMetricName);
+                let metricProps = getMetricProps(parserProps, curVariantData["benchmark"], curMetricName);
                 try {
                     curMetricUnits = metricProps["units"];
                 } catch (metricNotFoundError) {

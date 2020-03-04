@@ -8,14 +8,15 @@ export const getParserProps = async () => {
     return parserProps;  
 }
 
-export function getMetricProps(parserProps,benchmarkName,benchmarkVariant,curMetric) {
-    let metricProps ="";
-    let benchmarkMetricRouter = parserProps['benchmarkMetricRouter'];
+export function getMetricProps(parserProps,benchmarkName,curMetric) {
     let benchmarkMetric = parserProps['benchmarkMetric'];
     try {
-        metricProps = benchmarkMetric[benchmarkMetricRouter[benchmarkName][benchmarkVariant]]["metrics"][curMetric];
+        for(let key of Object.keys(benchmarkMetric)){
+            if(benchmarkName.includes(key)){
+                return benchmarkMetric[key]["metrics"][curMetric]
+            }
+        }
     } catch (benchmarkInfoErr) {
-        metricProps = "";
+        return "";
     }
-    return metricProps;
 }

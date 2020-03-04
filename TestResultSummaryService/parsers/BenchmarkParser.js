@@ -66,7 +66,8 @@ class BenchmarkParser extends Parser {
                 isValid = false;
             }
             // Parse test Data
-            let {testData} = Utils.parseOutput(curBenchmarkName, curBenchmarkVariant, curItr.value);
+            const benchmarkParserKey = Utils.getBenchmarkParserKey(curBenchmarkName);
+            let testData = Utils.parseOutput(benchmarkParserKey, curItr.value);
             if (!testData) {
                 isValid = false;
             }
