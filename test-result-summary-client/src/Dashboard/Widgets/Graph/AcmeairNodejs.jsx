@@ -8,7 +8,7 @@ import { Radio } from 'antd';
 import math from 'mathjs';
 
 const map = {
-    "AcmeairNodejs": "PerfNext-master-node-perf PerfNext-master-latest12-perf"
+    "AcmeairNodejs": "PerfNext-master-node13-s390x PerfNext-master-12LTS-s390x PerfNext-master-node13-ppc64le PerfNext-master-12LTS-ppc64le"
 };
 
 let display = {
@@ -91,15 +91,15 @@ export default class AcemeairNodejs extends Component {
                 }
                 resultsByJDKBuild[t.buildName][nodeRunDate] = resultsByJDKBuild[nodeRunDate] || [];
                 resultsByJDKBuild[t.buildName][nodeRunDate].push( {
-                    globalThroughput: element.metrics[0].value["mean"],
+                    globalThroughput: element.metrics[0].statValues["mean"],
                     additionalData: {
-                        mean: element.metrics[0].value["mean"],
-                        max: element.metrics[0].value["max"],
-                        min: element.metrics[0].value["min"],
-                        median: element.metrics[0].value["median"],
-                        stddev: element.metrics[0].value["stddev"],
-                        CI: element.metrics[0].value["CI"],
-                        validIterations: element.metrics[0].value["validIterations"],
+                        mean: element.metrics[0].statValues["mean"],
+                        max: element.metrics[0].statValues["max"],
+                        min: element.metrics[0].statValues["min"],
+                        median: element.metrics[0].statValues["median"],
+                        stddev: element.metrics[0].statValues["stddev"],
+                        CI: element.metrics[0].statValues["CI"],
+                        validIterations: element.metrics[0].statValues["validIterations"],
                         testId: (Array.isArray(t.tests) && t.tests.length > 0) ? t.tests[0]._id : null,
                         hasChildren: t.hasChildren,
                         parentId:t._id,
