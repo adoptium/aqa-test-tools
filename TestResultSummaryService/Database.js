@@ -1,6 +1,5 @@
 const { MongoClient, ObjectID } = require('mongodb');
 const ArgParser = require("./ArgParser");
-
 const credential = ArgParser.getConfigDB() === null ? "" : `${encodeURIComponent(ArgParser.getConfigDB().user)}:${encodeURIComponent(ArgParser.getConfigDB().password)}@`;
 const url = 'mongodb://' + credential + 'localhost:27017/exampleDb';
 
@@ -10,6 +9,7 @@ let db;
     db = dbConnect.db("exampleDb");
     await db.createCollection('testResults');
     await db.createCollection('output');
+    await db.createCollection('auditLogs');
 })()
 
 class Database {
@@ -222,6 +222,19 @@ class Database {
         const result = await this.aggregate(aggregateQuery);
         return result;
     }
+
+    async insertAuditLogs(info) {
+        const { _id, url, buildName, buildNum, status, action } = info;
+        await this.populateDB({
+            timestamp: new Date(),
+            buildId: _id,
+            url,
+            buildName,
+            buildNum,
+            status,
+            action
+        });
+    }
 }
 class TestResultsDB extends Database {
     constructor() {
@@ -244,4 +257,11 @@ class BuildListDB extends Database {
     }
 }
 
-module.exports = { TestResultsDB, OutputDB, BuildListDB, ObjectID };
+class AuditLogsDB extends Database {
+    constructor() {
+        super();
+        this.col = db.collection('auditLogs');
+    }
+}
+
+module.exports = { TestResultsDB, OutputDB, BuildListDB, AuditLogsDB, ObjectID };

@@ -1,4 +1,4 @@
-const { TestResultsDB, OutputDB } = require( './Database' );
+const { TestResultsDB, OutputDB, AuditLogsDB } = require( './Database' );
 const ObjectID = require( 'mongodb' ).ObjectID;
 const Parsers = require( `./parsers/` );
 const DefaultParser = require( `./parsers/Default` );
@@ -87,6 +87,14 @@ class DataManager {
                     status: "NotDone"
                 };
                 const id = await this.createBuild( childBuild );
+                await new AuditLogsDB().insertAuditLogs({
+                    _id : id,
+                    url: commonUrls + b.url,
+                    buildName: b.buildName,
+                    buildNum: b.buildNum,
+                    status: "NotDone",
+                    action: "[createBuild]"
+                });
             } ));
 
             const outputData = {
