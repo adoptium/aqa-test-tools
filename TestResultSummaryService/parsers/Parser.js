@@ -7,7 +7,7 @@ class Parser {
 
     exactJavaVersion(output) {
         const javaVersionRegex = /(((openjdk|java) version[\s\S]*?)(JCL.*)|((openjdk|java) version[\s\S]*?)(Server VM.*))/;
-        const javaBuildDateRegex = /-(20[0-9][0-9][0-9][0-9][0-9][0-9])/;
+        const javaBuildDateRegex = /\s([0-9]{4})(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])/;
         const sdkResourceRegex = /.*?SDK_RESOURCE\=(.*)[\r\n]/;
         let curRegexResult = null;
         let javaVersion, jdkDate, sdkResource;
@@ -21,7 +21,7 @@ class Parser {
         curRegexResult = null;
         // parse jdk date from javaVersion
         if ( ( curRegexResult = javaBuildDateRegex.exec( javaVersion ) ) !== null ) {
-            jdkDate = curRegexResult[1];
+            jdkDate = curRegexResult[0];
         }
         return { javaVersion, jdkDate, sdkResource };
     }

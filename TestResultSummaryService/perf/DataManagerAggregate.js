@@ -71,18 +71,18 @@ class DataManagerAggregate {
                     metrics
                 });
             });
-            //identify if the aggregateinfo is valid, save duplicate checks in front end usage.
-            if (!(Array.isArray(aggregateInfo) && aggregateInfo.length > 0)) {
-                validAggregateInfo = false;
-            } else {
-                for(let {benchmarkName, benchmarkVariant, metrics} of aggregateInfo){
-                    if(!(benchmarkName && benchmarkVariant && Array.isArray(metrics) && metrics.length > 0)){
-                        validAggregateInfo = false;
-                    } else {
-                        for(let{name, statValues} of metrics) {
-                            if (!(name && Object.keys(statValues).length > 0 && statValues.validIterations > 0)) {
-                                validAggregateInfo = false;
-                            }
+        }
+        //identify if the aggregateinfo is valid, save duplicate checks in front end usage.
+        if (!(Array.isArray(aggregateInfo) && aggregateInfo.length > 0)) {
+            validAggregateInfo = false;
+        } else {
+            for(let {benchmarkName, benchmarkVariant, metrics} of aggregateInfo){
+                if(!(benchmarkName && benchmarkVariant && Array.isArray(metrics) && metrics.length > 0)){
+                    validAggregateInfo = false;
+                } else {
+                    for(let{name, statValues} of metrics) {
+                        if (!(name && Object.keys(statValues).length > 0 && statValues.validIterations > 0)) {
+                            validAggregateInfo = false;
                         }
                     }
                 }
