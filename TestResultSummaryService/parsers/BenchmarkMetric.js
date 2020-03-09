@@ -35,7 +35,31 @@ function geomean(inputArray){
 * Note: All the Regex is specific to Jenkins. Higherbetter/units are used for both Jenkins & Perffarm
 */
 const BenchmarkMetricRegex = {
-    LibertyDTThroughput: {
+    DayTrader30: {
+        outerRegex: /<run runNo="\d*" runType="measure"([\s\S\n]*)/,
+        metrics: {
+            "Adjusted Single Server Memory": {
+                //Example: <metric type="Adjusted Single Server Memory">\n<data machine="sevenup10G" units="KB">1286449</data>
+                regex:/<metric type="Adjusted Single Server Memory">[\s\S\n]*?units="KB">(\d*\.?\d*)<\/data>/,
+                higherbetter: false,
+                units: "kb",
+            },
+            "CPU Util pct": {
+                //we only keep track of first CPUutil
+                //Example: <metric type="CPU Utilization">\n<data machine="sevenup10G" units="%" cv="0.0">14.0</data>/n<data machine="bottas10G" units="%" cv="2.9951475130430323">15.3</data>
+                regex:/<metric type="CPU Utilization">[\s\S\n]*?cv="\d*\.?\d*">(\d*\.?\d*)<\/data>[\s\S\n]<data machine/,
+                higherbetter: false,
+                units: "%",
+            },
+            "Throughput": {
+                //Example: <metric type="throughput">\n<data machine="bottas10G" units="req/sec">533.592</data>
+                regex:/<metric type="throughput"[\s\S\n]*? units="req\/sec">(\d*\.?\d*)<\/data>/,
+                higherbetter: true,
+                units: "req/sec",
+            }
+        }
+    },
+    DayTrader: {
         outerRegex: /<run runNo="\d*" runType="measure"([\s\S\n]*)/,
         metrics: {
             "Throughput":{
@@ -83,7 +107,7 @@ const BenchmarkMetricRegex = {
             },
         }
     },
-    BumbleBench: {
+    bumbleBench: {
         metrics: {
             "Score":{
                 //Example: ArrayListSortComparatorBench score: 2757481.000000 (2.757M 1483.0%)
@@ -155,30 +179,6 @@ const BenchmarkMetricRegex = {
             }
         }
     },
-    DayTrader30: {
-        outerRegex: /<run runNo="\d*" runType="measure"([\s\S\n]*)/,
-        metrics: {
-            "Adjusted Single Server Memory": {
-                //Example: <metric type="Adjusted Single Server Memory">\n<data machine="sevenup10G" units="KB">1286449</data>
-                regex:/<metric type="Adjusted Single Server Memory">[\s\S\n]*?units="KB">(\d*\.?\d*)<\/data>/,
-                higherbetter: false,
-                units: "kb",
-            },
-            "CPU Util pct": {
-                //we only keep track of first CPUutil
-                //Example: <metric type="CPU Utilization">\n<data machine="sevenup10G" units="%" cv="0.0">14.0</data>/n<data machine="bottas10G" units="%" cv="2.9951475130430323">15.3</data>
-                regex:/<metric type="CPU Utilization">[\s\S\n]*?cv="\d*\.?\d*">(\d*\.?\d*)<\/data>[\s\S\n]<data machine/,
-                higherbetter: false,
-                units: "%",
-            },
-            "Throughput": {
-                //Example: <metric type="throughput">\n<data machine="bottas10G" units="req/sec">533.592</data>
-                regex:/<metric type="throughput"[\s\S\n]*? units="req\/sec">(\d*\.?\d*)<\/data>/,
-                higherbetter: true,
-                units: "req/sec",
-            }
-        }
-    },
     SOABENCH: {
         outerRegex:/<run runNo="\d*" runType="measure"([\s\S\n]*)/,
         metrics: {
@@ -190,7 +190,7 @@ const BenchmarkMetricRegex = {
             }
         }
     },
-    CryptoBB: {
+    Crypto: {
         metrics: {
             "geomean_GCM": {
                 //Example: gcm-128-encrypt-NoPadding,16,IBMJCE,0.146262MB,sevenup.hursley.ibm.com,,1 

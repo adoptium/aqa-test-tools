@@ -1,8 +1,16 @@
-const BenchmarkMetricRouter = require( './BenchmarkMetricRouter' );
 const BenchmarkMetric = require( './BenchmarkMetric' );
 
 class Utils {
-    static parseOutput(benchmarkName, benchmarkVariant, testOutput) {
+    static getBenchmarkParserKey( testName ){
+        for(let key of Object.keys(BenchmarkMetric)) {
+            if(testName.includes(key)) {
+                return key;
+            }
+        }
+        return null;
+    }
+
+    static parseOutput(benchmarkParserkey, testOutput) {
         let isValid = true;
         let curTestData = {};
         let curBenchVariant = null;
@@ -11,16 +19,13 @@ class Utils {
         let curMetricValues = null;
         let curRegex = null;
 
-        if(!isNaN(benchmarkVariant)) {// TKG builds' benchmarkVariants go to "0" with current design.
-            benchmarkVariant = "0"; 
-        }
 
-        if ( !BenchmarkMetric[BenchmarkMetricRouter[benchmarkName][benchmarkVariant]] || !BenchmarkMetric[BenchmarkMetricRouter[benchmarkName][benchmarkVariant]]["metrics"] || Object.keys(BenchmarkMetric[BenchmarkMetricRouter[benchmarkName][benchmarkVariant]]["metrics"]).length === 0 ) {
+        if ( !BenchmarkMetric[benchmarkParserkey] || !BenchmarkMetric[benchmarkParserkey]["metrics"] || Object.keys(BenchmarkMetric[benchmarkParserkey]["metrics"]).length === 0 ) {
             isValid = false;
         }
 
         if ( isValid ) {
-            curBenchVariant = BenchmarkMetric[BenchmarkMetricRouter[benchmarkName][benchmarkVariant]];
+            curBenchVariant = BenchmarkMetric[benchmarkParserkey];
 
             // if outerRegex is undefined, all runs should be measured. Parse metrics in every run
             // if outerRegex is defined, any runs before outerRegex will be ignored. Parse metrics in warm runs only
@@ -62,9 +67,7 @@ class Utils {
         } else {
             return null;
         }
-        return {
-            testData: curTestData,
-        };
+        return curTestData;
     }
 
     static perfBuildResult(tests){
