@@ -8,7 +8,7 @@ import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { getParams } from '../utils/query';
 import 'react-day-picker/lib/style.css';
 import tabularViewConfig from './TabularViewConfig';
-import { getParserProps, getMetricProps } from '../utils/perf';
+import { getBenchmarkMetricProps } from '../utils/perf';
 // Pull property panel from Collapse, so you do not have to write Collapse.Panel each time
 const { Panel } = Collapse;
 // Pull property SHOW_PARENT from TreeSelect, so you do not have to write TreeSelect.SHOW_PARENT each time
@@ -91,6 +91,7 @@ export default class TabularView extends Component {
     this.handleDayChange = this.handleDayChange.bind(this);
     this.state = {testData: [], columns : [], originalColumns: [], platforms: [], baselineData: [], consolidatedData: [], platformFilter: [], colorFilter: "all", benchmarkFilter: [], tabularDropdown: [],
     defaultValues: tabularViewConfig};
+    this.metricsProps = {};
     }
  
     async componentDidMount() {
@@ -518,61 +519,57 @@ export default class TabularView extends Component {
         }
     }
 
-    populateCompTable(parserProps) {
+    populateCompTable = async() => {
     	// Each entry is a combination of the data in testData and baselineData, same format two fields benchmarkName and platforms
     	// Now platform entries contain information from both the testJdk and the baselineJdk
         const newArray = [];
-        var metricProps;
-        this.state.testData.forEach(function (testDataObject) {
+        for(let testDataObject of this.state.testData) {
             let consolidatedDataObject = {};
             let benchmark = testDataObject.benchmarkNVM.split(",")[0];
             let metric = testDataObject.benchmarkNVM.split(",")[2];
             consolidatedDataObject.platformsSpecificData = {};
             consolidatedDataObject.benchmarkNVM = testDataObject.benchmarkNVM;
-
-            let higherBetter;
-            
-            //get BenchmarkRouter & Metric files from server
-            metricProps = getMetricProps(parserProps, benchmark, metric);
-            try {
-                if (metricProps["higherbetter"]) {
-                    higherBetter = true;
-                } else {
-                    higherBetter = false;
+            //To get the values of highterbetter/units  
+            //first check if Metric does already exist in constructor , if not get its info from server
+            let metricProps;
+            if ( !this.metricsProps[benchmark] ) {
+                const metricPropsJSON = await getBenchmarkMetricProps(benchmark);
+                if(metricPropsJSON){
+                    this.metricsProps[benchmark] = metricPropsJSON;
+                    metricProps = metricPropsJSON.metric;
                 }
-            } catch (higherBetterNotFoundError) {
-                higherBetter = true;
+            } else {
+                metricProps = this.metricsProps[benchmark][metric];
             }
-
-
+            const higherBetter = !metricProps || metricProps.higherbetter !== false;
             let matchingDataObject = this.state.baselineData.find( s => s.benchmarkNVM === testDataObject.benchmarkNVM );
             // Baseline data contains information for the benchmark, comparison possible
             if (matchingDataObject != null) {
-            Object.keys(testDataObject.platformsSpecificData).forEach(function(platform) {
-            	// Baseline data contains same benchmark and same platform, compare values and store in comparison table
-                if (matchingDataObject.platformsSpecificData.hasOwnProperty(platform)) {
-                    consolidatedDataObject.platformsSpecificData[platform] = {...testDataObject.platformsSpecificData[platform], ...matchingDataObject.platformsSpecificData[platform]};	
-                    if (higherBetter) {
-                        consolidatedDataObject.platformsSpecificData[platform].relativeComparison = Number(testDataObject.platformsSpecificData[platform].testScore * 100 / matchingDataObject.platformsSpecificData[platform].baselineScore).toFixed(2);
+                Object.keys(testDataObject.platformsSpecificData).forEach(function(platform) {
+            	    // Baseline data contains same benchmark and same platform, compare values and store in comparison table
+                    if (matchingDataObject.platformsSpecificData.hasOwnProperty(platform)) {
+                        consolidatedDataObject.platformsSpecificData[platform] = {...testDataObject.platformsSpecificData[platform], ...matchingDataObject.platformsSpecificData[platform]};	
+                        if (higherBetter) {
+                            consolidatedDataObject.platformsSpecificData[platform].relativeComparison = Number(testDataObject.platformsSpecificData[platform].testScore * 100 / matchingDataObject.platformsSpecificData[platform].baselineScore).toFixed(2);
+                        } else {
+                            consolidatedDataObject.platformsSpecificData[platform].relativeComparison = Number(matchingDataObject.platformsSpecificData[platform].baselineScore * 100 / testDataObject.platformsSpecificData[platform].testScore).toFixed(2);
+                        }
+                    consolidatedDataObject.platformsSpecificData[platform].totalCI = testDataObject.platformsSpecificData[platform].testCI + matchingDataObject.platformsSpecificData[platform].baselineCI;
+                    // Only test data exists for this platform, set comparison table cell value to test data cell value
                     } else {
-                        consolidatedDataObject.platformsSpecificData[platform].relativeComparison = Number(matchingDataObject.platformsSpecificData[platform].baselineScore * 100 / testDataObject.platformsSpecificData[platform].testScore).toFixed(2);
+                        consolidatedDataObject.platformsSpecificData[platform] = testDataObject.platformsSpecificData[platform];
+                        consolidatedDataObject.platformsSpecificData[platform].relativeComparison = 0;
                     }
-                   consolidatedDataObject.platformsSpecificData[platform].totalCI = testDataObject.platformsSpecificData[platform].testCI + matchingDataObject.platformsSpecificData[platform].baselineCI;
-                // Only test data exists for this platform, set comparison table cell value to test data cell value
-                } else {
-                    consolidatedDataObject.platformsSpecificData[platform] = testDataObject.platformsSpecificData[platform];
-                    consolidatedDataObject.platformsSpecificData[platform].relativeComparison = 0;
-                }
-            });
-           // Baseline does not have the benchmark data, set to test data
+                });
+            // Baseline does not have the benchmark data, set to test data
             } else {
                 consolidatedDataObject.platformsSpecificData = testDataObject.platformsSpecificData;
                 Object.keys(consolidatedDataObject.platformsSpecificData).map(function(key, index) {
                     consolidatedDataObject.platformsSpecificData[key].relativeComparison = 0;
                 });
             }
-        newArray.push(consolidatedDataObject);
-        }.bind(this));
+            newArray.push(consolidatedDataObject);
+        };
         // Loop through baseline table and the newly created array to fill the gaps in comparison table
         this.state.baselineData.forEach(function (baselineDataObject) {
 
@@ -627,8 +624,7 @@ export default class TabularView extends Component {
         this.setState({platformFilter: platformFilter});
         this.populateTable(info, type);
         
-        let parserProps = await getParserProps();
-        this.populateCompTable(parserProps);
+        await this.populateCompTable();
     }
 
     render() {
