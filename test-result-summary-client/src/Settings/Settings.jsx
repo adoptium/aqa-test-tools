@@ -219,6 +219,7 @@ export default class Settings extends Component {
             },{
                 title: '# of Builds to Keep ',
                 dataIndex: 'numBuildsToKeep',
+                width: '10%',
                 render: ( text, record ) => {
                     return (
                         <EditableCell
