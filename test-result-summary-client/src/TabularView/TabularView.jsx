@@ -493,7 +493,7 @@ export default class TabularView extends Component {
     
                     for (const currentDataObject in newArray) {
                         // If benchmark already exists append to it
-                        if (newArray[currentDataObject].benchmarkNVM == benchmarkNVM) {
+                        if (newArray[currentDataObject].benchmarkNVM === benchmarkNVM) {
                             found = true;
                             newArray[currentDataObject].platformsSpecificData[platform] = this.handleEntry(aggregateIndex, testResultsObject, metric, type);
                             break;
@@ -526,7 +526,6 @@ export default class TabularView extends Component {
         this.state.testData.forEach(function (testDataObject) {
             let consolidatedDataObject = {};
             let benchmark = testDataObject.benchmarkNVM.split(",")[0];
-            let variant = testDataObject.benchmarkNVM.split(",")[1];
             let metric = testDataObject.benchmarkNVM.split(",")[2];
             consolidatedDataObject.platformsSpecificData = {};
             consolidatedDataObject.benchmarkNVM = testDataObject.benchmarkNVM;
