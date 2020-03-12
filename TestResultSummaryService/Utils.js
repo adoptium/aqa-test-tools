@@ -1,5 +1,5 @@
 const winston = require( 'winston' );
-const logLevel = process.env.LOG_LEVEL || 'debug';
+const logLevel = process.env.LOG_LEVEL || 'verbose';
 
 const tsFormat = () => ( new Date() ).toLocaleTimeString();
 const logger = new ( winston.Logger )( {
@@ -12,5 +12,19 @@ const logger = new ( winston.Logger )( {
     ]
 } );
 
+const addCredential = (credentails, url) => {
+    if (credentails) {
+        if (credentails.hasOwnProperty(url)) {
+            const user = encodeURIComponent(credentails[url].user);
+            const password = encodeURIComponent(credentails[url].password);
+            const tokens = url.split("://");
+            if (tokens.length == 2 && user && password) {
+                url = `${tokens[0]}://${user}:${password}@${tokens[1]}`;
+            }
+        }
+    }
+    return url;
+}
 
-module.exports = { logger };
+
+module.exports = { logger, addCredential };

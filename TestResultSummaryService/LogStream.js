@@ -1,14 +1,14 @@
 const got = require('got');
 const url = require('url');
-const { logger } = require('./Utils');
+const { logger, addCredential } = require('./Utils');
+const ArgParser = require("./ArgParser");
 
 class LogStream {
     constructor(options) {
+        this.credentails = ArgParser.getConfig();
         const build = options.build || 'lastBuild';
         const urlParsed = url.parse(options.baseUrl + '/job/' + options.job + '/' + build + '/logText/progressiveText');
-        this.url = urlParsed.protocol + '//' + urlParsed.host + urlParsed.path;
-
-        this.n = 0;
+        this.url = addCredential(this.credentails, options.baseUrl) + urlParsed.path;
     }
     async next(startPtr) {
         try {

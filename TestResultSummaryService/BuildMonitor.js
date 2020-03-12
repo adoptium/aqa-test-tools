@@ -115,7 +115,7 @@ class BuildMonitor {
         }
     }
 
-    async deleteOldAuditLogs(numDaysToKeep = 60) {
+    async deleteOldAuditLogs(numDaysToKeep = 30) {
         let date = new Date();
         date.setDate(date.getDate() - parseInt(numDaysToKeep, 10));
         const auditLogs = new AuditLogsDB();
