@@ -7,8 +7,7 @@ class LogStream {
     constructor(options) {
         this.credentails = ArgParser.getConfig();
         const build = options.build || 'lastBuild';
-        const urlParsed = url.parse(options.baseUrl + '/job/' + options.job + '/' + build + '/logText/progressiveText');
-        this.url = addCredential(this.credentails, options.baseUrl) + urlParsed.path;
+        this.url = addCredential(this.credentails, options.baseUrl) + '/job/' + options.job + '/' + build + '/logText/progressiveText';
     }
     async next(startPtr) {
         try {
@@ -23,7 +22,7 @@ class LogStream {
             }
         }
         catch (e) {
-            logger.warn("LogStreamError: ", e);
+            logger.warn("LogStreamError: ", this.url, e);
         }
     }
 }
