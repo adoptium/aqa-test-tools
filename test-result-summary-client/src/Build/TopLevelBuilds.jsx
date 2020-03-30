@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import TopLevelBuildTable from './TopLevelBuildTable';
-
+const { order } = require('../utils/Utils');
 export default class TopLevelBuilds extends Component {
 
     state = {
@@ -46,10 +46,6 @@ export default class TopLevelBuilds extends Component {
         const { builds, type } = this.state;
 
         if (builds && type) {
-            const order = (a, b) => {
-                const collator = new Intl.Collator(undefined, { numeric: true, sensitivity: 'base' });
-                return collator.compare(a, b);
-            }
             return (
                 <div>
                     {Object.keys(builds).sort().map((url, i) => {

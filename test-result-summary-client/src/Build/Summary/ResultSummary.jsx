@@ -6,9 +6,10 @@ import ResultGrid from './ResultGrid';
 import PieChart from './PieChart';
 import Overview from './Overview';
 import TestBreadcrumb from '../TestBreadcrumb';
+const { order } = require('../../utils/Utils');
 
 const hcvalues = {
-    hcjdkImpls: ["j9", "hs", "Upstream"],
+    hcjdkImpls: ["j9", "hs", "corretto", "Upstream"],
     hclevels: ["sanity", "extended", "special"],
     hcgroups: ["functional", "openjdk", "system", "external", "perf", "jck"]
 }
@@ -53,7 +54,7 @@ export default class ResultSummary extends Component {
         });
 
         const builds = await fetchBuild.json();
-        const regex = /^Test_openjdk(\d+|next)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl)?)(_.+)?$/i;
+        const regex = /^Test_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl)?)(_.+)?$/i;
         const buildMap = {};
         let jdkVersionOpts = [];
         builds.map((build, i) => {
@@ -102,7 +103,7 @@ export default class ResultSummary extends Component {
             }
         });
         const platformOpts = Object.keys(buildMap).sort();
-        jdkVersionOpts = [...new Set(jdkVersionOpts)].sort((a, b) => { return a - b });
+        jdkVersionOpts = [...new Set(jdkVersionOpts)].sort(order);
         const jdkImplOpts = hcvalues.hcjdkImpls;
 
 

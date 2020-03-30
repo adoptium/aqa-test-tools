@@ -13,7 +13,7 @@ class Cell extends Component {
             {hclevels.map((level, y) => {
                 const groups = data[level];
                 return <Fragment key={y}>
-                    {hcgroups.map((group, x) => {
+                    {hcgroups.sort().map((group, x) => {
                         let target = level + "." + group;
                         if (!(groups && groups[group])) {
                             return <div className="cell" style={{ gridColumn: x + 1, gridRow: y + 1 }} key={x}>
