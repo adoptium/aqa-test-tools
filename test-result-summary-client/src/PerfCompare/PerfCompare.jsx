@@ -104,8 +104,7 @@ export default class PerfCompare extends Component {
 
         // Check if the benchmark and test data is valid
         let displayErrorMessage = "";
-        if (resBenchmarkRunsJson === undefined || (Object.keys(resBenchmarkRunsJson).length === 0 && resBenchmarkRunsJson.constructor === Object) ||
-                resBenchmarkRunsJson.baselineCSV === undefined || resBenchmarkRunsJson.testCSV === undefined) {
+        if ( !resBenchmarkRunsJson ||!resBenchmarkRunsJson.baselineCSV || !resBenchmarkRunsJson.testCSV) {
             displayErrorMessage = "Baseline and Test build not found. "
         }
         if (resBenchmarkRunsJson.baselineCSV.length <= 2) {
@@ -114,9 +113,8 @@ export default class PerfCompare extends Component {
         if (resBenchmarkRunsJson.testCSV.length <= 2) {
             displayErrorMessage += "Test build not found"
         }
-
         // Data received is not valid
-        if (displayErrorMessage !== "") {
+        if (displayErrorMessage) {
             this.setState(
                 {
                     inputURL: {
@@ -189,17 +187,15 @@ export default class PerfCompare extends Component {
 
         // Check if the given builds are valid
         let displayErrorMessage = "";
-        let hasData;
-        if (baselineTestResultsJson === undefined || (Object.keys(baselineTestResultsJson).length === 0 && baselineTestResultsJson.constructor === Object) || 
-        baselineTestResultsJson.testInfo === undefined) {
+        let hasData = false;
+        if ( !baselineTestResultsJson || !baselineTestResultsJson.testInfo) {
             displayErrorMessage = "Baseline build not found. ";
         }
-        if (testTestResultsJson === undefined || (Object.keys(testTestResultsJson).length === 0 && testTestResultsJson.constructor === Object) ||
-        testTestResultsJson.testInfo === undefined) {
+        if ( !testTestResultsJson || !testTestResultsJson.testInfo ) {
             displayErrorMessage += "Test build not found";
         }
         // Check if the aggregate info is valid
-        if (displayErrorMessage === "") {
+        if (!displayErrorMessage) {
             try {
                 hasData = baselineTestResultsJson.testInfo[0].aggregateInfo.length > 0;
             } catch (e) {
@@ -212,9 +208,8 @@ export default class PerfCompare extends Component {
                 displayErrorMessage += "Test build has no data. ";
             }
         }
-
         // Data received is not valid
-        if (hasData === true && displayErrorMessage !== "") {
+        if (!hasData || displayErrorMessage) {
             this.setState(
                 {
                     inputURL: {
@@ -310,7 +305,7 @@ export default class PerfCompare extends Component {
                 baselineBuildURL = baselineURLScheme + "//" + baselineHostWithPort;
 
                 // Check if the benchmark and test data is valid
-                if (baselineBuildNum === undefined || (baselineBuildURL === undefined )) {
+                if (!baselineBuildNum || !baselineBuildURL ) {
                     displayErrorMessage += "Invalid Baseline URL. "
                 }
             } catch (baselineBuildURLSplitError) {
@@ -325,7 +320,7 @@ export default class PerfCompare extends Component {
 
                 testBuildURL = testURLScheme + "//" + testHostWithPort;
 
-                if (testBuildNum === undefined || (testBuildURL === undefined )) {
+                if (!testBuildNum || !testBuildURL) {
                     displayErrorMessage += "Invalid Test URL. "
                 }
             } catch (testBuildURLSplit) {
@@ -333,7 +328,7 @@ export default class PerfCompare extends Component {
             }
 
             // Data received is not valid
-            if (displayErrorMessage !== "") {
+            if (displayErrorMessage) {
                 this.setState(
                     {
                         displayAlert: {
@@ -354,7 +349,7 @@ export default class PerfCompare extends Component {
                 }
             )
 
-            this.handleGetJenkinsRuns();
+            await this.handleGetJenkinsRuns();
         
         // Received a Perffarm Run URL
         } else {
@@ -363,15 +358,15 @@ export default class PerfCompare extends Component {
             const [testSchemeWithHostWithPort, testBuildNum] = this.state.inputURL.testID.split("build_id=");
 
             // Check if the benchmark and test data is valid
-            if (baselineSchemeWithHostWithPort === undefined || baselineBuildNum === undefined) {
+            if (!baselineSchemeWithHostWithPort || !baselineBuildNum) {
                 displayErrorMessage += "Invalid Baseline URL. "
             }
-            if (testSchemeWithHostWithPort === undefined || testBuildNum === undefined) {
+            if (!testSchemeWithHostWithPort || !testBuildNum) {
                 displayErrorMessage += "Invalid Test URL. "
             }
 
             // Data received is not valid
-            if (displayErrorMessage !== "") {
+            if (displayErrorMessage) {
                 this.setState(
                     {
                         displayAlert: {
@@ -394,7 +389,7 @@ export default class PerfCompare extends Component {
                 }
             )
 
-            this.handleGetPerffarmRuns();
+            await this.handleGetPerffarmRuns();
         }
     }
 
@@ -406,14 +401,12 @@ export default class PerfCompare extends Component {
             }
         )
         let curAllVariantData = [];
-        let curVariantData, curMetricTable, curMatchingTestVariantIndex, curMatchingTestMetricIndex;
-        let curMetricName, curBaselineScore, curTestScore, curRawValues, curDiff, curBaselineCI, curTestCI, curColor, curMetricUnits, curHigherBetter;
 
         // Only compare variants that are in the baseline run
         for (let i = 0; i < this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants.length; i++) {
             // Must match the benchmark and variant names
             let parsedVariantsBaseline = this.state.benchmarkRuns.benchmarkRunBaseline.parsedVariants[i];
-            curMatchingTestVariantIndex = this.state.benchmarkRuns.benchmarkRunTest.parsedVariants.map(x =>
+            let curMatchingTestVariantIndex = this.state.benchmarkRuns.benchmarkRunTest.parsedVariants.map(x =>
                 x.benchmarkName + "!@#$%DELIMIT%$#@!" + x.benchmarkVariant).indexOf(parsedVariantsBaseline.benchmarkName +
                 "!@#$%DELIMIT%$#@!" + parsedVariantsBaseline.benchmarkVariant);
             let parsedVariantsTest = this.state.benchmarkRuns.benchmarkRunTest.parsedVariants[curMatchingTestVariantIndex];
@@ -422,7 +415,7 @@ export default class PerfCompare extends Component {
                 continue;
             }
 
-            curVariantData = {};
+            let curVariantData = {};
             curVariantData["benchmark"] = parsedVariantsBaseline.benchmarkName;
             curVariantData["variant"] = parsedVariantsBaseline.benchmarkVariant;
             curVariantData["baselineJdkDate"] = parsedVariantsBaseline.jdkDate;
@@ -431,12 +424,12 @@ export default class PerfCompare extends Component {
             curVariantData["baselineMachine"] = parsedVariantsBaseline.machine;
             curVariantData["testMachine"] = parsedVariantsTest.machine;
 
-            curMetricTable = [];
+            let curMetricTable = [];
 
             for (let j = 0; j < parsedVariantsBaseline.metrics.length; j++) {
-                
+                let curRawValues, curColor;
                 // Must match the baseline metric name
-                curMatchingTestMetricIndex = parsedVariantsTest.metrics.map(x =>
+                let curMatchingTestMetricIndex = parsedVariantsTest.metrics.map(x =>
                     x.name).indexOf(parsedVariantsBaseline.metrics[j].name);
 
                 // Metric was not found in Test run, skip it
@@ -445,7 +438,7 @@ export default class PerfCompare extends Component {
                 }
 
                 // get the raw values for master nodes.
-                curMetricName = parsedVariantsBaseline.metrics[j].name;
+                const curMetricName = parsedVariantsBaseline.metrics[j].name;
                 // getting the raw value for j metric of the x child
                 if ( this.state.buildType === "Jenkins") {
                     // raw values displaying: master jobs diplay all their children raw values, and child jobs diplay their own raw values.
@@ -469,67 +462,40 @@ export default class PerfCompare extends Component {
                     };
                 }
 
-                curBaselineScore = parsedVariantsBaseline.metrics[j].statValues.mean;
-                curBaselineCI = parsedVariantsBaseline.metrics[j].statValues.CI;
-                curTestScore = parsedVariantsTest.metrics[j].statValues.mean;
-                curTestCI = parsedVariantsTest.metrics[j].statValues.CI;
+                const curBaselineScore = parsedVariantsBaseline.metrics[j].statValues.mean;
+                const curBaselineCI = parsedVariantsBaseline.metrics[j].statValues.CI;
+                const curTestScore = parsedVariantsTest.metrics[j].statValues.mean;
+                const curTestCI = parsedVariantsTest.metrics[j].statValues.CI;
 
                 // To get the metric's higherbetter/units
                 // first check if Metric does exist in metricsProps, if not get Metric info from server
-                const benchmark = curVariantData["benchmark"]
+                const benchmark = curVariantData["benchmark"];
                 let metricProps;
                 if( !this.metricsProps[benchmark])  {
                     const metricPropsJSON = await getBenchmarkMetricProps(benchmark);
                     if (metricPropsJSON) {
                         this.metricsProps[benchmark] = metricPropsJSON;
-                        metricProps = metricPropsJSON.curMetricName;
+                        metricProps = metricPropsJSON[curMetricName];
                     }
                 } else {
                     metricProps = this.metricsProps[benchmark][curMetricName];
                 }
                 // get metric Properties (regex & higherbetter & units) using current benchmark information
-                try {
-                    curMetricUnits = metricProps["units"];
-                } catch (metricNotFoundError) {
-                    curMetricUnits = "";    
-                    // TODO: TOGGLE CONTINUE TO DISPLAY METRICS WHICH WE DON'T TRACK
-                    continue;
-                }
+                const curMetricUnits = metricProps ? this.metricsProps.units : "";
  
                 // Check if a higher value for this metric means a better score 
-                try {
-                    if (metricProps["higherbetter"]) {
-                        curHigherBetter = true;
-                    } else {
-                        curHigherBetter = false;
-                    }
-                } catch (higherBetterNotFoundError) {
-
-                    curHigherBetter = undefined;
-                }
+                const curHigherBetter = !metricProps || metricProps.higherbetter !== false;
 
                 // Reverse division if metric is not higher = better. This makes all differences above 100% an improvement.
                 // If a metric's higherbetter value is not found, defaults to higher = better.
-                try {
-                    if (curHigherBetter || curHigherBetter === undefined) {
-                        curDiff = curTestScore / curBaselineScore;
-                    } else {
-                        curDiff = curBaselineScore / curTestScore;
-                    }
-
-                    // Row colours based on improvement or regression
-                    if (curHigherBetter === undefined) {
-                        curColor = 'caution';
-                    } else if (curDiff > 1) {
-                        curColor = 'improvement';
-                    } else if (curDiff < 1) {
-                        curColor = 'regression';
-                    } else {
-                        curColor = 'nochange';
-                    }
-                } catch (roundDiffError) {
-                    curDiff = "error";
-                    curColor = 'caution';
+                const curDiff = curHigherBetter ? curTestScore / curBaselineScore : curBaselineScore / curTestScore;
+                // Row colours based on improvement or regression
+                if (curDiff > 1) {
+                    curColor = 'improvement';
+                } else if (curDiff < 1) {
+                    curColor = 'regression';
+                } else {
+                    curColor = 'nochange';
                 }
 
                 curMetricTable.push({
