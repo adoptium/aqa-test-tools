@@ -6,7 +6,7 @@ import PerffarmRunJSON from './lib/PerffarmRunJSON';
 import ExtractRelevantJenkinsTestResults from './lib/ExtractRelevantJenkinsTestResults';
 import { getParams } from '../utils/query';
 import './PerfCompare.css';
-import { getParserProps, getMetricProps } from '../utils/perf';
+import { getBenchmarkMetricProps } from '../utils/perf';
 
 const buildTypeExampleURL = {
     Jenkins: "https://customJenkinsServer/view/PerfTests/job/Daily-Liberty-Startup/1/",
@@ -14,6 +14,11 @@ const buildTypeExampleURL = {
 }
 
 export default class PerfCompare extends Component {
+    constructor(props) {
+        super(props);
+        this.metricsProps = {};
+    }
+
     state = {
         inputURL: {
             baselineID: "",
@@ -145,7 +150,7 @@ export default class PerfCompare extends Component {
                 }
             )
 
-            testRunJSON.init(() => {
+            testRunJSON.init(async () => {
                 this.setState(
                     {
                         benchmarkRuns: {
@@ -156,7 +161,7 @@ export default class PerfCompare extends Component {
                     }
                 )
 
-                this.handleGenerateTable();
+                await this.handleGenerateTable();
             })
         })
     }
@@ -243,7 +248,7 @@ export default class PerfCompare extends Component {
                 }
             )
 
-            testRunJSON.init(() => {
+            testRunJSON.init(async () => {
                 this.setState(
                     {
                         benchmarkRuns: {
@@ -254,7 +259,7 @@ export default class PerfCompare extends Component {
                     }
                 )
 
-                this.handleGenerateTable();
+                await this.handleGenerateTable();
             })
         })
     }
@@ -469,11 +474,20 @@ export default class PerfCompare extends Component {
                 curTestScore = parsedVariantsTest.metrics[j].statValues.mean;
                 curTestCI = parsedVariantsTest.metrics[j].statValues.CI;
 
-                // Get the metric's units
-                // get BenchmarkRouter & Metric files from server
-                let parserProps = await getParserProps();
+                // To get the metric's higherbetter/units
+                // first check if Metric does exist in metricsProps, if not get Metric info from server
+                const benchmark = curVariantData["benchmark"]
+                let metricProps;
+                if( !this.metricsProps[benchmark])  {
+                    const metricPropsJSON = await getBenchmarkMetricProps(benchmark);
+                    if (metricPropsJSON) {
+                        this.metricsProps[benchmark] = metricPropsJSON;
+                        metricProps = metricPropsJSON.curMetricName;
+                    }
+                } else {
+                    metricProps = this.metricsProps[benchmark][curMetricName];
+                }
                 // get metric Properties (regex & higherbetter & units) using current benchmark information
-                let metricProps = getMetricProps(parserProps, curVariantData["benchmark"], curMetricName);
                 try {
                     curMetricUnits = metricProps["units"];
                 } catch (metricNotFoundError) {
