@@ -235,7 +235,89 @@ const BenchmarkMetricRegex = {
                 funcName: geomean,
             }
         }
-    }
+    },
+    "pingperf-quarkus-baremetal_throughput": {
+        outerRegex:/Running \d*? measures([\s\S\n]*)/, 
+        //execlude warmup runs from getting parsed
+        metrics: {
+            "Throughput": {
+                //Example: Requests/sec: 100522.45/
+                regex:/Requests\/sec: (\d*\.?\d*)/,
+                higherbetter: true,
+                units: "Requests/sec"
+            },
+        }
+    },    
+    "quarkus-startup": {
+        outerRegex: /Quarkus Test:  measure \d*? ([\s\S\n]*)/,
+        //exclude warmup runs from getting parsed
+        metrics: {
+            "Footprint": {
+                //Example: Footprint for  measure 0 10129332
+                regex:/Footprint for  measure \d*? (\d*\.?\d*)/,
+                higherbetter: false,
+                units: "kb",
+                },
+            "Startup time": {
+                //Example: Startup time for measure 0 : 53232
+                regex:/Startup time for measure \d*? : (\d*\.?\d*)/,
+                higherbetter: false,
+                units: "ms",
+            }
+        }
+    },
+    "quarkusRestCrudDemo": {
+        metrics: {
+            "Throughput": {
+                //Example: Measure 0 ~ Requests/sec: 15145.27 -- in multi user, we test multiple scenarios of thread & connection in 1 run - using geomean as our metric.
+                regex:/Measure[\s\S\n]*?Requests\/sec: (\d*\.?\d*)/,
+                higherbetter: true,
+                units: "Requests/sec",
+                funcName: geomean,
+            },
+        }
+    },
+    "quarkus-getting-started": {
+        outerRegex:/Getting-Started Results([\s\S\n]*)/,
+        //Getting-Started has non-json format results printing before formatting into JSON type to remove duplicates, we only parse the JSON text
+        metrics: {
+            "Throughput geomean": {
+                //Example: "throughput": "6357.32"
+                regex:/"throughput": "(\d*\.?\d*)"/,
+                higherbetter: true,
+                units: 'Requests/sec',
+                funcName: geomean,
+            },
+            "Average Latency geomean": {
+                //Example: "latencyAvg": "5.68"
+                regex:/"latencyAvg": "(\d*\.?\d*)"/,
+                higherbetter: false,
+                units: 'ms',
+                funcName: geomean,
+            },
+            "Latency Max geomean": {
+                //Example: "latencyMax": "114.40"
+                regex:/"latencyMax": "(\d*\.?\d*)"/,
+                higherbetter: false,
+                units: 'ms',
+                funcName: geomean,
+            },
+            "Latency Stddev geomean": {
+                //Example: "latencyStddev": "21.43"
+                regex:/"latencyStddev": "(\d*\.?\d*)"/,
+                higherbetter: false,
+                units: "Stddev",
+                funcName: geomean,
+            },
+            "Startup Time geomean": {
+                //Example: "started": "93568"
+                regex:/"started": "(\d*\.?\d*)"/,
+                higherbetter: false,
+                units: "ms",
+                funcName: geomean,
+            },
+        },
+    },
 }
 
 module.exports = BenchmarkMetricRegex;
