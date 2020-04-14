@@ -10,7 +10,7 @@
     "highcharts-react-official": "^2.2.2",
     "highstock-release": "^6.0.4",
     "history": "^4.10.1",
-    "jquery": "^3.4.1",
+    "jquery": "^3.5.0",
     "mathjs": "^5.10.3",
     "mergely": "^4.0.15",
     "moment": "^2.24.0",
