@@ -163,9 +163,12 @@ export default class TopLevelBuildTable extends Component {
             };
 
             const renderPublishName = ({ buildParams = [] }) => {
-                const param = buildParams.find(param => param.name === "overridePublishName");
-                if (param)
-                    return param.value;
+                if (buildParams) {
+                    const param = buildParams.find(param => param.name === "overridePublishName");
+                    if (param)
+                        return param.value;
+                }
+                return;
             };
 
             const columns = [{

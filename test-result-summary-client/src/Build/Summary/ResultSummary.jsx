@@ -9,7 +9,7 @@ import TestBreadcrumb from '../TestBreadcrumb';
 const { order } = require('../../utils/Utils');
 
 const hcvalues = {
-    hcjdkImpls: ["j9", "hs", "corretto", "Upstream"],
+    hcjdkImpls: ["j9", "hs", "ibm", "corretto", "Upstream"],
     hclevels: ["sanity", "extended", "special"],
     hcgroups: ["functional", "openjdk", "system", "external", "perf", "jck"]
 }
