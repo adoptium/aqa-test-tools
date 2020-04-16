@@ -9,7 +9,6 @@ import TestBreadcrumb from '../TestBreadcrumb';
 const { order } = require('../../utils/Utils');
 
 const hcvalues = {
-    hcjdkImpls: ["j9", "hs", "ibm", "corretto", "Upstream"],
     hclevels: ["sanity", "extended", "special"],
     hcgroups: ["functional", "openjdk", "system", "external", "perf", "jck"]
 }
@@ -57,6 +56,7 @@ export default class ResultSummary extends Component {
         const regex = /^Test_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl)?)(_.+)?$/i;
         const buildMap = {};
         let jdkVersionOpts = [];
+        let jdkImplOpts = [];
         builds.map((build, i) => {
             const buildName = build.buildName.toLowerCase();
             const tokens = buildName.match(regex);
@@ -70,7 +70,7 @@ export default class ResultSummary extends Component {
                 buildMap[platform][jdkVersion][jdkImpl][level][group] = buildMap[platform][jdkVersion][jdkImpl][level][group] || {};
 
                 jdkVersionOpts.push(jdkVersion);
-
+                jdkImplOpts.push(jdkImpl);
                 // If there are multiple builds for one key, then this is a parallel build
                 // For parallel build, we only store the parent build info and loop child builds to get aggregated testSummary
                 if (Object.keys(buildMap[platform][jdkVersion][jdkImpl][level][group]).length !== 0) {
@@ -104,7 +104,7 @@ export default class ResultSummary extends Component {
         });
         const platformOpts = Object.keys(buildMap).sort();
         jdkVersionOpts = [...new Set(jdkVersionOpts)].sort(order);
-        const jdkImplOpts = hcvalues.hcjdkImpls;
+        jdkImplOpts = [...new Set(jdkImplOpts)].sort(order);
 
 
         this.setState({
