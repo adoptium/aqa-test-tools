@@ -6,7 +6,7 @@ import ResultGrid from './ResultGrid';
 import PieChart from './PieChart';
 import Overview from './Overview';
 import TestBreadcrumb from '../TestBreadcrumb';
-const { order } = require('../../utils/Utils');
+import { order, getInfoFromBuildName } from '../../utils/Utils';
 
 const hcvalues = {
     hclevels: ["sanity", "extended", "special"],
@@ -53,52 +53,51 @@ export default class ResultSummary extends Component {
         });
 
         const builds = await fetchBuild.json();
-        const regex = /^Test_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl)?)(_.+)?$/i;
         const buildMap = {};
         let jdkVersionOpts = [];
         let jdkImplOpts = [];
         builds.map((build, i) => {
             const buildName = build.buildName.toLowerCase();
-            const tokens = buildName.match(regex);
-            if (Array.isArray(tokens) && tokens.length > 5) {
-                const [_, jdkVersion, jdkImpl, level, group, platform] = tokens;
-
-                buildMap[platform] = buildMap[platform] || {};
-                buildMap[platform][jdkVersion] = buildMap[platform][jdkVersion] || {};
-                buildMap[platform][jdkVersion][jdkImpl] = buildMap[platform][jdkVersion][jdkImpl] || {};
-                buildMap[platform][jdkVersion][jdkImpl][level] = buildMap[platform][jdkVersion][jdkImpl][level] || {};
-                buildMap[platform][jdkVersion][jdkImpl][level][group] = buildMap[platform][jdkVersion][jdkImpl][level][group] || {};
-
-                jdkVersionOpts.push(jdkVersion);
-                jdkImplOpts.push(jdkImpl);
-                // If there are multiple builds for one key, then this is a parallel build
-                // For parallel build, we only store the parent build info and loop child builds to get aggregated testSummary
-                if (Object.keys(buildMap[platform][jdkVersion][jdkImpl][level][group]).length !== 0) {
-                    if (build.hasChildren) {
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].buildResult = build.buildResult;
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].buildUrl = build.buildUrl;
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].buildId = build._id;
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].hasChildren = build.hasChildren;
-
-                    } else if (build.testSummary) {
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary = buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary
-                            || { passed: 0, failed: 0, disabled: 0, skipped: 0, executed: 0, total: 0 };
-                        const { passed = 0, failed = 0, disabled = 0, skipped = 0, executed = 0, total = 0 } = build.testSummary;
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.passed += passed;
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.failed += failed;
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.disabled += disabled;
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.skipped += skipped;
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.executed += executed;
-                        buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.total += total;
+            if ( getInfoFromBuildName(buildName) ) {
+                const {jdkVersion, jdkImpl, level, group, platform} = getInfoFromBuildName(buildName);
+                if (jdkVersion && jdkImpl && level && group && platform) {
+                    buildMap[platform] = buildMap[platform] || {};
+                    buildMap[platform][jdkVersion] = buildMap[platform][jdkVersion] || {};
+                    buildMap[platform][jdkVersion][jdkImpl] = buildMap[platform][jdkVersion][jdkImpl] || {};
+                    buildMap[platform][jdkVersion][jdkImpl][level] = buildMap[platform][jdkVersion][jdkImpl][level] || {};
+                    buildMap[platform][jdkVersion][jdkImpl][level][group] = buildMap[platform][jdkVersion][jdkImpl][level][group] || {};
+    
+                    jdkVersionOpts.push(jdkVersion);
+                    jdkImplOpts.push(jdkImpl);
+                    // If there are multiple builds for one key, then this is a parallel build
+                    // For parallel build, we only store the parent build info and loop child builds to get aggregated testSummary
+                    if (Object.keys(buildMap[platform][jdkVersion][jdkImpl][level][group]).length !== 0) {
+                        if (build.hasChildren) {
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].buildResult = build.buildResult;
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].buildUrl = build.buildUrl;
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].buildId = build._id;
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].hasChildren = build.hasChildren;
+    
+                        } else if (build.testSummary) {
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary = buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary
+                                || { passed: 0, failed: 0, disabled: 0, skipped: 0, executed: 0, total: 0 };
+                            const { passed = 0, failed = 0, disabled = 0, skipped = 0, executed = 0, total = 0 } = build.testSummary;
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.passed += passed;
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.failed += failed;
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.disabled += disabled;
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.skipped += skipped;
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.executed += executed;
+                            buildMap[platform][jdkVersion][jdkImpl][level][group].testSummary.total += total;
+                        }
+                    } else {
+                        buildMap[platform][jdkVersion][jdkImpl][level][group] = {
+                            buildResult: build.buildResult,
+                            testSummary: build.testSummary,
+                            buildUrl: build.buildUrl,
+                            buildId: build._id,
+                            hasChildren: build.hasChildren
+                        };
                     }
-                } else {
-                    buildMap[platform][jdkVersion][jdkImpl][level][group] = {
-                        buildResult: build.buildResult,
-                        testSummary: build.testSummary,
-                        buildUrl: build.buildUrl,
-                        buildId: build._id,
-                        hasChildren: build.hasChildren
-                    };
                 }
             }
         });

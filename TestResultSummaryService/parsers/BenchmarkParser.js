@@ -37,14 +37,19 @@ class BenchmarkParser extends Parser {
         let curItr = benchmarkIterator.next();
         let testIndex = 1;
         let buildResult;
+        let regexResult = null;
+        let sdkResource = null;
         const tests = [];
 
+        // Parse product resource
+        if ( ( regexResult = productResourceRegex.exec( output ) ) !== null ) {
+            sdkResource = regexResult[1];
+        }
         while (curItr.done !== true) {
 
             let curBenchmarkName = null;
             let curBenchmarkVariant = null;
             let curRegexResult = null;
-            let curProductResource = null;
             let isValid = true;
 
             // Parse benchmark name
@@ -56,12 +61,6 @@ class BenchmarkParser extends Parser {
             // Parse benchmark variant
             if ( ( curRegexResult = benchmarkVariantRegex.exec( curItr.value ) ) !== null ) {
                 curBenchmarkVariant = curRegexResult[1];
-            } else {
-                isValid = false;
-            }
-            // Parse product resource
-            if ( ( curRegexResult = productResourceRegex.exec( curItr.value ) ) !== null ) {
-                curProductResource = curRegexResult[1];
             } else {
                 isValid = false;
             }
@@ -78,7 +77,6 @@ class BenchmarkParser extends Parser {
                 testIndex: testIndex++,
                 benchmarkName: curBenchmarkName,
                 benchmarkVariant: curBenchmarkVariant,
-                sdkResource: curProductResource,
                 testData,                
             } );
 
@@ -91,6 +89,7 @@ class BenchmarkParser extends Parser {
 
         return {
             tests,
+            sdkResource,
             jdkDate,
             javaVersion,
             nodeRunDate,
