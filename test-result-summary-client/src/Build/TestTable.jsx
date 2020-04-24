@@ -60,8 +60,7 @@ export default class TestTable extends Component {
         };
 
         const renderAction = (value, row, index) => {
-            const { testId, testName } = value;
-            const issueUrl = `https://github.com/eclipse/openj9/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+${testName}`;
+            const { testId } = value;
 
             return <span>
                 <Link to={{ pathname: '/testPerPlatform', search: params({ testId }) }}>
@@ -71,12 +70,26 @@ export default class TestTable extends Component {
                 <Link to={{ pathname: '/deepHistory', search: params({ testId }) }}>
                     Deep History
                 </Link>
-                <span className="ant-divider" />
-                <a href={issueUrl} target="_blank" rel="noopener noreferrer">Possible Issues</a>
-
+                {possibleIssues(value)}
                 {gitIssue(row)}
             </span>
         }
+
+        const possibleIssues = (value) => {
+            const { testName } = value;
+
+            if (buildData) {
+                const { buildName } = buildData;
+                let issueUrl = `https://github.com/AdoptOpenJDK/openjdk-tests/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+${testName}`;
+                if (buildName.includes('j9') || buildName.includes('ibm')) {
+                    issueUrl = `https://github.com/eclipse/openj9/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+${testName}`;
+                }
+                return <span>
+                    <span className="ant-divider" />
+                    <a href={issueUrl} target="_blank" rel="noopener noreferrer">Possible Issues</a>
+                    </span>;
+            }
+        };
 
         const gitIssue = (value) => {
             if (!buildData) return;
