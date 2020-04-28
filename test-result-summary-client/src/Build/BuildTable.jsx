@@ -120,7 +120,7 @@ export default class BuildTable extends Component {
             }],
             onFilter: (value, record) => {
                 const res = record.result;
-                return res.buildResult.indexOf(value) === 0;
+                return res.buildResult ? res.buildResult.indexOf(value) === 0 : false;
             },
         }, {
             title: 'Result Detail',
