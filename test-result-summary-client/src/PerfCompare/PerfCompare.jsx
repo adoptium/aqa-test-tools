@@ -7,6 +7,7 @@ import ExtractRelevantJenkinsTestResults from './lib/ExtractRelevantJenkinsTestR
 import { getParams } from '../utils/query';
 import './PerfCompare.css';
 import { getBenchmarkMetricProps } from '../utils/perf';
+import { parseJenkinsUrl } from '../utils/parseJenkinsUrl';
 
 const buildTypeExampleURL = {
     Jenkins: "https://customJenkinsServer/view/PerfTests/job/Daily-Liberty-Startup/1/",
@@ -275,56 +276,22 @@ export default class PerfCompare extends Component {
         // Received a Jenkins build URL
         if (this.state.buildType === "Jenkins") {
 
-            let baselineBuildURL, testBuildURL;
-            let baselineURLScheme, baselineHostWithPort, baselineBuildName, baselineBuildNum;
-            let testURLScheme, testHostWithPort, testBuildName, testBuildNum;
-            let baselineBuildURLSplit, testBuildURLSplit;
+            let baselineBuildURL, baselineBuildName, baselineBuildNum;
+            let testBuildURL, testBuildName, testBuildNum;
+
             if (this.state.inputURL.baselineID && this.state.inputURL.testID) {
-                baselineBuildURLSplit = this.state.inputURL.baselineID.split("/");
-                testBuildURLSplit = this.state.inputURL.testID.split("/");
-            }
-            
-            // Find the index for the top level "job" path in the Jenkins URLs given.
-            // This is to support comparing the following equivalent Jenkins job URLs:
-            // https://customJenkinsServer/view/PerfTests/job/Daily-Liberty-DayTrader3/155/
-            // https://customJenkinsServer/job/Daily-Liberty-DayTrader3/155/
-
-            let jenkinsTopLevelJobIndexBaseline, jenkinsTopLevelJobIndexTest;
-            if (baselineBuildURLSplit && testBuildURLSplit){
-                jenkinsTopLevelJobIndexBaseline= baselineBuildURLSplit.indexOf("job");
-                jenkinsTopLevelJobIndexTest= testBuildURLSplit.indexOf("job");
-            }
-
-            try {
-                baselineURLScheme = baselineBuildURLSplit[0];
-                baselineHostWithPort = baselineBuildURLSplit[2];
-                baselineBuildName = baselineBuildURLSplit[jenkinsTopLevelJobIndexBaseline + 1];
-                baselineBuildNum = baselineBuildURLSplit[jenkinsTopLevelJobIndexBaseline + 2];
-
-                // Build the original URL composed of host and port only
-                baselineBuildURL = baselineURLScheme + "//" + baselineHostWithPort;
-
-                // Check if the benchmark and test data is valid
-                if (!baselineBuildNum || !baselineBuildURL ) {
-                    displayErrorMessage += "Invalid Baseline URL. "
+                const baseLineRes = parseJenkinsUrl( this.state.inputURL.baselineID, "Baseline" );
+                const testRes = parseJenkinsUrl( this.state.inputURL.testID, "Test" );
+                displayErrorMessage += baseLineRes.errorMsg? baseLineRes.errorMsg: "";
+                displayErrorMessage += testRes.errorMsg? testRes.errorMsg: "";
+                if(!displayErrorMessage) {
+                    baselineBuildURL = baseLineRes.serverUrl;
+                    baselineBuildName = baseLineRes.buildName;
+                    baselineBuildNum = baseLineRes.buildNum;
+                    testBuildURL = testRes.serverUrl;
+                    testBuildName = testRes.buildName;
+                    testBuildNum = testRes.buildNum;
                 }
-            } catch (baselineBuildURLSplitError) {
-                displayErrorMessage += "Invalid Baseline URL. "
-            }
-
-            try {
-                testURLScheme = testBuildURLSplit[0];
-                testHostWithPort = testBuildURLSplit[2];
-                testBuildName = testBuildURLSplit[jenkinsTopLevelJobIndexTest + 1];
-                testBuildNum = testBuildURLSplit[jenkinsTopLevelJobIndexTest + 2];
-
-                testBuildURL = testURLScheme + "//" + testHostWithPort;
-
-                if (!testBuildNum || !testBuildURL) {
-                    displayErrorMessage += "Invalid Test URL. "
-                }
-            } catch (testBuildURLSplit) {
-                displayErrorMessage += "Invalid Test URL. "
             }
 
             // Data received is not valid
