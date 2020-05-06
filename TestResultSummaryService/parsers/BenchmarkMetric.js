@@ -107,6 +107,16 @@ const BenchmarkMetricRegex = {
             },
         }
     },
+    renaissance: {
+        metrics: { 
+            "Response Time":{
+                //Example: final iteration completed (16495.74 ms) ======
+                regex: /final iteration completed \((\d*\.?\d*)/,
+                higherbetter: false,
+                units: "ms",
+            },
+        }
+    },
     bumbleBench: {
         metrics: {
             "Score":{
