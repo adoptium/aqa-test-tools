@@ -23,7 +23,7 @@ export default {
     Perf: {
         widgets: [
             {
-                type: 'DayTrader3',
+                type: 'DayTrader7',
                 x: 0,
                 y: 2
             },
