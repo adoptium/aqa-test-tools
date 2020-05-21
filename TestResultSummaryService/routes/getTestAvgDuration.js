@@ -14,41 +14,41 @@ const { TestResultsDB } = require('../Database');
  * @param {string} impl Optional. JDK impl (i.e., j9, hs, etc)
  * @param {string} level Optional. Test level (i.e., sanity, extended, special)
  * @param {string} group Optional. Test group (i.e., functional, system, openjdk, perf, etc)
- * @param {number} bucketCount Optional. The number of buckets the tests will be divided into.
+ * @param {number} numMachines Optional. The number of testLists the tests will be divided into.
  * Default value is 1
  * @param {number} limit Optional. The number of matched builds the program will query.
  * Default value is 500
  * @return {object} 
- * bucketTime: array of bucket execution time
- * buckets: array of buckets which contains matched tests with average test duration
+ * testListTime: array of bucket execution time
+ * testLists: array of testLists which contains matched tests with average test duration
  */
 
 module.exports = async (req, res) => {
-    const { bucketCount = 1 } = req.query;
+    const { numMachines = 1 } = req.query;
     const db = new TestResultsDB();
     const result = await db.getAvgDuration(req.query);
 
     if (!result) {
         res.send(result);
     } else {
-        const buckets = Array(parseInt(bucketCount));
-        const bucketTime = Array(parseInt(bucketCount)).fill(0);
-        for (let i = 0; i < bucketCount; i++) {
-            buckets[i] = [];
+        const testLists = Array(parseInt(numMachines));
+        const testListTime = Array(parseInt(numMachines)).fill(0);
+        for (let i = 0; i < numMachines; i++) {
+            testLists[i] = [];
         }
 
         for (let r of result) {
             let bucketWithLeastWork = 0;
-            let leastWork = bucketTime[0];
-            for (let i = 0; i < bucketCount; i++) {
-                if (bucketTime[i] < leastWork) {
-                    leastWork = bucketTime[i];
+            let leastWork = testListTime[0];
+            for (let i = 0; i < numMachines; i++) {
+                if (testListTime[i] < leastWork) {
+                    leastWork = testListTime[i];
                     bucketWithLeastWork = i;
                 }
             }
-            buckets[bucketWithLeastWork].push(r);
-            bucketTime[bucketWithLeastWork] += r.avgDuration;
+            testLists[bucketWithLeastWork].push(r);
+            testListTime[bucketWithLeastWork] += r.avgDuration;
         }
-        res.send({ bucketTime, buckets });
+        res.send({ testListTime, testLists });
     }
 }
