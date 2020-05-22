@@ -448,8 +448,7 @@ export default class PerfCompare extends Component {
                     metricProps = this.metricsProps[benchmark][curMetricName];
                 }
                 // get metric Properties (regex & higherbetter & units) using current benchmark information
-                const curMetricUnits = metricProps ? this.metricsProps.units : "";
- 
+                const curMetricUnits = metricProps && metricProps.units ? metricProps.units : ""; 
                 // Check if a higher value for this metric means a better score 
                 const curHigherBetter = !metricProps || metricProps.higherbetter !== false;
 
