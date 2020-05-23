@@ -18,24 +18,18 @@ class DateRangePickers extends Component {
         this.handleAfterSetExtremes = this.handleAfterSetExtremes.bind( this );
 
         this.state = {
-            min: null,
-            max: null
+            min: new Date().setDate(new Date().getDate()-7),
+            max: new Date(),
         };
     }
 
     componentDidMount() {
         const axis = this.props.getAxis()
         Highcharts.addEvent( axis, 'afterSetExtremes', this.handleAfterSetExtremes );
-
-        const { min, max } = axis.getExtremes();
-        this.setState( {
-            min,
-            max
-        } );
     }
 
     handleFromDateChange( fromDate ) {
-        const axis = this.props.getAxis()
+        const axis = this.props.getAxis();
 
         let { max } = axis.getExtremes();
         let selectedTime = fromDate.valueOf();
