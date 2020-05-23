@@ -169,16 +169,17 @@ class Database {
     }
 
     async getAvgDuration(info) {
-        const { matchQuery = {}, testName, platform, jdkVersion, impl, level, group, limit = 500 } = info;
+        const { matchQuery = {}, testName, platform, jdkVersion, impl, level, group, buildResult, limit = 500 } = info;
         let buildNameRegex = `^Test.*`;
         if (jdkVersion) buildNameRegex = `${buildNameRegex}_openjdk${jdkVersion}.*`;
         if (impl) buildNameRegex = `${buildNameRegex}${impl}_.*`;
         if (level) buildNameRegex = `${buildNameRegex}${level}..*`;
         if (group) buildNameRegex = `${buildNameRegex}${group}_.*`;
         if (platform) buildNameRegex = `${buildNameRegex}${platform}.*`;
+        const buildResultRegex = buildResult || 'SUCCESS|UNSTABLE';
 
         matchQuery.buildName = { $regex: buildNameRegex };
-
+        matchQuery.buildResult = { $regex: buildResultRegex };
         // the aggregate order is important. Please change with caution
         const aggregateQuery = [
             { $match: matchQuery },
