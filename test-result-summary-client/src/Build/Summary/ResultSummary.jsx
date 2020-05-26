@@ -77,7 +77,7 @@ export default class ResultSummary extends Component {
                     if (build.hasChildren) {
                         buildMap[platform][jdkVersion][jdkImpl][level][group].buildResult = build.buildResult;
                         buildMap[platform][jdkVersion][jdkImpl][level][group].buildUrl = build.buildUrl;
-                        buildMap[platform][jdkVersion][jdkImpl][level][group]._id = build._id;
+                        buildMap[platform][jdkVersion][jdkImpl][level][group].buildId = build._id;
                         buildMap[platform][jdkVersion][jdkImpl][level][group].hasChildren = build.hasChildren;
 
                     } else if (build.testSummary) {
