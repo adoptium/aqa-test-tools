@@ -1,7 +1,7 @@
 const Parser = require('./Parser');
 const regexRunningTest = /.*?Running test (.*?) \.\.\.\r?/;
-const regexFinishTime = /.*?Finish Time\: .* Epoch Time \(ms\)\: (.*).*/;
-const regexStartTime = /.*?Start Time\: .* Epoch Time \(ms\)\: (.*).*/;
+const regexFinishTime = /(.*?) Finish Time\: .* Epoch Time \(ms\)\: (\d+).*/;
+const regexStartTime = /(.*?) Start Time\: .* Epoch Time \(ms\)\: (\d+).*/;
 const TestBenchmarkParser = require( `./TestBenchmarkParser`);
 const Utils = require(`./Utils`);
 
@@ -61,7 +61,7 @@ class Test extends Parser {
                 testResultRegex = new RegExp(testName + "_(.*)\r?");
             }
             if ((m = line.match(regexStartTime)) !== null) {
-                startTime = m[1];
+                startTime = (m[1].includes(testName) && m[2] > 0)? m[2] : null;
             }
             if (testResultRegex && ((m = testResultRegex.exec(line)) !== null)) {
                 testResult = m[1];
@@ -69,14 +69,14 @@ class Test extends Parser {
             if (testName) {
                 testStr += line + "\n";
                 if ((m = line.match(regexFinishTime)) !== null) {
+                    finishTime = (m[1].includes(testName) && m[2] > 0)? m[2] : null;
 
-                    finishTime = m[1];
                     results.push({
                         testName,
                         testOutput: testStr,
                         testResult,
                         testData: null,
-                        duration: finishTime - startTime,
+                        duration: (startTime && finishTime && finishTime - startTime > 0) ? finishTime - startTime : null,
                         startTime
                     });
                     testName = null;
