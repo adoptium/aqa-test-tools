@@ -9,6 +9,7 @@ import { getParams } from '../utils/query';
 import 'react-day-picker/lib/style.css';
 import tabularViewConfig from './TabularViewConfig';
 import { getBenchmarkMetricProps } from '../utils/perf';
+import { getInfoFromBuildName } from '../utils/Utils';
 // Pull property panel from Collapse, so you do not have to write Collapse.Panel each time
 const { Panel } = Collapse;
 // Pull property SHOW_PARENT from TreeSelect, so you do not have to write TreeSelect.SHOW_PARENT each time
@@ -103,7 +104,7 @@ export default class TabularView extends Component {
         await this.initializeJdk();
 
         await this.showData('test');
-        this.showData('baseline');
+        await this.showData('baseline');
      }
     // Get all dropdown values from database
     async updateDropdown () {
@@ -258,9 +259,9 @@ export default class TabularView extends Component {
         this.setState({treeData: newArray});
     }
     // When Submit button clicked, update table and URL
-    handleSubmit(event) {
-        this.showData('test');
-        this.showData('baseline');
+    async handleSubmit(event) {
+        await this.showData('test');
+        await this.showData('baseline');
         event.preventDefault();
         
         // Update URL with current state
@@ -270,6 +271,7 @@ export default class TabularView extends Component {
         + '&baselineSdkResource=' + this.state.baselineSdkResource + '&baselineBuildServer=' + this.state.baselineBuildServer;
 
         window.history.replaceState(null, '', newPath);
+        window.location.reload(false);
     }
     // Helper function to get value from benchmark entry
     handleProp (val, field) {
@@ -485,32 +487,33 @@ export default class TabularView extends Component {
         let found = false;
 
         data.forEach(function (testResultsObject) {
-            platform = testResultsObject.buildName
-            let aggregateIndex = 0;
-            for(; aggregateIndex < testResultsObject.aggregateInfo.length; aggregateIndex++) {
-                for (const metric in testResultsObject.aggregateInfo[aggregateIndex].metrics) {
-                    found = false;
-                    benchmarkNVM = testResultsObject.aggregateInfo[aggregateIndex].benchmarkName + ',' + testResultsObject.aggregateInfo[aggregateIndex].benchmarkVariant + "," + testResultsObject.aggregateInfo[aggregateIndex].metrics[metric].name;
+            const buildInfo = getInfoFromBuildName(testResultsObject.buildName);
+            if (buildInfo){
+                platform = buildInfo.platform;
+                for(let aggregateIndex = 0; aggregateIndex < testResultsObject.aggregateInfo.length; aggregateIndex++) {
+                    for (const metric in testResultsObject.aggregateInfo[aggregateIndex].metrics) {
+                        found = false;
+                        benchmarkNVM = testResultsObject.aggregateInfo[aggregateIndex].benchmarkName + ',' + testResultsObject.aggregateInfo[aggregateIndex].benchmarkVariant + "," + testResultsObject.aggregateInfo[aggregateIndex].metrics[metric].name;
     
-                    for (const currentDataObject in newArray) {
-                        // If benchmark already exists append to it
-                        if (newArray[currentDataObject].benchmarkNVM === benchmarkNVM) {
-                            found = true;
-                            newArray[currentDataObject].platformsSpecificData[platform] = this.handleEntry(aggregateIndex, testResultsObject, metric, type);
-                            break;
+                        for (const currentDataObject in newArray) {
+                            // If benchmark already exists append to it
+                            if (newArray[currentDataObject].benchmarkNVM === benchmarkNVM) {
+                                found = true;
+                                newArray[currentDataObject].platformsSpecificData[platform] = this.handleEntry(aggregateIndex, testResultsObject, metric, type);
+                                break;
+                            }
                         }
-                    }
-                   // Create a new entry if benchmark name does not exist
-                    if (!found) {
-                        dataObject = {};
-                        dataObject.platformsSpecificData = {};
-                        dataObject.benchmarkNVM = testResultsObject.aggregateInfo[aggregateIndex].benchmarkName + ',' + testResultsObject.aggregateInfo[aggregateIndex].benchmarkVariant + ',' + testResultsObject.aggregateInfo[aggregateIndex].metrics[metric].name;
-                        dataObject.platformsSpecificData[platform] = this.handleEntry(aggregateIndex, testResultsObject, metric, type);
-                        newArray.push(dataObject);	
+                    // Create a new entry if benchmark name does not exist
+                        if (!found) {
+                            dataObject = {};
+                            dataObject.platformsSpecificData = {};
+                            dataObject.benchmarkNVM = benchmarkNVM;
+                            dataObject.platformsSpecificData[platform] = this.handleEntry(aggregateIndex, testResultsObject, metric, type);
+                            newArray.push(dataObject);	
+                        }
                     }
                 }
             }
-            
         }.bind(this));
         if (type === 'test') {
             this.setState({testData:newArray});
@@ -612,7 +615,11 @@ export default class TabularView extends Component {
                 } );
         }
         const info = await tabularData.json();
-        const platformArray = [...new Set([...this.state.platforms,...(info.pop())])];
+        function getPlatform(platform) {
+            const inforFromBuildName = getInfoFromBuildName(platform);
+            return inforFromBuildName ? inforFromBuildName.platform : null;
+        }
+        const platformArray = [...new Set([...this.state.platforms,...(info.pop().map(getPlatform))])];
         this.setState({platforms:platformArray});
 
         this.generateColumns(this.state.platforms);
