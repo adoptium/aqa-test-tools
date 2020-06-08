@@ -11,34 +11,12 @@ const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
 export default class TestTable extends Component {
     state = {
         filteredData: [],
-        buildData: undefined
     };
-
-
-    async componentDidMount() {
-        await this.updateData();
-    }
 
     async componentDidUpdate(prevProps) {
         if (prevProps.testData !== this.props.testData) {
             this.setState({
                 filteredData: this.props.testData,
-            });
-        }
-        if (prevProps.buildId !== this.props.buildId) {
-            await this.updateData();
-        }
-    }
-
-    async updateData() {
-        const { buildId } = this.props;
-        const fetchBuild = await fetch(`/api/getData?_id=${buildId} `, {
-            method: 'get'
-        });
-        const builds = await fetchBuild.json();
-        if (builds && builds.length === 1) {
-            this.setState({
-                buildData: builds[0]
             });
         }
     }
@@ -49,7 +27,7 @@ export default class TestTable extends Component {
 
     render() {
         const { title, testData, parents } = this.props;
-        const { filteredData, buildData } = this.state;
+        const { filteredData } = this.state;
         const renderResult = ({ testResult, testId }) => {
             return <div>
                 {testId ? <Link to={{ pathname: '/output/test', search: params({ id: testId }) }}
@@ -70,17 +48,17 @@ export default class TestTable extends Component {
                 <Link to={{ pathname: '/deepHistory', search: params({ testId }) }}>
                     <Tooltip title="Deep History"><Icon type="history" /></Tooltip>
                 </Link>
-                {possibleIssues(value)}
+                {possibleIssues(row, value)}
                 {gitIssue(row)}
             </span>
         }
 
-        const possibleIssues = (value) => {
+        const possibleIssues = (row, value) => {
             const { testId, testName } = value;
-            const { buildId } = this.props;
+            const buildId = row.buildId;
 
-            if (buildData) {
-                const { buildName } = buildData;
+            if (row.buildName) {
+                const buildName = row.buildName;
                 return <span>
                     <span className="ant-divider" />
                     <Link to={{ pathname: '/possibleIssues', search: params({ buildId, buildName, testId, testName }) }}>
@@ -91,15 +69,14 @@ export default class TestTable extends Component {
         };
 
         const gitIssue = (value) => {
-            if (!buildData) return;
-            const { key, testName, duration } = value;
+            if (!testData) return;
+            const { key, testName, duration, buildId, buildName, buildUrl, machine, buildTimeStamp, javaVersion } = value;
 
             let testResult = "N/A";
             if (value && value[0]) {
                 testResult = value[0].testResult;
             }
-            const { _id, buildName, buildUrl, machine, timestamp } = buildData;
-            const buildStartTime = moment(timestamp).format(DAY_FORMAT);
+            const buildStartTime = moment(buildTimeStamp).format(DAY_FORMAT);
 
             const title = `${testName} ${testResult} in ${buildName}`;
             const nl = "\n";
@@ -113,7 +90,10 @@ export default class TestTable extends Component {
                 + `Build Name: ${buildName}${nl}`
                 + `Jenkins Build start time: ${buildStartTime}${nl}`
                 + `Jenkins Build URL: ${buildUrl}${nl}`
-                + `TRSS link for the build: https://trss.adoptopenjdk.net/allTestsInfo${params({ buildId: _id })}${nl}`;
+                + `TRSS link for the build: https://trss.adoptopenjdk.net/allTestsInfo${params({ buildId: buildId })}${nl}`
+                + `${nl}${nl}`
+                + `**Java Version**${nl}`
+                + `${javaVersion}${nl}`;
 
 
             const urlParams = params({ title, body });
