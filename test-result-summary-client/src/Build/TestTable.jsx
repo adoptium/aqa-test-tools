@@ -76,18 +76,17 @@ export default class TestTable extends Component {
         }
 
         const possibleIssues = (value) => {
-            const { testName } = value;
+            const { testId, testName } = value;
+            const { buildId } = this.props;
 
             if (buildData) {
                 const { buildName } = buildData;
-                let issueUrl = `https://github.com/AdoptOpenJDK/openjdk-tests/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+${testName}`;
-                if (buildName.includes('j9') || buildName.includes('ibm')) {
-                    issueUrl = `https://github.com/eclipse/openj9/issues?utf8=%E2%9C%93&q=is%3Aissue+is%3Aopen+${testName}`;
-                }
                 return <span>
                     <span className="ant-divider" />
-                    <Tooltip title="Possible Issues"><a href={issueUrl} target="_blank" rel="noopener noreferrer"><Icon type="question-circle" /></a></Tooltip>
-                    </span>;
+                    <Link to={{ pathname: '/possibleIssues', search: params({ buildId, buildName, testId, testName }) }}>
+                        <Tooltip title="Possible Issues"><Icon type="question-circle" /></Tooltip>
+                    </Link>
+                </span>;
             }
         };
 
