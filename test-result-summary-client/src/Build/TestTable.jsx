@@ -64,11 +64,11 @@ export default class TestTable extends Component {
 
             return <span>
                 <Link to={{ pathname: '/testPerPlatform', search: params({ testId }) }}>
-                    All Platforms
+                    <Tooltip title="All Platforms"><Icon type="cluster" /></Tooltip>
                 </Link>
                 <span className="ant-divider" />
                 <Link to={{ pathname: '/deepHistory', search: params({ testId }) }}>
-                    Deep History
+                    <Tooltip title="Deep History"><Icon type="history" /></Tooltip>
                 </Link>
                 {possibleIssues(value)}
                 {gitIssue(row)}
@@ -86,7 +86,7 @@ export default class TestTable extends Component {
                 }
                 return <span>
                     <span className="ant-divider" />
-                    <a href={issueUrl} target="_blank" rel="noopener noreferrer">Possible Issues</a>
+                    <Tooltip title="Possible Issues"><a href={issueUrl} target="_blank" rel="noopener noreferrer"><Icon type="question-circle" /></a></Tooltip>
                     </span>;
             }
         };
