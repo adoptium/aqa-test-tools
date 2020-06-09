@@ -53,12 +53,7 @@ class Cell extends Component {
                         } else {
                             icon = <Icon type="exclamation-circle" style={{ color: "white" }} />;
                         }
-                        let linkInfo = "";
-                        if (groups[group].hasChildren) {
-                            linkInfo = <Link to={{ pathname: '/buildDetail', search: params({ parentId: groups[group].buildId }) }} target="_blank">{icon}</Link>
-                        } else {
-                            linkInfo = <Link to={{ pathname: '/allTestsInfo', search: params({ buildId: groups[group].buildId, limit: 5 }) }} target="_blank">{icon}</Link>;
-                        }
+                        const linkInfo = <Link to={{ pathname: '/allTestsInfo', search: params({ buildId: groups[group].buildId, limit: 5, hasChildren: groups[group].hasChildren }) }} target="_blank">{icon}</Link>;
                         return <div className={`cell ${result}`} style={{ gridColumn: x + 1, gridRow: y + 1 }} key={x}>
                             <Tooltip title={<div>{element}</div>}>
                                 {linkInfo}
