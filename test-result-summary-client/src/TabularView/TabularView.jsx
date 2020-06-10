@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Button, Tooltip, Icon, Collapse, Checkbox, TreeSelect } from 'antd';
+import { QuestionCircleOutlined, WarningOutlined } from '@ant-design/icons';
+import { Button, Tooltip, Collapse, Checkbox, TreeSelect } from 'antd';
 import ReactTable from 'react-table'
 import './TabularView.css';
 import 'react-table/react-table.css'
@@ -33,7 +34,7 @@ const legendColumns = [{
     accessor: 'analysis'
     },
 ];
-	
+
 const legendRows = [{
     colorName: 'Green',
     color: '#2dc937',
@@ -393,7 +394,7 @@ export default class TabularView extends Component {
         if (relativeComparison === 100 || relativeComparison === 0 || relativeComparison === "N/A") {return;}
         else if (totalCI * 100 < (Math.abs(relativeComparison - 100) + 0.7)) {return;} 
         else {
-            return <Icon type="warning" />;
+            return <WarningOutlined />;
         }
     }
     // Two filters Benchmark and Color. Always call benchmark filter first. If color filter is the first filter, boolean ensures benchmark filter is called first instead
@@ -666,7 +667,7 @@ export default class TabularView extends Component {
                             keepFocus={false}
                         /> 
             <Tooltip placement="topRight" title="Table will contain latest results from all builds dated before the chosen date regardless of when the benchmark was run.">
-                <Icon type="question-circle" />
+                <QuestionCircleOutlined />
             </Tooltip></div>
             <div className="column"> 
                 <DayPickerInput
@@ -680,7 +681,7 @@ export default class TabularView extends Component {
                     keepFocus={false}
                 /> 
             <Tooltip placement="topRight" title="Table will contain latest results from all builds dated before the chosen date regardless of when the benchmark was run.">
-                <Icon type="question-circle" />
+                <QuestionCircleOutlined />
             </Tooltip></div>
         </div>
         <div className="row">

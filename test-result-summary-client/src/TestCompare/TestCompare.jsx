@@ -97,10 +97,8 @@ export default class TestCompare extends Component {
 
     render() {
         return <div>
-            <Row>
-                <TestInfo data={this.state.forms[0]} onChange={this.onChange.bind( null, 0 )} />
-                <TestInfo data={this.state.forms[1]} onChange={this.onChange.bind( null, 1 )} />
-            </Row>
+            <TestInfo data={this.state.forms[0]} onChange={this.onChange.bind( null, 0 )} />
+            <TestInfo data={this.state.forms[1]} onChange={this.onChange.bind( null, 1 )} />
             <Row>
                 <Col span={24} style={{ textAlign: 'right' }}>
                     <Checkbox onChange={this.toggleTimestamp}>Remove TimeStamp</Checkbox>

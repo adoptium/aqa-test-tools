@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Button, Dropdown, Menu, Icon } from 'antd';
+import { DownOutlined } from '@ant-design/icons';
+import { Button, Dropdown, Menu } from 'antd';
 import RGL, { WidthProvider } from "react-grid-layout";
 import * as Widgets from "./Widgets/";
 import WidgetWrapper from './WidgetWrapper';
@@ -101,28 +102,30 @@ export default class TabInfo extends Component {
             } )}
         </Menu>
 
-        return <div>
+        return (
             <div>
-                <Button type="primary" onClick={this.onReset} >Reset</Button>
-                <Dropdown overlay={menu}>
-                    <Button style={{ marginLeft: 8 }}>
-                        Add a widget <Icon type="down" />
-                    </Button>
-                </Dropdown>
+                <div>
+                    <Button type="primary" onClick={this.onReset} >Reset</Button>
+                    <Dropdown overlay={menu}>
+                        <Button style={{ marginLeft: 8 }}>
+                            Add a widget <DownOutlined />
+                        </Button>
+                    </Dropdown>
+                </div>
+                <div className="dashboard">
+                    <ReactGridLayout layout={layout} onLayoutChange={this.onLayoutChange} cols={4} rowHeight={125} autoSize draggableHandle=".widget--header-info">
+                        {layout.map(( item, i ) => {
+                            const setting = settings[item.i];
+                            if ( !setting ) return <div key={item.i} />;
+                            const Widget = Widgets[setting.type];
+                            if ( !Widget ) return <div key={item.i} />;
+                            return <div key={item.i}>
+                                <WidgetWrapper Widget={Widget} {...setting} onRemove={this.onRemove.bind( null, item.i )} onChange={this.onChange.bind( null, item.i )} />
+                            </div>
+                        } )}
+                    </ReactGridLayout>
+                </div>
             </div>
-            <div className="dashboard">
-                <ReactGridLayout layout={layout} onLayoutChange={this.onLayoutChange} cols={4} rowHeight={125} autoSize draggableHandle=".widget--header-info">
-                    {layout.map(( item, i ) => {
-                        const setting = settings[item.i];
-                        if ( !setting ) return <div key={item.i} />;
-                        const Widget = Widgets[setting.type];
-                        if ( !Widget ) return <div key={item.i} />;
-                        return <div key={item.i}>
-                            <WidgetWrapper Widget={Widget} {...setting} onRemove={this.onRemove.bind( null, item.i )} onChange={this.onChange.bind( null, item.i )} />
-                        </div>
-                    } )}
-                </ReactGridLayout>
-            </div>
-        </div>
+        );
     }
 }

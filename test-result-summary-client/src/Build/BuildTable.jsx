@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Table, Form, Input, Icon } from 'antd';
+import { EditOutlined } from '@ant-design/icons';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Table, Input } from 'antd';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
 
@@ -150,7 +153,7 @@ export default class BuildTable extends Component {
             dataIndex: 'comments',
             key: 'comments',
             editable: true,
-            render: comments => <div style={{ cursor: "pointer" }}>{comments}<Icon type="edit" /></div>
+            render: comments => <div style={{ cursor: "pointer" }}>{comments}<EditOutlined /></div>
         },
         ];
 

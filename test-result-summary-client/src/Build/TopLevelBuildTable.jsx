@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Icon, Table, Tooltip } from 'antd';
+import { CheckOutlined, CloseOutlined, InfoOutlined, LoadingOutlined } from '@ant-design/icons';
+import { Table, Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
 import BuildLink from './BuildLink';
@@ -78,14 +79,14 @@ export default class TopLevelBuildTable extends Component {
                 if (value && value.buildNum) {
                     let icon = "";
                     if (value.status !== "Done") {
-                        icon = <Icon type="loading" style={{ fontSize: 16, color: '#DAA520' }} />;
+                        icon = <LoadingOutlined style={{ fontSize: 16, color: '#DAA520' }} />;
                         value.buildResult = "PROGRESSING"
                     } else if (value.buildResult === "SUCCESS") {
-                        icon = <Icon type="check" style={{ fontSize: 16, color: '#2cbe4e' }} />;
+                        icon = <CheckOutlined style={{ fontSize: 16, color: '#2cbe4e' }} />;
                     } else if (value.buildResult === "FAILURE") {
-                        icon = <Icon type="close" style={{ fontSize: 16, color: '#f50' }} />;
+                        icon = <CloseOutlined style={{ fontSize: 16, color: '#f50' }} />;
                     } else {
-                        icon = <Icon type="info" style={{ fontSize: 16, color: '#f50' }} />;
+                        icon = <InfoOutlined style={{ fontSize: 16, color: '#f50' }} />;
                     }
                     return <div>
                         <Link to={{ pathname: '/buildDetail', search: params({ parentId: value._id }) }}
