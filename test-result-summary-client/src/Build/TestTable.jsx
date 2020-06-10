@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import TextFilter from '../utils/TextFilter';
-import { Table, Tooltip, Icon } from 'antd';
+import { ClusterOutlined, GithubOutlined, HistoryOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Table, Tooltip, Divider } from 'antd';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
 import renderDuration from './Duration';
@@ -40,17 +41,19 @@ export default class TestTable extends Component {
         const renderAction = (value, row, index) => {
             const { testId } = value;
 
-            return <span>
-                <Link to={{ pathname: '/testPerPlatform', search: params({ testId }) }}>
-                    <Tooltip title="All Platforms"><Icon type="cluster" /></Tooltip>
-                </Link>
-                <span className="ant-divider" />
-                <Link to={{ pathname: '/deepHistory', search: params({ testId }) }}>
-                    <Tooltip title="Deep History"><Icon type="history" /></Tooltip>
-                </Link>
-                {possibleIssues(row, value)}
-                {gitIssue(row)}
-            </span>
+            return (
+                <span>
+                    <Link to={{ pathname: '/testPerPlatform', search: params({ testId }) }}>
+                        <Tooltip title="All Platforms"><ClusterOutlined /></Tooltip>
+                    </Link>
+                    <Divider type="vertical" />
+                    <Link to={{ pathname: '/deepHistory', search: params({ testId }) }}>
+                        <Tooltip title="Deep History"><HistoryOutlined /></Tooltip>
+                    </Link>
+                    {possibleIssues(row, value)}
+                    {gitIssue(row)}
+                </span>
+            );
         }
 
         const possibleIssues = (row, value) => {
@@ -59,12 +62,14 @@ export default class TestTable extends Component {
 
             if (row.buildName) {
                 const buildName = row.buildName;
-                return <span>
-                    <span className="ant-divider" />
-                    <Link to={{ pathname: '/possibleIssues', search: params({ buildId, buildName, testId, testName }) }}>
-                        <Tooltip title="Possible Issues"><Icon type="question-circle" /></Tooltip>
-                    </Link>
-                </span>;
+                return (
+                    <span>
+                        <Divider type="vertical" />
+                        <Link to={{ pathname: '/possibleIssues', search: params({ buildId, buildName, testId, testName }) }}>
+                            <Tooltip title="Possible Issues"><QuestionCircleOutlined /></Tooltip>
+                        </Link>
+                    </span>
+                );
             }
         };
 
@@ -97,10 +102,12 @@ export default class TestTable extends Component {
 
 
             const urlParams = params({ title, body });
-            return <span>
-                <span className="ant-divider" />
-                <Tooltip title="Create new issue at https://github.com/AdoptOpenJDK/openjdk-tests"><a href={`https://github.com/AdoptOpenJDK/openjdk-tests/issues/new${urlParams}`} target="_blank" rel="noopener noreferrer"><Icon type="github" /></a></Tooltip>
-                </span>;
+            return (
+                <span>
+                    <Divider type="vertical" />
+                    <Tooltip title="Create new issue at https://github.com/AdoptOpenJDK/openjdk-tests"><a href={`https://github.com/AdoptOpenJDK/openjdk-tests/issues/new${urlParams}`} target="_blank" rel="noopener noreferrer"><GithubOutlined /></a></Tooltip>
+                </span>
+            );
         };
 
         let columns = [{

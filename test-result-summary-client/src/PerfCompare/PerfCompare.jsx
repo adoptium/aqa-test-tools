@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Form, Input, Button, Radio, Row, Table, Divider, Progress, Alert } from 'antd';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Input, Button, Radio, Row, Table, Divider, Progress, Alert } from 'antd';
 import math from 'mathjs';
 import { stringify } from 'qs';
 import PerffarmRunJSON from './lib/PerffarmRunJSON';

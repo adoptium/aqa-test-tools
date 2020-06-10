@@ -1,5 +1,15 @@
 import React, { Component } from 'react';
-import { Icon, Checkbox, Table, Tooltip, Input } from 'antd';
+
+import {
+    CheckOutlined,
+    CloseOutlined,
+    ExclamationCircleOutlined,
+    InfoOutlined,
+    LoadingOutlined,
+    QuestionOutlined,
+} from '@ant-design/icons';
+
+import { Checkbox, Table, Tooltip, Input } from 'antd';
 import ServerSelector from "./ServerSelector";
 import Highlighter from 'react-highlight-words';
 
@@ -198,17 +208,17 @@ export default class BuildStatus extends Component {
         const renderResult = (value, row, index) => {
             let icon = "";
             if (value === "Success") {
-                icon = <Icon type="check" style={{ fontSize: 16, color: '#43ed2d' }} />;
+                icon = <CheckOutlined style={{ fontSize: 16, color: '#43ed2d' }} />;
             } else if (value === "Running") {
-                icon = <Icon type="loading" style={{ fontSize: 16, color: '#43ed2d' }} />;
+                icon = <LoadingOutlined style={{ fontSize: 16, color: '#43ed2d' }} />;
             } else if (value === "Failure") {
-                icon = <Icon type="close" style={{ fontSize: 16, color: '#f50' }} />;
+                icon = <CloseOutlined style={{ fontSize: 16, color: '#f50' }} />;
             } else if (value === "Unstable") {
-                icon = <Icon type="exclamation-circle-o" style={{ fontSize: 16, color: '#DAA520' }} />;
+                icon = <ExclamationCircleOutlined style={{ fontSize: 16, color: '#DAA520' }} />;
             } else if (value === "Cannot connect") {
-                icon = <Icon type="question" style={{ fontSize: 16, color: '#DAA520' }} />;
+                icon = <QuestionOutlined style={{ fontSize: 16, color: '#DAA520' }} />;
             } else {
-                icon = <Icon type="info" style={{ fontSize: 16, color: '#f50' }} />;
+                icon = <InfoOutlined style={{ fontSize: 16, color: '#f50' }} />;
             }
             return <Tooltip title={value}>{icon}</Tooltip>;
         };

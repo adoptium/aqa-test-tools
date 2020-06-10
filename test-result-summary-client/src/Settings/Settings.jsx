@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
-import { Button, Table, Input, Icon, Popconfirm, Dropdown, Menu, message } from 'antd';
+import { CheckOutlined, DownOutlined, EditOutlined } from '@ant-design/icons';
+import { Button, Table, Input, Popconfirm, Dropdown, Menu, message } from 'antd';
 import './settings.css';
 
 class EditableCell extends Component {
@@ -36,20 +37,12 @@ class EditableCell extends Component {
                                 onChange={this.handleChange}
                                 onPressEnter={this.check}
                             />
-                            <Icon
-                                type="check"
-                                className="editable-cell-icon-check"
-                                onClick={this.check}
-                            />
+                            <CheckOutlined className="editable-cell-icon-check" onClick={this.check} />
                         </div>
                         :
                         <div className="editable-cell-text-wrapper">
                             {value || ' '}
-                            <Icon
-                                type="edit"
-                                className="editable-cell-icon"
-                                onClick={this.edit}
-                            />
+                            <EditOutlined className="editable-cell-icon" onClick={this.edit} />
                         </div>
                 }
             </div>
@@ -193,7 +186,7 @@ export default class Settings extends Component {
                     return (
                         <Dropdown overlay={menu}>
                             <Button style={{ marginLeft: 8 }}>
-                                {text ? text : "Type"} <Icon type="down" />
+                                {text ? text : "Type"} <DownOutlined />
                             </Button>
                         </Dropdown>
                     );
@@ -211,7 +204,7 @@ export default class Settings extends Component {
                     return (
                         <Dropdown overlay={menu}>
                             <Button style={{ marginLeft: 8 }}>
-                                {text ? text : "No"} <Icon type="down" />
+                                {text ? text : "No"} <DownOutlined />
                             </Button>
                         </Dropdown>
                     );

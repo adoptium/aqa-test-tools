@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
-import { Form, Row, Input, Icon } from 'antd';
+import { UserOutlined } from '@ant-design/icons';
+import { Form } from '@ant-design/compatible';
+import '@ant-design/compatible/assets/index.css';
+import { Row, Input } from 'antd';
 const FormItem = Form.Item;
 
 
@@ -7,15 +10,15 @@ export default class TestInfo extends Component {
     render() {
         const { data: { compareType, buildUrl, testName }, onChange } = this.props;
 
-        return <Form className="ant-advanced-search-form" onSubmit={this.handleSearch}>
-            <Row>
+        return (
+            <Form layout="vertical" className="ant-advanced-search-form" onSubmit={this.handleSearch}>
                 <FormItem label={compareType + " Build URL"}>
-                    <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Jenkins Build URL" value={buildUrl} onChange={onChange.bind( null, 'buildUrl' )} />
+                    <Input prefix={<UserOutlined style={{ fontSize: 13 }} />} placeholder="Jenkins Build URL" value={buildUrl} onChange={onChange.bind( null, 'buildUrl' )} />
                 </FormItem>
                 <FormItem label={compareType + " Test Name"}>
-                    <Input prefix={<Icon type="user" style={{ fontSize: 13 }} />} placeholder="Test Name" value={testName} onChange={onChange.bind( null, 'testName' )} />
+                    <Input prefix={<UserOutlined style={{ fontSize: 13 }} />} placeholder="Test Name" value={testName} onChange={onChange.bind( null, 'testName' )} />
                 </FormItem>
-            </Row>
-        </Form>
+            </Form>
+        );
     }
 }

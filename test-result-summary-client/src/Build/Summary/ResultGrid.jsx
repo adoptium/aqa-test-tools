@@ -1,6 +1,15 @@
 import React, { Component ,Fragment} from 'react';
 import { params } from '../../utils/query';
-import { Icon, Tooltip } from 'antd';
+
+import {
+    CheckCircleOutlined,
+    ExclamationCircleOutlined,
+    MinusCircleOutlined,
+    StopOutlined,
+    WarningOutlined,
+} from '@ant-design/icons';
+
+import { Tooltip } from 'antd';
 import { Link } from 'react-router-dom';
 
 import './ResultGrid.css';
@@ -9,60 +18,66 @@ class Cell extends Component {
     render() {
         const { data = {}, hcvalues } = this.props;
         const { hclevels, hcgroups } = hcvalues;
-        return <div className="nested-wrapper padding">
-            {hclevels.map((level, y) => {
-                const groups = data[level];
-                return <Fragment key={y}>
-                    {hcgroups.sort().map((group, x) => {
-                        let target = level + "." + group;
-                        if (!(groups && groups[group])) {
-                            return <div className="cell" style={{ gridColumn: x + 1, gridRow: y + 1 }} key={x}>
-                                <Tooltip title={target}><Icon type="stop" /></Tooltip>
-                            </div>
-                        }
-                        const result = groups[group].buildResult;
-                        let element = "";
-                        if (!groups[group].testSummary) {
-                            element = (
-                                <div>
-                                    {target} <br />
-                                    Build Result: {result} <br />
-                                    Result Summary: N/A <br />
-                                    <a href={groups[group].buildUrl} target="_blank" rel="noopener noreferrer">Jenkins Link</a>
+        return (
+            <div className="nested-wrapper padding">
+                {hclevels.map((level, y) => {
+                    const groups = data[level];
+                    return (
+                        <Fragment key={y}>
+                            {hcgroups.sort().map((group, x) => {
+                                let target = level + "." + group;
+                                if (!(groups && groups[group])) {
+                                    return (
+                                        <div className="cell" style={{ gridColumn: x + 1, gridRow: y + 1 }} key={x}>
+                                            <Tooltip title={target}><StopOutlined /></Tooltip>
+                                        </div>
+                                    );
+                                }
+                                const result = groups[group].buildResult;
+                                let element = "";
+                                if (!groups[group].testSummary) {
+                                    element = (
+                                        <div>
+                                            {target} <br />
+                                            Build Result: {result} <br />
+                                            Result Summary: N/A <br />
+                                            <a href={groups[group].buildUrl} target="_blank" rel="noopener noreferrer">Jenkins Link</a>
+                                        </div>
+                                    );
+                                } else {
+                                    element = (
+                                        <div>
+                                            Test Target: {target} <br />
+                                            Build Result: {result} <br />
+                                            Result Summary: {Object.keys(groups[group].testSummary).map((key) => {
+                                                return <div key={key}>{key}: {groups[group].testSummary[key]}</div>;
+                                            })}
+                                            <a href={groups[group].buildUrl} target="_blank" rel="noopener noreferrer">Jenkins Link</a>
+                                        </div>
+                                    );
+                                }
+                                let icon = "";
+                                if (result === "SUCCESS") {
+                                    icon = <CheckCircleOutlined style={{ color: "white" }} />;
+                                } else if (result === "UNSTABLE") {
+                                    icon = <WarningOutlined style={{ color: "white" }} />;
+                                } else if (result === "ABORT") {
+                                    icon = <MinusCircleOutlined style={{ color: "white" }} />;
+                                } else {
+                                    icon = <ExclamationCircleOutlined style={{ color: "white" }} />;
+                                }
+                                const linkInfo = <Link to={{ pathname: '/allTestsInfo', search: params({ buildId: groups[group].buildId, limit: 5, hasChildren: groups[group].hasChildren }) }} target="_blank">{icon}</Link>;
+                                return <div className={`cell ${result}`} style={{ gridColumn: x + 1, gridRow: y + 1 }} key={x}>
+                                    <Tooltip title={<div>{element}</div>}>
+                                        {linkInfo}
+                                    </Tooltip>
                                 </div>
-                            );
-                        } else {
-                            element = (
-                                <div>
-                                    Test Target: {target} <br />
-                                    Build Result: {result} <br />
-                                    Result Summary: {Object.keys(groups[group].testSummary).map((key) => {
-                                        return <div key={key}>{key}: {groups[group].testSummary[key]}</div>;
-                                    })}
-                                    <a href={groups[group].buildUrl} target="_blank" rel="noopener noreferrer">Jenkins Link</a>
-                                </div>
-                            );
-                        }
-                        let icon = "";
-                        if (result === "SUCCESS") {
-                            icon = <Icon type="check-circle" style={{ color: "white" }} />;
-                        } else if (result === "UNSTABLE") {
-                            icon = <Icon type="warning" style={{ color: "white" }} />;
-                        } else if (result === "ABORT") {
-                            icon = <Icon type="minus-circle" style={{ color: "white" }} />;
-                        } else {
-                            icon = <Icon type="exclamation-circle" style={{ color: "white" }} />;
-                        }
-                        const linkInfo = <Link to={{ pathname: '/allTestsInfo', search: params({ buildId: groups[group].buildId, limit: 5, hasChildren: groups[group].hasChildren }) }} target="_blank">{icon}</Link>;
-                        return <div className={`cell ${result}`} style={{ gridColumn: x + 1, gridRow: y + 1 }} key={x}>
-                            <Tooltip title={<div>{element}</div>}>
-                                {linkInfo}
-                            </Tooltip>
-                        </div>
-                    })}
-                </Fragment>;
-            })}
-        </div>;
+                            })}
+                        </Fragment>
+                    );
+                })}
+            </div>
+        );
     }
 }
 class Block extends Component {
