@@ -25,11 +25,15 @@
     "cors": "^2.8.5",
     "csv": "^5.3.2",
     "express": "^4.17.1",
+    "express-session": "^1.17.1",
     "got": "^9.6.0",
     "jenkins-api": "^0.3.1",
     "mathjs": "^5.10.3",
+    "memory-cache": "^0.2.0",
     "mongodb": "^3.5.4",
     "request": "^2.88.2",
+    "sha1": "^1.1.1",
+    "superagent": "^5.2.2",
     "winston": "^2.4.4"
   },
   "devDependencies": {

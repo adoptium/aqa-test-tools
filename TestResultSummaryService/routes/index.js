@@ -1,5 +1,18 @@
 const app = require( 'express' ).Router();
 const wrap = fn => ( req, res ) => fn( req, res ).catch( console.error.bind( console ) );
+const request = require('superagent');
+var sha1 = require('sha1');
+var session = require('express-session');
+var cache = require ('memory-cache');
+const { logger } = require( '../Utils' );
+
+app.use(session({
+    cookieName: 'session',
+    secret: 'eg[ijsli;;toyF9sfd-8I-7w2315df{}+8',
+    duration: 24 * 60 * 60 * 1000,
+    activeDuration: 5 * 60 * 1000,
+  }));
+const repoName = 'AdoptOpenJDK/openjdk-test-tools';
 
 app.get( '/compareTestDuration', wrap( require( "./compareTestDuration" ) ) );
 app.get( '/compareTestsOutput', wrap( require( "./compareTestsOutput" ) ) );
@@ -39,4 +52,58 @@ app.post( '/getParentSpecificData', wrap( require( "./getParentSpecificData" ) )
 app.post( '/getSpecificData', wrap( require( "./getSpecificData" ) ) );
 app.post( '/upsertBuildList', wrap( require( "./upsertBuildList" ) ) );
 
+app.get('/user/signin/callback', (req, res, next) => {
+    const code = req.query.code;
+  
+    if (!code) {
+      return res.send({
+        success: false,
+        message: 'Error: no code'
+      });
+    }
+  
+    // POST to github to get access code
+    request
+      .post('https://github.com/login/oauth/access_token')
+      .send({ 
+        client_id: 'c5ab64f68ab33409e874',
+        client_secret: '89f2d36e4d1e0b1f7e48e8b488eb6e45b68394c5',
+        code: code
+      })
+      .set('Content-Type', 'application/json')
+      .then(result => {
+        const access_token = result.body.access_token;
+        let repoInfo;
+        // use access code to get repo info about the user
+        request
+          .get('https://api.github.com/user/repos')
+          .set('Authorization', 'token ' + access_token)
+          .set('Content-Type', 'application/json')
+          .set('User-Agent', 'node.js')
+          .then(result => {
+            //  repo name is AdoptOpenJDK/openjdk-test-tools and user has admin access
+            repoInfo = result.body.filter(repo => (repo.full_name == repoName && repo.permissions.admin));
+            if (repoInfo.length !== 0) {
+                // store in cache (local memory space), set expire time to be 30min (1000*60*30 ms)
+                cache.put(sha1(access_token), { accessToken: access_token, permissions: repoInfo[0].permissions }, 1000*60*30, );
+                
+                logger.verbose(`Github Callback: access token is ${access_token}, permission is`, repoInfo[0].permissions);
+                // for security, client side will get SHA1-hash of access token
+                req.session.user = sha1(access_token);
+            }
+            res.status(301).redirect('http://localhost:3000/admin/settings');
+          })
+          .catch(error => console.log(error));;
+      })
+      .catch(error => console.log(error));
+  });
+
+  app.get('/user/status', (req, res, next) => {
+    logger.verbose(`user status:`,cache.get(req.session.user));
+    if (cache.get(req.session.user) == null) {
+      res.status(401).send({isLoggedIn: false});
+    } else {
+      res.status(200).send({isLoggedIn: true});
+    }
+  });
 module.exports = app;

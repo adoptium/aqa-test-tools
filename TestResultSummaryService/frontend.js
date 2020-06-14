@@ -10,7 +10,7 @@ const compression = require( 'compression' );
 const { logger } = require( './Utils' );
 
 app.use( compression() ); // GZIP all assets
-app.use( cors() );
+app.use( cors({credentials: true, origin: 'http://localhost:3000'}) );
 app.use( bodyParser.urlencoded( { extended: true } ) ); // support encoded bodies
 app.use( bodyParser.json() ); // support json encoded bodies
 

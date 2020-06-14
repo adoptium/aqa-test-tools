@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { CheckOutlined, DownOutlined, EditOutlined } from '@ant-design/icons';
+import { CheckOutlined, DownOutlined, EditOutlined, GithubOutlined } from '@ant-design/icons';
 import { Button, Table, Input, Popconfirm, Dropdown, Menu, message } from 'antd';
 import './settings.css';
 
@@ -51,25 +51,44 @@ class EditableCell extends Component {
 }
 
 export default class Settings extends Component {
-    state = { data: [] };
+    state = { 
+        data: [],
+        isLoggedIn: false, 
+    };
 
     async componentDidMount() {
-        const response = await fetch( `/api/getBuildList`, {
-            method: 'get'
-        } );
+        const fetchLoginStatus = await fetch(`/api/user/status`, {
+            method: 'GET',
+            credentials: 'include',  
+          });
+        const result = await fetchLoginStatus.json();
 
-        const results = await response.json();
-        if ( results && results.length > 0 ) {
-            const data = results.map(( info, i ) => {
-                return {
-                    key: i,
-                    ...info
-                };
-            } )
-            this.setState( { data } );
-            this.cacheData = data.map( item => ( { ...item } ) );
+        if (result.isLoggedIn) {
+            const response = await fetch( `/api/getBuildList`, {
+                method: 'get'
+            } );
+
+            const results = await response.json();
+            if ( results && results.length > 0 ) {
+                const data = results.map(( info, i ) => {
+                    return {
+                        key: i,
+                        ...info
+                    };
+                } )
+                this.setState( { 
+                    data,
+                    isLoggedIn: true,
+                 } );
+                this.cacheData = data.map( item => ( { ...item } ) );
+            }
+        } else {
+            this.setState({
+                isLoggedIn: false,
+            })
         }
     }
+
     onCellChange = ( key, dataIndex ) => {
         return ( value ) => {
             const { data } = this.state;
@@ -160,7 +179,7 @@ export default class Settings extends Component {
     }
 
     render() {
-        const { data } = this.state;
+        const { data, isLoggedIn } = this.state;
         if ( data ) {
             const columns = [{
                 title: 'Build URL',
@@ -236,22 +255,31 @@ export default class Settings extends Component {
                 },
             }];
 
-            return (
-                <div>
-                    <Table
-                        bordered
-                        dataSource={data}
-                        columns={columns}
-                        title={() => <b>Build Monitoring List</b>}
-                        pagination={false}
-                    />
-                    <div align="right">
-                        <Button type="primary" onClick={this.handleAdd} >Add Row</Button>
-                        <div className="divider" />
-                        <Button type="primary" onClick={this.handleSubmit} >Submit</Button>
+            if (!isLoggedIn) {
+                return (
+                <a href='https://github.com/login/oauth/authorize?client_id=c5ab64f68ab33409e874&scope=repo+user:email'>
+                <Button size="large">
+                    <GithubOutlined />Login
+                </Button>  
+                </a> );
+            } else {
+                return (
+                    <div>
+                        <Table
+                            bordered
+                            dataSource={data}
+                            columns={columns}
+                            title={() => <b>Build Monitoring List</b>}
+                            pagination={false}
+                        />
+                        <div align="right">
+                            <Button type="primary" onClick={this.handleAdd} >Add Row</Button>
+                            <div className="divider" />
+                            <Button type="primary" onClick={this.handleSubmit} >Submit</Button>
+                        </div>
                     </div>
-                </div>
-            );
+                );
+            }
         }
     }
 }
