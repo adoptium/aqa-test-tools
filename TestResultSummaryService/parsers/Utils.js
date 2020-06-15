@@ -74,7 +74,7 @@ class Utils {
         let buildResult;
         if ((tests.map(x=>x.testResult).indexOf("PASSED") > -1)) {
             if ((tests.map(x=>x.testResult).indexOf("FAILED") > -1)) {
-                buildResult = "PARTIAL-SUCCESS";
+                buildResult = "UNSTABLE";
             } else {
                 buildResult = "SUCCESS";
             }
