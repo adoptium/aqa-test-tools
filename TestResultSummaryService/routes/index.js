@@ -29,6 +29,7 @@ app.get( '/getTabularData', wrap( require( "./getTabularData" ) ) );
 app.get( '/getTabularDropdown', wrap( require( "./getTabularDropdown" ) ) );
 app.get( '/getTestById', wrap( require( "./getTestById" ) ) );
 app.get( '/getTestBySearch', wrap( require( "./getTestBySearch" ) ) );
+app.get( '/getTestByVersionInfo', wrap( require( "./getTestByVersionInfo" ) ) );
 app.get( '/getTestPerPlatform', wrap( require( "./getTestPerPlatform" ) ) );
 app.get( '/getTopLevelBuildNames', wrap( require( "./getTopLevelBuildNames" ) ) );
 app.get( '/getTotals', wrap( require( "./getTotals" ) ) );
