@@ -52,6 +52,7 @@ class Cell extends Component {
                                             Result Summary: {Object.keys(groups[group].testSummary).map((key) => {
                                                 return <div key={key}>{key}: {groups[group].testSummary[key]}</div>;
                                             })}
+                                            {group === 'perf' ? "Build Result is from TestBenchmarkParser (not CI build)" : ""} <br />
                                             <a href={groups[group].buildUrl} target="_blank" rel="noopener noreferrer">Jenkins Link</a>
                                         </div>
                                     );
