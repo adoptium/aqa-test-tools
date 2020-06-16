@@ -257,7 +257,7 @@ export default class Settings extends Component {
 
             if (!isLoggedIn) {
                 return (
-                <a href='https://github.com/login/oauth/authorize?client_id=c5ab64f68ab33409e874&scope=repo+user:email'>
+                <a href='https://github.com/login/oauth/authorize?client_id=c5ab64f68ab33409e874&scope=repo+user'>
                 <Button size="large">
                     <GithubOutlined />Login
                 </Button>  
