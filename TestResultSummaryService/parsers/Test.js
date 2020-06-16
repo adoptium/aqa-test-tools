@@ -77,7 +77,7 @@ class Test extends Parser {
                         testResult,
                         testData: null,
                         duration: (startTime && finishTime && finishTime - startTime > 0) ? finishTime - startTime : null,
-                        startTime
+                        startTime: parseInt(startTime)
                     });
                     testName = null;
                     testStr = null;
