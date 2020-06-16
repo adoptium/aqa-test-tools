@@ -1,3 +1,5 @@
+const {removeTimestamp} = require('../routes/utils/removeTimestamp');
+
 class Parser {
     constructor( buildName ) {
         this.buildName = buildName;
@@ -12,7 +14,7 @@ class Parser {
         let curRegexResult = null;
         let javaVersion, jdkDate, sdkResource;
         if ( ( curRegexResult = javaVersionRegex.exec( output ) ) !== null ) {
-            javaVersion = curRegexResult[1];
+            javaVersion = removeTimestamp(curRegexResult[1]);
         }
         curRegexResult = null;
         if ( ( curRegexResult = sdkResourceRegex.exec( output) ) != null) {
