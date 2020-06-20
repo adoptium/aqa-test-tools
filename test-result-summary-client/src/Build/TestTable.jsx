@@ -213,7 +213,7 @@ export default class TestTable extends Component {
                 dataSource={filteredData}
                 bordered
                 title={() => title}
-                pagination={{ pageSize: 50 }}
+                pagination={{ defaultPageSize: 50, pageSizeOptions: ['10', '20', '50', '100'], showSizeChanger: true }}
             />
         </div>
     }
