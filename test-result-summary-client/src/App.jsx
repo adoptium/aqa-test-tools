@@ -10,7 +10,7 @@ import { Output } from './Build/Output/';
 import { TestCompare } from './TestCompare/';
 import { PerfCompare } from './PerfCompare/';
 import { TabularView } from './TabularView/';
-import { AllTestsInfo, BuildDetail, DeepHistory, TestPerPlatform, PossibleIssues, TopLevelBuilds, ResultSummary } from './Build/';
+import { AllTestsInfo, BuildDetail, DeepHistory, GitNewIssue, TestPerPlatform, PossibleIssues, TopLevelBuilds, ResultSummary } from './Build/';
 import { SearchResult } from './Search/';
 import { Settings } from './Settings/';
 
@@ -63,6 +63,7 @@ export default class App extends Component {
                                 <Route path="/tests/:type" component={TopLevelBuilds} />
                                 <Route path="/output/:outputType" component={Output} />
                                 <Route path="/deepHistory" component={DeepHistory} />
+                                <Route path="/gitNewIssue" component={GitNewIssue} />
                                 <Route path="/testCompare" component={TestCompare} />
                                 <Route path="/perfCompare" component={PerfCompare} />
                                 <Route path="/tabularView" component={TabularView} />

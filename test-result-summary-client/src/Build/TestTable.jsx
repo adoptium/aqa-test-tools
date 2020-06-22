@@ -5,9 +5,6 @@ import { Table, Tooltip, Divider } from 'antd';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
 import renderDuration from './Duration';
-import moment from 'moment';
-
-const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
 
 export default class TestTable extends Component {
     state = {
@@ -40,6 +37,10 @@ export default class TestTable extends Component {
 
         const renderAction = (value, row, index) => {
             const { testId } = value;
+            let testResult = "N/A";
+            if (row && row[0]) {
+                testResult = row[0].testResult;
+            }
 
             return (
                 <span>
@@ -51,7 +52,10 @@ export default class TestTable extends Component {
                         <Tooltip title="Deep History"><HistoryOutlined /></Tooltip>
                     </Link>
                     {possibleIssues(row, value)}
-                    {gitIssue(row)}
+                    <Divider type="vertical" />
+                    <Link to={{ pathname: '/gitNewIssue', search: params({ testId, testResult, ...row }) }}>
+                        <Tooltip title="Create new issue at https://github.com/AdoptOpenJDK/openjdk-tests"> <GithubOutlined /></Tooltip>
+                    </Link>
                 </span>
             );
         }
@@ -71,43 +75,6 @@ export default class TestTable extends Component {
                     </span>
                 );
             }
-        };
-
-        const gitIssue = (value) => {
-            if (!testData) return;
-            const { key, testName, duration, buildId, buildName, buildUrl, machine, buildTimeStamp, javaVersion } = value;
-
-            let testResult = "N/A";
-            if (value && value[0]) {
-                testResult = value[0].testResult;
-            }
-            const buildStartTime = moment(buildTimeStamp).format(DAY_FORMAT);
-
-            const title = `${testName} ${testResult} in ${buildName}`;
-            const nl = "\n";
-            const body = `**Test Info**${nl}`
-                + `Test Name: ${testName}${nl}`
-                + `Test Duration: ${renderDuration(duration)}${nl}`
-                + `Machine: ${machine}${nl}`
-                + `TRSS link for the test output: https://trss.adoptopenjdk.net/output/test${params({ id: key })}${nl}`
-                + `${nl}${nl}`
-                + `**Build Info**${nl}`
-                + `Build Name: ${buildName}${nl}`
-                + `Jenkins Build start time: ${buildStartTime}${nl}`
-                + `Jenkins Build URL: ${buildUrl}${nl}`
-                + `TRSS link for the build: https://trss.adoptopenjdk.net/allTestsInfo${params({ buildId: buildId })}${nl}`
-                + `${nl}${nl}`
-                + `**Java Version**${nl}`
-                + `${javaVersion}${nl}`;
-
-
-            const urlParams = params({ title, body });
-            return (
-                <span>
-                    <Divider type="vertical" />
-                    <Tooltip title="Create new issue at https://github.com/AdoptOpenJDK/openjdk-tests"><a href={`https://github.com/AdoptOpenJDK/openjdk-tests/issues/new${urlParams}`} target="_blank" rel="noopener noreferrer"><GithubOutlined /></a></Tooltip>
-                </span>
-            );
         };
 
         let columns = [{

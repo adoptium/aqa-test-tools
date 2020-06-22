@@ -1,14 +1,15 @@
 const { TestResultsDB, ObjectID } = require( '../Database' );
 module.exports = async ( req, res ) => {
-    const { testId, limit } = req.query;
+    const { testId, limit, beforeTimestamp } = req.query;
     const db = new TestResultsDB();
     const data = await db.getTestById( testId );
+    let query = {};
+    query.buildName = data[0].buildName;
+    query.type = data[0].type;
+    if (beforeTimestamp) { query.timestamp = { $lt: parseInt(beforeTimestamp) } }
     const history = await db.aggregate( [
         {
-            $match: {
-                "buildName": data[0].buildName,
-                "type": data[0].type,
-            }
+            $match: query
         },
         { $limit: parseInt( limit, 10 ) },
         { $unwind: "$tests" },
@@ -25,7 +26,8 @@ module.exports = async ( req, res ) => {
                 machine: 1,
                 buildUrl: 1,
                 tests: 1,
-                timestamp: 1
+                timestamp: 1,
+                javaVersion: 1,
             }
         },
         { $sort: { 'buildNum': -1 } },
