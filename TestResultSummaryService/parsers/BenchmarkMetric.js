@@ -90,16 +90,17 @@ const BenchmarkMetricRegex = {
             },
         }
     },
-    LibertyStartup: {
+    "liberty-dt7-startup": {
+    	//Example: Warm run 0...
         outerRegex: /Warm run \d*([\s\S\n]*)/,
         metrics: { 
-            "Footprint in kb":{
+            "Footprint":{
                 //Example: Footprint (kb)=168940
                 regex: /Footprint \(kb\)=(\d*\.?\d*)/,
                 higherbetter: false,
                 units: "kb",
             },
-            "Startup time in ms":{
+            "Startup time":{
                 //Example: Startup time: 7828
                 regex: /Startup time: (\d*\.?\d*)/,
                 higherbetter: false,
@@ -107,6 +108,24 @@ const BenchmarkMetricRegex = {
             },
         }
     },
+    "liberty-dt7-throughput": {
+    	//Example: Running 1 measures...
+        outerRegex: /Running \d* measures([\s\S\n]*)/,
+        metrics: { 
+            "Footprint":{
+                //Example: Footprint (kb)=168940
+                regex: /Footprint \(kb\)=(\d*\.?\d*)/,
+                higherbetter: false,
+                units: "kb",
+            },
+            "Throughput":{
+                //Example: Page throughput = 2923.0 /s
+                regex: /Page throughput = (\d*\.?\d*)/,
+                higherbetter: true,
+                units: "req/sec",
+            },
+        }
+    },    
     renaissance: {
         metrics: { 
             "Response Time":{
@@ -248,7 +267,7 @@ const BenchmarkMetricRegex = {
     },
     "pingperf-quarkus-baremetal_throughput": {
         outerRegex:/Running \d*? measures([\s\S\n]*)/, 
-        //execlude warmup runs from getting parsed
+        //exclude warmup runs from getting parsed
         metrics: {
             "Throughput": {
                 //Example: Requests/sec: 100522.45/
