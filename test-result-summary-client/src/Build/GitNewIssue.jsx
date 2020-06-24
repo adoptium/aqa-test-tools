@@ -78,7 +78,7 @@ export default class GitNewissue extends Component {
             + `${javaVersion}${nl}`
             + ((!firstSeenFailure) ? `` : (
                 `${nl}${nl}`
-                + `**This test has been failed ${failCount} times since ${moment(firstSeenFailure.timestamp).format(DAY_FORMAT)} **${nl}`
+                + `**This test has been failed ${failCount} times since ${moment(firstSeenFailure.timestamp).format(DAY_FORMAT)}**${nl}`
                 + `**Java Version when the issue first seen**${nl}`
                 + `${firstSeenFailure.javaVersion}${nl}`
                 + `Jenkins Build URL: ${firstSeenFailure.buildUrl}${nl}${nl}`
