@@ -55,6 +55,9 @@ export default class PerfCompare extends Component {
         	inputURL[url] = urlData[url];
         }
         await this.setState({inputURL: inputURL});
+        if(this.state.inputURL){
+            await this.handleParseInputURL();
+        }
     }
 
     handleChange(event) {
