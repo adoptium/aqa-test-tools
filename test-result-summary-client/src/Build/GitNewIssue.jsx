@@ -5,6 +5,7 @@ import TestBreadcrumb from './TestBreadcrumb';
 import { GithubOutlined } from '@ant-design/icons';
 import { getParams } from '../utils/query';
 import renderDuration from './Duration';
+import { getGitDiffLinks } from '../utils/Utils';
 
 import './table.css';
 
@@ -27,16 +28,17 @@ export default class GitNewissue extends Component {
 
         let firstSeenFailure = null;
         let failCount = 0;
-        let failMachineUrlBody = '';
+        let failMachineUrlBody = '', gitDiffLinksBody = '';
 
         if (testResult === 'FAILED') {
+            let successBeforeFailure, gitDiffLinks = null;
+            let machinesMap = {};
+
             // get all history tests with strictly earlier timestamp
             const fetchPreviousTests = await fetch(`/api/getHistoryPerTest?testId=${testId}&beforeTimestamp=${buildTimeStamp}&limit=100`, {
                 method: 'get'
             });
             const response = await fetchPreviousTests.json();
-
-            let machinesMap = {};
 
             // add the current test result
             machinesMap[machine] = 1;
@@ -46,12 +48,24 @@ export default class GitNewissue extends Component {
                 const previousResult = response[i].tests.testResult;
                 const previousMachine = response[i].machine;
                 if (previousResult === 'PASSED') {
+                    successBeforeFailure = response[i];
                     break;
                 } else {
                     firstSeenFailure = response[i];
                     machinesMap[previousMachine] = machinesMap[previousMachine] ? machinesMap[previousMachine] + 1 : 1;
                     failCount++;
                 }
+            }
+
+            if (successBeforeFailure) {
+                if (firstSeenFailure) {
+                    gitDiffLinks = getGitDiffLinks(successBeforeFailure.javaVersion, firstSeenFailure.javaVersion, buildName);
+                } else {
+                    gitDiffLinks = getGitDiffLinks(successBeforeFailure.javaVersion, javaVersion, buildName);
+                }
+                gitDiffLinks.forEach(link => {
+                    gitDiffLinksBody += `${link}\n`;
+                });
             }
 
             Object.entries(machinesMap).forEach(([key, value]) => {
@@ -83,7 +97,8 @@ export default class GitNewissue extends Component {
                 + `${firstSeenFailure.javaVersion}${nl}`
                 + `Jenkins Build URL: ${firstSeenFailure.buildUrl}${nl}${nl}`
                 + failMachineUrlBody
-            ));
+            ))
+            + (gitDiffLinksBody ? `${nl}**Git Diff of first seen failure and last success**${nl}` + gitDiffLinksBody : ``);
 
         this.setState({
             body,

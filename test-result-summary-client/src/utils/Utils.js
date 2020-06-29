@@ -11,3 +11,37 @@ export const getInfoFromBuildName = (buildName) => {
     }
     return null;
 }
+
+export const getGitDiffLinks = (before, after, buildName) => {
+    const { jdkVersion } = getInfoFromBuildName(buildName);
+    const diffLinks = {
+        "OpenJ9": "https://github.com/eclipse/openj9/compare/",
+        "OMR": "https://github.com/eclipse/omr/compare/",
+        "IBM": "<IBM_REPO>/compare/",
+        "JCL": `https://github.com/ibmruntimes/openj9-openjdk-jdk${jdkVersion}/compare/`, 
+    }
+    let ret = [];
+
+    Object.entries(diffLinks).forEach(([key, value]) => {
+        const beforeSHA = getSHA(key, before);
+        const afterSHA = getSHA(key, after);
+        if (beforeSHA && afterSHA && beforeSHA !== afterSHA) {
+            ret.push(value + `${beforeSHA}...${afterSHA}`);
+        }
+    });
+
+    return ret;
+}
+
+const getSHA = (type, javaVersion) => {
+    const SHARegex = new RegExp(type + "\\s+-\\s+([^\\)\\s\\n]*)");
+    let m;
+    if ((m = javaVersion.match(SHARegex)) !== null) {
+        if (m[1].includes('_')) {
+            return null;
+        } else {
+            return m[1];
+        }
+    }
+    return null;
+}
