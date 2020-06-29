@@ -1,5 +1,5 @@
 {
-    "jdkVersion" : "openjdk8", 
+    "jdkVersion" : "openjdk11", 
     "jvmType" : "j9", 
     "testSdkResource" : "nightly", 
     "baselineSdkResource" : "releases",

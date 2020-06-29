@@ -106,6 +106,7 @@ export default class TabularView extends Component {
 
         await this.showData('test');
         await this.showData('baseline');
+        await this.populateCompTable();
      }
     // Get all dropdown values from database
     async updateDropdown () {
@@ -263,6 +264,7 @@ export default class TabularView extends Component {
     async handleSubmit(event) {
         await this.showData('test');
         await this.showData('baseline');
+        await this.populateCompTable();
         event.preventDefault();
         
         // Update URL with current state
@@ -272,7 +274,6 @@ export default class TabularView extends Component {
         + '&baselineSdkResource=' + this.state.baselineSdkResource + '&baselineBuildServer=' + this.state.baselineBuildServer;
 
         window.history.replaceState(null, '', newPath);
-        window.location.reload(false);
     }
     // Helper function to get value from benchmark entry
     handleProp (val, field) {
@@ -540,7 +541,7 @@ export default class TabularView extends Component {
                 const metricPropsJSON = await getBenchmarkMetricProps(benchmark);
                 if(metricPropsJSON){
                     this.metricsProps[benchmark] = metricPropsJSON;
-                    metricProps = metricPropsJSON.metric;
+                    metricProps = metricPropsJSON[metric];
                 }
             } else {
                 metricProps = this.metricsProps[benchmark][metric];
@@ -603,6 +604,8 @@ export default class TabularView extends Component {
     }
     // Main function to fetch data from backend and call the function to populate the displayed table
     showData = async (type) => {
+        this.setState({platforms:[]});
+        this.setState({columns:[], originalColumns: []});
         let tabularData;
         if (type === 'test') {
             tabularData = await fetch( `/api/getTabularData?jdkVersion=${this.state.testJdkVersion}&jvmType=${this.state.testJvmType}&jdkDate=${this.state.testJdkDate}
@@ -622,8 +625,6 @@ export default class TabularView extends Component {
         }
         const platformArray = [...new Set([...this.state.platforms,...(info.pop().map(getPlatform))])];
         this.setState({platforms:platformArray});
-
-        this.generateColumns(this.state.platforms);
     
         const platformFilter = [];
         for (let platform in this.state.platforms) {
@@ -631,8 +632,7 @@ export default class TabularView extends Component {
         }
         this.setState({platformFilter: platformFilter});
         this.populateTable(info, type);
-        
-        await this.populateCompTable();
+        this.generateColumns(this.state.platforms);
     }
 
     render() {
