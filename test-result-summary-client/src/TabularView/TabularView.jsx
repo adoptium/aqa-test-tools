@@ -734,6 +734,7 @@ export default class TabularView extends Component {
             showPaginationBottom={false}
             showPageSizeOptions={false}
             minRows={0}
+            pageSize={this.state.consolidatedData.length}
         />
         <br/>
         <ReactTable
