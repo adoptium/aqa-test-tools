@@ -8,7 +8,7 @@ import './table.css';
 export default class PossibleIssues extends Component {
     state = {
         error: null,
-        dataSource: [],
+        dataSource: {},
     };
 
     async componentDidMount() {
@@ -29,12 +29,16 @@ export default class PossibleIssues extends Component {
         });
         if (response.ok) {
             const relatedIssues = await response.json();
-            let dataSource = [];
+            let dataSource = {};
+            const repoUrlAPIPrefix = "https://api.github.com/repos/";
             for (let index = 0; index < relatedIssues.items.length; index++) {
-                dataSource.push({
-                    key: index,
-                    issues: <a href={relatedIssues.items[index].html_url} target="_blank" rel="noopener noreferrer">{relatedIssues.items[index].title}</a> 
-                }); 
+                const repoName = relatedIssues.items[index].repository_url.replace(repoUrlAPIPrefix, "");
+                const issue = <a href={relatedIssues.items[index].html_url} target="_blank" rel="noopener noreferrer">{relatedIssues.items[index].title}</a>;
+                dataSource[repoName] = dataSource[repoName] || [];
+                dataSource[repoName].push({
+                    key: dataSource[repoName].length,
+                    issue
+                });
             }
             this.setState({
                 dataSource
@@ -55,17 +59,23 @@ export default class PossibleIssues extends Component {
         } else {
             const columns = [{
                 title: 'Possible Issues',
-                dataIndex: 'issues',
-                key: 'issues',
+                dataIndex: 'issue',
+                key: 'issue',
             }];
+
             return <div>
                 <TestBreadcrumb buildId={buildId} testId={testId} testName={testName} />
-                <Table
-                    columns={columns}
-                    dataSource={dataSource}
-                    bordered
-                    title={() => testName}
-                />
+                {
+                    Object.keys(dataSource).map((repoName, index) => (
+                        <Table 
+                            key={index}
+                            columns={columns}
+                            dataSource={dataSource[repoName]}
+                            bordered
+                            title={() => repoName}
+                        />
+                    ))
+                }
             </div>
         }
     }
