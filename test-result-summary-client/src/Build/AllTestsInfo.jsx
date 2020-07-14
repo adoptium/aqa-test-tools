@@ -44,7 +44,7 @@ export default class Build extends Component {
         await Promise.all( buildIds.map( async buildId =>{
             const {testResult, parent} = await this.getTestResult(buildId, limitParam);
             testData = testData.concat(testResult);
-            if ( parents.length == 0 ) {
+            if ( parents.length === 0 ) {
                 parents = parent;
             }
         } ) );

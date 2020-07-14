@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { UserOutlined } from '@ant-design/icons';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
-import { Row, Input } from 'antd';
+import { Input } from 'antd';
 const FormItem = Form.Item;
 
 

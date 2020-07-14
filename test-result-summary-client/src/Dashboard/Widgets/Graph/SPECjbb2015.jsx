@@ -6,7 +6,7 @@ import {
 import DateRangePickers from '../DateRangePickers';
 import { Checkbox } from 'antd';
 import math from 'mathjs';
-import utils from './utils';
+import { parseSha } from './utils';
 
 const map = {
     "Daily-SPECjbb2015": "Daily-SPECjbb2015-pxa64 | multi_2grp_gencon",
@@ -179,8 +179,8 @@ export default class SPECjbb2015 extends Component {
             let prevJavaVersion = prevPoint ? prevPoint.additionalData[lengthPrev - 1].javaVersion : null;
             let ret = `${this.series.name}: ${this.y}<br/> Build: ${x.toISOString().slice( 0, 10 )} <br/>Link to builds: ${buildLinks}`;
 
-            prevJavaVersion = utils.parseSha(prevJavaVersion, 'OpenJ9');
-            javaVersion = utils.parseSha(javaVersion, 'OpenJ9');
+            prevJavaVersion = parseSha(prevJavaVersion, 'OpenJ9');
+            javaVersion = parseSha(javaVersion, 'OpenJ9');
 
             if (prevJavaVersion && javaVersion) {
                 let githubLink = `<a href="https://github.com/eclipse/openj9/compare/${prevJavaVersion}…${javaVersion}">Github Link </a>`;

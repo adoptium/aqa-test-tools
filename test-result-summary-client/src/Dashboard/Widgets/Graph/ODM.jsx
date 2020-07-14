@@ -6,7 +6,7 @@ import {
 import DateRangePickers from '../DateRangePickers';
 import { Radio } from 'antd';
 import math from 'mathjs';
-import utils from './utils';
+import { parseSha } from './utils';
 
 const map = {
     "Daily-ODM-all": "PerfNext-ODM-Child PerfNext-ODM-Parent Daily-ODM Daily-ODM-Linux-PPCLE64 Daily-ODM-openJ9 Daily-ODM-zLinux Daily-ODM-zOS"
@@ -149,8 +149,8 @@ export default class ODM extends Component {
             let prevPoint = i === 0 ? null : this.series.data[i - 1];
             this.point.additionalData.forEach(( xy, i ) => {
                 const { testId, parentId, buildName, buildNum, hasChildren } = xy;
-                let childBuildLinks = '' + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
-                let parentBuildLinks = '' + ` <a href="/buildDetail?parentId=${parentId}">${buildName} #${buildNum}</a>`
+                const childBuildLinks = ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
+                const parentBuildLinks = ` <a href="/buildDetail?parentId=${parentId}">${buildName} #${buildNum}</a>`
                 buildLinks = hasChildren ? parentBuildLinks : childBuildLinks;
             } );
 
@@ -169,8 +169,8 @@ export default class ODM extends Component {
             let validIterations = point.validIterations;
             let ret = `Test vs Baseline: ${math.round(this.y, 3)}%<br/> Build: ${x} <br/>Link to builds: ${ buildLinks }<br/>mean: ${mean}<br/>max: ${max}<br/>min: ${min}<br/>median: ${median}<br/>stddev: ${stddev}<br/>CI: ${CI}<br/>validIterations: ${validIterations}`;
 
-            prevJavaVersion = utils.parseSha(prevJavaVersion, 'OpenJ9');
-            javaVersion = utils.parseSha(javaVersion, 'OpenJ9');
+            prevJavaVersion = parseSha(prevJavaVersion, 'OpenJ9');
+            javaVersion = parseSha(javaVersion, 'OpenJ9');
 
             if (prevJavaVersion && javaVersion) {
                 let githubLink = `<a href="https://github.com/eclipse/openj9/compare/${prevJavaVersion}…${javaVersion}">Github Link </a>`;
