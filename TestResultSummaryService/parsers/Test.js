@@ -3,6 +3,8 @@ const regexRunningTest = /.*?Running test (.*?) \.\.\.\r?/;
 const regexFinishTime = /(.*?) Finish Time\: .* Epoch Time \(ms\)\: (\d+).*/;
 const regexStartTime = /(.*?) Start Time\: .* Epoch Time \(ms\)\: (\d+).*/;
 const TestBenchmarkParser = require( `./TestBenchmarkParser`);
+const ExternalTestParser = require( `./ExternalTestParser`);
+
 const Utils = require(`./Utils`);
 
 class Test extends Parser {
@@ -121,6 +123,11 @@ class Test extends Parser {
         if (isPerf) {
             results = TestBenchmarkParser.parsePerf(results);
             buildResult =  Utils.perfBuildResult(results);
+        }
+
+        const isExternal = ExternalTestParser.canParse(this.buildName);
+        if (isExternal) {
+            results = new ExternalTestParser().parseExternal(results);
         }
 
         return {

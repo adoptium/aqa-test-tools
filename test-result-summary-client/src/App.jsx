@@ -8,6 +8,7 @@ import { Dashboard } from './Dashboard/';
 import ErrorBoundary from './ErrorBoundary';
 import { Output } from './Build/Output/';
 import { TestCompare } from './TestCompare/';
+import { ThirdPartyAppView } from './ThirdPartyAppView/';
 import { PerfCompare } from './PerfCompare/';
 import { TabularView } from './TabularView/';
 import { AllTestsInfo, BuildDetail, DeepHistory, GitNewIssue, TestPerPlatform, PossibleIssues, TopLevelBuilds, ResultSummary } from './Build/';
@@ -52,6 +53,7 @@ export default class App extends Component {
                                 <Menu.Item key="sub3"><Link to="/tabularView">Tabular View</Link></Menu.Item>
                             </SubMenu>
                             <Menu.Item key="4"><Link to="/dashboard">Dashboard</Link></Menu.Item>
+                            <Menu.Item key="5"><Link to="/ThirdPartyAppView">Third Party Applications</Link></Menu.Item>
                         </Menu>
                     </Sider>
                     <Layout style={{ padding: '0 24px 24px' }}>
@@ -73,6 +75,7 @@ export default class App extends Component {
                                 <Route path="/possibleIssues" component={PossibleIssues} />
                                 <Route path="/searchResult" component={SearchResult} />
                                 <Route path="/resultSummary" component={ResultSummary} />
+                                <Route path="/ThirdPartyAppView" component={ThirdPartyAppView} />
                             </Content>
                         </ErrorBoundary>
                     </Layout>
