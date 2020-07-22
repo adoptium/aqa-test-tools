@@ -83,5 +83,15 @@ class Utils {
         }
         return buildResult;
     }
+
+    static getInfoFromBuildName( buildName ) {
+        const regex = /^Test_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl)?)(_.+)?$/i;
+        const tokens = buildName.match(regex);
+        if (Array.isArray(tokens) && tokens.length > 5) {
+            const [_, jdkVersion, jdkImpl, level, group, platform] = tokens;
+            return {jdkVersion, jdkImpl, level, group, platform};
+        }
+        return null;
+    }
 }
 module.exports = Utils;

@@ -251,6 +251,13 @@ class OutputDB extends Database {
     }
 }
 
+class ApplicationTestsDB extends Database {
+    constructor() {
+        super();
+        this.col = db.collection('ApplicationTests');
+    }
+}
+
 class BuildListDB extends Database {
     constructor() {
         super();
@@ -265,4 +272,4 @@ class AuditLogsDB extends Database {
     }
 }
 
-module.exports = { TestResultsDB, OutputDB, BuildListDB, AuditLogsDB, ObjectID };
+module.exports = { TestResultsDB, OutputDB, BuildListDB, ApplicationTestsDB, AuditLogsDB, ObjectID };
