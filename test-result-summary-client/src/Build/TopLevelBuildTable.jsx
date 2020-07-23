@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
-import { CheckOutlined, CloseOutlined, InfoOutlined, LoadingOutlined } from '@ant-design/icons';
-import { Table, Tooltip } from 'antd';
+import { CheckOutlined, CloseOutlined, InfoOutlined, LoadingOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { Table, Tooltip, Checkbox, Popconfirm } from 'antd';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
 import BuildLink from './BuildLink';
@@ -35,11 +35,12 @@ export default class TopLevelBuildTable extends Component {
         const builds = await fetchBuild.json();
 
         const buildInfo = builds.map(build => ({
-            key: build.buildUrl,
+            key: build._id,
             build: build,
             date: build.timestamp ? new Date(build.timestamp).toLocaleString() : null,
             startBy: build.startBy ? build.startBy : null,
             jenkins: build,
+            keepForever: build.keepForever ? build.keepForever : false
         }));
         this.setState({ buildInfo });
 
@@ -71,11 +72,28 @@ export default class TopLevelBuildTable extends Component {
         });
     };
 
+    handleKeepForverClick = async (record) => {
+        const { buildInfo } = this.state;
+        if (record.key) {
+            for (let build of buildInfo) {
+                if (build.key === record.key) {
+                    build.keepForever = !build.keepForever;
+                    await fetch(`/api/updateKeepForever?_id=${build.key}&keepForever=${build.keepForever}`, {
+                        method: 'get'
+                    });
+                    break;
+                }
+            }
+            await new Promise(r => setTimeout(r, 100));
+            this.setState({ buildInfo });
+        }
+    }
+
     render() {
         const { buildInfo } = this.state;
         const { buildName, url, type } = this.props;
         if (buildInfo) {
-            const renderFvTestBuild = (value, row, index) => {
+            const renderFvTestBuild = (value) => {
                 if (value && value.buildNum) {
                     let icon = "";
                     if (value.status !== "Done") {
@@ -209,7 +227,25 @@ export default class TopLevelBuildTable extends Component {
                 sorter: (a, b) => {
                     return a.date.localeCompare(b.date);
                 }
-            }];
+            }, {
+                title: 'Keep Forever',
+                dataIndex: 'keepForever',
+                key: 'keepForever',
+                render: (value, record) => {
+                    return <Popconfirm
+                        title={value ? "Unchecking 'keep forever' means the build results will be deleted once max # of builds to keep is reached. Uncheck?" : "Keep this build forever?"}
+                        onConfirm={() => this.handleKeepForverClick(record)}
+                        icon={<QuestionCircleOutlined style={{ color: 'red' }} />}
+                        okText="Yes"
+                        cancelText="No"
+                        okType="default"
+                        cancelButtonProps={{ type: 'primary' }}
+                    >
+                        <Checkbox checked={value}></Checkbox>
+                    </Popconfirm>
+                }
+            }
+            ];
 
             return <Table
                 columns={columns}
