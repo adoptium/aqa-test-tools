@@ -10,6 +10,7 @@ let db;
     await db.createCollection('testResults');
     await db.createCollection('output');
     await db.createCollection('auditLogs');
+    await db.createCollection('user');
 })()
 
 class Database {
@@ -272,4 +273,11 @@ class AuditLogsDB extends Database {
     }
 }
 
-module.exports = { TestResultsDB, OutputDB, BuildListDB, ApplicationTestsDB, AuditLogsDB, ObjectID };
+class UserDB extends Database {
+    constructor() {
+        super();
+        this.col = db.collection('user');
+    }
+}
+
+module.exports = { TestResultsDB, OutputDB, BuildListDB, ApplicationTestsDB, AuditLogsDB, UserDB, ObjectID };

@@ -37,6 +37,10 @@ app.get( '/getTotals', wrap( require( "./getTotals" ) ) );
 app.get( '/populateDB', wrap( require( "./populateDB" ) ) );
 app.get( '/updateComments', wrap( require( "./updateComments" ) ) );
 
+// jwt
+app.post( '/auth/register', wrap( require( "./jwt/register" ) ) );
+app.post( '/auth/verify', wrap( require( "./jwt/verify" ) ) );
+
 app.post( '/getParentSpecificData', wrap( require( "./getParentSpecificData" ) ) );
 app.post( '/getSpecificData', wrap( require( "./getSpecificData" ) ) );
 app.post( '/upsertBuildList', wrap( require( "./upsertBuildList" ) ) );
