@@ -35,7 +35,9 @@ app.get( '/getTestPerPlatform', wrap( require( "./getTestPerPlatform" ) ) );
 app.get( '/getTopLevelBuildNames', wrap( require( "./getTopLevelBuildNames" ) ) );
 app.get( '/getTotals', wrap( require( "./getTotals" ) ) );
 app.get( '/populateDB', wrap( require( "./populateDB" ) ) );
+
 app.get( '/updateComments', wrap( require( "./updateComments" ) ) );
+app.get( '/updateKeepForever', wrap( require( "./updateKeepForever" ) ) );
 
 // jwt
 app.post( '/auth/register', wrap( require( "./jwt/register" ) ) );

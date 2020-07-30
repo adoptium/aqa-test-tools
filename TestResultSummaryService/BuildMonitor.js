@@ -49,6 +49,7 @@ class BuildMonitor {
                     status = "Streaming";
                     logger.info(`Set build ${url} ${buildName} ${buildNum} status to Streaming `);
                 }
+                const keepForever = false;
                 const buildData = {
                     url,
                     buildName,
@@ -57,6 +58,7 @@ class BuildMonitor {
                     buildResult: allBuilds[i].result ? allBuilds[i].result : null,
                     timestamp: allBuilds[i].timestamp ? allBuilds[i].timestamp : null,
                     type: type === "FVT" ? "Test" : type,
+                    keepForever,
                     status,
                 };
                 const _id = await new DataManager().createBuild(buildData);
@@ -66,6 +68,7 @@ class BuildMonitor {
                     url,
                     buildName,
                     buildNum,
+                    keepForever,
                     status,
                 });
             } else {
@@ -105,8 +108,7 @@ class BuildMonitor {
         const { buildName, url } = this.getBuildInfo(buildUrl);
         // keep only limited builds in DB and delete old builds
         const testResults = new TestResultsDB();
-        const allBuildsInDB = await testResults.getData({ url, buildName }).sort({ buildNum: 1 }).toArray();
-
+        const allBuildsInDB = await testResults.getData({ url, buildName, keepForever: { $ne: true } }).sort({ buildNum: 1 }).toArray();
         if (allBuildsInDB && allBuildsInDB.length > numBuildsToKeep) {
             const endIndex = Math.max(0, allBuildsInDB.length - numBuildsToKeep);
             await Promise.all(allBuildsInDB.slice(0, endIndex).map(async (build) => {
