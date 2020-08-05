@@ -66,6 +66,16 @@ class Parser {
         return machine;
     }
 
+    extractRerunLink (output) {
+        let m;
+        let rerunLink = null;
+        const rerunLinkRegex = /Rerun in Grinder: (.*?)\n/;
+        if ( ( m = rerunLinkRegex.exec( output ) ) !== null ) {
+            rerunLink = m[1];
+        }
+        return rerunLink;
+    }
+
     extractTestSummary( output ) {
         let m;
         let total = 0;

@@ -24,7 +24,7 @@ export default class GitNewissue extends Component {
 
     async updateData() {
         const { testId, testName, duration, buildId, buildName,
-            buildUrl, machine, buildTimeStamp, javaVersion, testResult } = getParams(this.props.location.search);
+            buildUrl, machine, buildTimeStamp, javaVersion, testResult, rerunLink } = getParams(this.props.location.search);
 
         let firstSeenFailure = null;
         let failCount = 0;
@@ -98,7 +98,8 @@ export default class GitNewissue extends Component {
                 + `Jenkins Build URL: ${firstSeenFailure.buildUrl}${nl}${nl}`
                 + failMachineUrlBody
             ))
-            + (gitDiffLinksBody ? `${nl}**Git Diff of first seen failure and last success**${nl}` + gitDiffLinksBody : ``);
+            + (gitDiffLinksBody ? `${nl}**Git Diff of first seen failure and last success**${nl}` + gitDiffLinksBody : ``)
+            + (rerunLink ? `${nl}[Rerun in Grinder](${rerunLink})` : ``);
 
         this.setState({
             body,
@@ -124,7 +125,7 @@ export default class GitNewissue extends Component {
                         </a>
                     </Tooltip>
                 }>
-                    <pre>{body}</pre>
+                    <pre className="card-body">{body}</pre>
                 </Card>
             </div>
         );
