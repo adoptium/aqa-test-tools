@@ -25,6 +25,7 @@ class Test extends Parser {
         tests.testSummary = this.extractTestSummary(output);
         tests.startBy = this.extractStartedBy(output);
         tests.artifactory = this.extractArtifact(output);
+        tests.rerunLink = this.extractRerunLink(output);
         return tests;
     }
 
