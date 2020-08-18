@@ -45,7 +45,7 @@ export class DayTrader7Setting extends Component {
 
 export default class DayTrader7 extends Component {
     static Title = props => map[props.buildSelected] || '';
-    static defaultSize = { w: 2, h: 4 }
+    static defaultSize = { w: 4, h: 4 }
     static Setting = DayTrader7Setting;
     static defaultSettings = {
         buildSelected: Object.keys(map)[0]
@@ -189,7 +189,7 @@ export default class DayTrader7 extends Component {
     render() {
         const { displaySeries } = this.state;
         return <HighchartsStockChart>
-            <Chart zoomType="x" height="50%" />
+            <Chart zoomType="x" height="40%" />
 
             <Legend />
             <Tooltip formatter={this.formatter} useHTML={true} style={{ pointerEvents: 'auto' }} />
