@@ -86,10 +86,6 @@ export default class Build extends Component {
                     sortMachine: builds[0].machine,
                     buildName: buildData[0].buildName,
                     buildId: buildData[0]._id,
-                    buildUrl: buildData[0].buildUrl,
-                    buildTimeStamp: buildData[0].timestamp,
-                    javaVersion: buildData[0].javaVersion,
-                    rerunLink: buildData[0].rerunLink
                 };
                 ret.action = {
                     testId: test._id,
