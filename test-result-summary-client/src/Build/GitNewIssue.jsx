@@ -23,8 +23,21 @@ export default class GitNewissue extends Component {
     }
 
     async updateData() {
-        const { testId, testName, duration, buildId, buildName,
-            buildUrl, machine, buildTimeStamp, javaVersion, testResult, rerunLink } = getParams(this.props.location.search);
+        const { testId, buildId } = getParams(this.props.location.search);
+
+        // fetch test data
+        const fetchTestData = await fetch(`/api/getTestById?id=${testId}`, {
+            method: 'get'
+        });
+        const testData = await fetchTestData.json();
+        const { testName, duration, testResult } = testData;
+
+        // fetch build data
+        const fetchBuildData = await fetch(`/api/getData?_id=${buildId}`, {
+            method: 'get'
+        });
+        const buildData = await fetchBuildData.json();
+        const { buildName, buildUrl, machine, timestamp, javaVersion, rerunLink } = buildData[0];
 
         let firstSeenFailure = null;
         let failCount = 0;
@@ -35,7 +48,7 @@ export default class GitNewissue extends Component {
             let machinesMap = {};
 
             // get all history tests with strictly earlier timestamp
-            const fetchPreviousTests = await fetch(`/api/getHistoryPerTest?testId=${testId}&beforeTimestamp=${buildTimeStamp}&limit=100`, {
+            const fetchPreviousTests = await fetch(`/api/getHistoryPerTest?testId=${testId}&beforeTimestamp=${timestamp}&limit=100`, {
                 method: 'get'
             });
             const response = await fetchPreviousTests.json();
@@ -73,33 +86,34 @@ export default class GitNewissue extends Component {
             });
         }
 
-        const buildStartTime = moment(parseInt(buildTimeStamp)).format(DAY_FORMAT);
+        const buildStartTime = moment(parseInt(timestamp)).format(DAY_FORMAT);
         const title = `${testName} ${testResult} in ${buildName}`;
         const nl = "\n";
-        const body = `**Test Info**${nl}`
+        const testInfo = (testName && duration && machine && testId) ? `**Test Info**${nl}`
             + `Test Name: ${testName}${nl}`
             + `Test Duration: ${renderDuration(duration)}${nl}`
             + `Machine: ${machine}${nl}`
             + `TRSS link for the test output: https://trss.adoptopenjdk.net/output/test${params({ id: testId })}${nl}`
-            + `${nl}${nl}`
-            + `**Build Info**${nl}`
+            + `${nl}${nl}` : ``;
+        const buildInfo = (buildName && buildStartTime && buildUrl && buildId) ? `**Build Info**${nl}`
             + `Build Name: ${buildName}${nl}`
             + `Jenkins Build start time: ${buildStartTime}${nl}`
             + `Jenkins Build URL: ${buildUrl}${nl}`
             + `TRSS link for the build: https://trss.adoptopenjdk.net/allTestsInfo${params({ buildId: buildId })}${nl}`
-            + `${nl}${nl}`
-            + `**Java Version**${nl}`
-            + `${javaVersion}${nl}`
-            + ((!firstSeenFailure) ? `` : (
-                `${nl}${nl}`
-                + `**This test has been failed ${failCount} times since ${moment(firstSeenFailure.timestamp).format(DAY_FORMAT)}**${nl}`
-                + `**Java Version when the issue first seen**${nl}`
-                + `${firstSeenFailure.javaVersion}${nl}`
-                + `Jenkins Build URL: ${firstSeenFailure.buildUrl}${nl}${nl}`
-                + failMachineUrlBody
-            ))
-            + (gitDiffLinksBody ? `${nl}**Git Diff of first seen failure and last success**${nl}` + gitDiffLinksBody : ``)
-            + (rerunLink ? `${nl}[Rerun in Grinder](${rerunLink})` : ``);
+            + `${nl}${nl}` : ``;
+        const javaVersionInfo = javaVersion ? `**Java Version**${nl}`
+            + `${javaVersion}${nl}` : ``;
+        const firstSeenFailureInfo = firstSeenFailure ? (
+            `${nl}${nl}`
+            + `**This test has been failed ${failCount} times since ${moment(firstSeenFailure.timestamp).format(DAY_FORMAT)}**${nl}`
+            + (firstSeenFailure.javaVersion ? `**Java Version when the issue first seen**${nl}`
+                + `${firstSeenFailure.javaVersion}${nl}` : ``)
+            + `Jenkins Build URL: ${firstSeenFailure.buildUrl}${nl}${nl}`
+            + failMachineUrlBody
+        ) : ``;
+        const gitDiffLinksBodyInfo = gitDiffLinksBody ? `${nl}**Git Diff of first seen failure and last success**${nl}` + gitDiffLinksBody : ``;
+        const rerunLinkInfo = rerunLink ? `${nl}[Rerun in Grinder](${rerunLink})` : ``;
+        const body = testInfo + buildInfo + javaVersionInfo + firstSeenFailureInfo + gitDiffLinksBodyInfo + rerunLinkInfo;
 
         this.setState({
             body,

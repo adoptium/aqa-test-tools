@@ -35,8 +35,9 @@ export default class TestTable extends Component {
             </div>;
         };
 
-        const renderAction = (value, row, index) => {
+        const renderAction = (value, row) => {
             const { testId } = value;
+            const { buildId } = row;
             let testResult = "N/A";
             if (row && row[0]) {
                 testResult = row[0].testResult;
@@ -53,7 +54,7 @@ export default class TestTable extends Component {
                     </Link>
                     {possibleIssues(row, value)}
                     <Divider type="vertical" />
-                    <Link to={{ pathname: '/gitNewIssue', search: params({ testId, testResult, ...row }) }}>
+                    <Link to={{ pathname: '/gitNewIssue', search: params({ testId, buildId }) }}>
                         <Tooltip title="Create new issue at https://github.com/AdoptOpenJDK/openjdk-tests"> <GithubOutlined /></Tooltip>
                     </Link>
                 </span>
