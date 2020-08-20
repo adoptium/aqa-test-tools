@@ -38,10 +38,6 @@ export default class TestTable extends Component {
         const renderAction = (value, row) => {
             const { testId } = value;
             const { buildId } = row;
-            let testResult = "N/A";
-            if (row && row[0]) {
-                testResult = row[0].testResult;
-            }
 
             return (
                 <span>
