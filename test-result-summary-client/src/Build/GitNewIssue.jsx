@@ -37,7 +37,10 @@ export default class GitNewissue extends Component {
             method: 'get'
         });
         const buildData = await fetchBuildData.json();
-        const { buildName, buildUrl, machine, timestamp, javaVersion, rerunLink } = buildData[0];
+        const { buildName, buildUrl, machine, timestamp, javaVersion } = buildData[0];
+        let { rerunLink } = buildData[0];
+
+        rerunLink = rerunLink.replace(/(\WTARGET=)([^&]*)/gi, '$1' + testName);
 
         let firstSeenFailure = null;
         let failCount = 0;
