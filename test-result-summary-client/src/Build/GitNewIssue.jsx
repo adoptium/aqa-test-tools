@@ -37,7 +37,7 @@ export default class GitNewissue extends Component {
             method: 'get'
         });
         const buildData = await fetchBuildData.json();
-        const { buildName, buildUrl, machine, timestamp, javaVersion } = buildData[0];
+        const { artifactory, buildName, buildUrl, machine, timestamp, javaVersion } = buildData[0];
         let { rerunLink } = buildData[0];
 
         rerunLink = rerunLink.replace(/(\WTARGET=)([^&]*)/gi, '$1' + testName);
@@ -115,8 +115,9 @@ export default class GitNewissue extends Component {
             + failMachineUrlBody
         ) : ``;
         const gitDiffLinksBodyInfo = gitDiffLinksBody ? `${nl}**Git Diff of first seen failure and last success**${nl}` + gitDiffLinksBody : ``;
-        const rerunLinkInfo = rerunLink ? `${nl}[Rerun in Grinder](${rerunLink})` : ``;
-        const body = testInfo + buildInfo + javaVersionInfo + firstSeenFailureInfo + gitDiffLinksBodyInfo + rerunLinkInfo;
+        const artifactoryinfo = artifactory? `${nl}${nl}[Artifacts](${artifactory})` : ``;
+        const rerunLinkInfo = rerunLink ? `${nl}${nl}[Rerun in Grinder](${rerunLink})` : ``;
+        const body = testInfo + buildInfo + javaVersionInfo + firstSeenFailureInfo + gitDiffLinksBodyInfo + artifactoryinfo + rerunLinkInfo;
 
         this.setState({
             body,

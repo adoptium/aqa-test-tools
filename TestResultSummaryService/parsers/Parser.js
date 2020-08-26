@@ -49,7 +49,7 @@ class Parser {
     extractArtifact( output ) {
         let m;
         let artifact = null;
-        const artifactRegex = /Deploying artifact: ?(.*?)[\r\n]/;
+        const artifactRegex = /Test output artifactory URL:'(.*?)'/;
         if ( ( m = artifactRegex.exec( output ) ) !== null ) {
             artifact = m[1].trim();
         }
