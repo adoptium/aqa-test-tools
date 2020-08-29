@@ -44,7 +44,7 @@ class DataManager {
         } else {
             const status = await outputDB.populateDB( { output } );
             if ( status && status.insertedCount === 1 ) {
-                return status.insertedIds[0];
+                return status.insertedId;
             }
         }
         return -1;
@@ -184,7 +184,7 @@ class DataManager {
             const status = await testResults.populateDB( data );
             if ( status && status.insertedCount === 1 ) {
                 logger.debug( "createBuild", data.buildName, data.buildNum );
-                return status.insertedIds[0];
+                return status.insertedId;
             }
             return -1;
         }

@@ -36,7 +36,7 @@ class Test extends Parser {
         let results = [];
         const readline = require('readline');
         const stream = require('stream');
-        let buf = new Buffer(str);
+        let buf = Buffer.from(str);
         let bufferStream = new stream.PassThrough();
         bufferStream.end(buf);
         let rl = readline.createInterface({

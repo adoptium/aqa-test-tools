@@ -5,7 +5,7 @@ const url = 'mongodb://' + credential + 'localhost:27017/exampleDb';
 
 let db;
 (async function () {
-    const dbConnect = await MongoClient.connect(url);
+    const dbConnect = await MongoClient.connect(url, { useUnifiedTopology: true });
     db = dbConnect.db("exampleDb");
     await db.createCollection('testResults');
     await db.createCollection('output');
@@ -15,7 +15,7 @@ let db;
 
 class Database {
     populateDB(data) {
-        return this.col.insert(data);
+        return this.col.insertOne(data);
     }
 
     getData(query, fields = {}) {
@@ -39,7 +39,7 @@ class Database {
     }
 
     update(criteria, update, options = {}) {
-        return this.col.update(criteria, update, options);
+        return this.col.updateOne(criteria, update, options);
     }
 
     deleteMany(fields) {
