@@ -177,10 +177,23 @@ class Database {
         if (level) buildNameRegex = `${buildNameRegex}${level}..*`;
         if (group) buildNameRegex = `${buildNameRegex}${group}_.*`;
         if (platform) buildNameRegex = `${buildNameRegex}${platform}.*`;
+
+        // remove * at the end of buildNameRegex
+        buildNameRegex = buildNameRegex.replace(/\*$/, '');
+
+        // when calculate test average duration, exclude Personal builds
+        buildNameRegex = buildNameRegex + `(?:(?!Personal).)*$`;
+
         const buildResultRegex = buildResult || 'SUCCESS|UNSTABLE';
 
         matchQuery.buildName = { $regex: buildNameRegex };
         matchQuery.buildResult = { $regex: buildResultRegex };
+        matchQuery.hasChildren = false;
+        matchQuery.tests = {
+            "$exists": true, 
+            "$ne": null
+        };
+
         // the aggregate order is important. Please change with caution
         const aggregateQuery = [
             { $match: matchQuery },
