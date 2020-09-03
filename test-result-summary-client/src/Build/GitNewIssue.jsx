@@ -32,6 +32,13 @@ export default class GitNewissue extends Component {
         const testData = await fetchTestData.json();
         const { testName, duration, testResult } = testData;
 
+        // fetch error in test output
+        const fetchErrorInOutput = await fetch(`/api/getErrorInOutput?id=${testData.testOutputId}`, {
+            method: 'get'
+        });
+        const errorInOutput = await fetchErrorInOutput.json();
+        const failureOutput = errorInOutput.output;
+
         // fetch build data
         const fetchBuildData = await fetch(`/api/getData?_id=${buildId}`, {
             method: 'get'
@@ -40,7 +47,9 @@ export default class GitNewissue extends Component {
         const { artifactory, buildName, buildUrl, machine, timestamp, javaVersion } = buildData[0];
         let { rerunLink } = buildData[0];
 
-        rerunLink = rerunLink.replace(/(\WTARGET=)([^&]*)/gi, '$1' + testName);
+        if (rerunLink) {
+            rerunLink = rerunLink.replace(/(\WTARGET=)([^&]*)/gi, '$1' + testName);
+        }
 
         let firstSeenFailure = null;
         let failCount = 0;
@@ -106,6 +115,8 @@ export default class GitNewissue extends Component {
             + `${nl}${nl}` : ``;
         const javaVersionInfo = javaVersion ? `**Java Version**${nl}`
             + `${javaVersion}${nl}` : ``;
+        const failureOutputInfo = failureOutput ? `${nl}**Console Output**${nl}`
+            + `\`\`\`${nl}${failureOutput}${nl}\`\`\`` : ``;
         const firstSeenFailureInfo = firstSeenFailure ? (
             `${nl}${nl}`
             + `**This test has been failed ${failCount} times since ${moment(firstSeenFailure.timestamp).format(DAY_FORMAT)}**${nl}`
@@ -115,9 +126,9 @@ export default class GitNewissue extends Component {
             + failMachineUrlBody
         ) : ``;
         const gitDiffLinksBodyInfo = gitDiffLinksBody ? `${nl}**Git Diff of first seen failure and last success**${nl}` + gitDiffLinksBody : ``;
-        const artifactoryinfo = artifactory? `${nl}${nl}[Artifacts](${artifactory})` : ``;
+        const artifactoryinfo = artifactory ? `${nl}${nl}[Artifacts](${artifactory})` : ``;
         const rerunLinkInfo = rerunLink ? `${nl}${nl}[Rerun in Grinder](${rerunLink})` : ``;
-        const body = testInfo + buildInfo + javaVersionInfo + firstSeenFailureInfo + gitDiffLinksBodyInfo + artifactoryinfo + rerunLinkInfo;
+        const body = testInfo + buildInfo + javaVersionInfo + failureOutputInfo + firstSeenFailureInfo + gitDiffLinksBodyInfo + artifactoryinfo + rerunLinkInfo;
 
         this.setState({
             body,
