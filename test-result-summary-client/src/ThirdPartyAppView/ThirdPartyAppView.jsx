@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
-import { Table, Tooltip, Input, Button, Space } from 'antd';
-import Highlighter from 'react-highlight-words';
-import { InfoCircleOutlined, SearchOutlined } from '@ant-design/icons';
+import { Table, Tooltip } from 'antd';
+import { InfoCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
 import { getColumnSearchProps } from '../utils/TableUtils';

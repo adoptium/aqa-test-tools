@@ -140,8 +140,8 @@ export default class AcemeairNodejs extends Component {
             let buildLinks = '';
             this.point.additionalData.forEach(( xy, i ) => {
                 const { testId, parentId, buildName, buildNum, hasChildren } = xy;
-                const childBuildLinks = '' + ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
-                const parentBuildLinks = '' + ` <a href="/buildDetail?parentId=${parentId}">${buildName} #${buildNum}</a>`
+                const childBuildLinks = ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
+                const parentBuildLinks = ` <a href="/buildDetail?parentId=${parentId}">${buildName} #${buildNum}</a>`
                 buildLinks = hasChildren ? parentBuildLinks : childBuildLinks;
             } );
             const lengthThis = this.point.additionalData.length;
