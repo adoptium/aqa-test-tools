@@ -76,6 +76,44 @@ class Parser {
         return rerunLink;
     }
 
+    extractSha (output) {
+        let m;
+        let releaseInfo = null;
+        let openjdkSha = null;
+        let openJ9Sha = null;
+        let omrSha = null;
+        let versions = {};
+
+        const releaseInfoRegex = /=RELEASE INFO BEGIN=\n[\s\S]*?SOURCE="(.*)"[\s\S]*?=RELEASE INFO END=/;
+        const generalOpenjdkShaRegex = /git:(.*)/;
+        const openjdkShaRegex = /OpenJDK:\s?([^\s\:]*)/;
+        const j9AndOmrShaRegex = /OpenJ9:\s?([^\s\:]*).*OMR:\s?([^\s\:]*)/;
+
+        if ( ( m = releaseInfoRegex.exec( output ) ) !== null ) {
+            releaseInfo = m[1];
+
+            if ( ( m = generalOpenjdkShaRegex.exec( releaseInfo ) ) !== null ) {
+                openjdkSha = m[1];
+            } else if ( ( m = openjdkShaRegex.exec( releaseInfo ) ) !== null ) {
+                openjdkSha = m[1];
+            }
+
+            if ( ( m = j9AndOmrShaRegex.exec( releaseInfo ) ) !== null ) {
+                openJ9Sha = m[1];
+                omrSha = m[2];
+            }
+        }
+        
+        if (openjdkSha) {
+            versions.openjdkSha = openjdkSha
+        }
+        if (openJ9Sha && omrSha) {
+            versions.openJ9Sha = openJ9Sha;
+            versions.omrSha = omrSha;
+          }
+        return versions;
+    }
+
     extractTestSummary( output ) {
         let m;
         let total = 0;
