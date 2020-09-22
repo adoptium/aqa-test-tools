@@ -55,7 +55,8 @@ class EventHandler {
         while ( true ) {
             try {
                 const testResults = new BuildListDB();
-                const tasks = await testResults.getData().toArray();
+                let tasks = await testResults.getData().toArray();
+                tasks = tasks.filter(task => task.monitoring === 'Yes');
                 if ( tasks && tasks.length > 0 ) {
                     for ( let task of tasks ) {
                         try {

@@ -111,9 +111,7 @@ class BuildMonitor {
         const allBuildsInDB = await testResults.getData({ url, buildName, keepForever: { $ne: true } }).sort({ buildNum: 1 }).toArray();
         if (allBuildsInDB && allBuildsInDB.length > numBuildsToKeep) {
             const endIndex = Math.max(0, allBuildsInDB.length - numBuildsToKeep);
-            await Promise.all(allBuildsInDB.slice(0, endIndex).map(async (build) => {
-                await deleteBuildsAndChildrenByFields({ _id: build._id });
-            }));
+            return Promise.all(allBuildsInDB.slice(0, endIndex).map(build => deleteBuildsAndChildrenByFields({ _id: build._id })));
         }
     }
 
