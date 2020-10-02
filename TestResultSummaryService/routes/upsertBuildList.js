@@ -6,7 +6,7 @@ module.exports = async ( req, res ) => {
         const options = { upsert: true };
         await Promise.all( data.sort().map( async ( { key, _id, ...build } ) => {
             const criteria = { _id: new ObjectID( _id ) };
-            const update = build;
+            const update = { $set: build };
             await db.update( criteria, update, options );
         } ) );
         res.send( { error: false } );
