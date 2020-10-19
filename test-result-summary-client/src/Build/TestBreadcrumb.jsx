@@ -8,11 +8,13 @@ export default class TestBreadcrumb extends Component {
     async componentDidMount() {
         const { buildId } = this.props;
 
-        const fetchBuild = await fetch( `/api/getParents?id=${buildId} `, {
-            method: 'get'
-        } );
-        const builds = await fetchBuild.json();
-        this.setState( { builds } );
+        if (buildId) {
+            const fetchBuild = await fetch( `/api/getParents?id=${buildId} `, {
+                method: 'get'
+            } );
+            const builds = await fetchBuild.json();
+            this.setState( { builds } );
+        }
     }
     async componentDidUpdate( prevProps ) {
         if ( prevProps.buildId !== this.props.buildId ) {
