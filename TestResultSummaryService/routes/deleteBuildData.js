@@ -9,7 +9,7 @@ module.exports = async (req, res) => {
         return res.status(400).send({ message: "BuildUrl is missing" });
     } else {
         const buildMonitor = new BuildMonitor();
-        const task = { buildUrl, numBuildsToKeep: 0 };
+        const task = { buildUrl, numBuildsToKeep: 0, deleteForever: true };
 
         const result = await buildMonitor.deleteOldBuilds(task);
         if (result) {
