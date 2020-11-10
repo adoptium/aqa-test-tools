@@ -135,13 +135,15 @@ class BuildProcessor {
             task.status = "CurrentBuildDone";
 
             const output = await jenkinsInfo.getBuildOutput(task.url, task.buildName, task.buildNum);
-            task.output = output;
-            await new DataManager().updateBuildWithOutput(task);
-
-            await new AuditLogsDB().insertAuditLogs({
-                action: "[processBuild]: updateBuildWithOutput",
-                ...task
-            });
+            if (output) {
+                task.output = output;
+                await new DataManager().updateBuildWithOutput(task);
+    
+                await new AuditLogsDB().insertAuditLogs({
+                    action: "[processBuild]: updateBuildWithOutput",
+                    ...task
+                });
+            }
         } else if (!task.timestamp || !task.buildUrl) {
             await new DataManager().updateBuild({
                 _id: task._id,

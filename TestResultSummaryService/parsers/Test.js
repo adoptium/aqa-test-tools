@@ -9,12 +9,17 @@ const Utils = require(`./Utils`);
 
 class Test extends Parser {
     static canParse(buildName, output) {
-        if (buildName.indexOf("Test-") === 0) {
-            return true;
+        if (output) {
+            if (buildName.indexOf("Test-") === 0) {
+                return true;
+            } else {
+                return output.includes("Running test ");
+            }
         } else {
-            return output.includes("Running test ");
+            return false;
         }
     }
+
     async parse(output) {
         const tests = await this.extract(output);
         const {javaVersion, jdkDate, sdkResource} = this.exactJavaVersion(output);
