@@ -4,6 +4,7 @@ import { Col, Row, Switch } from 'antd';
 import TestBreadcrumb from '../TestBreadcrumb';
 import classnames from 'classnames';
 import Artifacts from './Artifacts';
+import AlertMsg from '../AlertMsg';
 import "./output.css";
 
 export default class Output extends Component {
@@ -61,9 +62,8 @@ export default class Output extends Component {
                     output: result.output,
                     result: info.buildResult
                 };
-            } else {
-                data = { error: true };
             }
+            data.error = info.error ? `${info.buildUrl}: ${info.error}` : "";
         }
 
         this.setState( { data, outputType } );
@@ -106,10 +106,9 @@ export default class Output extends Component {
     render() {
         const { data } = this.state;
         if ( data ) {
-            if ( data.error ) {
-                return "Cannot find output!";
+            if (data.error) {
+                return <AlertMsg error={data.error} />
             }
-
             return <div className="test-wrapper">
                 <TestBreadcrumb buildId={data.buildId} testId={data.testId} testName={data.name} />
                 {this.renderContent()}

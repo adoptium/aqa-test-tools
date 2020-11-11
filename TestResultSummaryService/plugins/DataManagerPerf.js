@@ -3,7 +3,7 @@ const { logger } = require( '../Utils' );
 
 
 module.exports.onBuildDone = async (task, { testResultsDB, logger }) => {
-    logger.debug("onBuildDone", task.buildName);
+    logger.debug("DataManagerPerf: onBuildDone:", task.buildName, task.buildNum);
     if ( task.type === "Perf" ) {
         if ( !task.aggregateInfo ) {
             let jdkDate, javaVersion, nodeRunDate, nodeVersion;

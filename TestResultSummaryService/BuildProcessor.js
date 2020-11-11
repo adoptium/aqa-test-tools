@@ -67,11 +67,11 @@ class BuildProcessor {
                             });
                             chunk = await logStream.next(startPtr);
                         } catch (e) {
-                            logger.error(e);
+                            logger.error("BuildProcessor: ", e.toString());
                             logger.error("Cannot get log stream ", task);
 
                             await new AuditLogsDB().insertAuditLogs({
-                                action: "[exception] " + e,
+                                action: "[exception] " + e.toString(),
                                 ...task
                             });
                         }
@@ -133,16 +133,27 @@ class BuildProcessor {
             task.buildDuration = buildInfo.duration;
             task.buildResult = buildInfo.result;
             task.status = "CurrentBuildDone";
-
-            const output = await jenkinsInfo.getBuildOutput(task.url, task.buildName, task.buildNum);
-            if (output) {
-                task.output = output;
-                await new DataManager().updateBuildWithOutput(task);
-    
+            let output = "";
+            let msg ="updateBuildWithOutput";
+            try {
+                output = await jenkinsInfo.getBuildOutput(task.url, task.buildName, task.buildNum);
+                if (output) {
+                    task.output = output;
+                    await new DataManager().updateBuildWithOutput(task);
+                } else {
+                    msg = "Cannot get the output";
+                    logger.warn(msg, task.url, task.buildName, task.buildNum);
+                    task.error = msg;
+                    await new DataManager().updateBuild(task);
+                }
                 await new AuditLogsDB().insertAuditLogs({
-                    action: "[processBuild]: updateBuildWithOutput",
+                    action: `[processBuild]: ${msg}`,
                     ...task
                 });
+            } catch (e) {
+                logger.warn(`BuildProcessor: processBuild(): Exception: ${e.toString()}`);
+                task.error = e.toString();
+                await new DataManager().updateBuild(task);
             }
         } else if (!task.timestamp || !task.buildUrl) {
             await new DataManager().updateBuild({

@@ -31,6 +31,7 @@ class JenkinsInfo {
     }
 
     async getAllBuilds(url, buildName) {
+        logger.debug("JenkinsInfo: getAllBuilds(): [CIServerRequest]", url, buildName);
         const newUrl = addCredential(this.credentails, url);
         const jenkins = jenkinsapi.init(newUrl, options);
         const all_builds = retry(jenkins.all_builds);
@@ -40,31 +41,33 @@ class JenkinsInfo {
 
     async getBuildOutput(url, buildName, buildNum) {
         logger.info("JenkinsInfo: getBuildOutput: ", url, buildName, buildNum);
-        try {
-            const logStream = new LogStream({
-                baseUrl: url,
-                job: buildName,
-                build: buildNum,
-            });
-            const size = await logStream.getSize();
+        const logStream = new LogStream({
+            baseUrl: url,
+            job: buildName,
+            build: buildNum,
+        });
+        const size = await logStream.getSize();
+        logger.debug("JenkinsInfo: getBuildOutput() is waiting for 5 secs after getSize()");
+        await Promise.delay(5 * 1000);
 
-            // Due to 1G string limit, only process the last 0.7G output for now
-            // ToDo: we need to update parser to handle segmented output
-            if (size > -1) {
-                const limit = Math.floor(0.7 * 1024 * 1024 * 1024);
-                const startPtr = size > limit ? size - limit : 0;
-                const output = await logStream.next(startPtr);
-                return output;
+        // Due to 1G string limit and possible OOM in CI server and/or TRSS, only query the output < 50M
+        // Regular output should be 2~3M. In rare cases, we get very large output
+        // ToDo: we need to update parser to handle segmented output
+        if (size > -1) {
+            const limit = Math.floor(50 * 1024 * 1024);
+            if (size < limit) {
+                return await logStream.next(0);
             } else {
-                logger.warn(`JenkinsInfo: getBuildOutput: The output size is ${size}. Cannot get build output`);
+                logger.debug(`JenkinsInfo: getBuildOutput(): Output size ${size} > size limit ${limit}`);
+                throw `Output size ${size} > size limit ${limit}`;
             }
-        } catch (e) {
-            logger.error("JenkinsInfo: getBuildOutput exception");
-            logger.error(e);
+        } else {
+            throw `Cannot get build output size: ${size}`;
         }
     }
 
     async getBuildInfo(url, buildName, buildNum) {
+        logger.debug("JenkinsInfo: getBuildInfo(): [CIServerRequest]", url, buildName, buildNum);
         const newUrl = addCredential(this.credentails, url);
         const jenkins = jenkinsapi.init(newUrl, options);
         const build_info = retry(jenkins.build_info);
@@ -73,6 +76,7 @@ class JenkinsInfo {
     }
 
     async getLastBuildInfo(url, buildName) {
+        logger.debug("JenkinsInfo: getLastBuildInfo(): [CIServerRequest]", url, buildName);
         const newUrl = addCredential(this.credentails, url);
         const jenkins = jenkinsapi.init(newUrl, options);
         const last_build_info = retry(jenkins.last_build_info);
