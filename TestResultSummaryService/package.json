@@ -6,7 +6,7 @@
   "scripts": {
     "test": "echo \"Error: no test specified! Configure in package.json\" && exit 1",
     "startFrontend": "nodemon frontend.js --configFile=./trssConf.json",
-    "startBackend": "nodemon backend.js --configFile=./trssConf.json",
+    "startBackend": "nodemon --max-old-space-size=6144 backend.js --configFile=./trssConf.json",
     "start": "npm-run-all --parallel startFrontend startBackend"
   },
   "repository": "",

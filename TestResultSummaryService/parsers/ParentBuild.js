@@ -7,7 +7,11 @@ const regexBuilds = /(\[(.*?)\])?Starting building: (.*?) ?#(\d*)/g;
 
 class ParentBuild extends Parser {
     static canParse( buildName, output ) {
-        return output.includes( "Starting building:" );
+        if (output) {
+            return output.includes( "Starting building:" );
+        } else {
+            return false;
+        }
     }
     parse( output ) {
         let openJ9Sha = null;

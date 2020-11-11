@@ -2,14 +2,15 @@ const Promise = require('bluebird');
 const jenkinsapi = require('jenkins-api');
 const { logger, addCredential } = require('./Utils');
 const ArgParser = require("./ArgParser");
+const LogStream = require('./LogStream');
 
-const options = { request: { timeout: 2000 } };
+const options = { request: { timeout: 30000 } };
 
 // Server connection may drop. If timeout, retry.
 const retry = fn => {
     const promise = Promise.promisify(fn);
     return async function () {
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 3; i++) {
             try {
                 return await promise.apply(null, arguments);
             } catch (e) {
@@ -38,11 +39,29 @@ class JenkinsInfo {
     }
 
     async getBuildOutput(url, buildName, buildNum) {
-        const newUrl = addCredential(this.credentails, url);
-        const jenkins = jenkinsapi.init(newUrl, options);
-        const console_output = retry(jenkins.console_output);
-        const { body } = await console_output(buildName, buildNum);
-        return body;
+        logger.info("JenkinsInfo: getBuildOutput: ", url, buildName, buildNum);
+        try {
+            const logStream = new LogStream({
+                baseUrl: url,
+                job: buildName,
+                build: buildNum,
+            });
+            const size = await logStream.getSize();
+
+            // Due to 1G string limit, only process the last 0.7G output for now
+            // ToDo: we need to update parser to handle segmented output
+            if (size > -1) {
+                const limit = Math.floor(0.7 * 1024 * 1024 * 1024);
+                const startPtr = size > limit ? size - limit : 0;
+                const output = await logStream.next(startPtr);
+                return output;
+            } else {
+                logger.warn(`JenkinsInfo: getBuildOutput: The output size is ${size}. Cannot get build output`);
+            }
+        } catch (e) {
+            logger.error("JenkinsInfo: getBuildOutput exception");
+            logger.error(e);
+        }
     }
 
     async getBuildInfo(url, buildName, buildNum) {
