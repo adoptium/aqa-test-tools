@@ -6,6 +6,7 @@ ArgParser.parse();
 
 const EventHandler = require( './EventHandler' );
 
+// running processBuild() and monitorBuild() in parallel
 setTimeout(() => {
     const handler = new EventHandler();
     handler.processBuild();

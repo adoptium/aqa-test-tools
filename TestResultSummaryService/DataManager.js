@@ -89,7 +89,7 @@ class DataManager {
     }
 
     async updateBuild( data ) {
-        logger.verbose( "updateBuild", data );
+        logger.verbose("updateBuild", data.buildName, data.buildNum);
         const { _id, buildName, ...newData } = data;
         const criteria = { _id: new ObjectID( _id ) };
         const testResults = new TestResultsDB();
