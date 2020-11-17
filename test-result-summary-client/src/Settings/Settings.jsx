@@ -138,20 +138,20 @@ export default class Settings extends Component {
             for ( let i = 0; i < data.length; i++ ) {
                 invalidRow = i + 1;
                 if ( !data[i].buildUrl ) {
-                    message.info( `Please provide a Build URL at Row ${invalidRow} and click the check mark!` );
+                    message.error( `Please provide a Build URL at Row ${invalidRow} and click the check mark!` );
                     return;
                 }
                 if (buildUrls.includes(data[i].buildUrl)) {
                     const formerRow= buildUrls.indexOf(data[i].buildUrl) + 1;
-                    message.info( `Duplicate Build URL found at Row ${formerRow} and ${invalidRow}`);
+                    message.error( `Duplicate Build URL found at Row ${formerRow} and ${invalidRow}`);
                     return;
                 }
                 if ( !data[i].type ) {
-                    message.info( `Please choose a Build Type at Row ${invalidRow}!` );
+                    message.error( `Please choose a Build Type at Row ${invalidRow}!` );
                     return;
                 }
                 if ( !data[i].numBuildsToKeep || !parseInt( data[i].numBuildsToKeep ) || parseInt( data[i].numBuildsToKeep ) < 0 ) {
-                    message.info( `Invalid # of Builds To Keep at Row ${invalidRow}! ${data[i].numBuildsToKeep}` );
+                    message.error( `Invalid # of Builds To Keep at Row ${invalidRow}! ${data[i].numBuildsToKeep}` );
                     return;
                 }
                 buildUrls.push(data[i].buildUrl);
