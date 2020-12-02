@@ -178,15 +178,15 @@ class Database {
         if (group) buildNameRegex = `${buildNameRegex}${group}_.*`;
         if (platform) buildNameRegex = `${buildNameRegex}${platform}.*`;
 
-        // remove * at the end of buildNameRegex
-        buildNameRegex = buildNameRegex.replace(/\*$/, '');
+        // remove .* at the end of buildNameRegex
+        buildNameRegex = buildNameRegex.replace(/\.\*$/, '');
 
         // when calculate test average duration, exclude Personal builds
-        buildNameRegex = buildNameRegex + `(?:(?!Personal).)*$`;
+        buildNameRegex = buildNameRegex + `(?:(?!_Personal).)*$`;
 
         const buildResultRegex = buildResult || 'SUCCESS|UNSTABLE';
 
-        matchQuery.buildName = { $regex: buildNameRegex };
+        matchQuery.buildName = { $regex: buildNameRegex, $options: 'i' };
         matchQuery.buildResult = { $regex: buildResultRegex };
         matchQuery.hasChildren = false;
         matchQuery.tests = {
