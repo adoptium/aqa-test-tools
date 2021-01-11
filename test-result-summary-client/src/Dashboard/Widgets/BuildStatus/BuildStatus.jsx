@@ -66,7 +66,7 @@ export default class BuildStatus extends Component {
     static Setting = BuildStatusSetting;
     static defaultSize = { w: 4, h: 4 }
     static defaultSettings = {
-        serverSelected: "OpenJ9"
+        serverSelected: "AdoptOpenJDK"
     }
 
     state = {
