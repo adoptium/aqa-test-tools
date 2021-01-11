@@ -8,9 +8,9 @@ class Parser {
     static canParse() { return false; }
 
     exactJavaVersion(output) {
-        const javaVersionRegex = /=JAVA VERSION OUTPUT BEGIN=\n([\s\S]*?)\n.*=JAVA VERSION OUTPUT END=/;
+        const javaVersionRegex = /=JAVA VERSION OUTPUT BEGIN=[\r\n]+([\s\S]*?)[\r\n]+.*=JAVA VERSION OUTPUT END=/;
         const javaBuildDateRegex = /\s([0-9]{4})(0[1-9]|1[012])(0[1-9]|[12][0-9]|3[01])/;
-        const sdkResourceRegex = /.*?SDK_RESOURCE\=(.*)[\r\n]/;
+        const sdkResourceRegex = /.*?SDK_RESOURCE\=(.*)[\r\n]+/;
         let curRegexResult = null;
         let javaVersion, jdkDate, sdkResource;
         if ( ( curRegexResult = javaVersionRegex.exec( output ) ) !== null ) {
@@ -69,7 +69,7 @@ class Parser {
     extractRerunLink (output) {
         let m;
         let rerunLink = null;
-        const rerunLinkRegex = /Rerun in Grinder: (.*?)\n/;
+        const rerunLinkRegex = /Rerun in Grinder: (.*?)[\r\n]+/;
         if ( ( m = rerunLinkRegex.exec( output ) ) !== null ) {
             rerunLink = m[1];
         }
@@ -99,7 +99,7 @@ class Parser {
     extractStartedBy( output ) {
         let m;
         let user = null;
-        const userRegex = /Started by ?(.*?)[\r\n]/;
+        const userRegex = /Started by ?(.*?)[\r\n]+/;
         if ( ( m = userRegex.exec( output ) ) !== null ) {
             user = m[1];
         }
