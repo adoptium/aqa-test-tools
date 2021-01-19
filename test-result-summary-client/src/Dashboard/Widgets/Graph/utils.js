@@ -16,3 +16,16 @@ export const parseSha = (str, sha) => {
     }
     return null;
 }
+
+export const getEpochTime = (str) => {
+	// str has the form "\syyyymmdd"
+	if (str.length === 9) {
+		let year = parseInt(str.slice(0, 5));
+		// UTC format has month 0 - 11
+		let month = parseInt(str.slice(5,7)) - 1; 
+		let day = parseInt(str.slice(7,9));
+		return Date.UTC(year,month,day); 
+	} else {
+		return null;
+	}
+}
