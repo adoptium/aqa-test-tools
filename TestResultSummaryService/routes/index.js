@@ -22,6 +22,7 @@ app.get( '/getErrorInOutput', wrap( require( "./getErrorInOutput" ) ) );
 app.get( '/getHistoryPerTest', wrap( require( "./getHistoryPerTest" ) ) );
 app.get( '/getJenkins', wrap( require( "./getJenkins" ) ) );
 app.get( '/getLastBuildInfo', wrap( require( "./getLastBuildInfo" ) ) );
+app.get( '/getLogStream', wrap( require( "./getLogStream" ) ) );
 app.get( '/getOutputById', wrap( require( "./getOutputById" ) ) );
 app.get( '/getOutputByTestInfo', wrap( require( "./getOutputByTestInfo" ) ) );
 app.get( '/getTestAvgDuration', wrap( require( "./getTestAvgDuration" ) ) );
