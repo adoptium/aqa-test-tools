@@ -14,12 +14,14 @@ const logger = new ( winston.Logger )( {
 
 const addCredential = (credentails, url) => {
     if (credentails) {
-        if (credentails.hasOwnProperty(url)) {
-            const user = encodeURIComponent(credentails[url].user);
-            const password = encodeURIComponent(credentails[url].password);
-            const tokens = url.split("://");
-            if (tokens.length == 2 && user && password) {
-                url = `${tokens[0]}://${user}:${password}@${tokens[1]}`;
+        for (const k in credentails) {
+            if (url.startsWith(k)) {
+                const user = encodeURIComponent(credentails[k].user);
+                const password = encodeURIComponent(credentails[k].password);
+                const tokens = url.split("://");
+                if (tokens.length == 2 && user && password) {
+                    return `${tokens[0]}://${user}:${password}@${tokens[1]}`;
+                }
             }
         }
     }
