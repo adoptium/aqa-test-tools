@@ -152,6 +152,28 @@ const BenchmarkMetricRegex = {
             },
         }
     },
+	dacapo: {
+		metrics: {
+			"eclipse":{
+				// DaCapo 9.12-MR1 eclipse PASSED in 75075 msec
+				regex: /DaCapo.*eclipse\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},
+			"h2":{
+				// DaCapo 9.12-MR1 h2 PASSED in 10295 msec
+				regex: /DaCapo.*h2\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},
+			"lusearch-fix":{
+				// DaCapo 9.12-MR1 lusearch-fix PASSED in 2597 msec
+				regex: /DaCapo.*lusearch-fix\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},
+		}
+	},
     ILOG_WODM: {
         metrics: {
             "Global Throughput":{
