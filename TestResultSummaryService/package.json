@@ -30,7 +30,7 @@
     "jenkins-api": "^0.3.1",
     "jsonwebtoken": "^8.5.1",
     "mathjs": "^5.10.3",
-    "mongodb": "^3.5.9",
+    "mongodb": "^3.6.3",
     "request": "^2.88.2",
     "winston": "^2.4.5"
   },
