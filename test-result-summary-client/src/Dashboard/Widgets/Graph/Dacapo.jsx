@@ -92,8 +92,8 @@ export default class Dacapo extends Component {
 
 		// combine results having the same JDK build date
 		results.forEach(( t, i ) => {
-			if ( t.buildResult !== "SUCCESS" ) return;
 			const jdkDate = t.jdkDate;	
+			if ( t.buildResult !== "SUCCESS" || !jdkDate ) return;
 			resultsByJDKBuild[jdkDate] = resultsByJDKBuild[jdkDate] || [];
 			t.tests.forEach(( test, i ) => {
 				let eclipse = null;
