@@ -1,0 +1,21 @@
+{
+  "name": "bugtool",
+  "version": "1.0.0",
+  "description": "Bug prediction tool",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "d3node-barchart": "0.0.6",
+    "ejs": "^2.7.4",
+    "express": "^4.17.1",
+    "express-validator": "^4.3.0",
+    "git-clone": "^0.1.0",
+    "highcharts": "^6.2.0",
+    "mongodb": "^2.2.36"
+  },
+  "author": "",
+  "license": "Apache License Version 2.0"
+}

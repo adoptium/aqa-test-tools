@@ -1,0 +1,124 @@
+<% include partials/header %>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/data.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js">
+	</script>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+
+<% if(result != undefined){ %>
+	<table id="datatable">
+	<tbody style="display:none">
+		<tr>
+			<th>Date</th> 
+			<th>Score</th>
+		</tr>
+		<% result.forEach(function(r){ %>
+		<tr>
+			<td>
+				<%=r.Date %>
+			</td>
+			<td>
+				<%=r.Score %>
+			</td>
+		</tr>
+	<script>
+	var file = "<%=file_name%>"
+	
+	Highcharts.chart('container', {
+    data: {
+        table: 'datatable'
+
+    },
+    exporting: {
+        menuItemDefinitions: {
+            // Custom definition
+            label: {
+                onclick: function () {
+                	document.write("<form id='form1' name='File'action=''>");
+					document.write(" <td><input name='name' type='text' id='name'/></td>");
+                    this.renderer.label(
+                        'You just clicked a custom menu item',
+                        100,
+                        100
+                    )
+                    .attr({
+                        fill: '#a4edba',
+                        r: 5,
+                        padding: 10,
+                        zIndex: 10
+                    })
+                    .css({
+                        fontSize: '1.5em'
+                    })
+                    .add();
+                },
+                text: 'Search by File Name'
+            }
+        },
+        buttons: {
+            contextButton: {
+                menuItems: ['label']
+            }
+        }
+    },
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: "History of " + file
+    },
+    plotOptions: {
+    	series: {
+            color: '#111E6c',
+            pointWidth: 30,
+    		cursor: "pointer",
+    		point: {
+    			events: {
+    				click: function(){
+    					<% result.forEach(function(r){%>
+                            console.log(this.name)
+    						if(this.name === "<%= r.Date%>"){
+                            console.log(this.name)
+    						var arr = [];
+    						<%r.Commits.forEach(function(c){%>
+    							arr.push("<%=c.message%>");
+    						<%})%>
+    						
+    						
+    						
+    						$.get("/commits", {commits: arr, fileName: this.name}, function(data){
+    						document.write(data);
+
+    						});
+    						}
+    					<% })%>
+
+    				}
+    			}
+    		}
+
+    	}
+    }
+    ,
+    yAxis: {
+        allowDecimals: true,
+        title: {
+            text: 'Score'
+        }
+    },
+    tooltip: {
+        formatter: function () {
+            return '<b>' + this.series.name + '</b><br/>' +
+                this.point.y + ' ' + this.point.name.toLowerCase();
+        }
+    }
+}); </script>
+		<% }) %>
+		</tbody>
+	</table>
+	<% } %>
+
+<% include partials/footer %>

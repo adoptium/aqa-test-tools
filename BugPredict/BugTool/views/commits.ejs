@@ -1,0 +1,34 @@
+<% include partials/header %>
+<!-- Meta Tags for Bootstrap 4 -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+<h3>Commits for <%=fileName%></h3>
+
+<script>
+	function myFunction(){
+		
+	}
+</script>
+
+<% if(commits != undefined){ %>
+	<table class="table">
+	<thead>
+		<tr>
+			<th>Commit Messages</th> 
+		</tr>
+	<thead>
+	<tbody>
+		<% commits.forEach(function(r){ %>
+		<tr>
+			<td>
+				<%=r%>
+			</td>
+		</tr>
+	<% }) %>
+	<tbody>
+	</table>
+	<% } %>
+
+<% include partials/footer %>
