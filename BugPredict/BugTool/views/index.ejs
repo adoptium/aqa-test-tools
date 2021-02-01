@@ -1,0 +1,149 @@
+<% include partials/header %>
+	
+	<script src="https://code.highcharts.com/highcharts.js"></script>
+	<script src="https://code.highcharts.com/modules/data.js"></script>
+	<script src="https://code.highcharts.com/modules/exporting.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.0/jquery.min.js">
+	</script>
+
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+	<div id="container" style="min-width: 310px; height: 400px; margin: 0 auto"></div>
+	<% if(result != undefined){ %>
+	<table id="datatable">
+	<tbody style="display:none">
+		<tr>
+			<th>File Name</th> 
+			<th>Score</th>
+		</tr>
+		<% result.forEach(function(r){ %>
+		<tr>
+			<td>
+				<%=r.File %>
+			</td>
+			<td>
+				<%=r.Score %>
+			</td>
+		</tr>
+	<script>
+	
+	Highcharts.chart('container', {
+    data: {
+        table: 'datatable'
+
+    },
+    exporting: {
+        menuItemDefinitions: {
+            // Custom definition
+            label: {
+                onclick: function () {
+                    this.renderer.label(
+                        'You just clicked a custom menu item',
+                        100,
+                        100
+                    )
+                    .attr({
+                        fill: '#a4edba',
+                        r: 5,
+                        padding: 10,
+                        zIndex: 10
+                    })
+                    .css({
+                        fontSize: '1.5em'
+                    })
+                    .add();
+                },
+                text: 'Search by File Name'
+            }
+        },
+        buttons: {
+            contextButton: {
+                menuItems: ['label']
+            }
+        }
+    },
+    chart: {
+        type: 'column'
+    },
+    title: {
+        text: 'Top 10 Hot Spots'
+    },
+    plotOptions: {
+    	series: {
+            color: '#111E6c',
+    		cursor: "pointer",
+    		point: {
+    			events: {
+    				click: function(){
+    					<% result.forEach(function(r){%>
+    						if(this.name === "<%= r.File%>"){
+    						var arr = [];
+    						<%r.Commits.forEach(function(c){%>
+    							arr.push("<%=c.message%>");
+    						<%})%>
+
+    						    						
+    						$.get("/commits", {commits: arr, fileName: this.name}, function(data){
+    						document.write(data);
+
+    						});
+    						}
+    					<% })%>
+
+    				}
+    			}
+    		}
+
+    	}
+    }
+    ,
+    yAxis: {
+        allowDecimals: true,
+        title: {
+            text: 'Score'
+        }
+    },
+    tooltip: {
+        formatter: function () {
+            return '<b>' + this.series.name + '</b><br/>' +
+                this.point.y + ' ' + this.point.name.toLowerCase();
+        }
+    }
+}); </script>
+		<% }) %>
+		</tbody>
+	</table>
+	<% } %>
+
+	<div class="form">
+		<form action="/getScore" method= "POST" class="mr-auto" id="search">
+    	<input align="middle" class="form-control mr-sm-2" type="text" name ="file_name" placeholder="Search Hot Spots " aria-label="Search">
+    	<button class="btn btn-unique btn-rounded btn-sm my-0" type="submit">Search</button>
+		</form>
+	</div>
+
+<style>
+	.active-purple-3 input[type=text]:focus:not([readonly]) {
+    border: 1px solid #ce93d8;
+    box-shadow: 0 0 0 1px #ce93d8;
+    }
+
+    div.form
+{
+    display: block;
+    text-align: center;
+}
+form
+{
+    display: inline-block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+
+
+</style>
+
+	
+
+<% include partials/footer %>	
