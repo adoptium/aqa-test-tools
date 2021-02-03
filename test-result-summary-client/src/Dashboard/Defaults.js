@@ -23,6 +23,11 @@ export default {
     Perf: {
         widgets: [
             {
+                type: 'Dacapo',
+                x: 0,
+                y: 1
+            },
+            {
                 type: 'DayTrader7',
                 x: 0,
                 y: 2
