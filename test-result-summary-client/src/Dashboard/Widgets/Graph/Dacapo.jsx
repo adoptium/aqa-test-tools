@@ -4,7 +4,7 @@ import {
 	SplineSeries, Navigator, RangeSelector, Tooltip, Series
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
-import { Checkbox } from 'antd';
+import { Radio } from 'antd';
 import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
 import math from 'mathjs';
 import { parseSha, getEpochTime } from './utils';
@@ -14,29 +14,30 @@ const map = {
 	"dacapo-jdk8": "Test_openjdk8_j9_sanity.perf_x86-64_linux"
 };
 
-let display = {
-	"dacapo-jdk11": true,
-	"dacapo-jdk8": true,
-};
+let servers = ['AdoptOpenJDK', 'CustomizedJenkins'];
 
 export class DacapoSetting extends Component {
 	onChange = obj => {
-		for (let i in display) {
-			display[i] = false;
-		}
-		for (let j in obj) {
-			display[obj[j]] = true;
-		}
-		this.props.onChange({ buildSelected: obj[obj.length - 1] });
+		this.props.onChange({ buildSelected: obj.target.value });
+	}
+
+	onServerChange = obj => {
+		this.props.onChange({ serverSelected: obj.target.value });
 	}
 
 	render() {
+		const { buildSelected, serverSelected } = this.props;
 		return <div style={{ maxWidth: 400 }}>
-			<Checkbox.Group onChange={this.onChange} values={map.keys} defaultValue={["dacapo-jdk11"]}>
+			<Radio.Group onChange={this.onServerChange} value={serverSelected} defaultValue={'AdoptOpenJDK'}>
+				{servers.map( server => {
+					return <Radio key={server} value={server}>{server}</Radio>;
+				} )}
+			</Radio.Group>
+			<Radio.Group onChange={this.onChange} values={buildSelected} defaultValue={'dacapo-jdk11'}>
 				{Object.keys(map).map(key => {
-					return <Checkbox key={key} value={key} checked={false}>{map[key]}</Checkbox>;
+					return <Radio key={key} value={key}>{map[key]}</Radio>;
 				})}
-			</Checkbox.Group>
+			</Radio.Group>
 		</div>
 	}
 }
@@ -46,7 +47,8 @@ export default class Dacapo extends Component {
 	static defaultSize = { w: 2, h: 4 }
 	static Setting = DacapoSetting;
 	static defaultSettings = {
-		buildSelected: Object.keys(map)[0]
+		buildSelected: Object.keys(map)[0],
+		serverSelected: 'AdoptOpenJDK'
 	}
 
 	state = {
@@ -59,18 +61,33 @@ export default class Dacapo extends Component {
 
 
 	async componentDidUpdate(prevProps) {
-		if (prevProps.buildSelected !== this.props.buildSelected) {
+		if (prevProps.buildSelected !== this.props.buildSelected 
+			|| prevProps.serverSelected !== this.props.serverSelected) {
 			await this.updateData();
 		}
 	}
 
 	async updateData() {
-		const { buildSelected } = this.props;
+		const { buildSelected, serverSelected } = this.props;
 		const buildName = encodeURIComponent(map[buildSelected]);
 		const response = await fetch(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
 			method: 'get'
 		});
 		const results = await response.json();
+
+		const res = await fetch(`/api/getDashboardBuildInfo`, {
+			method: 'get'
+		});
+		const buildInfoMap = await res.json();
+		
+		if ( serverSelected ){
+			if ( serverSelected === 'AdoptOpenJDK') {
+				results = results.filter(result => result.buildUrl.includes(buildInfoMap['AdoptOpenJDK'].url));
+			} else {
+				results = results.filter(result => !result.buildUrl.includes(buildInfoMap['AdoptOpenJDK'].url));
+			}
+		} 
+		
 		const resultsByJDKBuild = {};
 		let eclipseData = [];
 		let eclipseGtValues = [];
