@@ -172,6 +172,48 @@ const BenchmarkMetricRegex = {
 				higherbetter: true,
 				units: "msec"
 			},
+			"avrora":{
+				// DaCapo 9.12-MR1 avrora PASSED in 3705 msec
+				regex: /DaCapo.*avrora\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},
+			"fop":{
+				//  DaCapo 9.12-MR1 fop PASSED in 13864 msec
+				regex: /DaCapo.*fop\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},
+			"jython":{
+				//  DaCapo 9.12-MR1 jython PASSED in 13864 msec
+				regex: /DaCapo.*jython\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},
+			"luindex":{
+				//  DaCapo 9.12-MR1 luindex PASSED in 1785 msec 
+				regex: /DaCapo.*luindex\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},	
+			"pmd":{
+				//  DaCapo 9.12-MR1 pmd PASSED in 2721 msec 
+				regex: /DaCapo.*pmd\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},
+			"sunflow":{
+				//  DaCapo 9.12-MR1 sunflow PASSED in 4831 msec
+				regex: /DaCapo.*sunflow\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},
+			"xalan":{
+				//  DaCapo 9.12-MR1 xalan PASSED in 2630 msec 
+				regex: /DaCapo.*xalan\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},
 		}
 	},
     ILOG_WODM: {
