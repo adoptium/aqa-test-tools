@@ -189,7 +189,7 @@ export default class DayTrader7 extends Component {
     render() {
         const { displaySeries } = this.state;
         return <HighchartsStockChart>
-            <Chart zoomType="x" height="40%" />
+            <Chart zoomType="x" height="30%" />
 
             <Legend />
             <Tooltip formatter={this.formatter} useHTML={true} style={{ pointerEvents: 'auto' }} />
@@ -206,7 +206,7 @@ export default class DayTrader7 extends Component {
             </YAxis>
 
             <DateRangePickers axisId="xAxis" />
-            <RangeSelector>
+            <RangeSelector verticalAlign="bottom">
                 <RangeSelector.Button count={1} type="day">1d</RangeSelector.Button>
                 <RangeSelector.Button count={7} type="day">7d</RangeSelector.Button>
                 <RangeSelector.Button count={1} type="month">1m</RangeSelector.Button>

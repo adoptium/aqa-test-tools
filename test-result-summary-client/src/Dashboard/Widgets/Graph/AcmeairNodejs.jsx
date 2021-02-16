@@ -183,7 +183,7 @@ export default class AcemeairNodejs extends Component {
                 </YAxis>
 
                 <DateRangePickers axisId="xAxis" />
-                <RangeSelector>
+                <RangeSelector verticalAlign="bottom">
                     <RangeSelector.Button count={1} type="day">1d</RangeSelector.Button>
                     <RangeSelector.Button count={7} type="day">7d</RangeSelector.Button>
                     <RangeSelector.Button count={1} type="month">1m</RangeSelector.Button>

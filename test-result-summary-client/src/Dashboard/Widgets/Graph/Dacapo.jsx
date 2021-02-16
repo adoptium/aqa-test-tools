@@ -4,17 +4,19 @@ import {
 	SplineSeries, Navigator, RangeSelector, Tooltip, Series
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
-import { Radio } from 'antd';
+import { Radio, Divider } from 'antd';
 import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
 import math from 'mathjs';
 import { parseSha, getEpochTime } from './utils';
 
 const map = {
-	"dacapo-jdk11": "Test_openjdk11_j9_sanity.perf_x86-64_linux",
-	"dacapo-jdk8": "Test_openjdk8_j9_sanity.perf_x86-64_linux"
+	"dacapo-j9-sanity-jdk8": "Test_openjdk8_j9_sanity.perf_x86-64_linux",
+	"dacapo-j9-sanity-jdk11": "Test_openjdk11_j9_sanity.perf_x86-64_linux",
+	"dacapo-hs-sanity-jdk8": "Test_openjdk8_hs_sanity.perf_x86-64_linux",
+	"dacapo-hs-sanity-jdk11": "Test_openjdk11_hs_sanity.perf_x86-64_linux",
 };
 
-let servers = ['AdoptOpenJDK', 'CustomizedJenkins'];
+let servers = null;
 
 export class DacapoSetting extends Component {
 	onChange = obj => {
@@ -33,7 +35,8 @@ export class DacapoSetting extends Component {
 					return <Radio key={server} value={server}>{server}</Radio>;
 				} )}
 			</Radio.Group>
-			<Radio.Group onChange={this.onChange} values={buildSelected} defaultValue={'dacapo-jdk11'}>
+			<Divider type="horizontal" />
+			<Radio.Group onChange={this.onChange} values={buildSelected} defaultValue={'dacapo-j9-sanity-jdk8'}>
 				{Object.keys(map).map(key => {
 					return <Radio key={key} value={key}>{map[key]}</Radio>;
 				})}
@@ -79,6 +82,7 @@ export default class Dacapo extends Component {
 			method: 'get'
 		});
 		const buildInfoMap = await res.json();
+		servers = Object.keys(buildInfoMap);
 		
 		if ( serverSelected ){
 			if ( serverSelected === 'AdoptOpenJDK') {
@@ -109,8 +113,9 @@ export default class Dacapo extends Component {
 
 		// combine results having the same JDK build date
 		results.forEach(( t, i ) => {
-			const jdkDate = t.jdkDate;	
+			let jdkDate = t.jdkDate;
 			if ( t.buildResult !== "SUCCESS" || !jdkDate ) return;
+			jdkDate = jdkDate.replaceAll('-','');
 			resultsByJDKBuild[jdkDate] = resultsByJDKBuild[jdkDate] || [];
 			t.tests.forEach(( test, i ) => {
 				let eclipse = null;
