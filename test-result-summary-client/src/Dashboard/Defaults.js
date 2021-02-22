@@ -1,5 +1,5 @@
 export default {
-    FVT: {
+    Custom: {
         widgets: [
             {
                 type: 'BuildStatus',
