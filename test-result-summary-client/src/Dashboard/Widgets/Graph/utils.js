@@ -1,3 +1,6 @@
+import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
+import math from 'mathjs';
+
 export const parseSha = (str, sha) => {
     if (!str) {
         return null;
@@ -28,4 +31,21 @@ export const getEpochTime = (str) => {
 	} else {
 		return null;
 	}
+}
+
+export const calculateData = (date, dataGroup, data, std, mean, median, additionalData) => {
+	let datsGtVslues = [];
+	if (dataGroup.length > 0) {
+		datsGtVslues.push( math.mean( dataGroup ) );
+		let myCi = 'N/A';
+		if (dataGroup.length > 1){
+			myCi = BenchmarkMath.confidence_interval(dataGroup);
+		}
+		data.push( [date, math.mean( dataGroup ), additionalData , myCi] );
+		std.push( [date, math.std( datsGtVslues )] );
+		mean.push( [date, math.mean( datsGtVslues )] );
+		median.push( [date, math.median( datsGtVslues )] );	
+	}
+
+	return {data, std, mean, median};
 }

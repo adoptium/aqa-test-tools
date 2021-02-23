@@ -5,9 +5,8 @@ import {
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
 import { Radio } from 'antd';
-import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
 import math from 'mathjs';
-import { parseSha, getEpochTime } from './utils';
+import { parseSha, getEpochTime, calculateData } from './utils';
 
 const map = {
 	"dacapo-jdk11": "Test_openjdk11_j9_sanity.perf_x86-64_linux",
@@ -59,7 +58,6 @@ export default class Dacapo extends Component {
 		await this.updateData();
 	}
 
-
 	async componentDidUpdate(prevProps) {
 		if (prevProps.buildSelected !== this.props.buildSelected 
 			|| prevProps.serverSelected !== this.props.serverSelected) {
@@ -90,19 +88,16 @@ export default class Dacapo extends Component {
 		
 		const resultsByJDKBuild = {};
 		let eclipseData = [];
-		let eclipseGtValues = [];
 		let eclipseStd = [];
 		let eclipseMean = [];
 		let eclipseMedian = [];
 
 		let h2Data = [];
-		let h2GtValues = [];
 		let h2Std = [];
 		let h2Mean = [];
 		let h2Median = [];
 
 		let lusearchData = [];
-		let lusearchGtValues = [];
 		let lusearchStd = [];
 		let lusearchMean = [];
 		let lusearchMedian = [];
@@ -151,52 +146,37 @@ export default class Dacapo extends Component {
 		} );
 
 		math.sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
-			const date = getEpochTime(k);
+            const date = getEpochTime(k);
+            const additionalData = resultsByJDKBuild[k].map( x => x['additionalData'] );
 
 			let eclipseGroup = resultsByJDKBuild[k].map( x => x['eclipse']).filter(function (el) {
 				return el != null;
 			});
-			if (eclipseGroup.length > 0) {
-				eclipseGtValues.push( math.mean( eclipseGroup ) );
-				let myCi = 'N/A';
-				if (eclipseGroup.length > 1){
-					myCi = BenchmarkMath.confidence_interval(eclipseGroup);
-				}
-				eclipseData.push( [date, math.mean( eclipseGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
-				eclipseStd.push( [date, math.std( eclipseGtValues )] );
-				eclipseMean.push( [date, math.mean( eclipseGtValues )] );
-				eclipseMedian.push( [date, math.median( eclipseGtValues )] );	
-			}
+
+			const eclipseOut = calculateData(date, eclipseGroup, eclipseData, eclipseStd, eclipseMean, eclipseMedian, additionalData);
+			eclipseData = eclipseOut.data;
+			eclipseStd = eclipseOut.std;
+			eclipseMean = eclipseOut.mean;
+			eclipseMedian = eclipseOut.median;
 
 			let h2Group = resultsByJDKBuild[k].map( x => x['h2']).filter(function (el) {
 				return el != null;
 			});
-			if (h2Group.length > 0) {
-				h2GtValues.push( math.mean( h2Group ) );
-				let myCi = 'N/A';
-				if (h2Group.length > 1){
-					myCi = BenchmarkMath.confidence_interval(h2Group);
-				}
-				h2Data.push( [date, math.mean( h2Group ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
-				h2Std.push( [date, math.std( h2GtValues )] );
-				h2Mean.push( [date, math.mean( h2GtValues )] );
-				h2Median.push( [date, math.median( h2GtValues )] );
-			}
+			const h2Out = calculateData(date, h2Group, h2Data, h2Std, h2Mean, h2Median, additionalData);
+			h2Data = h2Out.data;
+			h2Std = h2Out.std;
+			h2Mean = h2Out.mean;
+			h2Median = h2Out.median;
 
 			let lusearchGroup = resultsByJDKBuild[k].map( x => x['lusearch']).filter(function (el) {
 				return el != null;
 			});
-			if (lusearchGroup.length > 0) {
-				lusearchGtValues.push( math.mean( lusearchGroup ) );
-				let myCi = 'N/A';
-				if (lusearchGroup.length > 1){
-					myCi = BenchmarkMath.confidence_interval(lusearchGroup);
-				}
-				lusearchData.push( [date, math.mean( lusearchGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
-				lusearchStd.push( [date, math.std( lusearchGtValues )] );
-				lusearchMean.push( [date, math.mean( lusearchGtValues )] );
-				lusearchMedian.push( [date, math.median( lusearchGtValues )] );
-			}
+			const lusearchOut = calculateData(date, lusearchGroup, lusearchData, lusearchStd, lusearchMean, lusearchMedian, additionalData);
+			lusearchData = lusearchOut.data;
+			lusearchStd = lusearchOut.std;
+			lusearchMean = lusearchOut.mean;
+			lusearchMedian = lusearchOut.median;
+
 		} );
 
 		const series = { eclipseData, eclipseStd, eclipseMean, eclipseMedian, h2Data, h2Std, h2Mean, h2Median, lusearchData, lusearchStd, lusearchMean, lusearchMedian };
