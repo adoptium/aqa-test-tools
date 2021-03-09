@@ -62,7 +62,7 @@ class Cell extends Component {
                                     icon = <CheckCircleOutlined style={{ color: "white" }} />;
                                 } else if (result === "UNSTABLE") {
                                     icon = <WarningOutlined style={{ color: "white" }} />;
-                                } else if (result === "ABORT") {
+                                } else if (result === "ABORTED") {
                                     icon = <MinusCircleOutlined style={{ color: "white" }} />;
                                 } else {
                                     icon = <ExclamationCircleOutlined style={{ color: "white" }} />;
