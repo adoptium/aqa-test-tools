@@ -31,6 +31,7 @@ class Test extends Parser {
         tests.startBy = this.extractStartedBy(output);
         tests.artifactory = this.extractArtifact(output);
         tests.rerunLink = this.extractRerunLink(output);
+        tests.versions = this.extractSha(outout);
         return tests;
     }
 
