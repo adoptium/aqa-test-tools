@@ -10,14 +10,6 @@ export default {
                     title: "https://ci.adoptopenjdk.net",
                 }
             },
-            {
-                type: 'BuildStatus',
-                x: 0,
-                y: 1,
-                settings: {
-                    serverSelected: 'CustomJenkins',
-                }
-            }
         ]
     },
     Perf: {
@@ -25,23 +17,12 @@ export default {
             {
                 type: 'Dacapo',
                 x: 0,
-                y: 1
+                y: 0,
+                settings: {
+                    serverSelected: 'AdoptOpenJDK',
+                    buildSelected: 'dacapo-jdk8'
+                }
             },
-            {
-                type: 'DayTrader7',
-                x: 0,
-                y: 2
-            },
-            {
-                type: 'ODM',
-                x: 2,
-                y: 1
-            },
-            {
-                type: 'SPECjbb2015',
-                x: 0,
-                y: 6
-            }
         ]
     }
 }

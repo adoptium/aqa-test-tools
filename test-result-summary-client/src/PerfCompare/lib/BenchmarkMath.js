@@ -64,6 +64,7 @@ class BenchmarkMath {
     * convergence.
     */
     static confidence_interval ( scores ) {
+        if (scores.length < 2) return "N/A";
         let scores_sum = 0;
         scores.forEach((x) => {
             if (x !== null) {
