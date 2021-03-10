@@ -68,3 +68,7 @@
 .cell.FAILURE {
     background-color: rgb(255, 85, 0);
 }
+
+.cell.ABORTED {
+    background-color: rgb(158, 158, 158);
+}
