@@ -45,7 +45,7 @@ class BuildMonitor {
             const buildsInDB = await testResults.getData({ url, buildName, buildNum }).toArray();
             if (!buildsInDB || buildsInDB.length === 0) {
                 let status = "NotDone";
-                if (streaming === "Yes" && allBuilds[i].result === null) {
+                if (streaming === "Yes") {
                     status = "Streaming";
                     logger.info(`Set build ${url} ${buildName} ${buildNum} status to Streaming `);
                 }
