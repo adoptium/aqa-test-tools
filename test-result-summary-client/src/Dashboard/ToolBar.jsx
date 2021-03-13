@@ -1,13 +1,13 @@
-import React, { Component } from 'react';
+import React, { Component, cloneElement, isValidElement } from 'react';
 import { CloseOutlined, SettingOutlined } from '@ant-design/icons';
 import { Popover, Button } from 'antd';
 
 class Settings extends Component {
     render() {
         const { Setting, ...props } = this.props;
-
+        const SettingComponent = isValidElement(Setting) ? cloneElement(Setting, props) : <Setting {...props} />;
         return (
-            <Popover content={<Setting {...props} />} trigger="click" placement="bottomLeft">
+            <Popover content={SettingComponent} trigger="click" placement="bottomLeft">
                 <Button size="small"><SettingOutlined /></Button>
             </Popover>
         );

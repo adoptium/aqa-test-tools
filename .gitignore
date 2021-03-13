@@ -4,3 +4,5 @@
 .DS_Store
 .gradle/
 __pycache__/
+GitHubData/
+JenkinsData/
