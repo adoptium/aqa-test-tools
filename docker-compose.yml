@@ -1,0 +1,39 @@
+version: "3"
+
+services:
+  service:
+    image: trss_service
+    container_name: service
+    depends_on:
+      - mongo
+    ports:
+      - "3001:3001"
+    networks:
+      - trss-app
+  web:
+    image: trss_web
+    container_name: web
+    stdin_open: true
+    depends_on:
+      - service
+    ports:
+      - "3000:3000"
+    networks:
+      - trss-app
+  mongo:
+    container_name: mongo
+    image: mongo:3.6.19-xenial
+    ports:
+      - "27017:27017"
+    networks:
+      - trss-app
+    volumes:
+      - mongo-data:/data/db
+
+networks:
+  trss-app:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
