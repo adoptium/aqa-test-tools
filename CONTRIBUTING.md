@@ -1,0 +1,36 @@
+# Contributing to aqa-test-tools
+
+Thanks for your interest in this project.
+
+## Project description
+
+aqa-test-tools is a project that contains a set of tools for monitoring and reporting AQA 
+and other tests from a variety of CI systems.
+
+* https://github.com/adoptium/aqa-test-tools
+
+## Developer resources
+
+The project maintains the following source code repositories
+
+* https://github.com/adoptium/aqa-test-tools
+
+## Eclipse Contributor Agreement
+
+Before your contribution can be accepted by the project team contributors must
+electronically sign the Eclipse Contributor Agreement (ECA).
+
+* http://www.eclipse.org/legal/ECA.php
+
+Commits that are provided by non-committers must have a Signed-off-by field in
+the footer indicating that the author is aware of the terms by which the
+contribution has been provided to the project. The non-committer must
+additionally have an Eclipse Foundation account and must have a signed Eclipse
+Contributor Agreement (ECA) on file.
+
+For more information, please see the Eclipse Committer Handbook:
+https://www.eclipse.org/projects/handbook/#resources-commit
+
+## Contact
+
+Contact the Eclipse Foundation Webdev team via webdev@eclipse-foundation.org.
