@@ -73,7 +73,7 @@ export default class Renaissance extends Component {
 		const response = await fetch(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
 			method: 'get'
 		});
-		const results = await response.json();
+		let results = await response.json();
 
 		const res = await fetch(`/api/getDashboardBuildInfo`, {
 			method: 'get'
@@ -175,7 +175,7 @@ export default class Renaissance extends Component {
 		math.sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
 			const date = getEpochTime(k);
 
-			let akkaUctGroup = resultsByJDKBuild[k].map( x => x['akka-uct']).filter(function (el) {
+			let akkaUctGroup = resultsByJDKBuild[k].map( x => x['akkaUct']).filter(function (el) {
 				return el != null;
 			});
 			if (akkaUctGroup.length > 0) {
@@ -190,7 +190,7 @@ export default class Renaissance extends Component {
 				akkaUctMedian.push( [date, math.median( akkaUctGtValues )] );
 			}
 
-			let fjGroup = resultsByJDKBuild[k].map( x => x['fj-kmeans']).filter(function (el) {
+			let fjGroup = resultsByJDKBuild[k].map( x => x['fj']).filter(function (el) {
 				return el != null;
 			});
 			if (fjGroup.length > 0) {
@@ -205,7 +205,7 @@ export default class Renaissance extends Component {
 				fjMedian.push( [date, math.median( fjGtValues )] );
 			}
 
-			let futureGeneticGroup = resultsByJDKBuild[k].map( x => x['future-genetic']).filter(function (el) {
+			let futureGeneticGroup = resultsByJDKBuild[k].map( x => x['futureGenetic']).filter(function (el) {
 				return el != null;
 			});
 			if (futureGeneticGroup.length > 0) {
@@ -220,7 +220,7 @@ export default class Renaissance extends Component {
 				futureGeneticMedian.push( [date, math.median( futureGeneticGtValues )] );
 			}
 
-            let bayesGroup = resultsByJDKBuild[k].map( x => x['naive-bayes']).filter(function (el) {
+            let bayesGroup = resultsByJDKBuild[k].map( x => x['bayes']).filter(function (el) {
 				return el != null;
 			});
 			if (bayesGroup.length > 0) {
@@ -235,7 +235,7 @@ export default class Renaissance extends Component {
 				bayesMedian.push( [date, math.median( bayesGtValues )] );
 			}
 
-            let scalaGroup = resultsByJDKBuild[k].map( x => x['scala-kmeans']).filter(function (el) {
+            let scalaGroup = resultsByJDKBuild[k].map( x => x['scala']).filter(function (el) {
 				return el != null;
 			});
 			if (scalaGroup.length > 0) {
@@ -255,7 +255,7 @@ export default class Renaissance extends Component {
 		const displaySeries = [];
 		for ( let key in series ) {
 			displaySeries.push( {
-				visible: key === "h2Data",
+				visible: key === "fjData",
 				name: key,
 				data: series[key],
 				keys: ['x', 'y', 'additionalData', 'CI']

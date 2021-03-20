@@ -215,104 +215,32 @@ const BenchmarkMetricRegex = {
                 units: "ms",
             },
 			"akka-uct":{
-                // Renaissance 9.12-MR1 akka-uct PASSED in 75075 msec
-				regex: /Renaissance.*akka-uct\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-			"als":{
-                // Renaissance 9.12-MR1 als PASSED in 612 msec
-				regex: /Renaissance.*als\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-			"chi-square":{
-                // Renaissance 9.12-MR1 chi-square PASSED in 84389 msec
-				regex: /Renaissance.*chi-square\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-			"db-shootout":{
-                // Renaissance 9.12-MR1 db-shootout PASSED in 6543 msec
-				regex: /Renaissance.*db-shootout\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-			"dec-tree":{
-                // Renaissance 9.12-MR1 dec-tree PASSED in 7865 msec
-				regex: /Renaissance.*dec-tree\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-			"finagle-chirper":{
-                // Renaissance 9.12-MR1 finagle-chirper PASSED in 56466 msec
-				regex: /Renaissance.*finagle-chirper\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-			"finagle-http":{
-                // Renaissance 9.12-MR1 finagle-http PASSED in 68453 msec
-				regex: /Renaissance.*finagle-http\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+                // akka-uct (jdk-concurrent) [default], iteration 1 completed (9227.702 ms)
+				regex: /akka-uct.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
 				higherbetter: true,
 				units: "msec"
 			},
 			"fj-kmeans":{
-                // Renaissance 9.12-MR1 fj-kmeans PASSED in 5498 msec
-				regex: /Renaissance.*fj-kmeans\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+                // fj-kmeans (jdk-concurrent) [default], iteration 1 completed (9227.702 ms)
+				regex: /fj-kmeans.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
 				higherbetter: true,
 				units: "msec"
 			},
 			"future-genetic":{
-                // Renaissance 9.12-MR1 future-genetic PASSED in 84649 msec
-				regex: /Renaissance.*future-genetic\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-			"gauss-mix":{
-                // Renaissance 9.12-MR1 gauss-mix PASSED in 35732 msec
-				regex: /Renaissance.*gauss-mix\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-            "log-regression":{
-                // Renaissance 9.12-MR1 log-regression PASSED in 75531 msec
-				regex: /Renaissance.*log-regression\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-            "mnemonics":{
-                // Renaissance 9.12-MR1 mnemonics PASSED in 659 msec
-				regex: /Renaissance.*mnemonics\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-            "movie-lens":{
-                // Renaissance 9.12-MR1 movie-lens PASSED in 6793 msec
-				regex: /Renaissance.*movie-lens\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+                // future-genetic (jdk-concurrent) [default], iteration 1 completed (1796.766 ms)
+				regex: /future-genetic.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
 				higherbetter: true,
 				units: "msec"
 			},
             "naive-bayes":{
-                // Renaissance 9.12-MR1 naive-bayes PASSED in 68763 msec
-				regex: /Renaissance.*naive-bayes\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-            "par-mnemonics":{
-                // Renaissance 9.12-MR1 par-mnemonics PASSED in 7557 msec
-				regex: /Renaissance.*par-mnemonics\sPASSED\sin\s(\d*\.?\d*)\smsec/,
-				higherbetter: true,
-				units: "msec"
-			},
-            "philosophers":{
-                // Renaissance 9.12-MR1 philosophers PASSED in 45721 msec
-				regex: /Renaissance.*philosophers\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+                // naive-bayes (jdk-concurrent) [default], iteration 1 completed (1796.766 ms)
+				regex: /naive-bayes.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
 				higherbetter: true,
 				units: "msec"
 			},
             "scala-kmeans":{
-                // Renaissance 9.12-MR1 scala-kmeans PASSED in 5663 msec
-				regex: /Renaissance.*scala-kmeans\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+                // scala-kmeans (scala-stdlib) [default], iteration 1 completed (742.875 ms)
+				regex: /scala-kmeans.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
 				higherbetter: true,
 				units: "msec"
 			},
