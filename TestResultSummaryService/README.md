@@ -103,3 +103,18 @@ A build can have the following status in database:
 
 ## Plugins
 Plugins can be added. Please refer [Plugins ReadMe](./plugins/README.md) for implementation detail.
+
+## Configure Crontab on server
+
+- step 1: run command `env`, copy the field SHELL and PATH
+- step 2: run command `crontab -e` to install a cron job, using SHELL and PATH value from step1
+
+    example cron job: 
+    ```
+    SHELL=/bin/bash
+    MAILTO=/home/oscar/log
+    PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin
+    0 8 * * 5 <path>/openjdk-test-tools/exportMongo.sh 
+    ```
+    This cron job will run exportMongo.sh once every week at Saturday 8am
+- step 3: run command `sudo chmod u+x exportMongo.sh` to grant cron access to shell scipt
