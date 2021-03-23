@@ -21,7 +21,7 @@ getConfig = () => {
 }
 
 getConfigDB = () => {
-    if (_config && _config.DB && _config.DB.user && _config.DB.password) {
+    if (_config && _config.DB && ((_config.DB.user && _config.DB.password) || _config.DB.connectionString)) {
         return _config.DB;
     }
     return null;
