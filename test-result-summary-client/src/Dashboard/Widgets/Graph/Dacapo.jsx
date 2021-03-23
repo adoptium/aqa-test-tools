@@ -3,16 +3,20 @@ import Settings from '../Settings';
 import StockChart from './ChartComponent/StockChart';
 import { getStatisticValues } from './utils';
 
-const map = {
-	"dacapo-jdk8": "Test_openjdk8_j9_sanity.perf_x86-64_linux",
-	"dacapo-jdk11": "Test_openjdk11_j9_sanity.perf_x86-64_linux",
-};
+const builds = ["Test_openjdk8_j9_sanity.perf_x86-64_linux",
+				"Test_openjdk11_j9_sanity.perf_x86-64_linux",
+				"Test_openjdk8_j9_sanity.perf_x86-64_mac",
+				"Test_openjdk11_j9_sanity.perf_x86-64_mac",
+				"Test_openjdk8_hs_sanity.perf_x86-64_linux",
+				"Test_openjdk11_hs_sanity.perf_x86-64_linux",
+				"Test_openjdk8_hs_sanity.perf_x86-64_mac",
+				"Test_openjdk11_hs_sanity.perf_x86-64_mac"];
 
 const servers = ['AdoptOpenJDK', 'CustomizedJenkins'];
 export default class Dacapo extends Component {
 	static Title = props => props.buildSelected || '';
 	static defaultSize = { w: 2, h: 4 }
-	static Setting = <Settings servers={servers} map={map} />;
+	static Setting = <Settings servers={servers} builds={builds} />;
 
 	state = {
 		displaySeries: [],
@@ -31,7 +35,7 @@ export default class Dacapo extends Component {
 
 	async updateData() {
 		const { buildSelected, serverSelected } = this.props;
-		const buildName = encodeURIComponent(map[buildSelected]);
+		const buildName = encodeURIComponent(buildSelected);
 		const response = await fetch(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
 			method: 'get'
 		});
@@ -54,8 +58,9 @@ export default class Dacapo extends Component {
 
 		// combine results having the same JDK build date
 		results.forEach((t, i) => {
-			const jdkDate = t.jdkDate;
+			let jdkDate = t.jdkDate;
 			if (t.buildResult !== "SUCCESS" || !jdkDate) return;
+			jdkDate = jdkDate.replaceAll('-', '');
 			resultsByJDKBuild[jdkDate] = resultsByJDKBuild[jdkDate] || [];
 			t.tests.forEach((test, i) => {
 				let eclipse = null;
