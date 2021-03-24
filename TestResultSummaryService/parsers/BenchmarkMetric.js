@@ -1,6 +1,6 @@
 const math = require('mathjs');
 // TODO : Find a library function for geometric mean
-function geomean(inputArray){ 
+function geomean(inputArray){
     let result = math.prod(inputArray);
     result = math.nthRoot(result, inputArray.length);
     return result;
@@ -18,17 +18,17 @@ function geomean(inputArray){
 * Format of each Benchmark
 * 	Benchmarkname: {
 * 	outerRegex:  Regex with capture group: all text(*) after warmup runs should be used
-*  NOTE : Outer regex is optional param should be only used when there are cold runs 
+*  NOTE : Outer regex is optional param should be only used when there are cold runs
 *  that you do not wish to include as result
 *  metrics:
 *    {  //  metrics object with following properties.
-*       name of metric : { //individual metric 
+*       name of metric : { //individual metric
 *           regex: Regex with capture group: value for the specific metric
 *           higherbetter: variable to dettermine if its better to have higher value
 *           units: unit of measurement
 *           (Optional) funcName: storing a function that will run on the current set of metric values.
-*                                Metrics such as JITCPU total in LibertyThroughput and geomean_GCA in CryptoBB require aggregate function to be applied. 
-*                                e.g JIT CPU total values are collected as [ 0,0,300,200,20 ] but we display 520 as the JITCPU total  
+*                                Metrics such as JITCPU total in LibertyThroughput and geomean_GCA in CryptoBB require aggregate function to be applied.
+*                                e.g JIT CPU total values are collected as [ 0,0,300,200,20 ] but we display 520 as the JITCPU total
 *
 *        }, and more metrics in same format...
 *    }
@@ -67,7 +67,7 @@ const BenchmarkMetricRegex = {
                 regex: /<metric type="throughput">[\s\S\n]*?(\d*\.?\d*)<\/data>/,
                 higherbetter: true,
                 units: "ops/s",
-            },  
+            },
             "Adjusted Single Server Memory":{
                 //Example: Footprint (kb)=589444
                 regex: /Footprint \(kb\)=(\d*\.?\d*)/,
@@ -78,10 +78,10 @@ const BenchmarkMetricRegex = {
                 //Example: <data machine="wehrlein10G" units="%" cv="1.0064976672229644">15.139217146458863</data>
                 regex: /<metric type="CPU Utilization">[\s\S\n]*?<\/data>[\s\S\n]*?<data[\s\S\n]*?>(\d*\.?\d*)*/,
                 higherbetter: false,
-                units: "%",  
+                units: "%",
             },
             "JIT CPU total ms":{
-                //Example: #PERF:  Time spent in compilation thread =22323 ms 
+                //Example: #PERF:  Time spent in compilation thread =22323 ms
                 //JITCPUtotal is sum of all JIT CPU usage use values in verbose logs
                 regex: /#PERF[\s\S\n]*?compilation thread =(\d*\.?\d*)[\s\S\n]*?/,
                 higherbetter: false,
@@ -93,7 +93,7 @@ const BenchmarkMetricRegex = {
     "liberty-dt7-startup": {
     	//Example: Warm run 0...
         outerRegex: /Warm run \d*([\s\S\n]*)/,
-        metrics: { 
+        metrics: {
             "Footprint":{
                 //Example: Footprint (kb)=168940
                 regex: /Footprint \(kb\)=(\d*\.?\d*)/,
@@ -111,7 +111,7 @@ const BenchmarkMetricRegex = {
     "liberty-dt7-throughput": {
     	//Example: Running 1 measures...
         outerRegex: /Running \d* measures([\s\S\n]*)/,
-        metrics: { 
+        metrics: {
             "Footprint":{
                 //Example: Footprint (kb)=168940
                 regex: /Footprint \(kb\)=(\d*\.?\d*)/,
@@ -123,16 +123,6 @@ const BenchmarkMetricRegex = {
                 regex: /Page throughput = (\d*\.?\d*)/,
                 higherbetter: true,
                 units: "req/sec",
-            },
-        }
-    },    
-    renaissance: {
-        metrics: { 
-            "Response Time":{
-                //Example: final iteration completed (16495.74 ms) ======
-                regex: /final iteration completed \((\d*\.?\d*)/,
-                higherbetter: false,
-                units: "ms",
             },
         }
     },
@@ -191,13 +181,13 @@ const BenchmarkMetricRegex = {
 				units: "msec"
 			},
 			"luindex":{
-				//  DaCapo 9.12-MR1 luindex PASSED in 1785 msec 
+				//  DaCapo 9.12-MR1 luindex PASSED in 1785 msec
 				regex: /DaCapo.*luindex\sPASSED\sin\s(\d*\.?\d*)\smsec/,
 				higherbetter: true,
 				units: "msec"
-			},	
+			},
 			"pmd":{
-				//  DaCapo 9.12-MR1 pmd PASSED in 2721 msec 
+				//  DaCapo 9.12-MR1 pmd PASSED in 2721 msec
 				regex: /DaCapo.*pmd\sPASSED\sin\s(\d*\.?\d*)\smsec/,
 				higherbetter: true,
 				units: "msec"
@@ -209,8 +199,48 @@ const BenchmarkMetricRegex = {
 				units: "msec"
 			},
 			"xalan":{
-				//  DaCapo 9.12-MR1 xalan PASSED in 2630 msec 
+				//  DaCapo 9.12-MR1 xalan PASSED in 2630 msec
 				regex: /DaCapo.*xalan\sPASSED\sin\s(\d*\.?\d*)\smsec/,
+				higherbetter: true,
+				units: "msec"
+			},
+		}
+	},
+    renaissance: {
+		metrics: {
+            		"Response Time":{
+				//Example: final iteration completed (16495.74 ms) ======
+				regex: /final iteration completed \((\d*\.?\d*)/,
+				higherbetter: false,
+				units: "ms",
+            		},
+			"akka-uct":{
+                		// akka-uct (jdk-concurrent) [default], iteration 1 completed (9227.702 ms)
+				regex: /akka-uct.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
+				higherbetter: true,
+				units: "msec"
+			},
+			"fj-kmeans":{
+                		// fj-kmeans (jdk-concurrent) [default], iteration 1 completed (9227.702 ms)
+				regex: /fj-kmeans.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
+				higherbetter: true,
+				units: "msec"
+			},
+			"future-genetic":{
+                		// future-genetic (jdk-concurrent) [default], iteration 1 completed (1796.766 ms)
+				regex: /future-genetic.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
+				higherbetter: true,
+				units: "msec"
+			},
+            		"naive-bayes":{
+                		// naive-bayes (jdk-concurrent) [default], iteration 1 completed (1796.766 ms)
+				regex: /naive-bayes.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
+				higherbetter: true,
+				units: "msec"
+			},
+            		"scala-kmeans":{
+                		// scala-kmeans (scala-stdlib) [default], iteration 1 completed (742.875 ms)
+				regex: /scala-kmeans.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
 				higherbetter: true,
 				units: "msec"
 			},
@@ -223,7 +253,7 @@ const BenchmarkMetricRegex = {
                 regex: /Global Throughput[\s\S\n]*?= ?(\d*\.?\d*)/,
                 higherbetter: true,
                 units: "req/sec"
-            },            
+            },
         }
     },
     SPECjbb2015: {
@@ -232,7 +262,7 @@ const BenchmarkMetricRegex = {
                 //Example: RUN RESULT: hbIR (max attempted) = 47675, hbIR (settled) = 44200, max-jOPS = 41954, critical-jOPS = 15735
                 regex: /RUN RESULT:[\s\S\n]*?max-jOPS\s?=\s?(\d*\.?\d*)[\s\S\n]*?critical-jOPS\s?=\s?\d*\.?\d*[\s\S\n]*?\n/,
                 higherbetter: true,
-                units:"jOPS", 
+                units:"jOPS",
             },
             "critical_jOPS":{
                 //same line as above different capture point
@@ -286,7 +316,7 @@ const BenchmarkMetricRegex = {
     Crypto: {
         metrics: {
             "geomean_GCM": {
-                //Example: gcm-128-encrypt-NoPadding,16,IBMJCE,0.146262MB,sevenup.hursley.ibm.com,,1 
+                //Example: gcm-128-encrypt-NoPadding,16,IBMJCE,0.146262MB,sevenup.hursley.ibm.com,,1
                 regex:/gcm-128[\s\S\n]*?IBMJCE,(\d*\.?\d*)MB/,
                 higherbetter: true,
                 units: "ops/sec",
@@ -330,7 +360,7 @@ const BenchmarkMetricRegex = {
         }
     },
     "pingperf-quarkus-baremetal_throughput": {
-        outerRegex:/Running \d*? measures([\s\S\n]*)/, 
+        outerRegex:/Running \d*? measures([\s\S\n]*)/,
         //exclude warmup runs from getting parsed
         metrics: {
             "Throughput": {
@@ -340,7 +370,7 @@ const BenchmarkMetricRegex = {
                 units: "Requests/sec"
             },
         }
-    },    
+    },
     "quarkus-startup": {
         outerRegex: /Quarkus Test:  measure \d*? ([\s\S\n]*)/,
         //exclude warmup runs from getting parsed
