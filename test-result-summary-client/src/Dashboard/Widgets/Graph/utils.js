@@ -57,3 +57,13 @@ export const getStatisticValues = (resultsByJDKBuild, key) => {
     });
     return [data, std, mean, median];
 }
+
+export const calculateMean = (array) => {
+    // calculate the mean for all iterations
+    var sum = 0;
+    for (var i = 0; i < array.length; i++) {
+        sum += parseInt( array[i], 10 );
+    }
+    var mean = sum / array.length;
+    return mean;
+}

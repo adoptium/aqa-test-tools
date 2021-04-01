@@ -7,7 +7,7 @@ import DateRangePickers from '../DateRangePickers';
 import { Radio } from 'antd';
 import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
 import math from 'mathjs';
-import { parseSha, getEpochTime } from './utils';
+import { parseSha, getEpochTime, calculateMean } from './utils';
 
 const map = {
 	"renaissance-jdk11": "Test_openjdk11_j9_sanity.perf_x86-64_linux",
@@ -135,19 +135,19 @@ export default class Renaissance extends Component {
 
 				test.testData.metrics.forEach(( metric, i)=> {
 					if ( metric.name === "akka-uct" ) {
-						akkaUct = metric.value[0];
+						akkaUct = calculateMean(metric.value);
 					}
 					if ( metric.name === "fj-kmeans" ) {
-						fj = metric.value[0];
+						fj = calculateMean(metric.value);
 					}
 					if ( metric.name === "future-genetic" ) {
-						futureGenetic = metric.value[0];
+						futureGenetic = calculateMean(metric.value);
 					}
                     if ( metric.name === "naive-bayes" ) {
-						bayes = metric.value[0];
+						bayes = calculateMean(metric.value);
 					}
                     if ( metric.name === "scala-kmeans" ) {
-						scala = metric.value[0];
+						scala = calculateMean(metric.value);
 					}
 				});
 
