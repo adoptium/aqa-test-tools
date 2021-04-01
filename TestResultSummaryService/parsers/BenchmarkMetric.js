@@ -216,31 +216,31 @@ const BenchmarkMetricRegex = {
             },
 			"akka-uct":{
                 // akka-uct (jdk-concurrent) [default], iteration 1 completed (9227.702 ms)
-				regex: /akka-uct.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
+				regex: /akka-uct.*iteration \d+ completed \((\d*\.?\d*)\sms\)/g,
 				higherbetter: true,
 				units: "msec"
 			},
 			"fj-kmeans":{
                 // fj-kmeans (jdk-concurrent) [default], iteration 1 completed (9227.702 ms)
-				regex: /fj-kmeans.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
+				regex: /fj-kmeans.*iteration \d+ completed \((\d*\.?\d*)\sms\)/g,
 				higherbetter: true,
 				units: "msec"
 			},
 			"future-genetic":{
                 // future-genetic (jdk-concurrent) [default], iteration 1 completed (1796.766 ms)
-				regex: /future-genetic.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
+				regex: /future-genetic.*iteration \d+ completed \((\d*\.?\d*)\sms\)/g,
 				higherbetter: true,
 				units: "msec"
 			},
             "naive-bayes":{
                 // naive-bayes (jdk-concurrent) [default], iteration 1 completed (1796.766 ms)
-				regex: /naive-bayes.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
+				regex: /naive-bayes.*iteration \d+ completed \((\d*\.?\d*)\sms\)/g,
 				higherbetter: true,
 				units: "msec"
 			},
             "scala-kmeans":{
                 // scala-kmeans (scala-stdlib) [default], iteration 1 completed (742.875 ms)
-				regex: /scala-kmeans.*iteration 1 completed \((\d*\.?\d*)\sms\)/,
+				regex: /scala-kmeans.*iteration \d+ completed \((\d*\.?\d*)\sms\)/g,
 				higherbetter: true,
 				units: "msec"
 			},
