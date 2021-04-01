@@ -208,12 +208,12 @@ const BenchmarkMetricRegex = {
 	},
     renaissance: {
 		metrics: {
-            "Response Time":{
-                //Example: final iteration completed (16495.74 ms) ======
-                regex: /final iteration completed \((\d*\.?\d*)/,
-                higherbetter: false,
-                units: "ms",
-            },
+            		"Response Time":{
+				//Example: final iteration completed (16495.74 ms) ======
+				regex: /final iteration completed \((\d*\.?\d*)/,
+				higherbetter: false,
+				units: "ms",
+            		},
 			"akka-uct":{
                 // akka-uct (jdk-concurrent) [default], iteration 1 completed (9227.702 ms)
 				regex: /akka-uct.*iteration \d+ completed \((\d*\.?\d*)\sms\)/g,
@@ -223,7 +223,7 @@ const BenchmarkMetricRegex = {
 			"fj-kmeans":{
                 // fj-kmeans (jdk-concurrent) [default], iteration 1 completed (9227.702 ms)
 				regex: /fj-kmeans.*iteration \d+ completed \((\d*\.?\d*)\sms\)/g,
-				higherbetter: true,
+                higherbetter: true,
 				units: "msec"
 			},
 			"future-genetic":{
