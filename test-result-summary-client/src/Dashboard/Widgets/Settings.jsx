@@ -23,7 +23,7 @@ export default class Settings extends Component {
     }
 
     render() {
-        const { servers, map, buildSelected, serverSelected } = this.props;
+        const { servers, builds, buildSelected, serverSelected } = this.props;
         return <div style={{ maxWidth: 400 }}>
             <Radio.Group onChange={this.onServerChange} value={serverSelected} defaultValue={servers[0]}>
                 {servers.map(server => {
@@ -31,9 +31,9 @@ export default class Settings extends Component {
                 })}
             </Radio.Group>
             <Divider />
-            <Radio.Group onChange={this.onChange} values={buildSelected} defaultValue={Object.keys(map)[0]}>
-                {Object.keys(map).map(key => {
-                    return <Radio key={key} value={key}>{map[key]}</Radio>;
+            <Radio.Group onChange={this.onChange} values={buildSelected} defaultValue={builds[0]}>
+                {builds.map(build => {
+                    return <Radio key={build} value={build}>{build}</Radio>;
                 })}
             </Radio.Group>
         </div>
