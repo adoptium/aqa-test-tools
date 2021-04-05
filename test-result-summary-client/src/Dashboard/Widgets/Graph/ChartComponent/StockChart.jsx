@@ -56,7 +56,7 @@ export default class StockChart extends Component {
             <Chart zoomType="x" />
 
             <Legend />
-            <Tooltip formatter={this.formatter} useHTML style={{ pointerEvents: 'auto' }} />
+            { this.props.showTooltip && <Tooltip formatter={this.formatter} useHTML style={{ pointerEvents: 'auto' }} />}
 
             <XAxis >
                 <XAxis.Title>Time</XAxis.Title>
@@ -84,4 +84,8 @@ export default class StockChart extends Component {
             </Navigator>
         </HighchartsStockChart>
     }
+}
+
+StockChart.defaultProps = {
+    showTooltip: true,
 }
