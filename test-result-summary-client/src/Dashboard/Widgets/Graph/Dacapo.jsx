@@ -14,7 +14,7 @@ const builds = ["Test_openjdk8_j9_sanity.perf_x86-64_linux",
 
 const servers = ['AdoptOpenJDK', 'CustomizedJenkins'];
 export default class Dacapo extends Component {
-	static Title = props => props.buildSelected || '';
+	static Title = props => 'Dacapo';
 	static defaultSize = { w: 2, h: 4 }
 	static Setting = <Settings servers={servers} builds={builds} />;
 
