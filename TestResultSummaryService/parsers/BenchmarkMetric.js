@@ -213,7 +213,7 @@ const BenchmarkMetricRegex = {
 		regex: /final iteration completed \((\d*\.?\d*)/,
 		higherbetter: false,
 		units: "ms",
-            },
+	    },
 	    "akka-uct":{
         	// akka-uct (jdk-concurrent) [default], iteration 1 completed (9227.702 ms)
 		regex: /akka-uct.*iteration \d+ completed \((\d*\.?\d*)\sms\)/g,
