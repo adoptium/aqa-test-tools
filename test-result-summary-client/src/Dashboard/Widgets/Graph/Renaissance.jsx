@@ -149,12 +149,12 @@ export default class Renaissance extends Component {
 							futureGenetic = math.mean(metric.value);
 						}
 					}
-          			if ( metric.name === "naive-bayes" ) {
+          				if ( metric.name === "naive-bayes" ) {
 						if ( math.size(metric.value) != 0 ) {
 							bayes = math.mean(metric.value);
 						}
 					}
-          			if ( metric.name === "scala-kmeans" ) {
+          				if ( metric.name === "scala-kmeans" ) {
 						if ( math.size(metric.value) != 0 ) {
 							scala = math.mean(metric.value);
 						}
