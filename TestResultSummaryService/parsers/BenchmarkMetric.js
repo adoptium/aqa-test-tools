@@ -238,7 +238,7 @@ const BenchmarkMetricRegex = {
 		higherbetter: true,
 		units: "msec"
 	    },
-      	    "scala-kmeans":{
+	    "scala-kmeans":{
         	// scala-kmeans (scala-stdlib) [default], iteration 1 completed (742.875 ms)
 		regex: /scala-kmeans.*iteration \d+ completed \((\d*\.?\d*)\sms\)/g,
 		higherbetter: true,
