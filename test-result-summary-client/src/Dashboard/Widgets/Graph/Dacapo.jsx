@@ -1,8 +1,7 @@
 import React, { Component } from 'react';
-import Swal from 'sweetalert2'
 import Settings from '../Settings';
 import StockChart from './ChartComponent/StockChart';
-import { getStatisticValues, parseSha } from './utils';
+import { getStatisticValues, handlePointClick } from './utils';
 import './Dacapo.css';
 
 const builds = ["Test_openjdk8_j9_sanity.perf_x86-64_linux",
@@ -115,42 +114,7 @@ export default class Dacapo extends Component {
 				data: series[key],
 				keys: ['x', 'y', 'additionalData', 'CI'],
 				events: {
-					click: async function (event) {
-						const { buildName, buildNum, javaVersion, jdkDate, testId } = event.point.additionalData[0];
-
-						const buildLinks = ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
-						const CIstr = (typeof event.point.CI === 'undefined') ? `` : `CI = ${event.point.CI}`;
-
-						let ret = `<b>${'NAME'}:</b> ${event.y}<br/> <b>Build: </b> ${jdkDate} <pre>${javaVersion}</pre><br/><b>Link to builds:</b> ${buildLinks}<br /> ${CIstr}`;
-						
-						let i = event.point.series.data.indexOf(event.point);
-						let prevPoint = i === 0 ? null : event.point.series.data[i - 1];
-						let lengthPrev = prevPoint ?
-						prevPoint.additionalData.length : 0;
-						let prevJavaVersion = prevPoint ? prevPoint.additionalData[lengthPrev - 1].javaVersion : null;
-
-						prevJavaVersion = parseSha(prevJavaVersion, 'OpenJ9');
-            			javaVersion = parseSha(javaVersion, 'OpenJ9');
-
-						if (prevJavaVersion && javaVersion) {
-							let githubLink = `<a href="https://github.com/eclipse/openj9/compare/${prevJavaVersion}…${javaVersion}">Github Link </a>`;
-							ret += `<br/> <b> Compare Builds: </b>${githubLink}`;
-						}
-
-						Swal.fire({
-							html: ret,
-							showCloseButton: true,
-							showConfirmButton: false,
-							width: '50%',
-							customClass: {
-								htmlContainer: 'text-align: left !important;',
-								container: 'text-align: left !important;',
-  								content: 'text-align: left !important;',
-  								input: 'text-align: left !important;',
-
-							}
-						});
-					}
+					click: handlePointClick(events)
 				}
 			});
 		}
