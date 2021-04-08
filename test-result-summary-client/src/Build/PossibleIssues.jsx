@@ -24,7 +24,7 @@ export default class PossibleIssues extends Component {
         }
 
         const response = await fetch(`https://api.github.com/search/issues?q=${testName}+state:open+repo:AdoptOpenJDK/openjdk-tests` +
-                    `+repo:AdoptOpenJDK/openjdk-infrastructure+repo:AdoptOpenJDK/openjdk-build${additionalRepo}`, {
+                    `+repo:AdoptOpenJDK/openjdk-infrastructure+repo:AdoptOpenJDK/openjdk-build+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`, {
             method: 'get'
         });
         if (response.ok) {

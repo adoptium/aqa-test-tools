@@ -135,19 +135,29 @@ export default class Renaissance extends Component {
 
 				test.testData.metrics.forEach(( metric, i)=> {
 					if ( metric.name === "akka-uct" ) {
-						akkaUct = metric.value[0];
+						if ( math.size(metric.value) != 0 ) {
+							akkaUct = math.mean(metric.value);
+						}
 					}
 					if ( metric.name === "fj-kmeans" ) {
-						fj = metric.value[0];
+						if ( math.size(metric.value) != 0 ) {
+							fj = math.mean(metric.value);
+						}
 					}
 					if ( metric.name === "future-genetic" ) {
-						futureGenetic = metric.value[0];
+						if ( math.size(metric.value) != 0 ) {
+							futureGenetic = math.mean(metric.value);
+						}
 					}
-                    if ( metric.name === "naive-bayes" ) {
-						bayes = metric.value[0];
+          				if ( metric.name === "naive-bayes" ) {
+						if ( math.size(metric.value) != 0 ) {
+							bayes = math.mean(metric.value);
+						}
 					}
-                    if ( metric.name === "scala-kmeans" ) {
-						scala = metric.value[0];
+          				if ( metric.name === "scala-kmeans" ) {
+						if ( math.size(metric.value) != 0 ) {
+							scala = math.mean(metric.value);
+						}
 					}
 				});
 
