@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import Settings from '../Settings';
 import StockChart from './ChartComponent/StockChart';
 import { getStatisticValues, handlePointClick } from './utils';
-import './Dacapo.css';
 
 const builds = ["Test_openjdk8_j9_sanity.perf_x86-64_linux",
 				"Test_openjdk11_j9_sanity.perf_x86-64_linux",
@@ -114,7 +113,7 @@ export default class Dacapo extends Component {
 				data: series[key],
 				keys: ['x', 'y', 'additionalData', 'CI'],
 				events: {
-					click: handlePointClick(events)
+					click: (event) => handlePointClick(event)
 				}
 			});
 		}
