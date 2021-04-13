@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
 import Settings from '../Settings';
 import StockChart from './ChartComponent/StockChart';
-import { getStatisticValues, handlePointClick } from './utils';
 import { fetchData } from '../../../utils/Utils';
+import { getStatisticValues, handlePointClick, formatDate } from './utils';
 
 const builds = ["Test_openjdk8_j9_sanity.perf_x86-64_linux",
 				"Test_openjdk11_j9_sanity.perf_x86-64_linux",
@@ -55,7 +55,7 @@ export default class Dacapo extends Component {
 		results.forEach((t, i) => {
 			let jdkDate = t.jdkDate;
 			if (t.buildResult !== "SUCCESS" || !jdkDate) return;
-			jdkDate = jdkDate.replaceAll('-', '');
+			jdkDate = formatDate(jdkDate.trim());
 			resultsByJDKBuild[jdkDate] = resultsByJDKBuild[jdkDate] || [];
 			t.tests.forEach((test, i) => {
 				let eclipse = null;
