@@ -21,17 +21,34 @@ export const parseSha = (str, sha) => {
     return null;
 }
 
+// this method should be deleted after total cleanup of Renaissance.jsx
 export const getEpochTime = (str) => {
-    // str has the form "\syyyymmdd"
-    if (str.length === 9) {
-        let year = parseInt(str.slice(0, 5));
-        // UTC format has month 0 - 11
-        let month = parseInt(str.slice(5, 7)) - 1;
-        let day = parseInt(str.slice(7, 9));
-        return Date.UTC(year, month, day);
-    } else {
-        return null;
-    }
+	// str has the form "yyyymmdd" or "\syyyymmdd"
+	str = str.trim();
+	if (str.length === 8) {
+		let year = parseInt(str.slice(0, 4));
+		// UTC format has month 0 - 11
+		let month = parseInt(str.slice(4, 6)) - 1;
+		let day = parseInt(str.slice(6, 8));
+		return Date.UTC(year, month, day);
+	} else {
+		return null;
+	}
+}
+
+// TODO: delete this function after a few months when all jdkDate are in the date format
+export const formatDate = (str) => {
+	const oldFormatRegex = /\d{8}/;
+	let curRegexResult = null;
+	if ( ( curRegexResult = oldFormatRegex.exec(str) ) != null) {
+		let year = parseInt(str.slice(0, 4));
+		let month = parseInt(str.slice(4, 6));
+		let day = parseInt(str.slice(6, 8));
+		let date = year + "-" + month + "-" + day;
+		return date;
+	} else {
+		return str;
+	}
 }
 
 export const getStatisticValues = (resultsByJDKBuild, key) => {
@@ -41,8 +58,10 @@ export const getStatisticValues = (resultsByJDKBuild, key) => {
     let mean = [];
     let median = [];
 
-    math.sort(Object.keys(resultsByJDKBuild)).forEach((k, i) => {
-        const date = getEpochTime(k);
+    Object.keys(resultsByJDKBuild).sort( function (a,b) 
+    { return new Date(a).getTime() - new Date(b).getTime(); })
+    .forEach((k, i) => {
+        const date = new Date(k);
 
         let group = resultsByJDKBuild[k].map(x => x[key]).filter(function (el) {
             return el != null;
@@ -54,13 +73,13 @@ export const getStatisticValues = (resultsByJDKBuild, key) => {
             mean.push([date, math.mean(values)]);
             median.push([date, math.median(values)]);
         }
-
     });
     return [data, std, mean, median];
 }
 
 export const handlePointClick = (event) => {
-    const { buildName, buildNum, javaVersion, jdkDate, testId } = event.point.additionalData[0];
+    const { buildName, buildNum, jdkDate, testId } = event.point.additionalData[0];
+    let { javaVersion } = event.point.additionalData[0];
 
     const buildLinks = ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
     const CIstr = (typeof event.point.CI === 'undefined') ? `` : `CI = ${event.point.CI}`;
