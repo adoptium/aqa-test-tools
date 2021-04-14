@@ -11,7 +11,7 @@ import { TestCompare } from './TestCompare/';
 import { ThirdPartyAppView } from './ThirdPartyAppView/';
 import { PerfCompare } from './PerfCompare/';
 import { TabularView } from './TabularView/';
-import { AllTestsInfo, BuildDetail, DeepHistory, GitNewIssue, TestPerPlatform, PossibleIssues, TopLevelBuilds, ResultSummary } from './Build/';
+import { AllTestsInfo, BuildDetail, DeepHistory, GitNewIssue, TestPerPlatform, PossibleIssues, TopLevelBuilds, ResultSummary, ReleaseSummary } from './Build/';
 import { SearchResult } from './Search/';
 import { Settings } from './Settings/';
 
@@ -76,6 +76,7 @@ export default class App extends Component {
                                 <Route path="/searchResult" component={SearchResult} />
                                 <Route path="/resultSummary" component={ResultSummary} />
                                 <Route path="/ThirdPartyAppView" component={ThirdPartyAppView} />
+                                <Route path="/releaseSummary" component={ReleaseSummary}/>
                             </Content>
                         </ErrorBoundary>
                     </Layout>
