@@ -6,3 +6,4 @@ export { default as TestPerPlatform } from "./TestPerPlatform";
 export { default as PossibleIssues } from "./PossibleIssues";
 export { default as TopLevelBuilds } from "./TopLevelBuilds";
 export { default as ResultSummary } from "./Summary/ResultSummary";
+export {default as ReleaseSummary} from "./ReleaseSummary";

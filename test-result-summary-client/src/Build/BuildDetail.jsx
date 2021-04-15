@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
-import { Table } from 'antd';
+import { Button, Table } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { SearchOutput } from '../Search/';
 import { getParams, params } from '../utils/query';
 import BuildTable from "./BuildTable";
+import { Link } from 'react-router-dom';
+
 
 export default class BuildDetail extends Component {
     state = {
@@ -110,6 +112,12 @@ export default class BuildDetail extends Component {
             />
             <br />
             <BuildTable title={"Children builds"} buildData={childBuildsDataSource} />
+            <br />
+            <Link to={{ pathname: '/releaseSummary', search: params({ parentId: parentId, buildName: buildName}) }}>
+                <Button type="primary">
+                    Release Summary Report
+                </Button>
+            </Link>
         </div>
     }
 }
