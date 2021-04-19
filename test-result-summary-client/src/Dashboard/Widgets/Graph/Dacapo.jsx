@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Settings from '../Settings';
 import StockChart from './ChartComponent/StockChart';
-import { getStatisticValues } from './utils';
+import { getStatisticValues, handlePointClick } from './utils';
 
 const builds = ["Test_openjdk8_j9_sanity.perf_x86-64_linux",
 				"Test_openjdk11_j9_sanity.perf_x86-64_linux",
@@ -111,7 +111,10 @@ export default class Dacapo extends Component {
 				visible: key === "h2Data",
 				name: key,
 				data: series[key],
-				keys: ['x', 'y', 'additionalData', 'CI']
+				keys: ['x', 'y', 'additionalData', 'CI'],
+				events: {
+					click: (event) => handlePointClick(event)
+				}
 			});
 		}
 		this.setState({ displaySeries });
@@ -119,6 +122,6 @@ export default class Dacapo extends Component {
 
 	render() {
 		const { displaySeries } = this.state;
-		return <StockChart displaySeries={displaySeries} />;
+		return <StockChart showTooltip={false} displaySeries={displaySeries} />;
 	}
 }
