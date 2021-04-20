@@ -3,6 +3,7 @@ import { Button, Table } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { SearchOutput } from '../Search/';
 import { getParams, params } from '../utils/query';
+import { fetchData } from '../utils/Utils';
 import BuildTable from "./BuildTable";
 import { Link } from 'react-router-dom';
 
@@ -32,22 +33,14 @@ export default class BuildDetail extends Component {
 
     async updateData() {
         const { parentId, buildResult, testSummaryResult, buildNameRegex } = getParams(this.props.location.search);
-        let fetchBuild = {};
+        let builds;
         if (testSummaryResult || buildNameRegex || buildResult) {
-            fetchBuild = await fetch(`/api/getAllChildBuilds${params({ buildResult, testSummaryResult, buildNameRegex, parentId })}`, {
-                method: 'get'
-            });
+            builds = await fetchData(`/api/getAllChildBuilds${params({ buildResult, testSummaryResult, buildNameRegex, parentId })}`);
         } else {
-            fetchBuild = await fetch(`/api/getChildBuilds?parentId=${parentId}`, {
-                method: 'get'
-            });
+            builds = await fetchData(`/api/getChildBuilds?parentId=${parentId}`);
         }
        
-        const builds = await fetchBuild.json();
-        const fetchParentBuild = await fetch( `/api/getData?_id=${parentId} `, {
-            method: 'get'
-        } );
-        const parent = await fetchParentBuild.json();
+        const parent = await fetchData(`/api/getData?_id=${parentId} `);
 
         this.setState( { builds, parent } );
     }

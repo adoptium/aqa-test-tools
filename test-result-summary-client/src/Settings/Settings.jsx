@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { CheckOutlined, DownOutlined, EditOutlined } from '@ant-design/icons';
 import { Button, Table, Input, Popconfirm, Dropdown, Menu, message, Spin } from 'antd';
+import { fetchData } from '../utils/Utils';
 import './settings.css';
 
 class EditableCell extends Component {
@@ -57,11 +58,7 @@ export default class Settings extends Component {
      };
 
     async componentDidMount() {
-        const response = await fetch( `/api/getBuildList`, {
-            method: 'get'
-        } );
-
-        const results = await response.json();
+        const results = await fetchData( `/api/getBuildList`);
         if ( results && results.length > 0 ) {
             const data = results.map(( info, i ) => {
                 return {
@@ -99,10 +96,7 @@ export default class Settings extends Component {
 
     deleteBuilds = async ( record ) => {
         // delete URL from monitor list
-        const response = await fetch( `/api/deleteBuildListById?_id=${record._id}`, {
-            method: 'get'
-        } );
-        await response.json();
+        await fetchData( `/api/deleteBuildListById?_id=${record._id}`);
 
          // delete build data from database
         const fetchDeleteBuildData = await fetch(`/api/deleteBuildData?buildUrl=${record.buildUrl}`, {

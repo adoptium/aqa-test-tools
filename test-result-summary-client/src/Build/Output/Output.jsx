@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { getParams } from '../../utils/query';
+import { fetchData } from '../../utils/Utils';
 import { Col, Row, Switch } from 'antd';
 import TestBreadcrumb from '../TestBreadcrumb';
 import classnames from 'classnames';
@@ -27,14 +28,8 @@ export default class Output extends Component {
         let data = {};
         const { id } = getParams( this.props.location.search );
         if ( outputType === "test" ) {
-            const fetchData = await fetch( `/api/getTestById?id=${id} `, {
-                method: 'get'
-            } );
-            const info = await fetchData.json();
-            const fetchTest = await fetch( `/api/getOutputById?id=${info.testOutputId}`, {
-                method: 'get'
-            } );
-            const result = await fetchTest.json();
+            const info = await fetchData(`/api/getTestById?id=${id} `);
+            const result = await fetchData(`/api/getOutputById?id=${info.testOutputId}`);
             data = {
                 testId: info._id,
                 buildId: info.buildId,
@@ -44,16 +39,10 @@ export default class Output extends Component {
                 result: info.testResult
             };
         } else {
-            const fetchData = await fetch( `/api/getData?_id=${id} `, {
-                method: 'get'
-            } );
-            const results = await fetchData.json();
+            const results = await fetchData(`/api/getData?_id=${id} `);
             const info = results[0];
             if ( info && info.buildOutputId ) {
-                const fetchTest = await fetch( `/api/getOutputById?id=${info.buildOutputId}`, {
-                    method: 'get'
-                } );
-                const result = await fetchTest.json();
+                const result = await fetchData(`/api/getOutputById?id=${info.buildOutputId}`);
 
                 data = {
                     buildId: info._id,

@@ -45,3 +45,16 @@ const getSHA = (type, javaVersion) => {
     }
     return null;
 }
+
+export const fetchData = async(url) => {
+    try{
+        const response = await fetch(url, {
+            method: 'get'
+        });
+        const jsonResponse = await response.json();
+        return jsonResponse;    
+    }
+    catch(e){
+        console.error(e);
+    }
+}

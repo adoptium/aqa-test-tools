@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import Settings from '../Settings';
 import StockChart from './ChartComponent/StockChart';
 import { getStatisticValues, handlePointClick } from './utils';
+import { fetchData } from '../../../utils/Utils';
 
 const builds = ["Test_openjdk8_j9_sanity.perf_x86-64_linux",
 				"Test_openjdk11_j9_sanity.perf_x86-64_linux",
@@ -36,15 +37,9 @@ export default class Dacapo extends Component {
 	async updateData() {
 		const { buildSelected, serverSelected } = this.props;
 		const buildName = encodeURIComponent(buildSelected);
-		const response = await fetch(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
-			method: 'get'
-		});
-		let results = await response.json();
+		let results = await fetchData(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`);
 
-		const res = await fetch(`/api/getDashboardBuildInfo`, {
-			method: 'get'
-		});
-		const buildInfoMap = await res.json();
+		const buildInfoMap = await fetchData(`/api/getDashboardBuildInfo`);
 
 		if (serverSelected) {
 			if (serverSelected === 'AdoptOpenJDK') {

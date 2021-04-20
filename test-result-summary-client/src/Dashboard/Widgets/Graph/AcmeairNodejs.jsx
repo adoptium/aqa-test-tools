@@ -4,6 +4,7 @@ import {
     LineSeries, Navigator, RangeSelector, Tooltip
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
+import { fetchData } from '../../../utils/Utils';
 import { Radio } from 'antd';
 import math from 'mathjs';
 
@@ -66,10 +67,7 @@ export default class AcemeairNodejs extends Component {
         const buildSelected  = Object.keys(map)[0];
         const buildName = encodeURIComponent( buildSelected );
         const buildsName = "buildName=" + map[buildName].split(" ").join("&buildName=");
-        const response = await fetch( `/api/getBuildHistory?type=Perf&${buildsName}&status=Done&limit=100&asc`, {
-            method: 'get'
-        } );
-        const results = await response.json();
+        const results = await fetchData(`/api/getBuildHistory?type=Perf&${buildsName}&status=Done&limit=100&asc`);
         const resultsByJDKBuild = {};
         let globalThroughputs = {};
         let baseLine = [];

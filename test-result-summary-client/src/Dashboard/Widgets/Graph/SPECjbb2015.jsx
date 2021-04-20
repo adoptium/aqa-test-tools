@@ -7,6 +7,7 @@ import DateRangePickers from '../DateRangePickers';
 import { Checkbox } from 'antd';
 import math from 'mathjs';
 import { parseSha } from './utils';
+import { fetchData } from '../../../utils/Utils';
 
 const map = {
     "Daily-SPECjbb2015": "Daily-SPECjbb2015-pxa64 | multi_2grp_gencon",
@@ -83,10 +84,7 @@ export default class SPECjbb2015 extends Component {
         const response = await fetch( `/api/getBuildHistory?type=Perf&${buildsName}&status=Done&limit=100&asc`, {
             method: 'get'
         } );*/
-        const response = await fetch( `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
-            method: 'get'
-        } );
-        const results = await response.json();
+        const results = await fetchData( `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`);
         const resultsByJDKBuild = {};
         const maxjOPSData = [];
         const maxjOPS = [];
