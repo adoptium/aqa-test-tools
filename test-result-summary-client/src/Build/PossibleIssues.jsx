@@ -2,8 +2,13 @@ import React, { Component } from 'react';
 import { Table } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { getParams } from '../utils/query';
+import { getGitConfig } from '../utils/parseGitConfig';
 
 import './table.css';
+
+//Attempt to fetch GitHub credentials for authenticated API requests
+const gitConfig = getGitConfig();
+const credentials = gitConfig === null ? "" : btoa(`${gitConfig.user}:${gitConfig.password}`);
 
 export default class PossibleIssues extends Component {
     state = {
@@ -25,8 +30,12 @@ export default class PossibleIssues extends Component {
 
         const response = await fetch(`https://api.github.com/search/issues?q=${testName}+state:open+repo:AdoptOpenJDK/openjdk-tests` +
                     `+repo:AdoptOpenJDK/openjdk-infrastructure+repo:AdoptOpenJDK/openjdk-build+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`, {
-            method: 'get'
+            method: 'get',
+            headers: {
+                Authorization: `Basic ${credentials}` 
+            }
         });
+
         if (response.ok) {
             const relatedIssues = await response.json();
             let dataSource = {};

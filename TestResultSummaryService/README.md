@@ -92,6 +92,23 @@ Config file example:
 
 If any server name matches with url in `DashboardBuildInfo.json` or domain in build monitoring list, credentials will be used when querying these servers.
 
+### GitHub credentials Config file
+In order to make authenticated requests to GitHub APIs, credentials of a valid GitHub account will be needed. Please provide an environment variable `REACT_APP_CONFIG_FILE=<name of the config json file>` in the client (i.e., in the `.env` file of `test-result-summary-client` module). The default value is `REACT_APP_CONFIG_FILE=gitConf.json`. 
+
+Please note that the config file will have to be added in the `src` folder to be valid. Hence, `REACT_APP_CONFIG_FILE=gitConf.json` will attempt to access `test-result-summary-client/src/gitConf.json`.
+
+Git Config file example:
+```
+{
+	"Git":{
+		"user": "abc",
+		"password": "123"	<=== this can also be a token
+	}
+}
+```  
+
+If the provided credentials are valid, they will be used to make authenticated requests to GitHub APIs. In case of a missing config file or invalid credentials, unauthenticated calls will be made. 
+
 ##Build Status
 
 A build can have the following status in database:
