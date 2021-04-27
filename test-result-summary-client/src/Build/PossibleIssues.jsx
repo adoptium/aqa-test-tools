@@ -16,14 +16,45 @@ export default class PossibleIssues extends Component {
     }
 
     async fetchIssues() {
-        const { buildName, testName } = getParams( this.props.location.search );
+        const { testId, buildName, testName } = getParams( this.props.location.search );
+        const generalTestName = testName.replace(/_\d+$/, '');
 
+        // fetch test output content
+        const fetchData = await fetch( `/api/getTestById?id=${testId} `, {
+            method: 'get'
+        } );
+        const info = await fetchData.json();
+        const fetchTest = await fetch( `/api/getOutputById?id=${info.testOutputId}`, {
+            method: 'get'
+        } );
+        const result = await fetchTest.json();
+        const testOutput = result.output;
+
+        // query ML Server for possible issues
+        let mlIssue = '', mlIssueRepo = '', mlIssueNum = '';
+        // Currently all TRSS servers will use the same ML server deployed on the TRSS adoptopendk machine
+        const mlResponse = await fetch( 'https://ml.trss.adoptopenjdk.net/predict', {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 'console_content' : testOutput })
+        }).catch((error) => {
+            console.log("ML server error " + error)
+        });
+        if ( mlResponse && mlResponse.ok ) {
+            const mlResponseJson = await mlResponse.json();
+            mlIssue = mlResponseJson['result'] || '';
+            mlIssueRepo = mlIssue.replace(/-\d+$/, '');
+            mlIssueNum = mlIssue.match(/\d+$/)[0];
+        }
+
+        // fetch related issues with Github API
         let additionalRepo = "";
         if (buildName.includes('j9') || buildName.includes('ibm')) {
             additionalRepo = "+repo:eclipse/openj9";
         }
-
-        const response = await fetch(`https://api.github.com/search/issues?q=${testName}+state:open+repo:AdoptOpenJDK/openjdk-tests` +
+        const response = await fetch(`https://api.github.com/search/issues?q=${generalTestName}+state:open+repo:AdoptOpenJDK/openjdk-tests` +
                     `+repo:AdoptOpenJDK/openjdk-infrastructure+repo:AdoptOpenJDK/openjdk-build+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`, {
             method: 'get'
         });
@@ -34,10 +65,19 @@ export default class PossibleIssues extends Component {
             for (let index = 0; index < relatedIssues.items.length; index++) {
                 const repoName = relatedIssues.items[index].repository_url.replace(repoUrlAPIPrefix, "");
                 const issue = <a href={relatedIssues.items[index].html_url} target="_blank" rel="noopener noreferrer">{relatedIssues.items[index].title}</a>;
+
+                let relatedDegree = 'Medium';
+                if (repoName.includes(mlIssueRepo)) {
+                    if (relatedIssues.items[index].number.toString() === mlIssueNum) {
+                        relatedDegree = 'High';
+                    }
+                }
+ 
                 dataSource[repoName] = dataSource[repoName] || [];
                 dataSource[repoName].push({
                     key: dataSource[repoName].length,
-                    issue
+                    issue,
+                    degree: relatedDegree,
                 });
             }
             this.setState({
@@ -57,11 +97,18 @@ export default class PossibleIssues extends Component {
         if (error) {
             return <div>Error: {error}</div>;
         } else {
-            const columns = [{
-                title: 'Possible Issues',
-                dataIndex: 'issue',
-                key: 'issue',
-            }];
+            const columns = [
+                {
+                    title: 'Possible Issues',
+                    dataIndex: 'issue',
+                    key: 'issue',
+                },
+                {
+                    title: 'Related Degree',
+                    dataIndex: 'degree',
+                    key: 'degree',
+                },
+            ];
 
             return <div>
                 <TestBreadcrumb buildId={buildId} testId={testId} testName={testName} />
