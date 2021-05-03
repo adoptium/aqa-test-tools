@@ -13,17 +13,17 @@ Running on test-packet-ubuntu1604-x64-2 in /home/jenkins/workspace/Test_openjdk1
 [Pipeline] checkout
 No credentials specified
 Cloning the remote Git repository
-Cloning repository https://github.com/AdoptOpenJDK/openjdk-tests.git
+Cloning repository https://github.com/adoptium/aqa-tests.git
  > git init /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests # timeout=10
 [WARNING] Reference path does not exist: /home/jenkins/openjdk_cache
-Fetching upstream changes from https://github.com/AdoptOpenJDK/openjdk-tests.git
+Fetching upstream changes from https://github.com/adoptium/aqa-tests.git
  > git --version # timeout=10
- > git fetch --tags --progress -- https://github.com/AdoptOpenJDK/openjdk-tests.git +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git config remote.origin.url https://github.com/AdoptOpenJDK/openjdk-tests.git # timeout=10
+ > git fetch --tags --progress -- https://github.com/adoptium/aqa-tests.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/adoptium/aqa-tests.git # timeout=10
  > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
- > git config remote.origin.url https://github.com/AdoptOpenJDK/openjdk-tests.git # timeout=10
-Fetching upstream changes from https://github.com/AdoptOpenJDK/openjdk-tests.git
- > git fetch --tags --progress -- https://github.com/AdoptOpenJDK/openjdk-tests.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/adoptium/aqa-tests.git # timeout=10
+Fetching upstream changes from https://github.com/adoptium/aqa-tests.git
+ > git fetch --tags --progress -- https://github.com/adoptium/aqa-tests.git +refs/heads/*:refs/remotes/origin/* # timeout=10
 Checking out Revision 61672c8d83e09d9593a88cd4c3497975daddbdcf (origin/master)
  > git rev-parse origin/master^{commit} # timeout=10
  > git config core.sparsecheckout # timeout=10
@@ -44,7 +44,7 @@ Timeout set to expire in 10 hr
 [Pipeline] sh
 [2020-06-08T16:14:58.690Z] + printenv
 [2020-06-08T16:14:58.691Z] JENKINS_HOME=/home/jenkins/.jenkins
-[2020-06-08T16:14:58.691Z] OPENJ9_REPO=https://github.com/eclipse/openj9.git
+[2020-06-08T16:14:58.691Z] OPENJ9_REPO=https://github.com/eclipse-openj9/openj9.git
 [2020-06-08T16:14:58.691Z] MAIL=/var/mail/jenkins
 [2020-06-08T16:14:58.691Z] SSH_CLIENT=78.47.239.97 60518 22
 [2020-06-08T16:14:58.691Z] USER=jenkins
@@ -52,7 +52,7 @@ Timeout set to expire in 10 hr
 [2020-06-08T16:14:58.691Z] SDK_RESOURCE=nightly
 [2020-06-08T16:14:58.691Z] OPENJ9_BRANCH=master
 [2020-06-08T16:14:58.691Z] RUN_CHANGES_DISPLAY_URL=https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/2/display/redirect?page=changes
-[2020-06-08T16:14:58.691Z] ADOPTOPENJDK_REPO=https://github.com/AdoptOpenJDK/openjdk-tests.git
+[2020-06-08T16:14:58.691Z] ADOPTOPENJDK_REPO=https://github.com/adoptium/aqa-tests.git
 [2020-06-08T16:14:58.691Z] TARGET=extended.external
 [2020-06-08T16:14:58.691Z] EXTRA_DOCKER_ARGS=-v ${TEST_JDK_HOME}:/opt/java/openjdk
 [2020-06-08T16:14:58.691Z] SHLVL=1
@@ -102,7 +102,7 @@ Timeout set to expire in 10 hr
 [2020-06-08T16:14:58.691Z] RUN_DISPLAY_URL=https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/2/display/redirect
 [2020-06-08T16:14:58.691Z] SPEC=linux_x86-64_cmprssptrs
 [2020-06-08T16:14:58.691Z] HUDSON_SERVER_COOKIE=2d832652af5afba8
-[2020-06-08T16:14:58.691Z] TKG_REPO=https://github.com/AdoptOpenJDK/TKG.git
+[2020-06-08T16:14:58.691Z] TKG_REPO=https://github.com/adoptium/TKG.git
 [2020-06-08T16:14:58.691Z] JOB_DISPLAY_URL=https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/display/redirect
 [2020-06-08T16:14:58.691Z] NUM_PROCESSORS=4
 [2020-06-08T16:14:58.691Z] JOB_NAME=Test_openjdk11_j9_extended.external_x86-64_linux_kafka
@@ -128,7 +128,7 @@ Timeout set to expire in 10 hr
 [Pipeline] sh
 [2020-06-08T16:14:59.449Z] + pwd
 [2020-06-08T16:14:59.449Z] + pwd
-[2020-06-08T16:14:59.449Z] + ./openjdk-tests/get.sh -s /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka -t /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests -p x86-64_linux -r nightly -j 11 -i openj9 --openj9_repo https://github.com/eclipse/openj9.git --openj9_branch master --tkg_repo https://github.com/AdoptOpenJDK/TKG.git --tkg_branch master
+[2020-06-08T16:14:59.449Z] + ./openjdk-tests/get.sh -s /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka -t /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests -p x86-64_linux -r nightly -j 11 -i openj9 --openj9_repo https://github.com/eclipse-openj9/openj9.git --openj9_branch master --tkg_repo https://github.com/adoptium/TKG.git --tkg_branch master
 [2020-06-08T16:14:59.449Z] TESTDIR: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests
 [2020-06-08T16:14:59.449Z] get jdk binary...
 [2020-06-08T16:14:59.449Z] _ENCODE_FILE_NEW=UNTAGGED curl -OLJSks  https://api.adoptopenjdk.net/v3/binary/latest/11/ea/linux/x64/jdk/openj9/normal/adoptopenjdk
@@ -143,8 +143,8 @@ Timeout set to expire in 10 hr
 [2020-06-08T16:15:18.080Z] OMR      - b68a7d300
 [2020-06-08T16:15:18.080Z] JCL      - 72bf42d051 based on jdk-11.0.8+6)
 [2020-06-08T16:15:18.389Z] get testKitGen...
-[2020-06-08T16:15:18.389Z] git clone -b master https://github.com/AdoptOpenJDK/TKG.git
-[2020-06-08T16:15:21.234Z] check AdoptOpenJDK repo and TKG repo SHA
+[2020-06-08T16:15:18.389Z] git clone -b master https://github.com/adoptium/TKG.git
+[2020-06-08T16:15:21.234Z] check Adoptium repo and TKG repo SHA
 [2020-06-08T16:15:21.234Z] /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG/scripts/getSHA.sh --repo_dir /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests --output_file /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG/SHA.txt
 [2020-06-08T16:15:21.234Z] Check sha in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests and store the info in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG/SHA.txt
 [2020-06-08T16:15:21.234Z] touch /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG/SHA.txt
@@ -152,7 +152,7 @@ Timeout set to expire in 10 hr
 [2020-06-08T16:15:21.234Z] timestamp: 20200608-161521
 [2020-06-08T16:15:21.234Z] repo dir: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests
 [2020-06-08T16:15:21.234Z] git repo: 
-[2020-06-08T16:15:21.546Z]   Fetch URL: https://github.com/AdoptOpenJDK/openjdk-tests.git
+[2020-06-08T16:15:21.546Z]   Fetch URL: https://github.com/adoptium/aqa-tests.git
 [2020-06-08T16:15:21.546Z] sha:
 [2020-06-08T16:15:21.546Z] 61672c8d83e09d9593a88cd4c3497975daddbdcf
 [2020-06-08T16:15:21.546Z] /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG/scripts/getSHA.sh --repo_dir /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG --output_file /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG/SHA.txt
@@ -161,11 +161,11 @@ Timeout set to expire in 10 hr
 [2020-06-08T16:15:21.546Z] timestamp: 20200608-161521
 [2020-06-08T16:15:21.546Z] repo dir: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG
 [2020-06-08T16:15:21.546Z] git repo: 
-[2020-06-08T16:15:21.546Z]   Fetch URL: https://github.com/AdoptOpenJDK/TKG.git
+[2020-06-08T16:15:21.546Z]   Fetch URL: https://github.com/adoptium/TKG.git
 [2020-06-08T16:15:21.546Z] sha:
 [2020-06-08T16:15:21.546Z] 15e196652a7b8da438fb6b071f40da131a14a6e4
 [2020-06-08T16:15:21.546Z] get functional test material...
-[2020-06-08T16:15:21.546Z] git clone --depth 1 -b master https://github.com/eclipse/openj9.git
+[2020-06-08T16:15:21.546Z] git clone --depth 1 -b master https://github.com/eclipse-openj9/openj9.git
 [2020-06-08T16:15:37.194Z] check OpenJ9 Repo sha
 [2020-06-08T16:15:37.194Z] /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG/scripts/getSHA.sh --repo_dir /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/openj9 --output_file /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG/SHA.txt
 [2020-06-08T16:15:37.194Z] Check sha in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/openj9 and store the info in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/TKG/SHA.txt
@@ -173,7 +173,7 @@ Timeout set to expire in 10 hr
 [2020-06-08T16:15:37.194Z] timestamp: 20200608-161536
 [2020-06-08T16:15:37.194Z] repo dir: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_x86-64_linux_kafka/openjdk-tests/openj9
 [2020-06-08T16:15:37.194Z] git repo: 
-[2020-06-08T16:15:37.194Z]   Fetch URL: https://github.com/eclipse/openj9.git
+[2020-06-08T16:15:37.194Z]   Fetch URL: https://github.com/eclipse-openj9/openj9.git
 [2020-06-08T16:15:37.194Z] sha:
 [2020-06-08T16:15:37.194Z] 1f34b29d93b9af09b53b55e7a1a923d5a19eceed
 [Pipeline] }

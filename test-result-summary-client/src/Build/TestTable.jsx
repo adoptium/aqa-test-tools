@@ -67,7 +67,7 @@ export default class TestTable extends Component {
                     {possibleIssues(row, value)}
                     <Divider type="vertical" />
                     <Link to={{ pathname: '/gitNewIssue', search: params({ testId, buildId }) }}>
-                        <Tooltip title="Create new issue at https://github.com/AdoptOpenJDK/openjdk-tests"> <GithubOutlined /></Tooltip>
+                        <Tooltip title="Create new issue at https://github.com/adoptium/aqa-tests"> <GithubOutlined /></Tooltip>
                     </Link>
                 </span>
             );

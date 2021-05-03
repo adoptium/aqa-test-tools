@@ -10,7 +10,7 @@ npm start
 Use API example:
 For more Twitter API parameters, see [Search Tweets](https://developer.twitter.com/en/docs/tweets/search/api-reference/get-search-tweets)
 ```
-http://localhost:3000/getGitCloneInfo?search=eclipse/openj9
+http://localhost:3000/getGitCloneInfo?search=eclipse-openj9/openj9
 http://localhost:3000/getSearchTweets?q=openj9
 ```
 
