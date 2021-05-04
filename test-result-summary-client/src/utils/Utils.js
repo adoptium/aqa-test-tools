@@ -16,7 +16,7 @@ export const getGitDiffLinks = (before, after, buildName) => {
     const { jdkVersion } = getInfoFromBuildName(buildName);
     const diffLinks = {
         "OpenJ9": "https://github.com/eclipse-openj9/openj9/compare/",
-        "OMR": "https://github.com/eclipse-openj9/omr/compare/",
+        "OMR": "https://github.com/eclipse/omr/compare/",
         "IBM": "<IBM_REPO>/compare/",
         "JCL": `https://github.com/ibmruntimes/openj9-openjdk-jdk${jdkVersion}/compare/`, 
     }

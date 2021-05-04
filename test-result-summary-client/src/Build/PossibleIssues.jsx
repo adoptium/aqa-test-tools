@@ -55,7 +55,7 @@ export default class PossibleIssues extends Component {
             additionalRepo = "+repo:eclipse-openj9/openj9";
         }
         const response = await fetch(`https://api.github.com/search/issues?q=${generalTestName}+state:open+repo:adoptium/aqa-tests` +
-                    `+repo:adoptium/aqa-infrastructure+repo:adoptium/aqa-build+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`, {
+                    `+repo:AdoptOpenJDK/openjdk-infrastructure+repo:adoptium/aqa-build+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`, {
             method: 'get'
         });
         if (response.ok) {
