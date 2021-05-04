@@ -1,7 +1,7 @@
 const https = require("https");
 const ArgParser = require("./ArgParser.js");
 const clonesPath = '/traffic/clones';
-const defaultRepo = 'eclipse/openj9';
+const defaultRepo = 'eclipse-openj9/openj9';
 const token = ArgParser.getGitConfig();
 
 module.exports = function (req, res) {

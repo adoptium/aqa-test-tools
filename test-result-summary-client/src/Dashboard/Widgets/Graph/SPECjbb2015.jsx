@@ -183,7 +183,7 @@ export default class SPECjbb2015 extends Component {
             javaVersion = parseSha(javaVersion, 'OpenJ9');
 
             if (prevJavaVersion && javaVersion) {
-                let githubLink = `<a href="https://github.com/eclipse/openj9/compare/${prevJavaVersion}…${javaVersion}">Github Link </a>`;
+                let githubLink = `<a href="https://github.com/eclipse-openj9/openj9/compare/${prevJavaVersion}…${javaVersion}">Github Link </a>`;
                 ret += `<br/> Compare Builds: ${githubLink}`;
             }
             return ret;

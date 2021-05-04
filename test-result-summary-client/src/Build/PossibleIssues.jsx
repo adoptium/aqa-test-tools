@@ -52,10 +52,10 @@ export default class PossibleIssues extends Component {
         // fetch related issues with Github API
         let additionalRepo = "";
         if (buildName.includes('j9') || buildName.includes('ibm')) {
-            additionalRepo = "+repo:eclipse/openj9";
+            additionalRepo = "+repo:eclipse-openj9/openj9";
         }
-        const response = await fetch(`https://api.github.com/search/issues?q=${generalTestName}+state:open+repo:AdoptOpenJDK/openjdk-tests` +
-                    `+repo:AdoptOpenJDK/openjdk-infrastructure+repo:AdoptOpenJDK/openjdk-build+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`, {
+        const response = await fetch(`https://api.github.com/search/issues?q=${generalTestName}+state:open+repo:adoptium/aqa-tests` +
+                    `+repo:AdoptOpenJDK/openjdk-infrastructure+repo:adoptium/aqa-build+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`, {
             method: 'get'
         });
         if (response.ok) {
