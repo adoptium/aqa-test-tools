@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import TextFilter from '../utils/TextFilter';
-import { ClusterOutlined, GithubOutlined, HistoryOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { ClusterOutlined, GithubOutlined, HistoryOutlined, QuestionCircleOutlined, LinkOutlined } from '@ant-design/icons';
 import { Table, Tooltip, Divider } from 'antd';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
@@ -53,7 +53,7 @@ export default class TestTable extends Component {
 
         const renderAction = (value, row) => {
             const { testId } = value;
-            const { buildId } = row;
+            const { buildId, buildUrl } = row;
 
             return (
                 <span>
@@ -69,6 +69,8 @@ export default class TestTable extends Component {
                     <Link to={{ pathname: '/gitNewIssue', search: params({ testId, buildId }) }}>
                         <Tooltip title="Create new issue at https://github.com/adoptium/aqa-tests"> <GithubOutlined /></Tooltip>
                     </Link>
+                    <Divider type="vertical" /> 
+                    <a target="_blank" href={buildUrl}><Tooltip title="Jenkins Link"> <LinkOutlined /> </Tooltip> </a>
                 </span>
             );
         }
