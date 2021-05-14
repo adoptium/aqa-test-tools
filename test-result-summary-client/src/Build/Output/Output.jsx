@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { getParams } from '../../utils/query';
-import { Col, Row, Switch } from 'antd';
+import { Col, Row, Switch, Tooltip, Divider } from 'antd';
+import { DownloadOutlined, LinkOutlined } from '@ant-design/icons';
 import TestBreadcrumb from '../TestBreadcrumb';
 import classnames from 'classnames';
 import Artifacts from './Artifacts';
@@ -35,13 +36,21 @@ export default class Output extends Component {
                 method: 'get'
             } );
             const result = await fetchTest.json();
+
+            const data = await fetch( `/api/getData?_id=${info.buildId} `, {
+                method: 'get'
+            } );
+            const results = await data.json();
+            const dataInfo = results[0];
+
             data = {
                 testId: info._id,
                 buildId: info.buildId,
                 name: info.testName,
-                artifactory: result.artifactory,
+                artifactory: info.artifactory,
                 output: result.output,
-                result: info.testResult
+                result: info.testResult,
+                buildUrl: dataInfo.buildUrl
             };
         } else {
             const fetchData = await fetch( `/api/getData?_id=${id} `, {
@@ -89,10 +98,11 @@ export default class Output extends Component {
                     </div>
                 </Col>
             </Row>
-            <Row>
-                <Col span={18} />
-                <Col span={6}>
-                    <Artifacts artifactory={data.artifactory} />
+            <Row justify="end">
+                <Col span={1}>
+                    {data.artifactory && <a target="_blank" href={data.artifactory}><Tooltip title="Artifactory Link"> <DownloadOutlined /> </Tooltip> </a>}
+                    <Divider type="vertical" />
+                    {data.buildUrl && <a target="_blank" href={data.buildUrl}><Tooltip title="Jenkins Link"> <LinkOutlined /> </Tooltip></a>}
                 </Col>
             </Row>
             <Row>
