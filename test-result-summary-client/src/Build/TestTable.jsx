@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 import TextFilter from '../utils/TextFilter';
-import { ClusterOutlined, GithubOutlined, HistoryOutlined, QuestionCircleOutlined } from '@ant-design/icons';
+import { ClusterOutlined, GithubOutlined, HistoryOutlined, QuestionCircleOutlined, LinkOutlined } from '@ant-design/icons';
 import { Table, Tooltip, Divider } from 'antd';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
 import renderDuration from './Duration';
+
+const testResultSortingArray = ['FAILED', 'PASSED', 'DISABLED', 'SKIPPED', 'N/A'];
 
 export default class TestTable extends Component {
     state = {
@@ -24,20 +26,34 @@ export default class TestTable extends Component {
     }
 
     render() {
-        const { title, testData, parents } = this.props;
+        const { title, parents } = this.props;
+        let { testData } = this.props;
         const { filteredData } = this.state;
-        const renderResult = ({ testResult, testId }) => {
-            return <div>
+        const renderResult = (value) => {
+            if (value) {
+                const { testId, testResult } = value
+                return <div>
                 {testId ? <Link to={{ pathname: '/output/test', search: params({ id: testId }) }}
                     style={{ color: testResult === "PASSED" ? "#2cbe4e" : (testResult === "FAILED" ? "#f50" : "#DAA520") }}>
                     {testResult}
                 </Link> : testResult}
             </div>;
+            } else {
+                return <div>
+                    N/A
+                </div>
+            }
         };
+
+        if (parents) {
+            testData = testData.sort(function(a, b){  
+                return testResultSortingArray.indexOf(a[0].testResult) - testResultSortingArray.indexOf(b[0].testResult);
+            })
+        }
 
         const renderAction = (value, row) => {
             const { testId } = value;
-            const { buildId } = row;
+            const { buildId, buildUrl } = row;
 
             return (
                 <span>
@@ -51,8 +67,10 @@ export default class TestTable extends Component {
                     {possibleIssues(row, value)}
                     <Divider type="vertical" />
                     <Link to={{ pathname: '/gitNewIssue', search: params({ testId, buildId }) }}>
-                        <Tooltip title="Create new issue at https://github.com/AdoptOpenJDK/openjdk-tests"> <GithubOutlined /></Tooltip>
+                        <Tooltip title="Create new issue at https://github.com/adoptium/aqa-tests"> <GithubOutlined /></Tooltip>
                     </Link>
+                    <Divider type="vertical" /> 
+                    <a target="_blank" href={buildUrl}><Tooltip title="Jenkins Link"> <LinkOutlined /> </Tooltip> </a>
                 </span>
             );
         }

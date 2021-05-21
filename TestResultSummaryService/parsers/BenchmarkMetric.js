@@ -441,6 +441,22 @@ const BenchmarkMetricRegex = {
             },
         },
     },
+    "syntheticgc": {
+        metrics: {
+            "Scavenge Average": {
+                //Example: Type: scavenge, scavenge_sum: 6665.59, scavenge_count: 136, scavenge_average: 49.0117, scavenge_max: 202.457
+                regex:/scavenge_average: (\d*\.?\d*)/,
+                higherbetter: false,
+                units: "ms",
+            },
+            "Partial Average": {
+                //Example: Type: partial, partial_sum: 47935, partial_count: 75, partial_average: 639.133, partial_max: 1274
+                regex:/partial_average: (\d*\.?\d*)/,
+                higherbetter: false,
+                units: "ms",
+            },
+        }
+    },
 }
 
 module.exports = BenchmarkMetricRegex;

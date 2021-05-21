@@ -45,7 +45,7 @@ export default class Build extends Component {
         await Promise.all( buildIds.map( async buildId =>{
             const {testResult, parent, error} = await this.getTestResult(buildId, limitParam);
             testData = testData.concat(testResult);
-            if ( parents.length === 0 ) {
+            if ( parent.length > parents.length || parents.length === 0 ) {
                 parents = parent;
             }
             if (error) {
@@ -88,6 +88,7 @@ export default class Build extends Component {
                     sortMachine: builds[0].machine,
                     buildName: buildData[0].buildName,
                     buildId: buildData[0]._id,
+                    buildUrl: buildData[0].buildUrl,
                 };
                 ret.action = {
                     testId: test._id,
