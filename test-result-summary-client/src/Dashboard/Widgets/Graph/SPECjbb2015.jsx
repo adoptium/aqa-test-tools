@@ -5,7 +5,7 @@ import {
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
 import { Checkbox } from 'antd';
-import math from 'mathjs';
+import { sort, mean, median, std } from 'mathjs';
 import { parseSha } from './utils';
 import { fetchData } from '../../../utils/Utils';
 
@@ -131,20 +131,20 @@ export default class SPECjbb2015 extends Component {
             }
         } );
 
-        math.sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
-            maxjOPSData.push( math.mean( resultsByJDKBuild[k].map( x => x['maxjOPS'] ) ) );
-            maxjOPS.push( [Number( k ), math.mean( resultsByJDKBuild[k].map( x => x['maxjOPS'] ) ), resultsByJDKBuild[k].map( x => x['additionalData'] )] );
+        sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
+            maxjOPSData.push( mean( resultsByJDKBuild[k].map( x => x['maxjOPS'] ) ) );
+            maxjOPS.push( [Number( k ), mean( resultsByJDKBuild[k].map( x => x['maxjOPS'] ) ), resultsByJDKBuild[k].map( x => x['additionalData'] )] );
 
-            criticaljOPSData.push( math.mean( resultsByJDKBuild[k].map( x => x['criticaljOPS'] ) ) );
-            criticaljOPS.push( [Number( k ), math.mean( resultsByJDKBuild[k].map( x => x['criticaljOPS'] ) ), resultsByJDKBuild[k].map( x => x['additionalData'] )] );
+            criticaljOPSData.push( mean( resultsByJDKBuild[k].map( x => x['criticaljOPS'] ) ) );
+            criticaljOPS.push( [Number( k ), mean( resultsByJDKBuild[k].map( x => x['criticaljOPS'] ) ), resultsByJDKBuild[k].map( x => x['additionalData'] )] );
 
-            maxjOPSStd.push( [Number( k ), math.std( maxjOPSData )] );
-            maxjOPSMean.push( [Number( k ), math.mean( maxjOPSData )] );
-            maxjOPSMedian.push( [Number( k ), math.median( maxjOPSData )] );
+            maxjOPSStd.push( [Number( k ), std( maxjOPSData )] );
+            maxjOPSMean.push( [Number( k ), mean( maxjOPSData )] );
+            maxjOPSMedian.push( [Number( k ), median( maxjOPSData )] );
 
-            criticaljOPSStd.push( [Number( k ), math.std( criticaljOPSData )] );
-            criticaljOPSMean.push( [Number( k ), math.mean( criticaljOPSData )] );
-            criticaljOPSMedian.push( [Number( k ), math.median( criticaljOPSData )] );
+            criticaljOPSStd.push( [Number( k ), std( criticaljOPSData )] );
+            criticaljOPSMean.push( [Number( k ), mean( criticaljOPSData )] );
+            criticaljOPSMedian.push( [Number( k ), median( criticaljOPSData )] );
         } );
 
         const series = { maxjOPS, maxjOPSStd, maxjOPSMean, maxjOPSMedian, criticaljOPS, criticaljOPSStd, criticaljOPSMean, criticaljOPSMedian };
