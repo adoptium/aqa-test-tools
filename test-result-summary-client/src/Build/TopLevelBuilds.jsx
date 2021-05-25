@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import TopLevelBuildTable from './TopLevelBuildTable';
-const { order } = require('../utils/Utils');
+const { order, fetchData } = require('../utils/Utils');
 export default class TopLevelBuilds extends Component {
 
     state = {
@@ -26,10 +26,7 @@ export default class TopLevelBuilds extends Component {
 
     async updateData(type) {
         if (!type) type = "Test";
-        const response = await fetch(`/api/getTopLevelBuildNames?type=${type}`, {
-            method: 'get'
-        });
-        const results = await response.json();
+        const results = await fetchData(`/api/getTopLevelBuildNames?type=${type}`);
         const builds = {};
         for (let i = 0; i < results.length; i++) {
             const url = results[i]._id.url;

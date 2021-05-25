@@ -8,6 +8,7 @@ import { Radio } from 'antd';
 import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
 import math from 'mathjs';
 import { parseSha, getEpochTime } from './utils';
+import { fetchData } from '../../../utils/Utils';
 
 const map = {
 	"renaissance-jdk11": "Test_openjdk11_j9_sanity.perf_x86-64_linux",
@@ -70,15 +71,9 @@ export default class Renaissance extends Component {
 	async updateData() {
 		const { buildSelected, serverSelected } = this.props;
 		const buildName = encodeURIComponent(map[buildSelected]);
-		const response = await fetch(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
-			method: 'get'
-		});
-		let results = await response.json();
+		let results = await fetchData(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`);
 
-		const res = await fetch(`/api/getDashboardBuildInfo`, {
-			method: 'get'
-		});
-		const buildInfoMap = await res.json();
+		const buildInfoMap = await fetchData(`/api/getDashboardBuildInfo`);
 
 		if ( serverSelected ){
 			if ( serverSelected === 'AdoptOpenJDK') {

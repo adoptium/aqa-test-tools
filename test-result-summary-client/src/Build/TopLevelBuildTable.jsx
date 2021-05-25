@@ -3,6 +3,7 @@ import { CheckOutlined, CloseOutlined, InfoOutlined, LoadingOutlined, QuestionCi
 import { Table, Tooltip, Checkbox, Popconfirm } from 'antd';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
+import { fetchData } from '../utils/Utils';
 import BuildLink from './BuildLink';
 
 const pageSize = 5;
@@ -29,11 +30,8 @@ export default class TopLevelBuildTable extends Component {
 
     async updateData() {
         const { buildName, url } = this.props;
-        const fetchBuild = await fetch(`/api/getBuildHistory?buildName=${buildName}&url=${url}`, {
-            method: 'get'
-        });
-        const builds = await fetchBuild.json();
-
+        const builds = await fetchData(`/api/getBuildHistory?buildName=${buildName}&url=${url}`);
+    
         const buildInfo = builds.map(build => ({
             key: build._id,
             build: build,
@@ -56,10 +54,7 @@ export default class TopLevelBuildTable extends Component {
 
             await Promise.all(buildInfo.slice(i, pageSize * currentPage).map(async build => {
                 if (build.totals) return;
-                const fetchBuild = await fetch(`/api/getTotals?buildName=${buildName}&url=${url}&buildNum=${build.build.buildNum}`, {
-                    method: 'get'
-                });
-                const totals = await fetchBuild.json();
+                const totals = await fetchData(`/api/getTotals?buildName=${buildName}&url=${url}&buildNum=${build.build.buildNum}`);
                 build.totals = totals;
             }));
             this.forceUpdate();

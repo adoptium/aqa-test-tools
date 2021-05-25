@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TestBreadcrumb from './TestBreadcrumb';
 import { SearchOutput } from '../Search/';
 import { getParams } from '../utils/query';
+import { fetchData } from '../utils/Utils';
 import TestTable from './TestTable';
 import AlertMsg from './AlertMsg';
 import './table.css';
@@ -35,10 +36,7 @@ export default class Build extends Component {
 
         // if it is a parallel build. 
         if ( hasChildrenBool ) {
-            const fetchChildrenBuild = await fetch(`/api/getChildBuilds?parentId=${buildId}`, {
-                method: 'get'
-            } );
-            const childrenBuilds = await fetchChildrenBuild.json();
+            const childrenBuilds = await fetchData(`/api/getChildBuilds?parentId=${buildId}`);
             buildIds = childrenBuilds.map((childrenBuilds) => childrenBuilds._id);
         } else {
             buildIds.push(buildId);
@@ -74,15 +72,9 @@ export default class Build extends Component {
     }
 
     async getTestResult(buildId, limitParam) {
-        const fetchBuild = await fetch(`/api/getAllTestsWithHistory?buildId=${buildId}${limitParam}`, {
-            method: 'get'
-        } );
-        const builds = await fetchBuild.json();
+        const builds = await fetchData(`/api/getAllTestsWithHistory?buildId=${buildId}${limitParam}`);
 
-        const fetchBuildData = await fetch(`/api/getData?_id=${buildId} `, {
-            method: 'get'
-        } );
-        const buildData = await fetchBuildData.json();
+        const buildData = await fetchData(`/api/getData?_id=${buildId} `);
         const error = buildData[0].error ? `${buildData[0].buildUrl}: ${buildData[0].error}` : "";
         let testResult = [];
         if (builds[0].tests !== undefined) {

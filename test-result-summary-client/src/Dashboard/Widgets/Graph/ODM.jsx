@@ -7,6 +7,7 @@ import DateRangePickers from '../DateRangePickers';
 import { Radio } from 'antd';
 import math from 'mathjs';
 import { parseSha } from './utils';
+import { fetchData } from '../../../utils/Utils';
 
 const map = {
     "Daily-ODM-all": "PerfNext-ODM-Child PerfNext-ODM-Parent Daily-ODM Daily-ODM-Linux-PPCLE64 Daily-ODM-openJ9 Daily-ODM-zLinux Daily-ODM-zOS"
@@ -67,10 +68,7 @@ export default class ODM extends Component {
         const { buildSelected } = this.props;
         const buildName = encodeURIComponent( buildSelected );
         const buildsName = "buildName=" + map[buildName].split(" ").join("&buildName=");
-        const response = await fetch( `/api/getBuildHistory?type=Perf&${buildsName}&status=Done&limit=100&asc`, {
-            method: 'get'
-        } );
-        const results = await response.json();
+        const results = await fetchData( `/api/getBuildHistory?type=Perf&${buildsName}&status=Done&limit=100&asc`);
         const resultsByJDKBuild = {};
         let globalThroughputs = {};
         let baseLine = [];

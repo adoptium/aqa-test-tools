@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import { Breadcrumb } from 'antd';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
+import { fetchData } from '../utils/Utils';
 
 export default class TestBreadcrumb extends Component {
     state = {};
@@ -9,10 +10,7 @@ export default class TestBreadcrumb extends Component {
         const { buildId } = this.props;
 
         if (buildId) {
-            const fetchBuild = await fetch( `/api/getParents?id=${buildId} `, {
-                method: 'get'
-            } );
-            const builds = await fetchBuild.json();
+            const builds = await fetchData(`/api/getParents?id=${buildId} `);
             this.setState( { builds } );
         }
     }

@@ -4,6 +4,7 @@ import { Button, Tooltip, Card } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { GithubOutlined } from '@ant-design/icons';
 import { getParams } from '../utils/query';
+import { fetchData } from '../utils/Utils';
 import renderDuration from './Duration';
 import { getGitDiffLinks } from '../utils/Utils';
 
@@ -26,24 +27,15 @@ export default class GitNewissue extends Component {
         const { testId, buildId } = getParams(this.props.location.search);
 
         // fetch test data
-        const fetchTestData = await fetch(`/api/getTestById?id=${testId}`, {
-            method: 'get'
-        });
-        const testData = await fetchTestData.json();
+        const testData = await fetchData(`/api/getTestById?id=${testId}`);
         const { testName, duration, testResult } = testData;
 
         // fetch error in test output
-        const fetchErrorInOutput = await fetch(`/api/getErrorInOutput?id=${testData.testOutputId}`, {
-            method: 'get'
-        });
-        const errorInOutput = await fetchErrorInOutput.json();
+        const errorInOutput = await fetchData(`/api/getErrorInOutput?id=${testData.testOutputId}`);
         const failureOutput = errorInOutput.output;
 
         // fetch build data
-        const fetchBuildData = await fetch(`/api/getData?_id=${buildId}`, {
-            method: 'get'
-        });
-        const buildData = await fetchBuildData.json();
+        const buildData = await fetchData(`/api/getData?_id=${buildId}`);
         const { artifactory, buildName, buildUrl, machine, timestamp, javaVersion } = buildData[0];
         let { rerunLink } = buildData[0];
 
@@ -60,10 +52,7 @@ export default class GitNewissue extends Component {
             let machinesMap = {};
 
             // get all history tests with strictly earlier timestamp
-            const fetchPreviousTests = await fetch(`/api/getHistoryPerTest?testId=${testId}&beforeTimestamp=${timestamp}&limit=100`, {
-                method: 'get'
-            });
-            const response = await fetchPreviousTests.json();
+            const response = await fetchData(`/api/getHistoryPerTest?testId=${testId}&beforeTimestamp=${timestamp}&limit=100`);
 
             // add the current test result
             machinesMap[machine] = 1;

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { getParams } from '../utils/query';
+import { fetchData } from '../utils/Utils';
 import TestBreadcrumb from '../Build/TestBreadcrumb';
 import SearchTestResult from './SearchTestResult';
 import SearchBuildResult from './SearchBuildResult';
@@ -20,10 +21,7 @@ export default class SearchResult extends Component {
 
         let url = `/api/getTestBySearch?searchText=${searchText}&buildId=${buildId}`;
 
-        const fetchBuild = await fetch( url, {
-            method: 'get'
-        } );
-        const result = await fetchBuild.json();
+        const result = await fetchData(url);
 
         this.setState( {
             builds: result.builds,
