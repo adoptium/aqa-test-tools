@@ -29,26 +29,11 @@ export default class Output extends Component {
         let data = {};
         const { id } = getParams( this.props.location.search );
         if ( outputType === "test" ) {
-<<<<<<< HEAD
             const info = await fetchData(`/api/getTestById?id=${id} `);
             const result = await fetchData(`/api/getOutputById?id=${info.testOutputId}`);
-=======
-            const fetchData = await fetch( `/api/getTestById?id=${id} `, {
-                method: 'get'
-            } );
-            const info = await fetchData.json();
-            const fetchTest = await fetch( `/api/getOutputById?id=${info.testOutputId}`, {
-                method: 'get'
-            } );
-            const result = await fetchTest.json();
-
-            const data = await fetch( `/api/getData?_id=${info.buildId} `, {
-                method: 'get'
-            } );
-            const results = await data.json();
+            const results = await fetchData(`/api/getData?_id=${info.buildId} `); 
             const dataInfo = results[0];
 
->>>>>>> 15ca219f103fba20f44d8a4a0af7282221eb11d4
             data = {
                 testId: info._id,
                 buildId: info.buildId,
