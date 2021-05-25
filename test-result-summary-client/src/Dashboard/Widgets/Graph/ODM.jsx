@@ -5,7 +5,7 @@ import {
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
 import { Radio } from 'antd';
-import math from 'mathjs';
+import { sort, mean, round } from 'mathjs';
 import { parseSha } from './utils';
 import { fetchData } from '../../../utils/Utils';
 
@@ -112,8 +112,8 @@ export default class ODM extends Component {
             if(!globalThroughputs[k]) {
                 globalThroughputs[k] = [];
             }
-            math.sort(Object.keys(resultsByJDKBuild[k])).forEach((a, b) => {
-                globalThroughputs[k].push( [Number( a ), math.mean( resultsByJDKBuild[k][a].map( x => x['globalThroughput'] ) / scale), resultsByJDKBuild[k][a].map( x => x['additionalData'] )] );
+            sort(Object.keys(resultsByJDKBuild[k])).forEach((a, b) => {
+                globalThroughputs[k].push( [Number( a ), mean( resultsByJDKBuild[k][a].map( x => x['globalThroughput'] ) / scale), resultsByJDKBuild[k][a].map( x => x['additionalData'] )] );
                 baseLineData.push([Number( a ), 100]);
             });
         } );
@@ -165,7 +165,7 @@ export default class ODM extends Component {
             let stddev = point.stddev;
             let CI = point.CI;
             let validIterations = point.validIterations;
-            let ret = `Test vs Baseline: ${math.round(this.y, 3)}%<br/> Build: ${x} <br/>Link to builds: ${ buildLinks }<br/>mean: ${mean}<br/>max: ${max}<br/>min: ${min}<br/>median: ${median}<br/>stddev: ${stddev}<br/>CI: ${CI}<br/>validIterations: ${validIterations}`;
+            let ret = `Test vs Baseline: ${round(this.y, 3)}%<br/> Build: ${x} <br/>Link to builds: ${ buildLinks }<br/>mean: ${mean}<br/>max: ${max}<br/>min: ${min}<br/>median: ${median}<br/>stddev: ${stddev}<br/>CI: ${CI}<br/>validIterations: ${validIterations}`;
 
             prevJavaVersion = parseSha(prevJavaVersion, 'OpenJ9');
             javaVersion = parseSha(javaVersion, 'OpenJ9');

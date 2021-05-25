@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Input, Button, Radio, Row, Table, Divider, Progress, Alert } from 'antd';
-import math from 'mathjs';
+import { round } from 'mathjs';
 import { stringify } from 'qs';
 import PerffarmRunJSON from './lib/PerffarmRunJSON';
 import ExtractRelevantJenkinsTestResults from './lib/ExtractRelevantJenkinsTestResults';
@@ -487,7 +487,7 @@ export default class PerfCompare extends Component {
         if (this.state.submitStatus === "done") {
             const formatNumbers = (value) => {
                 if (typeof value == 'number') {
-                    return <div>{math.round(value,3)}</div>;
+                    return <div>{round(value,3)}</div>;
                 }
                 else {
                     return <div>error</div>;
@@ -495,7 +495,7 @@ export default class PerfCompare extends Component {
             }
             const formatNumbersWithPercentage = (value) => {
                 if (typeof value == 'number') {
-                    return <div>{math.round(value*100,3)}%</div>;
+                    return <div>{round(value*100,3)}%</div>;
                 }
                 else {
                     return <div>error</div>;

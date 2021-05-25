@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { getParams } from '../utils/query';
-import { Button, Tooltip, Card, Alert } from 'antd';
+import { Tooltip, Card, Alert } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import TestBreadcrumb from './TestBreadcrumb';
 import { fetchData } from '../utils/Utils';
@@ -33,7 +33,7 @@ export default class ReleaseSummary extends Component{
         const buildHistory = await fetchData(`/api/getBuildHistory?parentId=${parentId}`);
 
         for (let build of buildHistory) {
-            if (build.buildResult != "SUCCESS") {
+            if (build.buildResult !== "SUCCESS") {
                 report += `### ⚠️  [${build.buildName}](${build.buildUrl}) has a build result of ${build.buildResult} ⚠️\n`;
             }
         }

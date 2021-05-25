@@ -6,7 +6,7 @@ import {
 import DateRangePickers from '../DateRangePickers';
 import { fetchData } from '../../../utils/Utils';
 import { Radio } from 'antd';
-import math from 'mathjs';
+import { sort, mean } from 'mathjs';
 
 const map = {
     "AcmeairNodejs": "PerfNext-master-node13-s390x PerfNext-master-12LTS-s390x PerfNext-master-node13-ppc64le PerfNext-master-12LTS-ppc64le"
@@ -113,9 +113,9 @@ export default class AcemeairNodejs extends Component {
             if(!globalThroughputs[k]) {
                 globalThroughputs[k] = [];
             }
-            math.sort(Object.keys(resultsByJDKBuild[k])).forEach((a, b) => {
+            sort(Object.keys(resultsByJDKBuild[k])).forEach((a, b) => {
                 const date = a.substring(0,4) + "-" + a.substring(4,6) + "-" + a.substring(6,8) //Example: 2019-03-29
-                globalThroughputs[k].push( [new Date(date).getTime(), math.mean( resultsByJDKBuild[k][a].map( x => x['globalThroughput'] ) / scale), resultsByJDKBuild[k][a].map( x => x['additionalData'] )] );
+                globalThroughputs[k].push( [new Date(date).getTime(), mean( resultsByJDKBuild[k][a].map( x => x['globalThroughput'] ) / scale), resultsByJDKBuild[k][a].map( x => x['additionalData'] )] );
             });
         } );
 
