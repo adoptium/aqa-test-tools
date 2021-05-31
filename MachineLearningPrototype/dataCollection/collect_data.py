@@ -1,0 +1,145 @@
+import requests
+import argparse
+from datetime import datetime
+from datetime import date
+from math import ceil
+import time
+from pprint import pprint
+import pymongo
+
+def get_num_pages(repo):
+	"""
+	Fetch the number of pages that store issues
+	"""
+	repo_query_url = f'https://api.github.com/repos/{repo}'
+	num_issues = requests.get(repo_query_url).json()['open_issues_count']
+	num_pages = ceil(num_issues/100)
+	return num_pages
+
+def store_in_db(data, collection_name, db, primary_key='url'):
+	"""
+	Store data in db.collection_name (update if exists using primary key)
+	"""
+	db_col = db[collection_name]
+	record_id = {primary_key: data[primary_key]}
+	db_col.update_one(record_id, {"$set": data}, upsert=True)
+
+def store_on_fs(data, file_name):
+	"""
+	Store data in file named `file_name`
+	"""
+	with open(file_name, "w") as f:
+		f.write(data)
+
+def get_collection_records(collection_name, db):
+	db_col = db[collection_name]
+	return db_col.find()
+	
+def store_issue_details(issue, repo, db):
+	"""
+	Get issue details to be stored in DB and store issue text on filesystem
+	"""
+	issue_number = issue['number']
+	repo_name = repo.split('/')[-1]
+	issue_uid = f'{repo_name}_{issue_number}.txt'
+	issue_content_path = f'./data/GitHubData/IssueContent/{issue_uid}'
+	# test_output_path = f'./data/GitHubData/TestOutput/{issue_uid}'
+
+	#Get issue details
+	issue_details = dict()
+	issue_details['url'] = issue['html_url']
+	issue_details['repository_url'] = issue['repository_url']
+	issue_details['number'] = issue_number
+	issue_details['state'] = issue['state']
+	issue_details['title'] = issue['title']
+	issue_details['created_at'] = issue['created_at']
+	issue_details['updated_at'] = issue['updated_at']
+	issue_details['issue_content_path'] = issue_content_path
+	# issue_details['test_output_path'] = test_output_path
+
+	#Store issue content at issue_content_path
+	store_on_fs(issue['body'], issue_content_path)
+	
+	#Store issue details in db.Issues Table
+	store_in_db(issue_details, "Issues", db, "url")
+
+	#To do: Add issue_details['test_output_path'] and store test_output in filesystem
+
+
+def fetch_new_issues(repo, since, auth_token, db):
+	"""
+	Fetch all new open issues in the repo since `since`
+	"""
+	num_pages = get_num_pages(repo)
+	pprint(f'Need to query {num_pages} pages')
+
+	page_number = 1
+	num_open_issues = 0
+	
+	query_url = f'https://api.github.com/repos/{repo}/issues'
+	params = {'accept': 'application/vnd.github.v3+json',
+			  'state': 'open',
+			  'since': since,
+			  'per_page': 100,
+			  'page': page_number,}
+
+	headers = None
+	if auth_token:
+		headers = {'Authorization': f'token {auth_token}'}
+
+	while page_number <= num_pages:
+		params['page'] = page_number
+		response = requests.get(query_url, headers=headers, params=params).json()
+		for r in response:
+			if 'pull_request' not in r:
+				store_issue_details(r, repo, db)	
+				num_open_issues += 1
+		page_number += 1
+	
+	pprint(f'Found {num_open_issues} open issues')
+
+def fetch_github_issues(args, db):
+	"""
+	Track all new open issues in the repo with the given labels
+	"""
+	repos = args.github_repo
+	since = args.github_since
+	auth_token = args.github_token
+	wait_time = args.github_freq * 60
+
+	while True:
+		start = time.time()
+		
+		for repo in repos:
+			pprint(f"Fetching open issues for {repo}")
+			fetch_new_issues(repo, since, auth_token, db)
+		
+		end = time.time()
+		pprint(f'Time taken to fetch issues: {end-start} seconds')
+
+		since = datetime.now().isoformat()
+		#To do: Store the since parameter in DB
+		
+		time.sleep(wait_time)
+
+def main():
+	parser = argparse.ArgumentParser(description="Data collection for DeepAQAtik")
+
+	parser.add_argument('--github_token', type=str, default=None, help='GitHub Auth token')
+	parser.add_argument('--github_repo', type=str, default=['adoptium/aqa-tests'], nargs='+', help='Github repo to track')
+	parser.add_argument('--github_since', type=date.fromisoformat, default=None, help='Since parameter (ISO format)')
+	parser.add_argument('--github_freq', type=int, default=30, help='Frequency of querying for new issues (in minutes)')
+	args = parser.parse_args()
+
+	#Initialize MongoDB client
+	db_client = pymongo.MongoClient()
+	db = db_client['DeepAQAtik_Data']
+
+	fetch_github_issues(args, db)
+
+if __name__ == '__main__':
+	main()
+
+
+
+
