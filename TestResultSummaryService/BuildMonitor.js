@@ -104,11 +104,15 @@ class BuildMonitor {
     }
 
     async deleteOldBuilds(task) {
-        let { buildUrl, numBuildsToKeep } = task;
+        let { buildUrl, numBuildsToKeep, deleteForever } = task;
         const { buildName, url } = this.getBuildInfo(buildUrl);
         // keep only limited builds in DB and delete old builds
         const testResults = new TestResultsDB();
-        const allBuildsInDB = await testResults.getData({ url, buildName, keepForever: { $ne: true } }).sort({ buildNum: 1 }).toArray();
+        let query = { url, buildName };
+        if (!deleteForever) {
+            query.keepForever = { $ne: true };
+        }
+        const allBuildsInDB = await testResults.getData( query ).sort({ buildNum: 1 }).toArray();
         if (allBuildsInDB && allBuildsInDB.length > numBuildsToKeep) {
             const endIndex = Math.max(0, allBuildsInDB.length - numBuildsToKeep);
             return Promise.all(allBuildsInDB.slice(0, endIndex).map(build => deleteBuildsAndChildrenByFields({ _id: build._id })));
