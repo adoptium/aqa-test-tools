@@ -32,8 +32,18 @@ def store_on_fs(data, file_name):
 		f.write(data)
 
 def get_collection_records(collection_name, db):
+	"""
+	Get all records of db.collection_name
+	"""
 	db_col = db[collection_name]
 	return db_col.find()
+
+def get_collection_record(query_params, field_params, collection_name, db):
+	"""
+	Get a record of db.collection_name specified by query_params and field_params
+	"""
+	db_col = db[collection_name]
+	return db_col.find_one(query_params, field_params)
 	
 def store_issue_details(issue, repo, db):
 	"""
@@ -97,13 +107,13 @@ def fetch_new_issues(repo, since, auth_token, db):
 		page_number += 1
 	
 	pprint(f'Found {num_open_issues} open issues')
+	return num_open_issues
 
 def fetch_github_issues(args, db):
 	"""
 	Track all new open issues in the repo with the given labels
 	"""
 	repos = args.github_repo
-	since = args.github_since
 	auth_token = args.github_token
 	wait_time = args.github_freq * 60
 
@@ -111,15 +121,29 @@ def fetch_github_issues(args, db):
 		start = time.time()
 		
 		for repo in repos:
+
+			#Get the last updated time for the repo
+			since_info = get_collection_record({'repository': repo}, None, 'LastUpdatedInfo', db)
+			if since_info:
+				since = since_info['last_updated_time']
+			else:
+				since = None
+	
 			pprint(f"Fetching open issues for {repo}")
-			fetch_new_issues(repo, since, auth_token, db)
-		
+			num_issues = fetch_new_issues(repo, since, auth_token, db)
+
+			#Store the last updated time for the repo
+			since = datetime.now().isoformat()
+			since_record_to_store = {
+				'repository': repo, 
+				'last_updated_time': since,
+				'total_issues_collected': num_issues
+			}
+			store_in_db(since_record_to_store, "LastUpdatedInfo", db, primary_key='repository')
+			
 		end = time.time()
 		pprint(f'Time taken to fetch issues: {end-start} seconds')
 
-		since = datetime.now().isoformat()
-		#To do: Store the since parameter in DB
-		
 		time.sleep(wait_time)
 
 def main():
@@ -127,8 +151,8 @@ def main():
 
 	parser.add_argument('--github_token', type=str, default=None, help='GitHub Auth token')
 	parser.add_argument('--github_repo', type=str, default=['adoptium/aqa-tests'], nargs='+', help='Github repo to track')
-	parser.add_argument('--github_since', type=date.fromisoformat, default=None, help='Since parameter (ISO format)')
 	parser.add_argument('--github_freq', type=int, default=30, help='Frequency of querying for new issues (in minutes)')
+	parser.add_argument('--db_connection_url', type=str, default='mongodb://localhost:27017', help='MongoDB Connection URL')
 	args = parser.parse_args()
 
 	#Initialize MongoDB client
