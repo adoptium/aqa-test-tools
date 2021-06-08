@@ -7,15 +7,6 @@ import time
 from pprint import pprint
 import pymongo
 
-def get_num_pages(repo):
-	"""
-	Fetch the number of pages that store issues
-	"""
-	repo_query_url = f'https://api.github.com/repos/{repo}'
-	num_issues = requests.get(repo_query_url).json()['open_issues_count']
-	num_pages = ceil(num_issues/100)
-	return num_pages
-
 def store_in_db(data, collection_name, db, primary_key='url'):
 	"""
 	Store data in db.collection_name (update if exists using primary key)
@@ -80,9 +71,6 @@ def fetch_new_issues(repo, since, auth_token, db):
 	"""
 	Fetch all new open issues in the repo since `since`
 	"""
-	num_pages = get_num_pages(repo)
-	pprint(f'Need to query {num_pages} pages')
-
 	page_number = 1
 	num_open_issues = 0
 	
@@ -97,16 +85,22 @@ def fetch_new_issues(repo, since, auth_token, db):
 	if auth_token:
 		headers = {'Authorization': f'token {auth_token}'}
 
-	while page_number <= num_pages:
+	while True:
 		params['page'] = page_number
 		response = requests.get(query_url, headers=headers, params=params).json()
+		
+		# Break if no new issues are found on the page
+		if not response:
+			break
+
 		for r in response:
 			if 'pull_request' not in r:
 				store_issue_details(r, repo, db)	
 				num_open_issues += 1
+
 		page_number += 1
-	
-	pprint(f'Found {num_open_issues} open issues')
+
+	pprint(f'Number of new issues found: {num_open_issues}')
 	return num_open_issues
 
 def fetch_github_issues(args, db):
@@ -124,13 +118,20 @@ def fetch_github_issues(args, db):
 
 			#Get the last updated time for the repo
 			since_info = get_collection_record({'repository': repo}, None, 'LastUpdatedInfo', db)
+			
+			num_issues = 0
+			since = None
+
+			#Get the last_updated time and total_issues_collected if the repo is found
 			if since_info:
 				since = since_info['last_updated_time']
-			else:
-				since = None
+				num_issues = since_info['total_issues_collected']
 	
 			pprint(f"Fetching open issues for {repo}")
-			num_issues = fetch_new_issues(repo, since, auth_token, db)
+
+			num_issues += fetch_new_issues(repo, since, auth_token, db)
+
+			pprint(f'Total number of issues: {num_issues}')
 
 			#Store the last updated time for the repo
 			since = datetime.now().isoformat()
@@ -150,7 +151,7 @@ def main():
 	parser = argparse.ArgumentParser(description="Data collection for DeepAQAtik")
 
 	parser.add_argument('--github_token', type=str, default=None, help='GitHub Auth token')
-	parser.add_argument('--github_repo', type=str, default=['adoptium/aqa-tests'], nargs='+', help='Github repo to track')
+	parser.add_argument('--github_repo', type=str, default=['adoptium/aqa-tests', 'eclipse-openj9/openj9', 'adoptium/infrastructure'], nargs='+', help='Github repo to track')
 	parser.add_argument('--github_freq', type=int, default=30, help='Frequency of querying for new issues (in minutes)')
 	parser.add_argument('--db_connection_url', type=str, default='mongodb://localhost:27017', help='MongoDB Connection URL')
 	args = parser.parse_args()
