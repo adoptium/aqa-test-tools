@@ -22,13 +22,6 @@ def store_on_fs(data, file_name):
 	with open(file_name, "w") as f:
 		f.write(data)
 
-def get_collection_records(collection_name, db):
-	"""
-	Get all records of db.collection_name
-	"""
-	db_col = db[collection_name]
-	return db_col.find()
-
 def get_collection_record(query_params, field_params, collection_name, db):
 	"""
 	Get a record of db.collection_name specified by query_params and field_params
@@ -158,7 +151,7 @@ def main():
 
 	#Initialize MongoDB client
 	db_client = pymongo.MongoClient()
-	db = db_client['DeepAQAtik_Data']
+	db = db_client['DeepAQAtikData']
 
 	fetch_github_issues(args, db)
 
