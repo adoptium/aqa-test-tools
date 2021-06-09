@@ -153,7 +153,7 @@ export default class TabularView extends Component {
         const month = (new Date().getMonth() + 1).toString(); //Current Month
         const year = (new Date().getFullYear()).toString(); //Current Year
         // Assumption: JDK date is in the format of YYYYMMDD in database, example: 20190814
-        const jdkDate = year + ((month.length < 2) ? "0" + month : month) + ((date.length < 2) ? "0" + date : date)
+        const jdkDate = year + '-' + ((month.length < 2) ? "0" + month : month) + '-' + ((date.length < 2) ? "0" + date : date)
         
         /*
         Each database entry should contain a pipeline name (buildName) which contains the JDK Version and JVM Type.
@@ -325,7 +325,7 @@ export default class TabularView extends Component {
     dateTransform(date, type) {
         const dateSplit = date.split('/');
         // Database date format: YYYYMMDD
-        const jdkDate = dateSplit[2] + ((dateSplit[0].length < 2) ? "0" + dateSplit[0] : dateSplit[0]) + ((dateSplit[1].length < 2) ? "0" + dateSplit[1] : dateSplit[1]);
+        const jdkDate = dateSplit[2] + '-' + ((dateSplit[0].length < 2) ? "0" + dateSplit[0] : dateSplit[0]) + '-' + ((dateSplit[1].length < 2) ? "0" + dateSplit[1] : dateSplit[1]);
 
         if (type === 'test') {
             this.setState({testJdkDate: jdkDate});
