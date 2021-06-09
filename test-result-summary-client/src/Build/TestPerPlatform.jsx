@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import { params } from '../utils/query';
+import { fetchData } from '../utils/Utils';
 import { Link } from 'react-router-dom';
 import { Table, Input } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
@@ -38,10 +39,7 @@ export default class TestPerPlatform extends Component {
 
     async updateData() {
         const { testId } = getParams( this.props.location.search );
-        const fetchBuild = await fetch( `/api/getTestPerPlatform?testId=${testId} `, {
-            method: 'get'
-        } );
-        const builds = await fetchBuild.json();
+        const builds = await fetchData(`/api/getTestPerPlatform?testId=${testId} `);
 
         let testName = null;
         let buildId = null;

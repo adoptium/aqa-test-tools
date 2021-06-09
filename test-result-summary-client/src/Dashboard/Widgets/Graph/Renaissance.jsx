@@ -6,8 +6,9 @@ import {
 import DateRangePickers from '../DateRangePickers';
 import { Radio } from 'antd';
 import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
-import math from 'mathjs';
+import { sort, std, mean, size, median } from 'mathjs';
 import { parseSha, getEpochTime } from './utils';
+import { fetchData } from '../../../utils/Utils';
 
 const map = {
 	"renaissance-jdk11": "Test_openjdk11_j9_sanity.perf_x86-64_linux",
@@ -70,15 +71,9 @@ export default class Renaissance extends Component {
 	async updateData() {
 		const { buildSelected, serverSelected } = this.props;
 		const buildName = encodeURIComponent(map[buildSelected]);
-		const response = await fetch(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
-			method: 'get'
-		});
-		let results = await response.json();
+		let results = await fetchData(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`);
 
-		const res = await fetch(`/api/getDashboardBuildInfo`, {
-			method: 'get'
-		});
-		const buildInfoMap = await res.json();
+		const buildInfoMap = await fetchData(`/api/getDashboardBuildInfo`);
 
 		if ( serverSelected ){
 			if ( serverSelected === 'AdoptOpenJDK') {
@@ -135,28 +130,28 @@ export default class Renaissance extends Component {
 
 				test.testData.metrics.forEach(( metric, i)=> {
 					if ( metric.name === "akka-uct" ) {
-						if ( math.size(metric.value) != 0 ) {
-							akkaUct = math.mean(metric.value);
+						if ( size(metric.value) != 0 ) {
+							akkaUct = mean(metric.value);
 						}
 					}
 					if ( metric.name === "fj-kmeans" ) {
-						if ( math.size(metric.value) != 0 ) {
-							fj = math.mean(metric.value);
+						if ( size(metric.value) != 0 ) {
+							fj = mean(metric.value);
 						}
 					}
 					if ( metric.name === "future-genetic" ) {
-						if ( math.size(metric.value) != 0 ) {
-							futureGenetic = math.mean(metric.value);
+						if ( size(metric.value) != 0 ) {
+							futureGenetic = mean(metric.value);
 						}
 					}
           				if ( metric.name === "naive-bayes" ) {
-						if ( math.size(metric.value) != 0 ) {
-							bayes = math.mean(metric.value);
+						if ( size(metric.value) != 0 ) {
+							bayes = mean(metric.value);
 						}
 					}
           				if ( metric.name === "scala-kmeans" ) {
-						if ( math.size(metric.value) != 0 ) {
-							scala = math.mean(metric.value);
+						if ( size(metric.value) != 0 ) {
+							scala = mean(metric.value);
 						}
 					}
 				});
@@ -182,82 +177,82 @@ export default class Renaissance extends Component {
 			});
 		} );
 
-		math.sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
+		sort( Object.keys( resultsByJDKBuild ) ).forEach(( k, i ) => {
 			const date = getEpochTime(k);
 
 			let akkaUctGroup = resultsByJDKBuild[k].map( x => x['akkaUct']).filter(function (el) {
 				return el != null;
 			});
 			if (akkaUctGroup.length > 0) {
-				akkaUctGtValues.push( math.mean( akkaUctGroup ) );
+				akkaUctGtValues.push( mean( akkaUctGroup ) );
 				let myCi = 'N/A';
 				if (akkaUctGroup.length > 1){
 					myCi = BenchmarkMath.confidence_interval(akkaUctGroup);
 				}
-				akkaUctData.push( [date, math.mean( akkaUctGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
-				akkaUctStd.push( [date, math.std( akkaUctGtValues )] );
-				akkaUctMean.push( [date, math.mean( akkaUctGtValues )] );
-				akkaUctMedian.push( [date, math.median( akkaUctGtValues )] );
+				akkaUctData.push( [date, mean( akkaUctGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
+				akkaUctStd.push( [date, std( akkaUctGtValues )] );
+				akkaUctMean.push( [date, mean( akkaUctGtValues )] );
+				akkaUctMedian.push( [date, median( akkaUctGtValues )] );
 			}
 
 			let fjGroup = resultsByJDKBuild[k].map( x => x['fj']).filter(function (el) {
 				return el != null;
 			});
 			if (fjGroup.length > 0) {
-				fjGtValues.push( math.mean( fjGroup ) );
+				fjGtValues.push( mean( fjGroup ) );
 				let myCi = 'N/A';
 				if (fjGroup.length > 1){
 					myCi = BenchmarkMath.confidence_interval(fjGroup);
 				}
-				fjData.push( [date, math.mean( fjGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
-				fjStd.push( [date, math.std( fjGtValues )] );
-				fjMean.push( [date, math.mean( fjGtValues )] );
-				fjMedian.push( [date, math.median( fjGtValues )] );
+				fjData.push( [date, mean( fjGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
+				fjStd.push( [date, std( fjGtValues )] );
+				fjMean.push( [date, mean( fjGtValues )] );
+				fjMedian.push( [date, median( fjGtValues )] );
 			}
 
 			let futureGeneticGroup = resultsByJDKBuild[k].map( x => x['futureGenetic']).filter(function (el) {
 				return el != null;
 			});
 			if (futureGeneticGroup.length > 0) {
-				futureGeneticGtValues.push( math.mean( futureGeneticGroup ) );
+				futureGeneticGtValues.push( mean( futureGeneticGroup ) );
 				let myCi = 'N/A';
 				if (futureGeneticGroup.length > 1){
 					myCi = BenchmarkMath.confidence_interval(futureGeneticGroup);
 				}
-				futureGeneticData.push( [date, math.mean( futureGeneticGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
-				futureGeneticStd.push( [date, math.std( futureGeneticGtValues )] );
-				futureGeneticMean.push( [date, math.mean( futureGeneticGtValues )] );
-				futureGeneticMedian.push( [date, math.median( futureGeneticGtValues )] );
+				futureGeneticData.push( [date, mean( futureGeneticGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
+				futureGeneticStd.push( [date, std( futureGeneticGtValues )] );
+				futureGeneticMean.push( [date, mean( futureGeneticGtValues )] );
+				futureGeneticMedian.push( [date, median( futureGeneticGtValues )] );
 			}
 
             let bayesGroup = resultsByJDKBuild[k].map( x => x['bayes']).filter(function (el) {
 				return el != null;
 			});
 			if (bayesGroup.length > 0) {
-				bayesGtValues.push( math.mean( bayesGroup ) );
+				bayesGtValues.push( mean( bayesGroup ) );
 				let myCi = 'N/A';
 				if (bayesGroup.length > 1){
 					myCi = BenchmarkMath.confidence_interval(bayesGroup);
 				}
-				bayesData.push( [date, math.mean( bayesGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
-				bayesStd.push( [date, math.std( bayesGtValues )] );
-				bayesMean.push( [date, math.mean( bayesGtValues )] );
-				bayesMedian.push( [date, math.median( bayesGtValues )] );
+				bayesData.push( [date, mean( bayesGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
+				bayesStd.push( [date, std( bayesGtValues )] );
+				bayesMean.push( [date, mean( bayesGtValues )] );
+				bayesMedian.push( [date, median( bayesGtValues )] );
 			}
 
             let scalaGroup = resultsByJDKBuild[k].map( x => x['scala']).filter(function (el) {
 				return el != null;
 			});
 			if (scalaGroup.length > 0) {
-				scalaGtValues.push( math.mean( scalaGroup ) );
+				scalaGtValues.push( mean( scalaGroup ) );
 				let myCi = 'N/A';
 				if (scalaGroup.length > 1){
 					myCi = BenchmarkMath.confidence_interval(futureGeneticGroup);
 				}
-				scalaData.push( [date, math.mean( scalaGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
-				scalaStd.push( [date, math.std( scalaGtValues )] );
-				scalaMean.push( [date, math.mean( scalaGtValues )] );
-				scalaMedian.push( [date, math.median( scalaGtValues )] );
+				scalaData.push( [date, mean( scalaGroup ), resultsByJDKBuild[k].map( x => x['additionalData'] ), myCi] );
+				scalaStd.push( [date, std( scalaGtValues )] );
+				scalaMean.push( [date, mean( scalaGtValues )] );
+				scalaMedian.push( [date, median( scalaGtValues )] );
 			}
 		} );
 

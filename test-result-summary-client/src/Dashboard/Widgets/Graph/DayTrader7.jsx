@@ -5,8 +5,9 @@ import {
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
 import { Checkbox } from 'antd';
-import math from 'mathjs';
+import { sort, mean } from 'mathjs';
 import { parseSha } from './utils';
+import { fetchData } from '../../../utils/Utils';
 
 const map = {
     "Test_openjdk8_j9_sanity.perf_x86-64_linux_Liberty": "Test_openjdk8_j9_sanity.perf_x86-64_linux_Liberty",
@@ -70,10 +71,7 @@ export default class DayTrader7 extends Component {
 
         const { buildSelected } = this.props;
         const buildName = encodeURIComponent(buildSelected);
-        const response = await fetch(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`, {
-            method: 'get'
-        });
-        const results = await response.json();
+        const results = await fetchData(`/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`);
         const resultsByJDKBuild = [];
         let baseLine = [];
         let jdkDate = "";
@@ -126,8 +124,8 @@ export default class DayTrader7 extends Component {
                 if (!metricLineSeriesData[buildName][metricName]) {
                     metricLineSeriesData[buildName][metricName] = [];
                 }
-                math.sort(Object.keys(resultsByJDKBuild[buildName][metricName])).forEach((a, b) => {
-                    metricLineSeriesData[buildName][metricName].push([Number(a), math.mean(resultsByJDKBuild[buildName][metricName][a].map(x => x[metricName] / startupScale)), resultsByJDKBuild[buildName][metricName][a].map(x => x['additionalData'])]);
+                sort(Object.keys(resultsByJDKBuild[buildName][metricName])).forEach((a, b) => {
+                    metricLineSeriesData[buildName][metricName].push([Number(a), mean(resultsByJDKBuild[buildName][metricName][a].map(x => x[metricName] / startupScale)), resultsByJDKBuild[buildName][metricName][a].map(x => x['additionalData'])]);
                     baseLineData.push([Number(a), 2000]);
                 });
             }

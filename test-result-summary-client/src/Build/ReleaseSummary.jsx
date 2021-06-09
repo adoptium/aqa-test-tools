@@ -1,9 +1,10 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
 import { getParams } from '../utils/query';
-import { Button, Tooltip, Card, Alert } from 'antd';
+import { Tooltip, Card, Alert } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import TestBreadcrumb from './TestBreadcrumb';
+import { fetchData } from '../utils/Utils';
 
 export default class ReleaseSummary extends Component{
     state = {
@@ -19,11 +20,7 @@ export default class ReleaseSummary extends Component{
         const originUrl = window.location.origin;
         
         //get build info
-        let fetchBuild = {};
-        fetchBuild = await fetch(`/api/getParents?id=${parentId}`, {
-            method: 'get'
-        });
-        const build = await fetchBuild.json();
+        const build = await fetchData(`/api/getParents?id=${parentId}`);
     
         //add build and test details to report
         let report = `TRSS [link](${originUrl}/buildDetail?parentId=${parentId}&testSummaryResult=failed&buildNameRegex=%5ETest) \n`;
@@ -33,23 +30,17 @@ export default class ReleaseSummary extends Component{
         report += `Build URL ${buildUrl} \nStarted by ${startedBy} \n`;
 
         //get build history
-        fetchBuild = await fetch(`/api/getBuildHistory?parentId=${parentId}`, {
-            method: 'get'
-        });
-        const buildHistory = await fetchBuild.json();
+        const buildHistory = await fetchData(`/api/getBuildHistory?parentId=${parentId}`);
 
         for (let build of buildHistory) {
-            if (build.buildResult != "SUCCESS") {
+            if (build.buildResult !== "SUCCESS") {
                 report += `### ⚠️  [${build.buildName}](${build.buildUrl}) has a build result of ${build.buildResult} ⚠️\n`;
             }
         }
         
         // get all child builds info based on buildNameRegex
         const buildNameRegex = "^Test_openjdk.*";
-        fetchBuild = await fetch(`/api/getAllChildBuilds?parentId=${parentId}&buildNameRegex=${buildNameRegex}`, {
-            method: 'get'
-        })
-        const childrenBuilds = await fetchBuild.json();
+        const childrenBuilds = await fetchData(`/api/getAllChildBuilds?parentId=${parentId}&buildNameRegex=${buildNameRegex}`);
 
         for (let testGroup of childrenBuilds) {
             //Update report with test groups that have not succeeded
@@ -65,10 +56,7 @@ export default class ReleaseSummary extends Component{
                             const testId = test._id;
 
                             //get test history
-                            fetchBuild = await fetch(`/api/getHistoryPerTest?testId=${testId}&limit=100`, {
-                                method: 'get'
-                            });
-                            const history = await fetchBuild.json();
+                            const history = await fetchData(`/api/getHistoryPerTest?testId=${testId}&limit=100`);
 
                             let totalRuns = 0;
                             let totalPasses = 0;

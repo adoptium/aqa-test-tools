@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { Table, Input } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { getParams } from '../utils/query';
+import { fetchData } from '../utils/Utils';
 import Highlighter from 'react-highlight-words';
 import renderDuration from './Duration';
 
@@ -42,10 +43,7 @@ export default class DeepHistory extends Component {
 
     async updateData() {
         const { testId } = getParams( this.props.location.search );
-        const fetchBuild = await fetch( `/api/getHistoryPerTest?testId=${testId}&limit=100`, {
-            method: 'get'
-        } );
-        const response = await fetchBuild.json();
+        const response = await fetchData(`/api/getHistoryPerTest?testId=${testId}&limit=100`);
         const testData = response.map( build => {
             return {
                 key: build.parentNum,

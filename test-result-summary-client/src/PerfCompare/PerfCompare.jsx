@@ -2,14 +2,14 @@ import React, { Component } from 'react';
 import { Form } from '@ant-design/compatible';
 import '@ant-design/compatible/assets/index.css';
 import { Input, Button, Radio, Row, Table, Divider, Progress, Alert } from 'antd';
-import math from 'mathjs';
+import { round } from 'mathjs';
 import { stringify } from 'qs';
 import PerffarmRunJSON from './lib/PerffarmRunJSON';
 import ExtractRelevantJenkinsTestResults from './lib/ExtractRelevantJenkinsTestResults';
 import { getParams } from '../utils/query';
 import './PerfCompare.css';
-import { getBenchmarkMetricProps } from '../utils/perf';
 import { parseJenkinsUrl } from '../utils/parseJenkinsUrl';
+import { fetchData } from '../utils/Utils';
 
 const buildTypeExampleURL = {
     Jenkins: "https://customJenkinsServer/view/PerfTests/job/Daily-Liberty-Startup/1/",
@@ -89,11 +89,7 @@ export default class PerfCompare extends Component {
             }
         )
                 
-        let resBenchmarkRuns = await fetch(`/api/getPerffarmRunCSV?${stringify(this.state.selectedRuns)}`, {
-            method: 'get'
-        } );
-
-        const resBenchmarkRunsJson = await resBenchmarkRuns.json();
+        const resBenchmarkRunsJson = await fetchData(`/api/getPerffarmRunCSV?${stringify(this.state.selectedRuns)}`);
 
         if(resBenchmarkRunsJson.error){
            this.setState(
@@ -180,16 +176,8 @@ export default class PerfCompare extends Component {
             }
         )
 
-        const baselineBuildTestInfo = await fetch( `/api/getTestInfoByBuildInfo?url=${this.state.selectedRuns.baselineID[0]}&buildName=${this.state.selectedRuns.baselineID[1]}&buildNum=${this.state.selectedRuns.baselineID[2]}`, {
-            method: 'get'
-        } );
-
-        const testBuildTestInfo = await fetch( `/api/getTestInfoByBuildInfo?url=${this.state.selectedRuns.testID[0]}&buildName=${this.state.selectedRuns.testID[1]}&buildNum=${this.state.selectedRuns.testID[2]}`, {
-            method: 'get'
-        } );
-
-        let baselineTestResultsJson = await baselineBuildTestInfo.json();
-        let testTestResultsJson = await testBuildTestInfo.json();
+        const baselineTestResultsJson = await fetchData( `/api/getTestInfoByBuildInfo?url=${this.state.selectedRuns.baselineID[0]}&buildName=${this.state.selectedRuns.baselineID[1]}&buildNum=${this.state.selectedRuns.baselineID[2]}`);
+        const testTestResultsJson = await fetchData( `/api/getTestInfoByBuildInfo?url=${this.state.selectedRuns.testID[0]}&buildName=${this.state.selectedRuns.testID[1]}&buildNum=${this.state.selectedRuns.testID[2]}`);
 
         // Check if the given builds are valid
         let displayErrorMessage = "";
@@ -444,7 +432,7 @@ export default class PerfCompare extends Component {
                 const benchmark = curVariantData["benchmark"];
                 let metricProps;
                 if( !this.metricsProps[benchmark])  {
-                    const metricPropsJSON = await getBenchmarkMetricProps(benchmark);
+                    const metricPropsJSON = await fetchData(`/api/getBenchmarkMetricProps?benchmarkName=${benchmark}`);
                     if (metricPropsJSON) {
                         this.metricsProps[benchmark] = metricPropsJSON;
                         metricProps = metricPropsJSON[curMetricName];
@@ -499,7 +487,7 @@ export default class PerfCompare extends Component {
         if (this.state.submitStatus === "done") {
             const formatNumbers = (value) => {
                 if (typeof value == 'number') {
-                    return <div>{math.round(value,3)}</div>;
+                    return <div>{round(value,3)}</div>;
                 }
                 else {
                     return <div>error</div>;
@@ -507,7 +495,7 @@ export default class PerfCompare extends Component {
             }
             const formatNumbersWithPercentage = (value) => {
                 if (typeof value == 'number') {
-                    return <div>{math.round(value*100,3)}%</div>;
+                    return <div>{round(value*100,3)}%</div>;
                 }
                 else {
                     return <div>error</div>;

@@ -10,6 +10,7 @@ import {
 } from '@ant-design/icons';
 
 import { Checkbox, Table, Tooltip, Input } from 'antd';
+import { fetchData } from '../../../utils/Utils';
 import ServerSelector from "./ServerSelector";
 import Highlighter from 'react-highlight-words';
 
@@ -96,10 +97,7 @@ export default class BuildStatus extends Component {
         const { selected = {}, serverSelected } = this.props;
         if (!serverSelected) return;
 
-        const res = await fetch(`/api/getDashboardBuildInfo`, {
-            method: 'get'
-        });
-        buildInfoMap = await res.json();
+        buildInfoMap = await fetchData(`/api/getDashboardBuildInfo`);
         const list = getList(selected, serverSelected, buildInfoMap);
         if (!list) {
             return;
@@ -108,10 +106,7 @@ export default class BuildStatus extends Component {
             const url = buildInfoMap[serverSelected].url;
             if (force || !this.state.builds[buildName]) {
                 const encodeUrl = encodeURIComponent(url);
-                const response = await fetch(`/api/getLastBuildInfo?url=${encodeUrl}&buildName=${buildName}`, {
-                    method: 'get'
-                });
-                const data = await response.json();
+                const data = await fetchData(`/api/getLastBuildInfo?url=${encodeUrl}&buildName=${buildName}`);
                 let result = null;
                 let buildNum = null;
                 let buildUrl = null;

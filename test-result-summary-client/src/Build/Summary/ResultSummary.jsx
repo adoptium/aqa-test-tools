@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Divider } from 'antd';
 import { params, getParams } from '../../utils/query';
+import { fetchData } from '../../utils/Utils';
 import Checkboxes from './Checkboxes';
 import ResultGrid from './ResultGrid';
 import PieChart from './PieChart';
@@ -31,16 +32,10 @@ export default class ResultSummary extends Component {
 
         // get test summary (i.e., passed, failed, total numbers)
         let fetchBuild = {};
-        fetchBuild = await fetch(`/api/getTotals?id=${parentId}`, {
-            method: 'get'
-        });
-        const summary = await fetchBuild.json();
+        const summary = await fetchData(`/api/getTotals?id=${parentId}`);
 
         // get build information
-        fetchBuild = await fetch(`/api/getData?_id=${parentId}`, {
-            method: 'get'
-        });
-        const buildInfo = await fetchBuild.json();
+        const buildInfo = await fetchData(`/api/getData?_id=${parentId}`);
         const parentBuildInfo = buildInfo[0] || {};
 
         // get all child builds info based on buildNameRegex
@@ -48,11 +43,7 @@ export default class ResultSummary extends Component {
         const testSummaryResult = undefined;
         const buildResult = undefined;
 
-        fetchBuild = await fetch(`/api/getAllChildBuilds${params({ buildResult, testSummaryResult, buildNameRegex, parentId })}`, {
-            method: 'get'
-        });
-
-        const builds = await fetchBuild.json();
+        const builds = await fetchData(`/api/getAllChildBuilds${params({ buildResult, testSummaryResult, buildNameRegex, parentId })}`);
         const buildMap = {};
         let jdkVersionOpts = [];
         let jdkImplOpts = [];

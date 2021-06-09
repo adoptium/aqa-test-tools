@@ -1,4 +1,4 @@
-import math from 'mathjs';
+import * as math from 'mathjs';
 import Swal from 'sweetalert2';
 import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
 

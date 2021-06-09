@@ -3,6 +3,7 @@ import { Table, Tooltip } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
+import { fetchData } from '../utils/Utils';
 import { getColumnSearchProps } from '../utils/TableUtils';
 
 export default class ThirdPartyAppView extends Component {
@@ -22,10 +23,7 @@ export default class ThirdPartyAppView extends Component {
     }
 
     async updateData() {
-        const fetchAppTests = await fetch(`/api/getApplicationTests`, {
-            method: 'get'
-        });
-        const appTestsData = await fetchAppTests.json();
+        const appTestsData = await fetchData(`/api/getApplicationTests`);
 
         this.allJDKVersions = this.getDistinctValues(appTestsData, "jdkVersion");
 

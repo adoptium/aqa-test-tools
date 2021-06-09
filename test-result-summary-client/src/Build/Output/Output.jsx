@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import { getParams } from '../../utils/query';
-import { Col, Row, Switch } from 'antd';
+import { fetchData } from '../../utils/Utils';
+import { Col, Row, Switch, Tooltip, Divider } from 'antd';
+import { DownloadOutlined, LinkOutlined } from '@ant-design/icons';
 import TestBreadcrumb from '../TestBreadcrumb';
 import classnames from 'classnames';
 import Artifacts from './Artifacts';
@@ -27,33 +29,25 @@ export default class Output extends Component {
         let data = {};
         const { id } = getParams( this.props.location.search );
         if ( outputType === "test" ) {
-            const fetchData = await fetch( `/api/getTestById?id=${id} `, {
-                method: 'get'
-            } );
-            const info = await fetchData.json();
-            const fetchTest = await fetch( `/api/getOutputById?id=${info.testOutputId}`, {
-                method: 'get'
-            } );
-            const result = await fetchTest.json();
+            const info = await fetchData(`/api/getTestById?id=${id} `);
+            const result = await fetchData(`/api/getOutputById?id=${info.testOutputId}`);
+            const results = await fetchData(`/api/getData?_id=${info.buildId} `); 
+            const dataInfo = results[0];
+
             data = {
                 testId: info._id,
                 buildId: info.buildId,
                 name: info.testName,
-                artifactory: result.artifactory,
+                artifactory: info.artifactory,
                 output: result.output,
-                result: info.testResult
+                result: info.testResult,
+                buildUrl: dataInfo.buildUrl
             };
         } else {
-            const fetchData = await fetch( `/api/getData?_id=${id} `, {
-                method: 'get'
-            } );
-            const results = await fetchData.json();
+            const results = await fetchData(`/api/getData?_id=${id} `);
             const info = results[0];
             if ( info && info.buildOutputId ) {
-                const fetchTest = await fetch( `/api/getOutputById?id=${info.buildOutputId}`, {
-                    method: 'get'
-                } );
-                const result = await fetchTest.json();
+                const result = await fetchData(`/api/getOutputById?id=${info.buildOutputId}`);
 
                 data = {
                     buildId: info._id,
@@ -89,10 +83,11 @@ export default class Output extends Component {
                     </div>
                 </Col>
             </Row>
-            <Row>
-                <Col span={18} />
-                <Col span={6}>
-                    <Artifacts artifactory={data.artifactory} />
+            <Row justify="end">
+                <Col span={1}>
+                    {data.artifactory && <a target="_blank" href={data.artifactory}><Tooltip title="Artifactory Link"> <DownloadOutlined /> </Tooltip> </a>}
+                    <Divider type="vertical" />
+                    {data.buildUrl && <a target="_blank" href={data.buildUrl}><Tooltip title="Jenkins Link"> <LinkOutlined /> </Tooltip></a>}
                 </Col>
             </Row>
             <Row>

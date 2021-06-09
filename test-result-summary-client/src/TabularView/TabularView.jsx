@@ -9,8 +9,7 @@ import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { getParams } from '../utils/query';
 import 'react-day-picker/lib/style.css';
 import tabularViewConfig from './TabularViewConfig';
-import { getBenchmarkMetricProps } from '../utils/perf';
-import { getInfoFromBuildName } from '../utils/Utils';
+import { getInfoFromBuildName, fetchData } from '../utils/Utils';
 // Pull property panel from Collapse, so you do not have to write Collapse.Panel each time
 const { Panel } = Collapse;
 // Pull property SHOW_PARENT from TreeSelect, so you do not have to write TreeSelect.SHOW_PARENT each time
@@ -110,7 +109,7 @@ export default class TabularView extends Component {
      }
     // Get all dropdown values from database
     async updateDropdown () {
-        await fetch("/api/getTabularDropdown").then(response => response.json()).then((data) => {
+        await fetchData("/api/getTabularDropdown").then((data) => {
                 this.setState({
                     tabularDropdown: data
             });
@@ -538,7 +537,7 @@ export default class TabularView extends Component {
             //first check if Metric does already exist in constructor , if not get its info from server
             let metricProps;
             if ( !this.metricsProps[benchmark] ) {
-                const metricPropsJSON = await getBenchmarkMetricProps(benchmark);
+                const metricPropsJSON = await fetchData(`/api/getBenchmarkMetricProps?benchmarkName=${benchmark}`);
                 if(metricPropsJSON){
                     this.metricsProps[benchmark] = metricPropsJSON;
                     metricProps = metricPropsJSON[metric];
@@ -606,19 +605,14 @@ export default class TabularView extends Component {
     showData = async (type) => {
         this.setState({platforms:[]});
         this.setState({columns:[], originalColumns: []});
-        let tabularData;
+        let info;
         if (type === 'test') {
-            tabularData = await fetch( `/api/getTabularData?jdkVersion=${this.state.testJdkVersion}&jvmType=${this.state.testJvmType}&jdkDate=${this.state.testJdkDate}
-            &sdkResource=${this.state.testSdkResource}&buildServer=${this.state.testBuildServer}`, {
-                method: 'get'
-            } );
+            info = await fetchData( `/api/getTabularData?jdkVersion=${this.state.testJdkVersion}&jvmType=${this.state.testJvmType}&jdkDate=${this.state.testJdkDate}
+            &sdkResource=${this.state.testSdkResource}&buildServer=${this.state.testBuildServer}`);
         } else {
-            tabularData = await fetch( `/api/getTabularData?jdkVersion=${this.state.baselineJdkVersion}&jvmType=${this.state.baselineJvmType}&jdkDate=${this.state.baselineJdkDate}
-            &sdkResource=${this.state.baselineSdkResource}&buildServer=${this.state.baselineBuildServer}`, {
-                method: 'get'
-                } );
+            info = await fetchData( `/api/getTabularData?jdkVersion=${this.state.baselineJdkVersion}&jvmType=${this.state.baselineJvmType}&jdkDate=${this.state.baselineJdkDate}
+            &sdkResource=${this.state.baselineSdkResource}&buildServer=${this.state.baselineBuildServer}`);
         }
-        const info = await tabularData.json();
         function getPlatform(platform) {
             const inforFromBuildName = getInfoFromBuildName(platform);
             return inforFromBuildName ? inforFromBuildName.platform : null;

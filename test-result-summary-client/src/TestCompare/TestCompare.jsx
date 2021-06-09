@@ -3,6 +3,7 @@ import { Row, Col, Button, Checkbox } from 'antd';
 import TestInfo from './TestInfo'
 import $ from 'jquery';
 import { parseJenkinsUrl } from '../utils/parseJenkinsUrl';
+import { fetchData } from '../utils/Utils';
 
 require('codemirror');
 require('codemirror/lib/codemirror.css');
@@ -64,8 +65,7 @@ export default class TestCompare extends Component {
                     const initialQueryForBuildID = "/api/getTestInfoByBuildInfo?url=" + serverUrl 
                                     + "&buildName=" + buildName
                                     + "&buildNum=" + buildNum;
-                    const queryIDResponse = await fetch( initialQueryForBuildID, { method: 'get' } );
-                    const queryIDRes = await queryIDResponse.json();
+                    const queryIDRes = await fetchData(initialQueryForBuildID);
                     if ( !(queryIDRes && queryIDRes.testInfo && queryIDRes.testInfo[0].buildOutputId)) {
                         alert( "Cannot find data with provided " + compareType + " Build URL:\n" + buildUrl );
                         return;
@@ -74,8 +74,7 @@ export default class TestCompare extends Component {
                                     + "&removeTimestampFlag=" + removeTimestampFlag
                                     + "&applyDeepSmithMatchFlag=" + applyDeepSmithMatchFlag;
                 }
-                const response = await fetch( queryForGetOutput, { method: 'get' } );
-                const res = await response.json();
+                const res = await fetchData(queryForGetOutput);
                 if ( res && res.output ) {
                     this.state.tests[i] = res;
                 } else {
