@@ -16,7 +16,7 @@ import { SearchResult } from './Search/';
 import { Settings } from './Settings/';
 
 import './App.css';
-import  { ReactComponent as AdoptLogo } from './Adoptlogo.svg';
+import  { ReactComponent as AdoptiumLogo } from './AdoptiumLogo.svg';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -25,16 +25,16 @@ export default class App extends Component {
     render() {
         return <ConfigProvider locale={enUS}>
             <Layout>
-                <Header className="header" style={{ background: '#152935' }}>
+                <Header className="header" style={{ background: '#14003c' }}>
                     <div className="logo" />
                     <Menu
                         theme="dark"
                         mode="horizontal"
                         defaultSelectedKeys={['2']}
-                        style={{ lineHeight: '64px', background: '#152935' }}
+                        style={{ lineHeight: '64px', background: '#14003c' }}
                     >
-                    <Menu.Item key="1"><a href="https://adoptopenjdk.net/" style={{lineHeight: '250%'}}><AdoptLogo/></a></Menu.Item>
-                    <Menu.Item key="2"><Link to="/dashboard">Test Results Summary Service</Link></Menu.Item>
+                    <Menu.Item key="1"><a href="https://adoptium.net/" style={{lineHeight: '250%'}}><AdoptiumLogo style={{height: '3.5em', paddingTop: '1em'}}/></a></Menu.Item>
+                    <Menu.Item style={{top: '-1em'}} key="2"><Link to="/dashboard">Test Results Summary Service</Link></Menu.Item>
                     </Menu>
                 </Header>
                 <Layout>
