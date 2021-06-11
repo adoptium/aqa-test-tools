@@ -94,13 +94,13 @@ export default class GitNewissue extends Component {
             + `Test Name: ${testName}${nl}`
             + `Test Duration: ${renderDuration(duration)}${nl}`
             + `Machine: ${machine}${nl}`
-            + `TRSS link for the test output: https://trss.adoptopenjdk.net/output/test${params({ id: testId })}${nl}`
+            + `TRSS link for the test output: https://trss.adoptium.net/output/test${params({ id: testId })}${nl}`
             + `${nl}${nl}` : ``;
         const buildInfo = (buildName && buildStartTime && buildUrl && buildId) ? `**Build Info**${nl}`
             + `Build Name: ${buildName}${nl}`
             + `Jenkins Build start time: ${buildStartTime}${nl}`
             + `Jenkins Build URL: ${buildUrl}${nl}`
-            + `TRSS link for the build: https://trss.adoptopenjdk.net/allTestsInfo${params({ buildId: buildId })}${nl}`
+            + `TRSS link for the build: https://trss.adoptium.net/allTestsInfo${params({ buildId: buildId })}${nl}`
             + `${nl}${nl}` : ``;
         const javaVersionInfo = javaVersion ? `**Java Version**${nl}`
             + `${javaVersion}${nl}` : ``;

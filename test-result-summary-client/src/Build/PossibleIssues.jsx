@@ -33,7 +33,7 @@ export default class PossibleIssues extends Component {
         // query ML Server for possible issues
         let mlIssue = '', mlIssueRepo = '', mlIssueNum = '';
         // Currently all TRSS servers will use the same ML server deployed on the TRSS adoptopendk machine
-        const mlResponse = await fetch( 'https://ml.trss.adoptopenjdk.net/predict', {
+        const mlResponse = await fetch( 'https://trssml.adoptium.net/predict', {
             method: 'post',
             headers: {
                 'Content-Type': 'application/json'

@@ -41,7 +41,7 @@ Note:
 
 
 ## Production server
-https://trss.adoptopenjdk.net/
+https://trss.adoptium.net/
 
 ## Deployment Instructions
 - on TRSS production server machine, cd to source code folder and update the code
