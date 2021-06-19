@@ -6,6 +6,9 @@ from math import ceil
 import time
 from pprint import pprint
 import pymongo
+import sys
+sys.path.append("../utils/")
+from preprocess_data import extract_quotation_content
 
 def store_in_db(data, collection_name, db, primary_key='url'):
 	"""
@@ -19,8 +22,11 @@ def store_on_fs(data, file_name):
 	"""
 	Store data in file named `file_name`
 	"""
-	with open(file_name, "w") as f:
-		f.write(data)
+	if data:
+
+		with open(file_name, "w") as f:
+			f.write(str(data))
+		return True
 
 def get_collection_record(query_params, field_params, collection_name, db):
 	"""
@@ -28,7 +34,7 @@ def get_collection_record(query_params, field_params, collection_name, db):
 	"""
 	db_col = db[collection_name]
 	return db_col.find_one(query_params, field_params)
-	
+
 def store_issue_details(issue, repo, db):
 	"""
 	Get issue details to be stored in DB and store issue text on filesystem
@@ -38,7 +44,7 @@ def store_issue_details(issue, repo, db):
 	issue_uid = f'{repo_name}_{issue_number}.txt'
 	issue_content_path = f'./data/GitHubData/IssueContent/{issue_uid}'
 	# test_output_path = f'./data/GitHubData/TestOutput/{issue_uid}'
-
+	issue_content_quotation_path = f'./data/GitHubData/IssueContentQuote/{issue_uid}'
 	#Get issue details
 	issue_details = dict()
 	issue_details['url'] = issue['html_url']
@@ -50,10 +56,12 @@ def store_issue_details(issue, repo, db):
 	issue_details['updated_at'] = issue['updated_at']
 	issue_details['issue_content_path'] = issue_content_path
 	# issue_details['test_output_path'] = test_output_path
-
+	issue_details['issue_content_quotation_path'] = issue_content_quotation_path
 	#Store issue content at issue_content_path
 	store_on_fs(issue['body'], issue_content_path)
-	
+	store_quotation_result = store_on_fs(extract_quotation_content(issue['body']), issue_content_quotation_path)
+	if store_quotation_result:
+		issue_details['issue_content_quotation_path'] = issue_content_quotation_path
 	#Store issue details in db.Issues Table
 	store_in_db(issue_details, "Issues", db, "url")
 
@@ -66,7 +74,7 @@ def fetch_new_issues(repo, since, auth_token, db):
 	"""
 	page_number = 1
 	num_open_issues = 0
-	
+
 	query_url = f'https://api.github.com/repos/{repo}/issues'
 	params = {'accept': 'application/vnd.github.v3+json',
 			  'state': 'open',
@@ -81,14 +89,14 @@ def fetch_new_issues(repo, since, auth_token, db):
 	while True:
 		params['page'] = page_number
 		response = requests.get(query_url, headers=headers, params=params).json()
-		
+
 		# Break if no new issues are found on the page
 		if not response:
 			break
 
 		for r in response:
 			if 'pull_request' not in r:
-				store_issue_details(r, repo, db)	
+				store_issue_details(r, repo, db)
 				num_open_issues += 1
 
 		page_number += 1
@@ -106,12 +114,12 @@ def fetch_github_issues(args, db):
 
 	while True:
 		start = time.time()
-		
+
 		for repo in repos:
 
 			#Get the last updated time for the repo
 			since_info = get_collection_record({'repository': repo}, None, 'LastUpdatedInfo', db)
-			
+
 			num_issues = 0
 			since = None
 
@@ -119,7 +127,7 @@ def fetch_github_issues(args, db):
 			if since_info:
 				since = since_info['last_updated_time']
 				num_issues = since_info['total_issues_collected']
-	
+
 			pprint(f"Fetching open issues for {repo}")
 
 			num_issues += fetch_new_issues(repo, since, auth_token, db)
@@ -129,12 +137,12 @@ def fetch_github_issues(args, db):
 			#Store the last updated time for the repo
 			since = datetime.now().isoformat()
 			since_record_to_store = {
-				'repository': repo, 
+				'repository': repo,
 				'last_updated_time': since,
 				'total_issues_collected': num_issues
 			}
 			store_in_db(since_record_to_store, "LastUpdatedInfo", db, primary_key='repository')
-			
+
 		end = time.time()
 		pprint(f'Time taken to fetch issues: {end-start} seconds')
 
@@ -157,7 +165,3 @@ def main():
 
 if __name__ == '__main__':
 	main()
-
-
-
-
