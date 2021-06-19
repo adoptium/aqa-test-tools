@@ -28,8 +28,6 @@ def store_on_fs(data, file_name):
 			f.write(str(data))
 		return True
 
-
-
 def get_collection_record(query_params, field_params, collection_name, db):
 	"""
 	Get a record of db.collection_name specified by query_params and field_params
@@ -62,8 +60,8 @@ def store_issue_details(issue, repo, db):
 	#Store issue content at issue_content_path
 	store_on_fs(issue['body'], issue_content_path)
 	store_quotation_result = store_on_fs(extract_quotation_content(issue['body']), issue_content_quotation_path)
-    if store_quotation_result:
-        issue_details['issue_content_quotation_path'] = issue_content_quotation_path
+        if store_quotation_result:
+		issue_details['issue_content_quotation_path'] = issue_content_quotation_path
 	#Store issue details in db.Issues Table
 	store_in_db(issue_details, "Issues", db, "url")
 
