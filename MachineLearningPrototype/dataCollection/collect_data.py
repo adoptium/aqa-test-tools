@@ -54,6 +54,8 @@ def store_issue_details(issue, repo, db):
 	issue_details['title'] = issue['title']
 	issue_details['created_at'] = issue['created_at']
 	issue_details['updated_at'] = issue['updated_at']
+	issue_details['labels'] = issue['labels']
+	
 	issue_details['issue_content_path'] = issue_content_path
 	# issue_details['test_output_path'] = test_output_path
 	issue_details['issue_content_quotation_path'] = issue_content_quotation_path
@@ -63,21 +65,21 @@ def store_issue_details(issue, repo, db):
 	if store_quotation_result:
 		issue_details['issue_content_quotation_path'] = issue_content_quotation_path
 	#Store issue details in db.Issues Table
-	store_in_db(issue_details, "Issues", db, "url")
+	store_in_db(issue_details, 'Issues', db, 'url')
 
 	#To do: Add issue_details['test_output_path'] and store test_output in filesystem
 
 
 def fetch_new_issues(repo, since, auth_token, db):
 	"""
-	Fetch all new open issues in the repo since `since`
+	Fetch all new issues in the repo since `since`
 	"""
 	page_number = 1
-	num_open_issues = 0
+	new_issues_count = 0
 
 	query_url = f'https://api.github.com/repos/{repo}/issues'
 	params = {'accept': 'application/vnd.github.v3+json',
-			  'state': 'open',
+			  'state': 'all',
 			  'since': since,
 			  'per_page': 100,
 			  'page': page_number,}
@@ -97,12 +99,11 @@ def fetch_new_issues(repo, since, auth_token, db):
 		for r in response:
 			if 'pull_request' not in r:
 				store_issue_details(r, repo, db)
-				num_open_issues += 1
+				new_issues_count += 1
 
 		page_number += 1
 
-	pprint(f'Number of new issues found: {num_open_issues}')
-	return num_open_issues
+	pprint(f'Number of new issues found: {new_issues_count}')
 
 def fetch_github_issues(args, db):
 	"""
@@ -119,29 +120,25 @@ def fetch_github_issues(args, db):
 
 			#Get the last updated time for the repo
 			since_info = get_collection_record({'repository': repo}, None, 'LastUpdatedInfo', db)
-
 			num_issues = 0
 			since = None
-
-			#Get the last_updated time and total_issues_collected if the repo is found
+			
 			if since_info:
 				since = since_info['last_updated_time']
-				num_issues = since_info['total_issues_collected']
+			
+			pprint(f"Fetching new issues for {repo}")
 
-			pprint(f"Fetching open issues for {repo}")
-
-			num_issues += fetch_new_issues(repo, since, auth_token, db)
-
-			pprint(f'Total number of issues: {num_issues}')
+			fetch_new_issues(repo, since, auth_token, db)
 
 			#Store the last updated time for the repo
 			since = datetime.now().isoformat()
 			since_record_to_store = {
 				'repository': repo,
 				'last_updated_time': since,
-				'total_issues_collected': num_issues
 			}
 			store_in_db(since_record_to_store, "LastUpdatedInfo", db, primary_key='repository')
+
+			pprint('-----------------------------------')
 
 		end = time.time()
 		pprint(f'Time taken to fetch issues: {end-start} seconds')
