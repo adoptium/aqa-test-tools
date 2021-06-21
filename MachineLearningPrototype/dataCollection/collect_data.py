@@ -123,7 +123,7 @@ def fetch_github_issues(args, db):
 			num_issues = 0
 			since = None
 			
-			#Get the last_updated time if the repo is found
+			#Get the last updated time if the repo is found
 			if since_info:
 				since = since_info['last_updated_time']
 			
