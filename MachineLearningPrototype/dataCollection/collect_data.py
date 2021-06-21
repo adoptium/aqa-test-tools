@@ -98,7 +98,7 @@ def fetch_new_issues(repo, since, auth_token, db):
 
 		for r in response:
 			if 'pull_request' not in r:
-				store_issue_details(r, repo, db)	
+				store_issue_details(r, repo, db)
 				new_issues_count += 1
 
 		page_number += 1
