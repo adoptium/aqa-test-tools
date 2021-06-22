@@ -28,7 +28,7 @@ export default class TopLevelBuilds extends Component {
         if (!type) type = "Test";
         const results = await fetchData(`/api/getTopLevelBuildNames?type=${type}`);
         const builds = {};
-        for (let i = 0; i < results.length; i++) {
+        for (let i = 0; results && i < results.length; i++) {
             const url = results[i]._id.url;
             const buildName = results[i]._id.buildName;
             builds[url] = builds[url] || [];

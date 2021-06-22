@@ -37,8 +37,8 @@ npm start
 User can navigate at http://localhost:3000
 Note: 
 - Dashboard can be configured using DashboardBuildInfo.json
-- Database needs to be populated before any data can be view on the side menu
-
+- Database needs to be populated before any data can be displayed on the side menu
+- Optional: database GUI client (i.e., Robo 3T) can be installed to view data in database
 
 ## Production server
 https://trss.adoptium.net/

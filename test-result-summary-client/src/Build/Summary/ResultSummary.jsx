@@ -31,7 +31,6 @@ export default class ResultSummary extends Component {
         const { parentId } = getParams(this.props.location.search);
 
         // get test summary (i.e., passed, failed, total numbers)
-        let fetchBuild = {};
         const summary = await fetchData(`/api/getTotals?id=${parentId}`);
 
         // get build information
