@@ -1,0 +1,48 @@
+version: "3"
+
+services:
+  mongo:
+    container_name: "${MONGO_CONTAINER_NAME}"
+    image: mongo:3.6.19-xenial
+    ports:
+      - "27017:27017"
+    networks:
+      - trss-app
+    volumes:
+      - mongo-data:/data/db
+  service:
+    build: TestResultSummaryService
+    container_name: "${SERVICE_CONTAINER_NAME}"
+    depends_on:
+      - mongo
+    ports:
+      - "3001:3001"
+    networks:
+      - trss-app
+    environment: 
+      - MONGO_CONTAINER_NAME=${MONGO_CONTAINER_NAME}
+    volumes:
+      - ./TestResultSummaryService:/usr/src/app
+  client:
+    build: test-result-summary-client
+    container_name: "${CLIENT_CONTAINER_NAME}"
+    stdin_open: true
+    depends_on:
+      - service
+    ports:
+      - "3000:3000"
+    networks:
+      - trss-app
+    environment:
+      - SERVICE_CONTAINER_NAME=${SERVICE_CONTAINER_NAME}
+    volumes:
+      - ./test-result-summary-client:/usr/src/app
+
+networks:
+  trss-app:
+    driver: bridge
+
+volumes:
+  mongo-data:
+    driver: local
+    
