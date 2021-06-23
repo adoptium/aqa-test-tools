@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
-import { Table, Input } from 'antd';
+import { Table, Input, Tooltip } from 'antd';
+import { ProfileOutlined } from '@ant-design/icons';
 import TestBreadcrumb from './TestBreadcrumb';
 import { getParams } from '../utils/query';
 import { fetchData } from '../utils/Utils';
@@ -52,6 +53,7 @@ export default class DeepHistory extends Component {
                     testId: build.tests._id,
                     testResult: build.tests.testResult,
                 },
+                buildUrl: build.buildUrl,
                 duration: build.tests.duration || null,
                 machine: build.machine || null,
                 startTime: new Date( build.tests.startTime ).toLocaleString(),
@@ -87,6 +89,16 @@ export default class DeepHistory extends Component {
             return <div>Build #{value}</div>;
         };
 
+        const renderAction = (value, row) => {
+            const { buildUrl } = row;
+
+            return (
+                <span>
+                    <a target="_blank" rel="noopener noreferrer" href={`${buildUrl}/testReport`}><Tooltip title="Junit Test Report"> <ProfileOutlined /> </Tooltip> </a>
+                </span>
+            );
+        }
+
         var columns = [{
             title: 'Parent Build',
             dataIndex: 'parentBuild',
@@ -98,6 +110,12 @@ export default class DeepHistory extends Component {
             sortOrder: sortedInfo.columnKey === 'parentBuild' && sortedInfo.order,
         },
         {
+            title: 'Test Result',
+            dataIndex: 'testResult',
+            key: 'testResult',
+            render: renderTestResult,
+        },
+        {
             title: 'Duration',
             dataIndex: 'duration',
             key: 'duration',
@@ -106,12 +124,6 @@ export default class DeepHistory extends Component {
                 return a.duration - b.duration;
             },
             sortOrder: sortedInfo.columnKey === 'duration' && sortedInfo.order,
-        },
-        {
-            title: 'Test Result',
-            dataIndex: 'testResult',
-            key: 'testResult',
-            render: renderTestResult,
         },
         {
             title: 'Machine',
@@ -139,6 +151,12 @@ export default class DeepHistory extends Component {
             title: 'Start Time',
             dataIndex: 'startTime',
             key: 'startTime',
+        },
+        {
+            title: 'Action',
+            dataIndex: 'action',
+            key: 'action',
+            render: renderAction,
         },
         ];
 
