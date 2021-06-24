@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { Row, Col, Button, Checkbox } from 'antd';
 import TestInfo from './TestInfo'
 import $ from 'jquery';
-import { parseJenkinsUrl } from '../utils/parseJenkinsUrl';
 import { fetchData } from '../utils/Utils';
 
 require('codemirror');
@@ -50,41 +49,49 @@ export default class TestCompare extends Component {
         $( this.compare ).mergely( 'rhs', '' );
 
         const { removeTimestampFlag, applyDeepSmithMatchFlag } = this.state;
-        for ( var i = 0; i < this.state.forms.length; i++ ) {
+        for ( let i = 0; i < this.state.forms.length; i++ ) {
             const { compareType, buildUrl, testName } = this.state.forms[i];
-            const { errorMsg, serverUrl, buildName, buildNum } = parseJenkinsUrl( buildUrl, compareType );
-            if (!errorMsg) {
-                let queryForGetOutput = "";
-                if (testName) {
-                    queryForGetOutput = "/api/getOutputByTestInfo?url=" + encodeURIComponent( serverUrl ) 
-                                    + "&buildName=" + encodeURIComponent( buildName ) 
-                                    + "&buildNum=" + buildNum + "&testName=" + testName 
-                                    + "&removeTimestampFlag=" + removeTimestampFlag
-                                    + "&applyDeepSmithMatchFlag=" + applyDeepSmithMatchFlag;
-                } else {
-                    const initialQueryForBuildID = "/api/getTestInfoByBuildInfo?url=" + serverUrl 
-                                    + "&buildName=" + buildName
-                                    + "&buildNum=" + buildNum;
-                    const queryIDRes = await fetchData(initialQueryForBuildID);
-                    if ( !(queryIDRes && queryIDRes.testInfo && queryIDRes.testInfo[0].buildOutputId)) {
-                        alert( "Cannot find data with provided " + compareType + " Build URL:\n" + buildUrl );
+
+            const queryForParseJenkinsUrl = "/api/parseJenkinsUrl?jenkinsUrl=" + buildUrl + "&compareType=" + compareType;
+            const parseRes = await fetchData(queryForParseJenkinsUrl);
+            if ( parseRes && parseRes.output ) {
+                const { errorMsg, serverUrl, buildName, buildNum } = parseRes.output;
+                if (!errorMsg) {
+                    let queryForGetOutput = "";
+                    if (testName) {
+                        queryForGetOutput = "/api/getOutputByTestInfo?url=" + encodeURIComponent( serverUrl ) 
+                                        + "&buildName=" + encodeURIComponent( buildName ) 
+                                        + "&buildNum=" + buildNum + "&testName=" + testName 
+                                        + "&removeTimestampFlag=" + removeTimestampFlag
+                                        + "&applyDeepSmithMatchFlag=" + applyDeepSmithMatchFlag;
+                    } else {
+                        const initialQueryForBuildID = "/api/getTestInfoByBuildInfo?url=" + serverUrl 
+                                        + "&buildName=" + buildName
+                                        + "&buildNum=" + buildNum;
+                        const queryIDRes = await fetchData(initialQueryForBuildID);
+                        if ( !(queryIDRes && queryIDRes.testInfo && queryIDRes.testInfo[0].buildOutputId)) {
+                            alert( "Cannot find data with provided " + compareType + " Build URL:\n" + buildUrl );
+                            return;
+                        }
+                        queryForGetOutput = "/api/getOutputById?id=" + queryIDRes.testInfo[0].buildOutputId
+                                        + "&removeTimestampFlag=" + removeTimestampFlag
+                                        + "&applyDeepSmithMatchFlag=" + applyDeepSmithMatchFlag;
+                    }
+                    const res = await fetchData(queryForGetOutput);
+                    if ( res && res.output ) {
+                        this.state.tests[i] = res;
+                    } else {
+                        const testNameAlertMsg = testName? " and Test Name": "";
+                        alert( "Cannot find data with provided " + compareType + " Build URL" + testNameAlertMsg + ":\n"
+                                + buildUrl + "\n" + testName );
                         return;
                     }
-                    queryForGetOutput = "/api/getOutputById?id=" + queryIDRes.testInfo[0].buildOutputId
-                                    + "&removeTimestampFlag=" + removeTimestampFlag
-                                    + "&applyDeepSmithMatchFlag=" + applyDeepSmithMatchFlag;
-                }
-                const res = await fetchData(queryForGetOutput);
-                if ( res && res.output ) {
-                    this.state.tests[i] = res;
                 } else {
-                    const testNameAlertMsg = testName? " and Test Name": "";
-                    alert( "Cannot find data with provided " + compareType + " Build URL" + testNameAlertMsg + ":\n"
-                            + buildUrl + "\n" + testName );
+                    alert( errorMsg );
                     return;
                 }
             } else {
-                alert( errorMsg );
+                alert( "Failed to connect with API to parse Jenkins URL!" );
                 return;
             }
         }

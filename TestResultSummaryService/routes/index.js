@@ -37,6 +37,7 @@ app.get( '/getTestByVersionInfo', wrap( require( "./getTestByVersionInfo" ) ) );
 app.get( '/getTestPerPlatform', wrap( require( "./getTestPerPlatform" ) ) );
 app.get( '/getTopLevelBuildNames', wrap( require( "./getTopLevelBuildNames" ) ) );
 app.get( '/getTotals', wrap( require( "./getTotals" ) ) );
+app.get( '/parseJenkinsUrl', wrap( require( "./parseJenkinsUrl" ) ) );
 app.get( '/populateDB', wrap( require( "./populateDB" ) ) );
 
 app.get( '/updateComments', wrap( require( "./updateComments" ) ) );
