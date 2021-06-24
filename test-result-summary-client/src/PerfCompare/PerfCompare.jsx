@@ -8,7 +8,6 @@ import PerffarmRunJSON from './lib/PerffarmRunJSON';
 import ExtractRelevantJenkinsTestResults from './lib/ExtractRelevantJenkinsTestResults';
 import { getParams } from '../utils/query';
 import './PerfCompare.css';
-import { parseJenkinsUrl } from '../utils/parseJenkinsUrl';
 import { fetchData } from '../utils/Utils';
 
 const buildTypeExampleURL = {
@@ -273,17 +272,25 @@ export default class PerfCompare extends Component {
             let testBuildURL, testBuildName, testBuildNum;
 
             if (this.state.inputURL.baselineID && this.state.inputURL.testID) {
-                const baseLineRes = parseJenkinsUrl( this.state.inputURL.baselineID, "Baseline" );
-                const testRes = parseJenkinsUrl( this.state.inputURL.testID, "Test" );
-                displayErrorMessage += baseLineRes.errorMsg? baseLineRes.errorMsg: "";
-                displayErrorMessage += testRes.errorMsg? testRes.errorMsg: "";
-                if(!displayErrorMessage) {
-                    baselineBuildURL = baseLineRes.serverUrl;
-                    baselineBuildName = baseLineRes.buildName;
-                    baselineBuildNum = baseLineRes.buildNum;
-                    testBuildURL = testRes.serverUrl;
-                    testBuildName = testRes.buildName;
-                    testBuildNum = testRes.buildNum;
+                const queryForParseBaseLineUrl = "/api/parseJenkinsUrl?jenkinsUrl=" + this.state.inputURL.baselineID + "&compareType=Baseline";
+                const parseBaseLineRes = await fetchData(queryForParseBaseLineUrl);
+                const queryForTestUrl = "/api/parseJenkinsUrl?jenkinsUrl=" + this.state.inputURL.testID + "&compareType=Test";
+                const parseTestRes = await fetchData(queryForTestUrl);
+                if (parseBaseLineRes && parseBaseLineRes.output && parseTestRes && parseTestRes.output) {
+                    const baseLineRes = parseBaseLineRes.output;
+                    const testRes = parseTestRes.output;
+                    displayErrorMessage += baseLineRes.errorMsg? baseLineRes.errorMsg: "";
+                    displayErrorMessage += testRes.errorMsg? testRes.errorMsg: "";
+                    if(!displayErrorMessage) {
+                        baselineBuildURL = baseLineRes.serverUrl;
+                        baselineBuildName = baseLineRes.buildName;
+                        baselineBuildNum = baseLineRes.buildNum;
+                        testBuildURL = testRes.serverUrl;
+                        testBuildName = testRes.buildName;
+                        testBuildNum = testRes.buildNum;
+                    }
+                } else {
+                    displayErrorMessage += "Failed to connect with API to parse Jenkins URL!";
                 }
             }
 
