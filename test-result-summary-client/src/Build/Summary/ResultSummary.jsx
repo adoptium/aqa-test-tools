@@ -22,6 +22,7 @@ export default class ResultSummary extends Component {
         allJdkVersions: [],
         selectedJdkImpls: [],
         allJdkImpls: [],
+        failedSdkBuilds : [],
     };
     async componentDidMount() {
         await this.updateData();
@@ -36,6 +37,14 @@ export default class ResultSummary extends Component {
         // get build information
         const buildInfo = await fetchData(`/api/getData?_id=${parentId}`);
         const parentBuildInfo = buildInfo[0] || {};
+
+        // get failed SDK build
+        // need to support different SDK build names: jdk8u-linux-aarch64-openj9 and Build_JDK8_ppc64_aix_Nightly
+        const failedSdkBuilds = await fetchData(`/api/getAllChildBuilds${params({
+            buildResult: "!SUCCESS",
+            buildNameRegex: "^(jdk[0-9]{1,2}|Build_)",
+            parentId,
+        })}`);
 
         // get all child builds info based on buildNameRegex
         const buildNameRegex = "^Test_openjdk.*";
@@ -106,16 +115,17 @@ export default class ResultSummary extends Component {
             allJdkVersions: jdkVersionOpts,
             selectedJdkImpls: jdkImplOpts,
             allJdkImpls: jdkImplOpts,
+            failedSdkBuilds,
         });
     }
 
     render() {
-        const { buildMap, selectedPlatforms, allPlatforms, selectedJdkVersions, allJdkVersions, selectedJdkImpls, allJdkImpls, summary, parentBuildInfo } = this.state;
+        const { buildMap, selectedPlatforms, allPlatforms, selectedJdkVersions, allJdkVersions, selectedJdkImpls, allJdkImpls, summary, parentBuildInfo, failedSdkBuilds } = this.state;
         const { parentId } = getParams(this.props.location.search);
         if (buildMap && parentBuildInfo) {
             return <div>
                 <TestBreadcrumb buildId={parentId} />
-                <Overview id={parentId} parentBuildInfo={parentBuildInfo} summary={summary} />
+                <Overview id={parentId} parentBuildInfo={parentBuildInfo} summary={summary} failedSdkBuilds={failedSdkBuilds}/>
                 <Divider />
                 <div style={{ display: "flex" }}>
                     <PieChart buildMap={buildMap} dataKey="passed" selectedPlatforms={selectedPlatforms} selectedJdkVersions={selectedJdkVersions} selectedJdkImpls={selectedJdkImpls} hcvalues={hcvalues} name="Passed Tests" showInLegend={true} dataLabels={true} />

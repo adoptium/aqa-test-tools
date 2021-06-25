@@ -1,7 +1,7 @@
 const { TestResultsDB, ObjectID } = require('../Database');
 
 /*
-* This API takes parentId or combination of (url, buildName and buildNum)
+* This getAllChildBuilds API takes parentId or combination of (url, buildName and buildNum)
 * Optional paramters: buildResult, testSummaryResult and buildNameRegex
 * It finds a parent build that has id = parentId or matches the combination of (url, buildName 
 * and buildNum)

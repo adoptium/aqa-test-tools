@@ -9,17 +9,16 @@ import { Link } from 'react-router-dom';
 const { TextArea } = Input;
 export default class BuildTable extends Component {
     state = {
-        buildData: []
+        buildData: this.props.buildData
     };
 
-    async componentDidUpdate(prevProps) {
+    componentDidUpdate(prevProps) {
         if (prevProps.buildData !== this.props.buildData) {
             this.setState({
                 buildData: this.props.buildData,
             });
         }
     }
-
 
     handleSave = async row => {
         const newData = [...this.state.buildData];
@@ -48,7 +47,7 @@ export default class BuildTable extends Component {
             },
         };
 
-        const renderJenkinsBuild = ({ buildName, buildNum, buildUrl, url }) => {
+        const renderJenkinsBuild = ({ buildName, buildNum, buildUrl, url } = {}) => {
             // Temporarily support BlueOcean link under folders
             let blueOcean;
             if (`${url}`.includes("/jobs") || `${url}`.includes("/build-scripts")) {

@@ -3,19 +3,24 @@ import { Divider, Row, Col, Tooltip } from 'antd';
 import moment from 'moment';
 import BuildLink from '../BuildLink';
 import renderDuration from '../Duration';
-
 const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
 
 export default class Overview extends Component {
     render() {
-        const { id, parentBuildInfo, summary } = this.props;
+        const { id, parentBuildInfo, summary, failedSdkBuilds } = this.props;
         if (id && parentBuildInfo) {
             const { passed = 0, failed = 0, disabled = 0, skipped = 0, executed = 0, total = 0 } = summary;
             const passPercentage = (parseInt(passed) / parseInt(executed)) * 100;
             const buildResult = parentBuildInfo.buildResult;
+
             return <div>
                 <div style={{ textAlign: "center", fontSize: "28px" }}><a href={parentBuildInfo.buildUrl} target="_blank" rel="noopener noreferrer">{parentBuildInfo.buildName} #{parentBuildInfo.buildNum}</a> Test Summary</div>
-                <Divider />
+                <Divider>SDK Build Results</Divider>
+                <div style={{ fontSize: "18px" }}>
+                    {failedSdkBuilds ? <BuildLink id={id} label="SDK Builds and Smoke Tests " link="Failed" buildNameRegex="^(jdk[0-9]{1,2}|Build_)" buildResult="!SUCCESS" /> : <div>SDK builds and Smoke Tests Passed</div>}
+                </div>
+
+                <Divider>AQA Test Results</Divider>
                 <div style={{ fontSize: "18px" }}>
                     <Row>
                         <Col span={6}>
