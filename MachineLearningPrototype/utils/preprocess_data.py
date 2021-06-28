@@ -17,14 +17,14 @@ def extract_quotation_content(content):
         result=' '.join(substring)
         return result
 
-def get_test_output(jenkins_url, test_name, config_file_path="./config.json"):
-    #Get servers to query
+def query_trss_for_jenkins_output(jenkins_url, test_name, config_file_path="config.json"):
+    #Get TRSS servers to query
     with open(config_file_path) as config_file:
         config = json.loads(config_file.read())
-        if "servers" not in config:
-            raise Exception("No servers in config file")
+        if "trss_servers" not in config:
+            raise Exception("No TRSS servers in config file")
             return ""
-        servers = config["servers"]
+        servers = config["trss_servers"]
     
     #Get build info from TRSS
     query_url = "https://trss.adoptium.net/api/parseJenkinsUrl"
@@ -37,9 +37,8 @@ def get_test_output(jenkins_url, test_name, config_file_path="./config.json"):
         return ""
     
     output_dict = output_dict["output"]
-    success = (output_dict["errorMsg"] == "")
-    
-    if not success:
+
+    if output_dict["errorMsg"]:
         raise Exception("Failed to parse Jenkins Url")
         return ""
 
