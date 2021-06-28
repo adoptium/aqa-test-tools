@@ -62,6 +62,3 @@ def get_test_output(jenkins_url, test_name, config_file_path="./config.json"):
     
     print("Couldn't find data for test")
     return ""
-
-data = get_test_output("https://ci.adoptopenjdk.net/job/Test_openjdk8_bisheng_sanity.openjdk_aarch64_linux/22", "jdk_math_1") 
-print(data)
