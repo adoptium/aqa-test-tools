@@ -25,7 +25,7 @@ def query_trss_for_jenkins_output(jenkins_url, test_name, trss_servers=["https:/
     output_dict = json.loads(output.content)
 
     if "output" not in output_dict:
-        raise Exception("Invalid jenkins Url")
+        raise Exception("No response received from TRSS while parsing Jenkins Url")
         return ""
     
     output_dict = output_dict["output"]
@@ -38,14 +38,19 @@ def query_trss_for_jenkins_output(jenkins_url, test_name, trss_servers=["https:/
     build_name = output_dict["buildName"]
     build_num = output_dict["buildNum"]
 
+    query_params = {"url": url,
+                    "buildName": build_name,
+                    "buildNum": build_num,
+                    "testName": test_name,}
+
+    print("Query parameters:")
+    print(query_params)
+
     for server in trss_servers:
         #Try to fetch test data from server
         query_url = f"{server}/api/getOutputByTestInfo"
-        query_params = {"url": url,
-                        "buildName": build_name,
-                        "buildNum": build_num,
-                        "testName": test_name,}
-
+        print(f"\nQuerying url: {query_url}")
+        
         output = requests.get(query_url, query_params)
         data = json.loads(output.content)
 
