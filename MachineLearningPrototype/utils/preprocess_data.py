@@ -17,15 +17,7 @@ def extract_quotation_content(content):
         result=' '.join(substring)
         return result
 
-def query_trss_for_jenkins_output(jenkins_url, test_name, config_file_path="config.json"):
-    #Get TRSS servers to query
-    with open(config_file_path) as config_file:
-        config = json.loads(config_file.read())
-        if "trss_servers" not in config:
-            raise Exception("No TRSS servers in config file")
-            return ""
-        servers = config["trss_servers"]
-    
+def query_trss_for_jenkins_output(jenkins_url, test_name, trss_servers=["https://trss.adoptium.net"]):
     #Get build info from TRSS
     query_url = "https://trss.adoptium.net/api/parseJenkinsUrl"
     query_params = {"jenkinsUrl": jenkins_url}
@@ -39,14 +31,15 @@ def query_trss_for_jenkins_output(jenkins_url, test_name, config_file_path="conf
     output_dict = output_dict["output"]
 
     if output_dict["errorMsg"]:
-        raise Exception("Failed to parse Jenkins Url")
+        raise Exception("Failed to parse Jenkins Url with error message: " + output_dict["errorMsg"])
         return ""
 
     url = output_dict["serverUrl"]
     build_name = output_dict["buildName"]
     build_num = output_dict["buildNum"]
 
-    for server in servers:
+    for server in trss_servers:
+        #Try to fetch test data from server
         query_url = f"{server}/api/getOutputByTestInfo"
         query_params = {"url": url,
                         "buildName": build_name,
