@@ -127,11 +127,6 @@ export default class ResultSummary extends Component {
                 <TestBreadcrumb buildId={parentId} />
                 <Overview id={parentId} parentBuildInfo={parentBuildInfo} summary={summary} failedSdkBuilds={failedSdkBuilds}/>
                 <Divider />
-                <div style={{ display: "flex" }}>
-                    <PieChart buildMap={buildMap} dataKey="passed" selectedPlatforms={selectedPlatforms} selectedJdkVersions={selectedJdkVersions} selectedJdkImpls={selectedJdkImpls} hcvalues={hcvalues} name="Passed Tests" showInLegend={true} dataLabels={true} />
-                    <PieChart buildMap={buildMap} dataKey="failed" selectedPlatforms={selectedPlatforms} selectedJdkVersions={selectedJdkVersions} selectedJdkImpls={selectedJdkImpls} hcvalues={hcvalues} name="Failed Tests" showInLegend={true} dataLabels={true} />
-                </div>
-                <Divider />
                 <ResultGrid buildMap={buildMap} selectedPlatforms={selectedPlatforms} selectedJdkVersions={selectedJdkVersions} selectedJdkImpls={selectedJdkImpls} hcvalues={hcvalues} />
                 <Divider />
                 <Checkboxes name="Platforms" onChange={selectedPlatforms => this.setState({ selectedPlatforms })} value={selectedPlatforms} options={allPlatforms} />
