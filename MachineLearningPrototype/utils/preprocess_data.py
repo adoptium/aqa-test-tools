@@ -57,6 +57,7 @@ def query_trss_for_jenkins_output(jenkins_url, test_name, trss_servers=["https:/
         if "output" in data:
             return data["output"]
 
+
     print("Couldn't find data for test")
     return ""
 
