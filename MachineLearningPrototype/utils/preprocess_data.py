@@ -76,8 +76,8 @@ def extract_jenkins_link_and_testname(content):
 
     pattern3 = r"[a-zA-Z].+\d+(?=_FAILED)" # For "testname_FAILED" to testname
     splitted_content = content.split()
-    for string in splitted_content:
-        extracted_test = re.findall(pattern3, string)
+    for word in splitted_content:
+        extracted_test = re.findall(pattern3, word)
         test_names += extracted_test
 
     pattern4 = r"(?<=Test Name: ).+_\d+" # "Test Name: HCRLateAttachWorkload_0" to "HCRLateAttachWorkload_0"
