@@ -27,7 +27,7 @@ def query_trss_for_jenkins_output(jenkins_url, test_name, trss_servers=["https:/
     if "output" not in output_dict:
         raise Exception("No response received from TRSS while parsing Jenkins Url")
         return ""
-    
+
     output_dict = output_dict["output"]
 
     if output_dict["errorMsg"]:
@@ -50,12 +50,38 @@ def query_trss_for_jenkins_output(jenkins_url, test_name, trss_servers=["https:/
         #Try to fetch test data from server
         query_url = f"{server}/api/getOutputByTestInfo"
         print(f"\nQuerying url: {query_url}")
-        
+
         output = requests.get(query_url, query_params)
         data = json.loads(output.content)
 
         if "output" in data:
             return data["output"]
-    
+
+
     print("Couldn't find data for test")
     return ""
+
+def extract_jenkins_link_and_testname(content):
+    jenkins_links = []
+    test_names = []
+
+    pattern = r"(https:\/\/.+\/job\/Test_openjdk\d+.+\/\d+)"
+    adoptium_jenkins_links = re.findall(pattern, content)
+    jenkins_links += adoptium_jenkins_links
+
+    pattern2 = r"(?<=\`)Test_openjdk\d+.+?\/?(?=\`)"
+    internal_jenkins_job_names = re.findall(pattern2, content)
+    extracted_internal_links = [''.join(('https://internal_jenkins/job/',x)) for x in internal_jenkins_job_names]
+    jenkins_links += extracted_internal_links
+
+    pattern3 = r"[a-zA-Z].+\d+(?=_FAILED)" # For "testname_FAILED" to testname
+    splitted_content = content.split()
+    for word in splitted_content:
+        extracted_test = re.findall(pattern3, word)
+        test_names += extracted_test
+
+    pattern4 = r"(?<=Test Name: ).+_\d+" # "Test Name: HCRLateAttachWorkload_0" to "HCRLateAttachWorkload_0"
+    special_test_names = re.findall(pattern4, content)
+    test_names += special_test_names
+
+    return jenkins_links, test_names
