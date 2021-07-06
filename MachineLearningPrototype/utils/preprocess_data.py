@@ -65,9 +65,11 @@ def extract_jenkins_link_and_testname(content):
     jenkins_links = []
     test_names = []
 
+    splitted_content = content.split()
     pattern = r"(https:\/\/.+\/job\/Test_openjdk\d+.+\/\d+)"
-    adoptium_jenkins_links = re.findall(pattern, content)
-    jenkins_links += adoptium_jenkins_links
+    for word in splitted_content:
+        adoptium_jenkins_links = re.findall(pattern, word)
+        jenkins_links += adoptium_jenkins_links
 
     pattern2 = r"(?<=\`)Test_openjdk\d+.+?\/?(?=\`)"
     internal_jenkins_job_names = re.findall(pattern2, content)
@@ -75,7 +77,6 @@ def extract_jenkins_link_and_testname(content):
     jenkins_links += extracted_internal_links
 
     pattern3 = r"[a-zA-Z].+\d+(?=_FAILED)" # For "testname_FAILED" to testname
-    splitted_content = content.split()
     for word in splitted_content:
         extracted_test = re.findall(pattern3, word)
         test_names += extracted_test
