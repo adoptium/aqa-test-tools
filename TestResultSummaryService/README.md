@@ -40,6 +40,25 @@ Note:
 - Database needs to be populated before any data can be displayed on the side menu
 - Optional: database GUI client (i.e., Robo 3T) can be installed to view data in database
 
+## Optional: import sample data
+If you do not have Jenkins access or you do not want to monior Jenkins server, you can import our sample data
+- turn off TestResultSummaryService if it is running
+
+- import sample data
+
+```
+mongorestore --archive=./data/sampleData.gz --db exampleDb --gzip
+```
+
+- start TestResultSummaryService
+
+```
+cd to TestResultSummaryService folder
+npm install
+npm start
+```
+
+- Open http://localhost:3000 in your broswer, you should see sample data showing up!
 ## Production server
 https://trss.adoptium.net/
 
