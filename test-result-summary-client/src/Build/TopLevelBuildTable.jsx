@@ -30,7 +30,7 @@ export default class TopLevelBuildTable extends Component {
 
     async updateData() {
         const { buildName, url } = this.props;
-        const builds = await fetchData(`/api/getBuildHistory?buildName=${buildName}&url=${url}`);
+        const builds = await fetchData(`/api/getBuildHistory?buildName=${buildName}&url=${url}&limit=120`);
     
         const buildInfo = builds.map(build => ({
             key: build._id,
