@@ -8,7 +8,8 @@ from pprint import pprint
 import pymongo
 import sys
 sys.path.append("../utils/")
-from preprocess_data import extract_quotation_content
+from preprocess_data import extract_quotation_content, query_trss_for_jenkins_output, extract_jenkins_link_and_testname
+import os
 
 def store_in_db(data, collection_name, db, primary_key='url'):
 	"""
@@ -55,7 +56,7 @@ def store_issue_details(issue, repo, db):
 	issue_details['created_at'] = issue['created_at']
 	issue_details['updated_at'] = issue['updated_at']
 	issue_details['labels'] = issue['labels']
-	
+
 	issue_details['issue_content_path'] = issue_content_path
 	# issue_details['test_output_path'] = test_output_path
 	issue_details['issue_content_quotation_path'] = issue_content_quotation_path
@@ -64,6 +65,37 @@ def store_issue_details(issue, repo, db):
 	store_quotation_result = store_on_fs(extract_quotation_content(issue['body']), issue_content_quotation_path)
 	if store_quotation_result:
 		issue_details['issue_content_quotation_path'] = issue_content_quotation_path
+
+	content_extracted = extract_jenkins_link_and_testname(issue['body'])
+	jenkins_links = content_extracted[0]
+	test_names = content_extracted[1]
+	if jenkins_links != []:
+    		issue_details['issue_quoted_jenkins_links'] = jenkins_links
+	if test_names != []:
+    		issue_details['issue_quoted_test_names'] = test_names
+
+	if (jenkins_links and test_names):
+		path_list = []
+		for link in jenkins_links:
+				new_string = link.split('/')
+				final_string = ''.join(new_string)
+		    		for test in test_names:
+					issue_uid2 = f'{repo_name}_{issue_number}_{final_string}_{test}.txt'
+					jenkins_output_path = f'./data/GitHubData/JenkinsOutput/{issue_uid2}'
+
+					if os.path.isfile(issue_uid2):
+			    			path_list.append(jenkins_output_path)
+
+					else:
+			    			trss_jenkins_output = query_trss_for_jenkins_output(link, test)
+			    			if trss_jenkins_output:
+							store_on_fs(trss_jenkins_output, jenkins_output_path)
+							path_list.append(jenkins_output_path)
+
+		if path_list:
+			issue_details['jenkins_output_path_list'] = path_list
+
+
 	#Store issue details in db.Issues Table
 	store_in_db(issue_details, 'Issues', db, 'url')
 
@@ -122,10 +154,10 @@ def fetch_github_issues(args, db):
 			since_info = get_collection_record({'repository': repo}, None, 'LastUpdatedInfo', db)
 			num_issues = 0
 			since = None
-			
+
 			if since_info:
 				since = since_info['last_updated_time']
-			
+
 			pprint(f"Fetching new issues for {repo}")
 
 			fetch_new_issues(repo, since, auth_token, db)
