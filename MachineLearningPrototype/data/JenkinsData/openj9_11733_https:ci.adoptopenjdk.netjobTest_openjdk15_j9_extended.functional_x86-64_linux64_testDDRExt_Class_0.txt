@@ -1,0 +1,991 @@
+[2021-01-21T10:51:03.921Z] Running test testDDRExt_Class_0 ...
+[2021-01-21T10:51:03.921Z] ===============================================
+[2021-01-21T10:51:03.921Z] testDDRExt_Class_0 Start Time: Thu Jan 21 10:51:03 2021 Epoch Time (ms): 1611226263445
+[2021-01-21T10:51:03.921Z] "/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:destroyAll; "/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:groupAccess,destroyAll; echo "cache cleanup done";
+[2021-01-21T10:51:03.921Z] JVMSHRC005I No shared class caches available
+[2021-01-21T10:51:03.921Z] JVMSHRC005I No shared class caches available
+[2021-01-21T10:51:03.921Z] cache cleanup done
+[2021-01-21T10:51:03.921Z] variation: NoOptions
+[2021-01-21T10:51:03.921Z] JVM_OPTIONS:  
+[2021-01-21T10:51:03.921Z] { itercnt=1; \
+[2021-01-21T10:51:03.921Z] mkdir -p "/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0"; \
+[2021-01-21T10:51:03.921Z] cd "/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0"; \
+[2021-01-21T10:51:03.921Z] ant -DJAVA_COMMAND="/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdkbinary/j2sdk-image/bin/java" -DTEST_ROOT=/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/.. -DTEST_JDK_HOME=/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdkbinary/j2sdk-image -DJDK_VERSION=15 \
+[2021-01-21T10:51:03.921Z] -DTEST_RESROOT=/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../../jvmtest/functional/DDR_Test -DRESOURCES_DIR=/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../../jvmtest/TestConfig/resources -DREPORTDIR="/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0" -DOS=os.linux -DBITS=bits.64 -DLIB_DIR=/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/lib \
+[2021-01-21T10:51:03.921Z] -Dtest.list="TestClassExt" -DADDITIONALEXPORTS=--add-exports=java.base/jdk.internal.org.objectweb.asm=ALL-UNNAMED -f "/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../../jvmtest/functional/DDR_Test/tck_ddrext.xml"; \
+[2021-01-21T10:51:03.921Z] if [ $? -eq 0 ] ; then echo ""; echo "testDDRExt_Class_0""_PASSED"; echo ""; cd /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/..; rm -f -r "/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0"; else echo ""; echo "testDDRExt_Class_0""_FAILED"; echo ""; fi; } 2>&1 | tee -a "/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/TestTargetResult";
+[2021-01-21T10:51:03.921Z] Buildfile: /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/jvmtest/functional/DDR_Test/tck_ddrext.xml
+[2021-01-21T10:51:04.536Z] 
+[2021-01-21T10:51:04.536Z] TCK.initialize.cache:
+[2021-01-21T10:51:04.536Z]      [echo] Initializing cache
+[2021-01-21T10:51:04.536Z]      [echo] Running j9vm.test.corehelper.StackMapCoreGenerator to create a new cache
+[2021-01-21T10:51:04.536Z]      [echo] Using JVM : ${sdk.executable}${sdk.executable.ext}
+[2021-01-21T10:51:04.536Z]      [echo] classname = "j9vm.test.corehelper.StackMapCoreGenerator"
+[2021-01-21T10:51:04.536Z]      [echo] Java VM Args:
+[2021-01-21T10:51:04.536Z]      [echo] 	jvmarg = -Xshareclasses:name=ddrextjunitSCC,reset -Xitsn1000
+[2021-01-21T10:51:04.536Z]      [echo] 
+[2021-01-21T10:51:04.536Z]      [echo] 		
+[2021-01-21T10:51:05.406Z]      [java] JVMSHRC023E Cache does not exist
+[2021-01-21T10:51:05.406Z]      [java] HelperExceptionForCoreGeneration is thrown and caught successfuly!
+[2021-01-21T10:51:05.406Z] 
+[2021-01-21T10:51:05.406Z] TCK.generate.dump:
+[2021-01-21T10:51:05.406Z]      [echo] Generate dump file
+[2021-01-21T10:51:05.406Z]      [echo] JAVA_COMMAND: /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdkbinary/j2sdk-image/bin/java
+[2021-01-21T10:51:05.406Z]      [echo] DUMP_OPTION: -Xdump:system:defaults:label=/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0/DDREXT.J9CORE.DMP,request=exclusive+compact+prepwalk -Xscmx16m -Xshareclasses:name=ddrextjunitSCC,addtestjithints -Xjit:count=0 -Xaot:forceaot,count=5,disableAsyncCompilation -Xmx512M
+[2021-01-21T10:51:05.406Z]      [echo] EXTRADUMPOPT: 
+[2021-01-21T10:51:05.406Z]      [echo] COREGEN: j9vm.test.corehelper.CoreGen
+[2021-01-21T10:51:05.406Z]      [echo] JVM_OPTIONS: 
+[2021-01-21T10:51:05.406Z]      [echo] TEST_NUM: 
+[2021-01-21T10:51:05.406Z]      [echo] os.name: Linux
+[2021-01-21T10:51:05.406Z]      [echo] TEST_LIB_PATH_VAL: 
+[2021-01-21T10:51:05.406Z]      [exec] Running helper class for the -Xshareclasses:printStats=startuphint DDR test
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Object.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/J9VMInternals.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to com/ibm/oti/vm/VM.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/J9VMInternals$ClassInitializationLock.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Class.getUnsafe
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/reflect/GenericDeclaration.getTypeParameters
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/reflect/AnnotatedElement.isAnnotationPresent
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/reflect/Type.getTypeName
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/constant/Constable.describeConstable
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/invoke/TypeDescriptor.descriptorString
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/invoke/TypeDescriptor$OfField.isArray
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/String.checkLastChar
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Comparable.compareTo
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/CharSequence.length
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/constant/ConstantDesc.resolveConstantDesc
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/String$CaseInsensitiveComparator.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/Comparator.compare
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to com/ibm/jit/JITHelpers.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/Unsafe.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandle.doCustomizationLogic
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/Objects.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/Reflection.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/Set.size
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/Collection.size
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Iterable.iterator
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$Set12.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$AbstractImmutableSet.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$AbstractImmutableCollection.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/AbstractCollection.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/VM.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/System.initEncodings
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Runtime.getRuntime
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$ListN.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$AbstractImmutableList.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/List.size
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$SetN.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$MapN.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$AbstractImmutableMap.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/AbstractMap.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/util/Map.size
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/reflect/AccessibleObject.checkPermission
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/ClassLoader.initAnonClassLoader
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/reflect/Constructor.getFactory
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/reflect/Executable.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/reflect/Member.getDeclaringClass
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/reflect/Field.getGenericSignature
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/reflect/Method.getGenericSignature
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Module.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Math.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Float.toString
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Number.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/annotation/Annotation.equals
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Double.toString
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/io/ObjectStreamField.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Thread.<init>
+[2021-01-21T10:51:05.406Z]      [exec] addTestJitHint adding hint to java/lang/Runnable.run
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Thread$TidLock.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/security/CodeSource.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/security/cert/Certificate.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Package.getName
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/NamedPackage.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/StackTraceElement.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Throwable.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/StackOverflowError.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/VirtualMachineError.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Error.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/ClassNotFoundException.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/ReflectiveOperationException.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Exception.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/LinkageError.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/NoClassDefFoundError.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/NullPointerException.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/RuntimeException.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/NativeLibraries.jniNativeLibraries
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/HashSet.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/AbstractSet.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/HashMap.hash
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/ArrayDeque.grow
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Deque.addFirst
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Queue.add
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/NativeLibraries$NativeLibraryImpl.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/NativeLibrary.name
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/OutOfMemoryError.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/StackWalker$StackFrameImpl.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/StackWalker$StackFrame.getByteCodeIndex
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Boolean.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Byte.toString
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Character.describeConstable
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Short.toString
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Integer.toString
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Long.toString
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/reflect/RecordComponent.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/ThreadGroup.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Thread$UncaughtExceptionHandler.uncaughtException
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/ref/Reference.waitForReferenceProcessingImpl
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/ref/SoftReference.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/AbstractOwnableSynchronizer.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/PrimitiveHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ReceiverBoundHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/DirectHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ConvertHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/FoldHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/FilterArgumentsWithCombinerHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/FilterArgumentsHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/GuardWithTestHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/CollectHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/SpreadHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodType.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/TypeDescriptor$OfMethod.parameterCount
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/DynamicInvokerHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/FilterReturnHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/VarargsCollectorHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/InvokeExactHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/VolatileCallSite.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/CallSite.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MutableCallSite.registerNatives
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/PassThroughHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ThunkTuple.registerNatives
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/InsertHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/PermuteHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ConstantObjectHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ConstantHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ConstantIntHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ConstantFloatHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ConstantLongHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ConstantDoubleHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/InvokeGenericHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/VarHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/VarHandleInternal.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandleCache.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/VarHandleInvokeHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/FieldVarHandle.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/InternalRamClass.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to com/ibm/oti/util/WeakReferenceNode.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/ref/WeakReference.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodTypeHelper.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Arrays.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Arrays$ArrayList.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/AbstractList.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Arrays$ArrayItr.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Iterator.hasNext
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/HashMap$Node.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Map$Entry.getKey
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/HashMap$TreeNode.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/LinkedHashMap$Entry.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Collections.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Collections$EmptySet.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Collections$EmptyList.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Collections$EmptyMap.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Collections$UnmodifiableSet.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Collections$UnmodifiableCollection.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandleResolver.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandles$Lookup.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/ConstructorAccessorImpl.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/MagicAccessorImpl.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/ConstructorAccessor.newInstance
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/MethodAccessorImpl.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/MethodAccessor.invoke
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/ThreadGroup$ChildrenGroupsLock.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/ThreadGroup$ChildrenThreadsLock.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/Thread$ThreadLock.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/VMAccess.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to com/ibm/oti/vm/VMLangAccess.getPlatformClassLoader
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Hashtable.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Dictionary.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/util/Hashtable$Entry.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/VersionProps.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/String$UnsafeHelpers.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/reflect/ReflectAccess.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaLangReflectAccess.newConstructor
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to jdk/internal/access/SharedSecrets.<init>
+[2021-01-21T10:51:05.407Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandles.getStackClass
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/ReflectionFactory$GetReflectionFactoryAction.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/security/PrivilegedAction.run
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/security/AccessController.initializeInternal
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/ReflectionFactory.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/StringBuilder.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/AbstractStringBuilder.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/Appendable.append
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/StringUTF16.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/util/ArraysSupport.exactLog2
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/CharacterData.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/CharacterDataLatin1.getProperties
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/Integer$IntegerCache.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/Properties.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/ConcurrentHashMap.spread
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/ConcurrentMap.getOrDefault
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/ConcurrentHashMap$Segment.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/ReentrantLock.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/Lock.lock
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/ConcurrentHashMap$CounterCell.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/ConcurrentHashMap$Node.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/LockSupport.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/ConcurrentHashMap$ReservationNode.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/Hashtable$EntrySet.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/Collections$SynchronizedSet.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/Collections$SynchronizedCollection.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/Hashtable$Enumerator.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/Enumeration.hasMoreElements
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/ConcurrentHashMap$ForwardingNode.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/util/StaticProperty.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/Access.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaLangAccess.getDeclaredPublicMethods
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/StringCoding.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/ThreadLocal.nextHashCode
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/concurrent/atomic/AtomicInteger.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/ISO_8859_1.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/charset/Charset.checkName
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/HistoricallyNamedCharset.historicalName
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/StandardCharsets.aliases_US_ASCII
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/charset/spi/CharsetProvider.checkPermission
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/US_ASCII.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/UTF_8.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/Unicode.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/StringCoding$1.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/security/action/GetPropertyAction.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/StandardCharsets$Aliases.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/util/PreHashedMap.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/StandardCharsets$Cache.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/charset/StandardCharsets.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/UTF_16BE.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/UTF_16LE.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/UTF_16.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/PrintStream.requireNonNull
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/FilterOutputStream.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/OutputStream.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/Closeable.close
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/AutoCloseable.close
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/Flushable.flush
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/BufferedOutputStream.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/FileOutputStream.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/FileDescriptor.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/reflect/Modifier.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/FileDescriptor$1.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaIOFileDescriptorAccess.set
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/OutputStreamWriter.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/Writer.nullWriter
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/StreamEncoder.ensureOpen
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/US_ASCII$Encoder.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/charset/CharsetEncoder.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/charset/CodingErrorAction.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/Surrogate$Parser.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to sun/nio/cs/Surrogate.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/charset/CoderResult.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/ByteBuffer.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/Buffer.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/Buffer$1.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaNioAccess.getDirectBufferPool
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/HeapByteBuffer.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/nio/ByteOrder.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/io/BufferedWriter.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/WeakHashMap.newTable
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/ref/ReferenceQueue.poll
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/Cleaner.add
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/ref/PhantomReference.get
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/Class$ReflectRef.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/ref/Reference$1.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaLangRefAccess.waitForReferenceProcessing
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/ClassLoader$ClassNameLockRef.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/WeakHashMap$Entry.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/util/Collections$SynchronizedMap.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/security/ProtectionDomain.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/security/ProtectionDomain$JavaSecurityAccessImpl.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaSecurityAccess.doIntersectionPrivilege
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/ClassLoaders.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/ClassLoaders$BootClassLoader.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/BuiltinClassLoader.initializeSharedClassesSupport
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/security/SecureClassLoader.<init>
+[2021-01-21T10:51:05.408Z]      [exec] addTestJitHint adding hint to java/lang/ClassLoader$AssertionLock.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/lang/ClassLoader$LazyInitLock.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/ClassLoaders$PlatformClassLoader.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/URLClassPath.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/net/URL.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/net/URL$DefaultFactory.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/net/URLStreamHandlerFactory.createURLStreamHandler
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/net/URL$3.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaNetURLAccess.getHandler
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/util/ArrayList.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/io/File.isInvalid
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/io/DefaultFileSystem.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/io/UnixFileSystem.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/io/FileSystem.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/io/File$PathStatus.values
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/lang/Enum.name
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/lang/ThreadLocal$ThreadLocalMap.setThreshold
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/lang/ThreadLocal$ThreadLocalMap$Entry.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/TerminatingThreadLocal.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/lang/StringCoding$Result.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to sun/net/www/ParseUtil.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to sun/net/www/protocol/file/Handler.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to java/net/URLStreamHandler.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to sun/net/util/IPAddressUtil.<init>
+[2021-01-21T10:51:05.409Z]      [exec] addTestJitHint adding hint to jdk/internal/util/Preconditions.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/ClassLoaders$AppClassLoader.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/BootLoader.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ServicesCatalog.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/ClassLoaderValue.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/AbstractClassLoaderValue.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/InternalAnonymousClassLoader.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleBootstrap.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleDescriptor.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleDescriptor$1.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaLangModuleAccess.newModuleBuilder
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModulePatcher.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleBootstrap$Counters.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ArchivedModuleGraph.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/SystemModuleFinders.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/net/URI.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/net/URI$1.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaNetUriAccess.create
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/SystemModulesMap.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/SystemModules$default.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/SystemModules.hasSplitPackages
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/Builder.newRequires
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleDescriptor$Requires.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleDescriptor$Exports.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleDescriptor$Opens.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleDescriptor$Provides.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$List12.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleDescriptor$Version.takeNumber
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleDescriptor$Modifier.values
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleDescriptor$Requires$Modifier.values
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleTarget.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleHashes.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleHashes$Builder.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/Collections$UnmodifiableMap.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleResolution.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleReference.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/SystemModuleFinders$2.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/function/Supplier.get
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleReferenceImpl.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/KeyValueHolder.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/SystemModuleFinders$3.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleHashes$HashSupplier.generate
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/module/SystemModuleFinders$SystemModuleFinder.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleFinder.find
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/Optional.empty
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/BuiltinClassLoader$LoadedModule.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/BuiltinClassLoader$2.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/Paths.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/Path.of
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/Watchable.register
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/FileSystems.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/DefaultFileSystemProvider.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/LinuxFileSystemProvider.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixFileSystemProvider.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/AbstractFileSystemProvider.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/spi/FileSystemProvider.checkPermission
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/StandardOpenOption.values
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/LinuxFileSystem.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixFileSystem.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/FileSystem.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixPath.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/Util.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixNativeDispatcher.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/NativeLibraries$LibraryPaths.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/ClassLoaderHelper.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/NativeLibraries$1.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/ArrayDeque$DeqIterator.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixFileAttributes.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/PosixFileAttributes.owner
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/BasicFileAttributes.lastModifiedTime
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixFileStoreAttributes.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixMountEntry.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/CharBuffer.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/Readable.read
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/HeapCharBuffer.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/LinkOption.values
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/nio/file/Files.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/NativeBuffers.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/NativeBuffers$1.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/TerminatingThreadLocal$1.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/IdentityHashMap.maskNull
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/Collections$SetFromMap.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/IdentityHashMap$KeySet.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to sun/nio/fs/NativeBuffer.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/CleanerFactory.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/CleanerFactory$1.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/concurrent/ThreadFactory.newThread
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/ref/Cleaner.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/ref/Cleaner$1.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/util/function/Function.apply
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/CleanerImpl.setCleanerImplAccess
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/CleanerImpl$PhantomCleanableRef.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/PhantomCleanable.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to java/lang/ref/Cleaner$Cleanable.clean
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/CleanerImpl$WeakCleanableRef.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/WeakCleanable.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/CleanerImpl$SoftCleanableRef.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/SoftCleanable.<init>
+[2021-01-21T10:51:05.410Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/CleanerImpl$CleanerCleanable.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/ref/CleanerFactory$1$1.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/InnocuousThread.newName
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/security/AccessControlContext.debugSetting
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/security/ProtectionDomain$Key.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/security/Principal.equals
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/InnocuousThread$3.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/InnocuousThread$2.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to sun/nio/fs/NativeBuffer$Deallocator.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixUriUtils.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/net/URI$Parser.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to sun/net/www/protocol/jrt/Handler.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$SetN$SetNIterator.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/Modules.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/lang/module/Configuration.targetPlatform
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/lang/module/ResolvedModule.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/AbstractMap$1.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/AbstractMap$1$1.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$MapN$1.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$MapN$MapNIterator.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$Set12$1.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleLoaderMap.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleLoaderMap$Mapper.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ModuleLoaderMap$Modules.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/lang/ModuleLayer.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$SubList.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ImmutableCollections$ListItr.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ListIterator.hasNext
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/concurrent/CopyOnWriteArrayList.getArray
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/ServicesCatalog$ServiceProvider.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/HashMap$KeySet.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/HashMap$KeyIterator.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/HashMap$HashIterator.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/lang/ModuleLayer$Controller.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/IllegalAccessLogger$Mode.values
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/IllegalAccessLogger$Builder.ensureNotComplete
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/HashMap$Values.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/HashMap$ValueIterator.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/HashMap$EntrySet.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/HashMap$EntryIterator.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/IllegalAccessLogger.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/BuiltinClassLoader$1.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/sharedclasses/spi/SharedClassProvider.initializeProvider
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ServiceLoader.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ServiceLoader$ModuleServicesLookupIterator.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/concurrent/CopyOnWriteArrayList$COWIterator.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ServiceLoader$LazyClassPathLookupIterator.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ServiceLoader$2.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ServiceLoader$3.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/provider/SharedClassProviderImpl.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/lang/Class$CacheKey.hashCombine
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ServiceLoader$1.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/security/PrivilegedExceptionAction.run
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ServiceLoader$ProviderImpl.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/ServiceLoader$Provider.type
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/NativeConstructorAccessorImpl.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/DelegatingConstructorAccessorImpl.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/Shared.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/Shared$Monitor.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedClassHelperFactoryImpl.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedAbstractHelperFactory.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedClassHelperFactory.getTokenHelper
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedAbstractHelperFactory$Monitor.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedClassURLHelperImpl.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedClassAbstractHelper.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedAbstractHelper.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedHelper.getClassLoader
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedClassHelper.setSharingFilter
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedClassURLHelper.findSharedClass
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/util/Msg.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/util/PriviAction.getSecurityProperty
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to com/ibm/oti/vm/MsgHelp.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/Locale.createConstant
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to sun/util/locale/BaseLocale.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to sun/util/locale/LocaleUtils.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/Resources.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/Checks.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/BuiltinClassLoader$7.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/SystemModuleFinders$SystemModuleReader.checkPermissionToConnect
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/lang/module/ModuleReader.find
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/module/SystemModuleFinders$SystemImage.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/ImageReaderFactory.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/ImageReaderFactory$1.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/ImageReader.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/ImageReader$SharedImageReader.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/BasicImageReader.isSystemProperty
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/BasicImageReader$1.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/NativeImageBuffer.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/NativeImageBuffer$1.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/nio/DirectByteBuffer.attachment
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/nio/MappedByteBuffer.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to sun/nio/ch/DirectBuffer.address
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/nio/Bits.<init>
+[2021-01-21T10:51:05.411Z]      [exec] addTestJitHint adding hint to java/util/concurrent/atomic/AtomicLong.VMSupportsCS8
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/nio/Bits$1.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/VM$BufferPool.getName
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/ImageHeader.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/nio/DirectIntBufferU.attachment
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/nio/IntBuffer.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/nio/DirectByteBufferR.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/nio/DirectIntBufferRU.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/ImageStringsReader.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/ImageStrings.get
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/decompressor/Decompressor.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodType$InternTableAddLock.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/Void.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/Module$ReflectionData.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/WeakPairMap.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/WeakPairMap$Pair.weak
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/WeakPairMap$Pair$Lookup.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandles$Lookup$VMLangAccessGetter.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/LambdaMetafactory.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/HandleCache.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/Cache.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/ClassValue.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/ClassValue$Entry.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/ClassValue$Identity.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/ClassValue$Version.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/ClassValue$ClassValueMap.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodCacheKey.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/CacheKey.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ComputedCalls.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ThunkKey.normalize
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ILGenMacros.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ThunkTable.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ThunkTable$Properties.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ThunkTable$Properties$1.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/SecurityFrameInjector.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/SecurityFrameInjector$SecurityFrameInjectorLoaderLock.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/ConstantPool.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/io/InputStream.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/AsTypeHandle.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ArgumentConversionHandle.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ConvertHandle$FilterHelpers.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ThunkKeyWithObject.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/InnerClassLambdaMetafactory.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/AbstractValidatingLambdaMetafactory.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/Type.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to sun/security/action/GetBooleanAction.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandleInfoImpl.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandleInfo.getDeclaringClass
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/ClassWriter.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/ClassVisitor.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/SymbolTable.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/SymbolTable$Entry.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/Symbol.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/ByteVector.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to sun/invoke/util/BytecodeDescriptor.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to sun/invoke/util/Wrapper.values
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to sun/invoke/util/Wrapper$Format.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/LambdaProxyClassArchive.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/FieldWriter.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/FieldVisitor.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/MethodWriter.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/MethodVisitor.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/Label.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/InnerClassLambdaMetafactory$ForwardingMethodGenerator.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/TypeConvertingMethodAdapter.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/Attribute.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/AnnotationWriter.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/AnnotationVisitor.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/Handler.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandles$Lookup$ClassOption.values
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandleNatives.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/org/objectweb/asm/ClassReader.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandles$Lookup$ClassDefiner.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/MethodHandles$Lookup$ClassDefiner$1.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/security/Permissions.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/security/PermissionCollection.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to sun/security/util/SecurityConstants.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/security/AllPermission.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/security/Permission.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/security/Guard.checkGuard
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/net/NetPermission.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/security/BasicPermission.init
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/RuntimePermission.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/security/SecurityPermission.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/net/SocketPermission.getDebug
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/reflect/ReflectPermission.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/security/Permissions$1.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/security/AllPermissionCollection.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/security/UnresolvedPermission.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ConstructorHandle.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to java/lang/invoke/ConstantCallSite.<init>
+[2021-01-21T10:51:05.412Z]      [exec] addTestJitHint adding hint to jdk/internal/jimage/ImageLocation.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/io/ByteArrayInputStream.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/Properties$LineReader.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/BuiltinClassLoader$SharedClassMetaDataCache.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/BuiltinClassLoader$SharedClassMetaData.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/reflect/Array.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedClassURLClasspathHelperImpl.init
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedClassURLClasspathHelper.findSharedClass
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/ReentrantReadWriteLock.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/ReadWriteLock.readLock
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/ReentrantReadWriteLock$NonfairSync.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/ReentrantReadWriteLock$Sync.sharedCount
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/AbstractQueuedSynchronizer.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/AbstractQueuedSynchronizer$Node.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/ReentrantReadWriteLock$Sync$ThreadLocalHoldCounter.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/ReentrantReadWriteLock$ReadLock.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/concurrent/locks/ReentrantReadWriteLock$WriteLock.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/Class$6.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/io/BufferedInputStream.getInIfOpen
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/io/FilterInputStream.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/io/FileInputStream.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/Terminator.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/Terminator$1.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/Signal$Handler.handle
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/Signal.getNumber
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/misc/Signal$NativeHandler.getHandler
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/ThreadDeath.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/ClassLoader$ClassNameBasedLock.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to com/ibm/oti/lang/ArgumentHelper.helper
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/reflect/InvocationTargetException.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint class myAnnotation not in the cache
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint class TestAnnotation not in the cache
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint class x10/annotations/JITOption not in the cache
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint class x10/annotations/NoSideEffects not in the cache
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint class x10/annotations/AllocateOnStack not in the cache
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to com/ibm/jvm/Trace.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to com/ibm/jvm/TracePermission.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/Shutdown.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/Shutdown$Lock.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/AttachHandler.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/Vector.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/AttachHandler$syncObject.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/AttachHandler$AttachStateValues.values
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/AttachHandler$AttachStateSync.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/IPC.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/PosixFilePermission.values
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/EnumSet.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/Class$EnumVars.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/Class$ReflectCache.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to sun/reflect/annotation/AnnotationParser.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/NativeMethodAccessorImpl.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/DelegatingMethodAccessorImpl.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/Class$5.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/UnsafeFieldAccessorFactory.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/UnsafeObjectFieldAccessorImpl.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/UnsafeFieldAccessorImpl.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/FieldAccessorImpl.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/reflect/FieldAccessor.get
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/RegularEnumSet.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/IPC$syncObject.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/AttachHandler$teardownHook.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/ApplicationShutdownHooks.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/lang/ApplicationShutdownHooks$1.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to sun/launcher/LauncherHelper.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint class j9vm/test/corehelper/CoreGen not in the cache
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/BuiltinClassLoader$SharedClassIndexHolder.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/CommonDirectory.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/CommonDirectory$syncObject.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/util/function/IntConsumer.accept
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/FileLock.isLocked
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/FileLock$syncObject.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/CommonDirectory$DirectorySampler.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/io/FileFilter.accept
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/TargetDirectory.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/Advertisement.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/nio/file/FileSystems$DefaultFileSystemHolder.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/nio/file/FileSystems$DefaultFileSystemHolder$1.<init>
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/DosFileAttributes.isReadOnly
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/PosixFileAttributeView.name
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/BasicFileAttributeView.name
+[2021-01-21T10:51:05.413Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/AttributeView.name
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/FileOwnerAttributeView.name
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/DosFileAttributeView.name
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/UserDefinedFileAttributeView.name
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixFileAttributeViews.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixFileAttributeViews$Posix.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixFileAttributeViews$Basic.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to sun/nio/fs/AbstractBasicFileAttributeView.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to sun/nio/fs/DynamicFileAttributeView.setAttribute
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/provider/SharedClassProviderImpl$IndexHolderImpl.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedClassURLClasspathHelper$IndexHolder.setIndex
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to sun/net/util/URLUtil.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/URLClassPath$3.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/URLClassPath$JarLoader.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/URLClassPath$Loader.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipFile.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipFile$1.<init>
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaUtilZipFileAccess.startsWithLocHeader
+[2021-01-21T10:51:05.414Z]      [exec] addTestJitHint adding hint to sun/net/www/protocol/jar/Handler.<init>
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/URLClassPath$JarLoader$1.<init>
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/FileURLMapper.<init>
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to java/util/jar/JarFile.baseVersion
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to java/io/FileCleanable.cleanupClose0
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to java/util/jar/JavaUtilJarAccessImpl.<init>
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaUtilJarAccess.jarFileHasClassPathAttribute
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to java/lang/Runtime$Version.<init>
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipFile$CleanableResource.<init>
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipCoder.get
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipCoder$UTF8ZipCoder.<init>
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to java/io/FileOutputStream$1.<init>
+[2021-01-21T10:51:05.417Z]      [exec] addTestJitHint adding hint to java/util/WeakHashMap$KeySet.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipFile$Source.addEntry
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipFile$Source$Key.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/WaitLoop.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to sun/nio/fs/UnixFileAttributes$UnixAsBasicFileAttributes.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/io/RandomAccessFile.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/io/DataOutput.write
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/IdentityHashMap$KeyIterator.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/io/DataInput.readFully
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/IdentityHashMap$IdentityHashMapIterator.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/io/RandomAccessFile$2.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to jdk/internal/access/JavaIORandomAccessFileAccess.openAndDelete
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipFile$Source$End.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipUtils.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/concurrent/TimeUnit.values
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/nio/file/attribute/FileTime.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to jdk/internal/perf/PerfCounter.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to jdk/internal/perf/Perf$GetPerfAction.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to jdk/internal/perf/Perf.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to jdk/internal/perf/PerfCounter$CoreCounters.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/nio/DirectByteBuffer$Deallocator.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/nio/DirectLongBufferU.attachment
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/nio/LongBuffer.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/jar/JarFile$JarFileEntry.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/jar/JarEntry.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipEntry.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipFile$ZipFileInputStream.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipFile$ZipFileInflaterInputStream.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/InflaterInputStream.ensureOpen
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/Inflater.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/Inflater$InflaterZStreamRef.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/zip/ZipFile$InflaterCleanupAction.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/URLClassPath$JarLoader$2.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to jdk/internal/loader/Resource.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/jar/Manifest.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/jar/Attributes.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/LinkedHashMap.linkNodeLast
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/jar/Manifest$FastInputStream.<init>
+[2021-01-21T10:51:05.418Z]      [exec] addTestJitHint adding hint to java/util/jar/Attributes$Name.of
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint adding hint to java/lang/Package$VersionInfo.getInstance
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint adding hint to sun/nio/ByteBuffered.getByteBuffer
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint adding hint to java/security/SecureClassLoader$CodeSourceKey.<init>
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint adding hint to java/security/SecureClassLoader$1.<init>
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint adding hint to sun/security/util/LazyCodeSourcePermissionCollection.<init>
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint adding hint to java/security/BasicPermissionCollection.<init>
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint adding hint to java/security/SecureClassLoader$DebugHolder.<init>
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint adding hint to sun/security/util/Debug.<init>
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint adding hint to java/lang/ClassLoader$NamedPackageProvider.<init>
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint adding hint to com/ibm/oti/shared/SharedClassAbstractHelper$1.<init>
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint class j9vm/test/corehelper/SimpleThread not in the cache
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint class j9vm.test.corehelper.SimpleThread not in the cache
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint class j9vm/test/corehelper/SimpleThread$DumperThread not in the cache
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint class j9vm.test.corehelper.SimpleThread$DumperThread not in the cache
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint class java/lang/InterruptedException not in the cache
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint class j9vm/test/corehelper/TestJITExtHelperThread not in the cache
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint class j9vm.test.corehelper.TestJITExtHelperThread not in the cache
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint class java/lang/Compiler not in the cache
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint class j9vm/test/corehelper/TestJITExtHelperThread$1 not in the cache
+[2021-01-21T10:51:06.033Z]      [exec] addTestJitHint class j9vm.test.corehelper.TestJITExtHelperThread$1 not in the cache
+[2021-01-21T10:51:06.648Z]      [exec] JVMDUMP034I User requested System dump using '/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0/DDREXT.J9CORE.DMP' through com.ibm.jvm.Dump.SystemDump
+[2021-01-21T10:51:06.648Z]      [exec] addTestJitHint class com/ibm/jvm/Dump not in the cache
+[2021-01-21T10:51:06.648Z]      [exec] addTestJitHint class com/ibm/jvm/DumpPermission not in the cache
+[2021-01-21T10:51:06.648Z]      [exec] addTestJitHint class com/ibm/jvm/ToolDumpPermission not in the cache
+[2021-01-21T10:51:06.649Z]      [exec] addTestJitHint class com/ibm/jvm/Dump$DumpOptionsLock not in the cache
+[2021-01-21T10:51:09.454Z]      [exec] addTestJitHint adding hint to openj9/internal/tools/attach/target/AttachHandler$1.<clinit>
+[2021-01-21T10:51:09.454Z]      [exec] addTestJitHint adding hint to java/util/Vector$Itr.<init>
+[2021-01-21T10:51:09.454Z]      [exec] addTestJitHint adding hint to java/lang/Thread$State.values
+[2021-01-21T10:51:09.454Z]      [exec] JVMDUMP010I System dump written to /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0/DDREXT.J9CORE.DMP
+[2021-01-21T10:51:09.454Z] 
+[2021-01-21T10:51:09.454Z] TCK.destroy.cache:
+[2021-01-21T10:51:09.454Z]      [echo] Destroying cache
+[2021-01-21T10:51:09.454Z]      [echo] Running j9vm.test.corehelper.StackMapCoreGenerator to destroy the cache
+[2021-01-21T10:51:09.454Z]      [echo] Using JVM : /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdkbinary/j2sdk-image/bin/java
+[2021-01-21T10:51:09.454Z]      [echo] classname = "j9vm.test.corehelper.StackMapCoreGenerator"
+[2021-01-21T10:51:09.454Z]      [echo] Java VM Args:
+[2021-01-21T10:51:09.454Z]      [echo]   jvmarg = -Xshareclasses:name=ddrextjunitSCC,destroy
+[2021-01-21T10:51:09.454Z]      [echo] 
+[2021-01-21T10:51:09.454Z]      [java] JVMSHRC806I Compressed references persistent shared cache "ddrextjunitSCC" has been destroyed. Use option -Xnocompressedrefs if you want to destroy a non-compressed references cache.
+[2021-01-21T10:51:09.454Z]      [java] Java Result: 1
+[2021-01-21T10:51:09.454Z] 
+[2021-01-21T10:51:09.454Z] TCK.run.tests.ddrext:
+[2021-01-21T10:51:09.454Z]      [echo] Running the DDR Extension Test
+[2021-01-21T10:51:11.456Z]      [java] [SetupConfig] [INFO] Created new DDR Interactive instance using core file : /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0/DDREXT.J9CORE.DMP
+[2021-01-21T10:51:11.456Z]      [java] [AutoRun] [INFO] Running 20 tests for /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0/DDREXT.J9CORE.DMP
+[2021-01-21T10:51:11.456Z]      [java] [AutoRun] [INFO] Starting testAllClassesExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!allclasses '
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!allclasses '
+[2021-01-21T10:51:12.079Z]      [java] [AutoRun] [INFO] Finished testAllClassesExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:12.079Z]      [java] 
+[2021-01-21T10:51:12.079Z]      [java] [AutoRun] [INFO] Starting testJ9ClassShapeExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!j9classshape  0x00000000001F0700'
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!j9classshape  0x00000000001F0700'
+[2021-01-21T10:51:12.079Z]      [java] [AutoRun] [INFO] Finished testJ9ClassShapeExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:12.079Z]      [java] 
+[2021-01-21T10:51:12.079Z]      [java] [AutoRun] [INFO] Starting testJ9VTablesExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!j9vtables  0x00000000001F0700'
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!j9vtables  0x00000000001F0700'
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9method 0x00000000000724F0
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Structure validation passed
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!j9vtables  0x00000000001F0700'
+[2021-01-21T10:51:12.079Z]      [java] [AutoRun] [INFO] Finished testJ9VTablesExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:12.079Z]      [java] 
+[2021-01-21T10:51:12.079Z]      [java] [AutoRun] [INFO] Starting testJ9StaticsExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!j9statics  0x00000000001F0700'
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!j9statics  0x00000000001F0700'
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9romstaticfieldshape 0x00007F0ECD6776E8
+[2021-01-21T10:51:12.079Z]      [java] 419433290[DDRExtTesterBase] [INFO] Structure validation passed
+[2021-01-21T10:51:12.079Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!j9statics  0x00000000001F0700'
+[2021-01-21T10:51:12.079Z]      [java] [AutoRun] [INFO] Finished testJ9StaticsExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:12.079Z]      [java] 
+[2021-01-21T10:51:12.079Z]      [java] [AutoRun] [INFO] Starting testROMClassSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:26.591Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!romclasssummary '
+[2021-01-21T10:51:26.591Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!romclasssummary '
+[2021-01-21T10:51:26.591Z]      [java] [AutoRun] [INFO] Finished testROMClassSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:26.591Z]      [java] 
+[2021-01-21T10:51:26.591Z]      [java] [AutoRun] [INFO] Starting testRAMClassSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:26.591Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!ramclasssummary '
+[2021-01-21T10:51:26.591Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!ramclasssummary '
+[2021-01-21T10:51:26.591Z]      [java] [AutoRun] [INFO] Finished testRAMClassSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:26.591Z]      [java] 
+[2021-01-21T10:51:26.591Z]      [java] [AutoRun] [INFO] Starting testClassForNameExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:26.591Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!classforname  java/lang/Object'
+[2021-01-21T10:51:26.591Z]      [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!classforname  java/lang/Object'
+[2021-01-21T10:51:26.591Z]      [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9class 0x000000000003CA00
+[2021-01-21T10:51:26.591Z]      [java] 2573637990196608000140001397030241625921397015498219535962254000100080[DDRExtTesterBase] [INFO] Structure validation passed
+[2021-01-21T10:51:26.591Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!classforname  java/lang/Object'
+[2021-01-21T10:51:26.591Z]      [java] [AutoRun] [INFO] Finished testClassForNameExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:26.591Z]      [java] 
+[2021-01-21T10:51:26.591Z]      [java] [AutoRun] [INFO] Starting testClassLoadersSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:26.591Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!classloaderssummary '
+[2021-01-21T10:51:26.591Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!classloaderssummary '
+[2021-01-21T10:51:26.591Z]      [java] [AutoRun] [INFO] Finished testClassLoadersSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:26.591Z]      [java] 
+[2021-01-21T10:51:26.591Z]      [java] [AutoRun] [INFO] Starting testDumpAllROMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:38.637Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpallromclasslinear  1'
+[2021-01-21T10:51:38.637Z]      [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!dumpallromclasslinear  1'
+[2021-01-21T10:51:38.637Z]      [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9javavm 0x00007F0F2000F510
+[2021-01-21T10:51:38.637Z]      [java] 1052416020973263506543674180800471048576327681310720469762048202017026214400000013970293925996013970293926000013970293926004013970293926008030000002621442563245256324511100131072204815131643200100112345429261516384409611111111110111111110383650000192512-1000800105174800026160139702939260120139702939260160139702939259920-13000641200110102410256[DDRExtTesterBase] [INFO] Structure validation passed
+[2021-01-21T10:51:38.637Z]      [java] [DDRExtTesterBase] [INFO] Runing structure test with : !dumpromclasslinear 0x00007F0F271D5D10
+[2021-01-21T10:51:38.637Z]      [java] [DDRExtTesterBase] [INFO] Can not validate: '!dumpromclasslinear  0x00007F0F271D5D10' output is not a structure
+[2021-01-21T10:51:38.637Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpallromclasslinear  1'
+[2021-01-21T10:51:38.637Z]      [java] [AutoRun] [INFO] Finished testDumpAllROMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:38.637Z]      [java] 
+[2021-01-21T10:51:38.637Z]      [java] [AutoRun] [INFO] Starting testDumpROMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:38.637Z]      [java] 2573637990196608000140001397030241625921397015498219535962254000100080[DDRExtTesterBase] [INFO] Validation started for : '!dumpromclasslinear  0x00007F0ECD407000'
+[2021-01-21T10:51:38.637Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclasslinear  0x00007F0ECD407000'
+[2021-01-21T10:51:38.637Z]      [java] [AutoRun] [INFO] Finished testDumpROMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:38.637Z]      [java] 
+[2021-01-21T10:51:38.637Z]      [java] [AutoRun] [INFO] Starting testDumpROMClassExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:38.637Z]      [java] 2573637990196608000140001397030241625921397015498219535962254000100080[DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  0x00007F0ECD407000'
+[2021-01-21T10:51:38.637Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  0x00007F0ECD407000'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  0x00007F0ECD407000 maps'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  0x00007F0ECD407000 maps'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  0x100'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  0x100'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  name:java/lang/Object'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  name:java/lang/Object'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  name:*Object*'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!dumpromclass  name:*Object*'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  name:*Object*'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  name:java/lang/Object maps'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  name:java/lang/Object maps'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  name:ABCDEFGH'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  name:ABCDEFGH'
+[2021-01-21T10:51:38.638Z]      [java] [AutoRun] [INFO] Finished testDumpROMClassExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:38.638Z]      [java] 
+[2021-01-21T10:51:38.638Z]      [java] [AutoRun] [INFO] Starting testQueryROMClassExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:38.638Z]      [java] 2573637990196608000140001397030241625921397015498219535962254000100080[DDRExtTesterBase] [INFO] Validation started for : '!queryromclass  0x00007F0ECD407000,/romHeader'
+[2021-01-21T10:51:38.638Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!queryromclass  0x00007F0ECD407000,/romHeader'
+[2021-01-21T10:51:38.638Z]      [java] [AutoRun] [INFO] Finished testQueryROMClassExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:38.638Z]      [java] 
+[2021-01-21T10:51:38.638Z]      [java] [AutoRun] [INFO] Starting testAnalyzeROMClassUTF8Ext(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!analyseromClassutf8 '
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!analyseromClassutf8 '
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Finished testAnalyzeROMClassUTF8Ext(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] 
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Starting testDumpAllRAMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpallramclasslinear  1'
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!dumpallramclasslinear  1'
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Runing structure test with : !dumpramclasslinear 0x00000000001F1000
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Can not validate: '!dumpramclasslinear  0x00000000001F1000' output is not a structure
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9itable 0x001CA6B0
+[2021-01-21T10:51:50.775Z]      [java] 2[DDRExtTesterBase] [INFO] Structure validation passed
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpallramclasslinear  1'
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Finished testDumpAllRAMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] 
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Starting testDumpRAMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpramclasslinear  0x000000000003CA00'
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpramclasslinear  0x000000000003CA00'
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Finished testDumpRAMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] 
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Starting testDumpAllRegionsExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpallregions '
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpallregions '
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Finished testDumpAllRegionsExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] 
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Starting testDumpAllSegmentsExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!setvm  18446744073709551615'
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!setvm  18446744073709551615'
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!setvm  18446744073709551615'
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9memorysegmentlist 0x7f0f2005e7e0
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Structure validation passed
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!setvm  18446744073709551615'
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Finished testDumpAllSegmentsExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] 
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Starting testDumpSegmentsInListExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpsegmentsinlist  0x7f0f2005f1e0'
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpsegmentsinlist  0x7f0f2005f1e0'
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Finished testDumpSegmentsInListExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] 
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Starting testFJ9ObjectExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] 2573637990196608000140001397030241625921397015498219535962254000100080[DDRExtTesterBase] [INFO] Validation started for : '!fj9object  0x00000000E0000420'
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Finished testFJ9ObjectExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] 
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Starting testDumpAllClassLoadersExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpallclassloaders '
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpallclassloaders '
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Finished testDumpAllClassLoadersExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z]      [java] 
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] ================Test Result for /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0/DDREXT.J9CORE.DMP==================
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Errors:   0 out of 20 test cases.
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Failures: 1 out of 20 test cases.
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [INFO] Total Error/Failures: 1
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [ERROR] '!setvm  18446744073709551615' output does not contain success key : is larger than the max available memory address: 0xFFFFFFFF
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [ERROR] '!setvm  18446744073709551615' output :Error: Specified value (=-1) is not a javaVM or vmThread pointer, VM not set
+[2021-01-21T10:51:50.775Z]      [java] 
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [ERROR] '!fj9object  0x00000000E0000420' output contains common failure key : unable to read
+[2021-01-21T10:51:50.775Z]      [java] [DDRExtTesterBase] [ERROR] '!fj9object  0x00000000E0000420' output :
+[2021-01-21T10:51:50.775Z]      [java] Unable to read object clazz at 0x0000000700002100 (clazz = (null))
+[2021-01-21T10:51:50.775Z]      [java] 
+[2021-01-21T10:51:50.775Z]      [java] junit.framework.AssertionFailedError
+[2021-01-21T10:51:50.775Z]      [java] 	at junit.framework.Assert.fail(Assert.java:48)
+[2021-01-21T10:51:50.775Z]      [java] 	at junit.framework.Assert.assertTrue(Assert.java:20)
+[2021-01-21T10:51:50.775Z]      [java] 	at junit.framework.Assert.assertTrue(Assert.java:27)
+[2021-01-21T10:51:50.775Z]      [java] 	at j9vm.test.ddrext.junit.TestClassExt.testFJ9ObjectExt(TestClassExt.java:310)
+[2021-01-21T10:51:50.775Z]      [java] 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+[2021-01-21T10:51:50.775Z]      [java] 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
+[2021-01-21T10:51:50.775Z]      [java] 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+[2021-01-21T10:51:50.775Z]      [java] 	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+[2021-01-21T10:51:50.775Z]      [java] 	at junit.framework.TestCase.runTest(TestCase.java:168)
+[2021-01-21T10:51:50.775Z]      [java] 	at junit.framework.TestCase.runBare(TestCase.java:134)
+[2021-01-21T10:51:50.775Z]      [java] 	at junit.framework.TestResult$1.protect(TestResult.java:110)
+[2021-01-21T10:51:50.775Z]      [java] 	at junit.framework.TestResult.runProtected(TestResult.java:128)
+[2021-01-21T10:51:50.775Z]      [java] 	at junit.framework.TestResult.run(TestResult.java:113)
+[2021-01-21T10:51:50.775Z]      [java] 	at junit.framework.TestCase.run(TestCase.java:124)
+[2021-01-21T10:51:50.775Z]      [java] 	at junit.framework.TestSuite.runTest(TestSuite.java:243)
+[2021-01-21T10:51:50.775Z]      [java] 	at j9vm.test.ddrext.junit.DDRTestSuite.run(DDRTestSuite.java:74)
+[2021-01-21T10:51:50.775Z]      [java] 	at j9vm.test.ddrext.junit.DDRTestSuite.run(DDRTestSuite.java:69)
+[2021-01-21T10:51:50.775Z]      [java] 	at j9vm.test.ddrext.junit.DDRTestSuite.run(DDRTestSuite.java:55)
+[2021-01-21T10:51:50.775Z]      [java] 	at j9vm.test.ddrext.AutoRun.runTest(AutoRun.java:275)
+[2021-01-21T10:51:50.775Z]      [java] 	at j9vm.test.ddrext.AutoRun.main(AutoRun.java:110)
+[2021-01-21T10:51:50.775Z]      [java] [AutoRun] [ERROR] testFJ9ObjectExt(j9vm.test.ddrext.junit.TestClassExt)
+[2021-01-21T10:51:50.775Z] 
+[2021-01-21T10:51:50.775Z] BUILD FAILED
+[2021-01-21T10:51:50.775Z] /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/jvmtest/functional/DDR_Test/tck_ddrext.xml:115: Java returned: 254
+[2021-01-21T10:51:50.775Z] 
+[2021-01-21T10:51:50.775Z] Total time: 46 seconds
+[2021-01-21T10:51:50.775Z] 
+[2021-01-21T10:51:50.775Z] testDDRExt_Class_0_FAILED
+[2021-01-21T10:51:50.775Z] 
+[2021-01-21T10:51:50.775Z] "/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:destroyAll; "/home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:groupAccess,destroyAll; echo "cache cleanup done";
+[2021-01-21T10:51:50.775Z] JVMSHRC005I No shared class caches available
+[2021-01-21T10:51:50.775Z] JVMSHRC005I No shared class caches available
+[2021-01-21T10:51:50.775Z] cache cleanup done
+[2021-01-21T10:51:50.775Z] testDDRExt_Class_0 Finish Time: Thu Jan 21 10:51:50 2021 Epoch Time (ms): 1611226310110
