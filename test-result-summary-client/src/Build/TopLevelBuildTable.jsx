@@ -36,7 +36,7 @@ export default class TopLevelBuildTable extends Component {
             key: build._id,
             build: build,
             date: build.timestamp ? new Date(build.timestamp).toLocaleString() : null,
-            startBy: build.startBy ? build.startBy : null,
+            startBy: build.startBy ? build.startBy : "N/A",
             jenkins: build,
             keepForever: build.keepForever ? build.keepForever : false
         }));
