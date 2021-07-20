@@ -17,7 +17,7 @@ export default class Overview extends Component {
                 <div style={{ textAlign: "center", fontSize: "28px" }}><a href={parentBuildInfo.buildUrl} target="_blank" rel="noopener noreferrer">{parentBuildInfo.buildName} #{parentBuildInfo.buildNum}</a> Test Summary</div>
                 <Divider>SDK Build Results</Divider>
                 <div style={{ fontSize: "18px" }}>
-                    {failedSdkBuilds ? <BuildLink id={id} label="SDK Builds and Smoke Tests " link="Failed" buildNameRegex="^(jdk[0-9]{1,2}|Build_)" buildResult="!SUCCESS" /> : <div>SDK builds and Smoke Tests Passed</div>}
+                    {(failedSdkBuilds && failedSdkBuilds.length)  ? <BuildLink id={id} label="SDK Builds and Smoke Tests " link="Failed" buildNameRegex="^(jdk[0-9]{1,2}|Build_)" buildResult="!SUCCESS" /> : <div>SDK builds and Smoke Tests Passed</div>}
                 </div>
 
                 <Divider>AQA Test Results</Divider>
