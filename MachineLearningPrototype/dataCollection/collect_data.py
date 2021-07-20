@@ -114,17 +114,29 @@ def fetch_new_issues(repo, since, auth_token, db):
     while True:
         params['page'] = page_number
         response = requests.get(query_url, headers=headers, params=params).json()
+        api_rate_normal = True
 
         # Break if no new issues are found on the page
         if not response:
             break
 
         for r in response:
+            # Check if Github Issue API rate limit exceeded
+            if "message" in r:
+                if (response["message"].find("rate limit exceeded") != -1):
+                    api_rate_normal = False
+                    pprint(f"Warning: {response['message'].split('(')[0]}")
+                    pprint(f"Program will sleep 1 hour since {datetime.now().strftime('%H:%M:%S, %m/%d/%Y')}")
+                    time.sleep(3601) # sleep 1 hour
+                    break
+            # Store issue details
+            else:
                 if 'pull_request' not in r:
                     store_issue_details(r, repo, db)
                     new_issues_count += 1
 
-        page_number += 1
+        if api_rate_normal:
+            page_number += 1
 
     pprint(f'Number of new issues found: {new_issues_count}')
 
