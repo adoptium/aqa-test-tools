@@ -1,0 +1,194 @@
+Build under test is the jdk15 openj9-0.24.0 release build:
+```
+10:41:34  openjdk version "15.0.2" 2021-01-19
+10:41:34  OpenJDK Runtime Environment AdoptOpenJDK (build 15.0.2+7)
+10:41:34  Eclipse OpenJ9 VM AdoptOpenJDK (build openj9-0.24.0, JRE 15 Linux amd64-64-Bit Compressed References 20210121_172 (JIT enabled, AOT enabled)
+10:41:34  OpenJ9   - 345e1b09e
+10:41:34  OMR      - 741e94ea8
+10:41:34  JCL      - 863b523566 based on jdk-15.0.2+7)
+```
+
+Link to failing job: https://ci.adoptopenjdk.net/job/Test_openjdk15_j9_extended.functional_x86-64_linux/64/consoleFull
+
+Output from failing test:
+```
+10:51:09  TCK.run.tests.ddrext:
+10:51:09       [echo] Running the DDR Extension Test
+10:51:11       [java] [SetupConfig] [INFO] Created new DDR Interactive instance using core file : /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0/DDREXT.J9CORE.DMP
+10:51:11       [java] [AutoRun] [INFO] Running 20 tests for /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0/DDREXT.J9CORE.DMP
+10:51:11       [java] [AutoRun] [INFO] Starting testAllClassesExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:12       [java] [DDRExtTesterBase] [INFO] Validation started for : '!allclasses '
+10:51:12       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!allclasses '
+10:51:12       [java] [AutoRun] [INFO] Finished testAllClassesExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:12       [java] 
+10:51:12       [java] [AutoRun] [INFO] Starting testJ9ClassShapeExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:12       [java] [DDRExtTesterBase] [INFO] Validation started for : '!j9classshape  0x00000000001F0700'
+10:51:12       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!j9classshape  0x00000000001F0700'
+10:51:12       [java] [AutoRun] [INFO] Finished testJ9ClassShapeExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:12       [java] 
+10:51:12       [java] [AutoRun] [INFO] Starting testJ9VTablesExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:12       [java] [DDRExtTesterBase] [INFO] Validation started for : '!j9vtables  0x00000000001F0700'
+10:51:12       [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!j9vtables  0x00000000001F0700'
+10:51:12       [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9method 0x00000000000724F0
+10:51:12       [java] [DDRExtTesterBase] [INFO] Structure validation passed
+10:51:12       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!j9vtables  0x00000000001F0700'
+10:51:12       [java] [AutoRun] [INFO] Finished testJ9VTablesExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:12       [java] 
+10:51:12       [java] [AutoRun] [INFO] Starting testJ9StaticsExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:12       [java] [DDRExtTesterBase] [INFO] Validation started for : '!j9statics  0x00000000001F0700'
+10:51:12       [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!j9statics  0x00000000001F0700'
+10:51:12       [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9romstaticfieldshape 0x00007F0ECD6776E8
+10:51:12       [java] 419433290[DDRExtTesterBase] [INFO] Structure validation passed
+10:51:12       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!j9statics  0x00000000001F0700'
+10:51:12       [java] [AutoRun] [INFO] Finished testJ9StaticsExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:12       [java] 
+10:51:12       [java] [AutoRun] [INFO] Starting testROMClassSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:26       [java] [DDRExtTesterBase] [INFO] Validation started for : '!romclasssummary '
+10:51:26       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!romclasssummary '
+10:51:26       [java] [AutoRun] [INFO] Finished testROMClassSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:26       [java] 
+10:51:26       [java] [AutoRun] [INFO] Starting testRAMClassSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:26       [java] [DDRExtTesterBase] [INFO] Validation started for : '!ramclasssummary '
+10:51:26       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!ramclasssummary '
+10:51:26       [java] [AutoRun] [INFO] Finished testRAMClassSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:26       [java] 
+10:51:26       [java] [AutoRun] [INFO] Starting testClassForNameExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:26       [java] [DDRExtTesterBase] [INFO] Validation started for : '!classforname  java/lang/Object'
+10:51:26       [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!classforname  java/lang/Object'
+10:51:26       [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9class 0x000000000003CA00
+10:51:26       [java] 2573637990196608000140001397030241625921397015498219535962254000100080[DDRExtTesterBase] [INFO] Structure validation passed
+10:51:26       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!classforname  java/lang/Object'
+10:51:26       [java] [AutoRun] [INFO] Finished testClassForNameExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:26       [java] 
+10:51:26       [java] [AutoRun] [INFO] Starting testClassLoadersSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:26       [java] [DDRExtTesterBase] [INFO] Validation started for : '!classloaderssummary '
+10:51:26       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!classloaderssummary '
+10:51:26       [java] [AutoRun] [INFO] Finished testClassLoadersSummaryExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:26       [java] 
+10:51:26       [java] [AutoRun] [INFO] Starting testDumpAllROMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpallromclasslinear  1'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!dumpallromclasslinear  1'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9javavm 0x00007F0F2000F510
+10:51:38       [java] 1052416020973263506543674180800471048576327681310720469762048202017026214400000013970293925996013970293926000013970293926004013970293926008030000002621442563245256324511100131072204815131643200100112345429261516384409611111111110111111110383650000192512-1000800105174800026160139702939260120139702939260160139702939259920-13000641200110102410256[DDRExtTesterBase] [INFO] Structure validation passed
+10:51:38       [java] [DDRExtTesterBase] [INFO] Runing structure test with : !dumpromclasslinear 0x00007F0F271D5D10
+10:51:38       [java] [DDRExtTesterBase] [INFO] Can not validate: '!dumpromclasslinear  0x00007F0F271D5D10' output is not a structure
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpallromclasslinear  1'
+10:51:38       [java] [AutoRun] [INFO] Finished testDumpAllROMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:38       [java] 
+10:51:38       [java] [AutoRun] [INFO] Starting testDumpROMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:38       [java] 2573637990196608000140001397030241625921397015498219535962254000100080[DDRExtTesterBase] [INFO] Validation started for : '!dumpromclasslinear  0x00007F0ECD407000'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclasslinear  0x00007F0ECD407000'
+10:51:38       [java] [AutoRun] [INFO] Finished testDumpROMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:38       [java] 
+10:51:38       [java] [AutoRun] [INFO] Starting testDumpROMClassExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:38       [java] 2573637990196608000140001397030241625921397015498219535962254000100080[DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  0x00007F0ECD407000'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  0x00007F0ECD407000'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  0x00007F0ECD407000 maps'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  0x00007F0ECD407000 maps'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  0x100'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  0x100'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  name:java/lang/Object'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  name:java/lang/Object'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  name:*Object*'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!dumpromclass  name:*Object*'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  name:*Object*'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  name:java/lang/Object maps'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  name:java/lang/Object maps'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpromclass  name:ABCDEFGH'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpromclass  name:ABCDEFGH'
+10:51:38       [java] [AutoRun] [INFO] Finished testDumpROMClassExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:38       [java] 
+10:51:38       [java] [AutoRun] [INFO] Starting testQueryROMClassExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:38       [java] 2573637990196608000140001397030241625921397015498219535962254000100080[DDRExtTesterBase] [INFO] Validation started for : '!queryromclass  0x00007F0ECD407000,/romHeader'
+10:51:38       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!queryromclass  0x00007F0ECD407000,/romHeader'
+10:51:38       [java] [AutoRun] [INFO] Finished testQueryROMClassExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:38       [java] 
+10:51:38       [java] [AutoRun] [INFO] Starting testAnalyzeROMClassUTF8Ext(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation started for : '!analyseromClassutf8 '
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!analyseromClassutf8 '
+10:51:50       [java] [AutoRun] [INFO] Finished testAnalyzeROMClassUTF8Ext(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] 
+10:51:50       [java] [AutoRun] [INFO] Starting testDumpAllRAMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpallramclasslinear  1'
+10:51:50       [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!dumpallramclasslinear  1'
+10:51:50       [java] [DDRExtTesterBase] [INFO] Runing structure test with : !dumpramclasslinear 0x00000000001F1000
+10:51:50       [java] [DDRExtTesterBase] [INFO] Can not validate: '!dumpramclasslinear  0x00000000001F1000' output is not a structure
+10:51:50       [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9itable 0x001CA6B0
+10:51:50       [java] 2[DDRExtTesterBase] [INFO] Structure validation passed
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpallramclasslinear  1'
+10:51:50       [java] [AutoRun] [INFO] Finished testDumpAllRAMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] 
+10:51:50       [java] [AutoRun] [INFO] Starting testDumpRAMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpramclasslinear  0x000000000003CA00'
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpramclasslinear  0x000000000003CA00'
+10:51:50       [java] [AutoRun] [INFO] Finished testDumpRAMClassLinearExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] 
+10:51:50       [java] [AutoRun] [INFO] Starting testDumpAllRegionsExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpallregions '
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpallregions '
+10:51:50       [java] [AutoRun] [INFO] Finished testDumpAllRegionsExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] 
+10:51:50       [java] [AutoRun] [INFO] Starting testDumpAllSegmentsExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation started for : '!setvm  18446744073709551615'
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation started for : '!setvm  18446744073709551615'
+10:51:50       [java] [DDRExtTesterBase] [INFO] Starting exhaustive DDR structure test for parent command : '!setvm  18446744073709551615'
+10:51:50       [java] [DDRExtTesterBase] [INFO] Runing structure test with : !j9memorysegmentlist 0x7f0f2005e7e0
+10:51:50       [java] [DDRExtTesterBase] [INFO] Structure validation passed
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!setvm  18446744073709551615'
+10:51:50       [java] [AutoRun] [INFO] Finished testDumpAllSegmentsExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] 
+10:51:50       [java] [AutoRun] [INFO] Starting testDumpSegmentsInListExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpsegmentsinlist  0x7f0f2005f1e0'
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpsegmentsinlist  0x7f0f2005f1e0'
+10:51:50       [java] [AutoRun] [INFO] Finished testDumpSegmentsInListExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] 
+10:51:50       [java] [AutoRun] [INFO] Starting testFJ9ObjectExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] 2573637990196608000140001397030241625921397015498219535962254000100080[DDRExtTesterBase] [INFO] Validation started for : '!fj9object  0x00000000E0000420'
+10:51:50       [java] [AutoRun] [INFO] Finished testFJ9ObjectExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] 
+10:51:50       [java] [AutoRun] [INFO] Starting testDumpAllClassLoadersExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation started for : '!dumpallclassloaders '
+10:51:50       [java] [DDRExtTesterBase] [INFO] Validation passed for : '!dumpallclassloaders '
+10:51:50       [java] [AutoRun] [INFO] Finished testDumpAllClassLoadersExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50       [java] 
+10:51:50       [java] [AutoRun] [INFO] ================Test Result for /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/openjdk-tests/TKG/../TKG/test_output_16112261538793/testDDRExt_Class_0/DDREXT.J9CORE.DMP==================
+10:51:50       [java] [AutoRun] [INFO] Errors:   0 out of 20 test cases.
+10:51:50       [java] [AutoRun] [INFO] Failures: 1 out of 20 test cases.
+10:51:50       [java] [AutoRun] [INFO] Total Error/Failures: 1
+10:51:50       [java] [DDRExtTesterBase] [ERROR] '!setvm  18446744073709551615' output does not contain success key : is larger than the max available memory address: 0xFFFFFFFF
+10:51:50       [java] [DDRExtTesterBase] [ERROR] '!setvm  18446744073709551615' output :Error: Specified value (=-1) is not a javaVM or vmThread pointer, VM not set
+10:51:50       [java] 
+10:51:50       [java] [DDRExtTesterBase] [ERROR] '!fj9object  0x00000000E0000420' output contains common failure key : unable to read
+10:51:50       [java] [DDRExtTesterBase] [ERROR] '!fj9object  0x00000000E0000420' output :
+10:51:50       [java] Unable to read object clazz at 0x0000000700002100 (clazz = (null))
+10:51:50       [java] 
+10:51:50       [java] junit.framework.AssertionFailedError
+10:51:50       [java] 	at junit.framework.Assert.fail(Assert.java:48)
+10:51:50       [java] 	at junit.framework.Assert.assertTrue(Assert.java:20)
+10:51:50       [java] 	at junit.framework.Assert.assertTrue(Assert.java:27)
+10:51:50       [java] 	at j9vm.test.ddrext.junit.TestClassExt.testFJ9ObjectExt(TestClassExt.java:310)
+10:51:50       [java] 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+10:51:50       [java] 	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:64)
+10:51:50       [java] 	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+10:51:50       [java] 	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+10:51:50       [java] 	at junit.framework.TestCase.runTest(TestCase.java:168)
+10:51:50       [java] 	at junit.framework.TestCase.runBare(TestCase.java:134)
+10:51:50       [java] 	at junit.framework.TestResult$1.protect(TestResult.java:110)
+10:51:50       [java] 	at junit.framework.TestResult.runProtected(TestResult.java:128)
+10:51:50       [java] 	at junit.framework.TestResult.run(TestResult.java:113)
+10:51:50       [java] 	at junit.framework.TestCase.run(TestCase.java:124)
+10:51:50       [java] 	at junit.framework.TestSuite.runTest(TestSuite.java:243)
+10:51:50       [java] 	at j9vm.test.ddrext.junit.DDRTestSuite.run(DDRTestSuite.java:74)
+10:51:50       [java] 	at j9vm.test.ddrext.junit.DDRTestSuite.run(DDRTestSuite.java:69)
+10:51:50       [java] 	at j9vm.test.ddrext.junit.DDRTestSuite.run(DDRTestSuite.java:55)
+10:51:50       [java] 	at j9vm.test.ddrext.AutoRun.runTest(AutoRun.java:275)
+10:51:50       [java] 	at j9vm.test.ddrext.AutoRun.main(AutoRun.java:110)
+10:51:50       [java] [AutoRun] [ERROR] testFJ9ObjectExt(j9vm.test.ddrext.junit.TestClassExt)
+10:51:50  
+10:51:50  BUILD FAILED
+10:51:50  /home/jenkins/workspace/Test_openjdk15_j9_extended.functional_x86-64_linux/jvmtest/functional/DDR_Test/tck_ddrext.xml:115: Java returned: 254
+10:51:50  
+10:51:50  Total time: 46 seconds
+10:51:50  
+10:51:50  testDDRExt_Class_0_FAILED
+```
