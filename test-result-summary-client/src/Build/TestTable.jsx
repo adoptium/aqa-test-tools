@@ -70,7 +70,7 @@ export default class TestTable extends Component {
                         <Tooltip title="Create new issue at https://github.com/adoptium/aqa-tests"> <GithubOutlined /></Tooltip>
                     </Link>
                     <Divider type="vertical" /> 
-                    <a target="_blank" href={buildUrl}><Tooltip title="Jenkins Link"> <LinkOutlined /> </Tooltip> </a>
+                    <a target="_blank" href={buildUrl} rel="noopener noreferrer"><Tooltip title="Jenkins Link"> <LinkOutlined /> </Tooltip> </a>
                 </span>
             );
         }

@@ -60,8 +60,7 @@ export const getStatisticValues = (resultsByJDKBuild, key) => {
 }
 
 export const handlePointClick = (event) => {
-    const { buildName, buildNum, javaVersion, jdkDate, testId } = event.point.additionalData[0];
-
+    let { buildName, buildNum, javaVersion, jdkDate, testId } = event.point.additionalData[0];
     const buildLinks = ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
     const CIstr = (typeof event.point.CI === 'undefined') ? `` : `CI = ${event.point.CI}`;
 
