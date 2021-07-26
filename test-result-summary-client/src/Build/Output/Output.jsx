@@ -5,7 +5,6 @@ import { Col, Row, Switch, Tooltip, Divider } from 'antd';
 import { DownloadOutlined, LinkOutlined } from '@ant-design/icons';
 import TestBreadcrumb from '../TestBreadcrumb';
 import classnames from 'classnames';
-import Artifacts from './Artifacts';
 import AlertMsg from '../AlertMsg';
 import "./output.css";
 
@@ -85,9 +84,9 @@ export default class Output extends Component {
             </Row>
             <Row justify="end">
                 <Col span={1}>
-                    {data.artifactory && <a target="_blank" href={data.artifactory}><Tooltip title="Artifactory Link"> <DownloadOutlined /> </Tooltip> </a>}
+                    {data.artifactory && <a target="_blank" href={data.artifactory} rel="noopener noreferrer"><Tooltip title="Artifactory Link"> <DownloadOutlined /> </Tooltip> </a>}
                     <Divider type="vertical" />
-                    {data.buildUrl && <a target="_blank" href={data.buildUrl}><Tooltip title="Jenkins Link"> <LinkOutlined /> </Tooltip></a>}
+                    {data.buildUrl && <a target="_blank" href={data.buildUrl} rel="noopener noreferrer"><Tooltip title="Jenkins Link"> <LinkOutlined /> </Tooltip></a>}
                 </Col>
             </Row>
             <Row>

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import {
 	HighchartsStockChart, Chart, XAxis, YAxis, Legend,
-	SplineSeries, Navigator, RangeSelector, Tooltip, Series
+	SplineSeries, Navigator, RangeSelector, Tooltip
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
 import { Radio } from 'antd';
@@ -130,27 +130,27 @@ export default class Renaissance extends Component {
 
 				test.testData.metrics.forEach(( metric, i)=> {
 					if ( metric.name === "akka-uct" ) {
-						if ( size(metric.value) != 0 ) {
+						if ( size(metric.value) !== 0 ) {
 							akkaUct = mean(metric.value);
 						}
 					}
 					if ( metric.name === "fj-kmeans" ) {
-						if ( size(metric.value) != 0 ) {
+						if ( size(metric.value) !== 0 ) {
 							fj = mean(metric.value);
 						}
 					}
 					if ( metric.name === "future-genetic" ) {
-						if ( size(metric.value) != 0 ) {
+						if ( size(metric.value) !== 0 ) {
 							futureGenetic = mean(metric.value);
 						}
 					}
           				if ( metric.name === "naive-bayes" ) {
-						if ( size(metric.value) != 0 ) {
+						if ( size(metric.value) !== 0 ) {
 							bayes = mean(metric.value);
 						}
 					}
           				if ( metric.name === "scala-kmeans" ) {
-						if ( size(metric.value) != 0 ) {
+						if ( size(metric.value) !== 0 ) {
 							scala = mean(metric.value);
 						}
 					}
