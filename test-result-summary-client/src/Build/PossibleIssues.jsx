@@ -65,6 +65,7 @@ export default class PossibleIssues extends Component {
             for (let index = 0; index < relatedIssues.items.length; index++) {
                 const repoName = relatedIssues.items[index].repository_url.replace(repoUrlAPIPrefix, "");
                 const issue = <a href={relatedIssues.items[index].html_url} target="_blank" rel="noopener noreferrer">{relatedIssues.items[index].title}</a>;
+                const issueCreator = <a href={relatedIssues.items[index].user.html_url} target="_blank" rel="noopener noreferrer">{relatedIssues.items[index].user.login}</a>;
 
                 let relatedDegree = 'Medium';
                 if (repoName.includes(mlIssueRepo)) {
@@ -77,6 +78,7 @@ export default class PossibleIssues extends Component {
                 dataSource[repoName].push({
                     key: dataSource[repoName].length,
                     issue,
+                    issueCreator,
                     degree: relatedDegree,
                 });
             }
@@ -102,6 +104,11 @@ export default class PossibleIssues extends Component {
                     title: 'Possible Issues',
                     dataIndex: 'issue',
                     key: 'issue',
+                },
+                {
+                    title: 'Issue Creator',
+                    dataIndex: 'issueCreator',
+                    key: 'issueCreator',
                 },
                 {
                     title: 'Related Degree',
