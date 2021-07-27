@@ -8,6 +8,7 @@ import sys
 sys.path.append("../utils/")
 from preprocess_data import extract_quotation_content, query_trss_for_jenkins_output, extract_jenkins_link_and_testname
 import os
+import re
 
 
 def store_in_db(data, collection_name, db, primary_key='url'):
@@ -74,7 +75,7 @@ def store_issue_details(issue, repo, db):
     if (jenkins_links and test_names):
         path_list = []
         for link in jenkins_links:
-            new_string = link.split('/')
+            new_string = re.split(':|/', link)
             final_string = ''.join(new_string)
             for test in test_names:
                 issue_uid2 = f'{issue_uid}_{final_string}_{test}.txt'
