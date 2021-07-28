@@ -40,6 +40,8 @@ Note:
 - Database needs to be populated before any data can be displayed on the side menu
 - Optional: database GUI client (i.e., Robo 3T) can be installed to view data in database
 
+For swagger API docs, please check http://localhost:3001/api-docs
+
 ## Optional: import sample data
 If you do not have Jenkins access or you do not want to monior Jenkins server, you can import our sample data
 - turn off TestResultSummaryService if it is running

@@ -1,26 +1,25 @@
 const { TestResultsDB } = require('../Database');
 
 /**
- * getTestAvgDuration calculates the average test duration from the most recent matched test builds
- * (default limit is 500)
+ * getTestAvgDuration calculates the average test duration from the most recent matched test builds (default limit is 500)
  * 
- * All params are optional. If none is provided, all platforms/jdkVersions/impls/levels/groups will 
- * be considered.
- * 
- * @param {string} testName Optional. Test Name (i.e., jdk_math_0, jdk_math, etc). 
+ * All params are optional. If none is provided, all platforms/jdkVersions/impls/levels/groups will be considered.
+ *
+ * @route GET /api/getTestAvgDuration
+ * @group Test - Operations about test
+ * @param {string} testName.query - Optional. Test Name - eg: jdk_math_0, jdk_io
  * The program will query all tests that contain this name.
- * @param {string} platform Optional. Test platform (i.e., x86-64_linux)
- * @param {number} jdkVersion Optional. JDK version (i.e., 8, 11, etc)
- * @param {string} impl Optional. JDK impl (i.e., j9, hs, etc)
- * @param {string} level Optional. Test level (i.e., sanity, extended, special)
- * @param {string} group Optional. Test group (i.e., functional, system, openjdk, perf, etc)
- * @param {number} numMachines Optional. The number of testLists the tests will be divided into.
+ * @param {string} platform.query - Optional. Test platform - eg: x86-64_linux
+ * @param {number} jdkVersion.query - Optional. JDK version - eg: 8, 11
+ * @param {string} impl.query - Optional. JDK impl - eg: j9, hs
+ * @param {string} level.query - Optional. Test level - eg: sanity, extended, special
+ * @param {string} group.query - Optional. Test group - eg: functional, system, openjdk, perf, external
+ * @param {number} numMachines.query - Optional. The number of testLists the tests will be divided into
  * Default value is 1
- * @param {number} limit Optional. The number of matched builds the program will query.
+ * @param {number} limit.query - Optional. The number of matched builds the program will query
  * Default value is 500
- * @return {object} 
- * testListTime: array of bucket execution time
- * testLists: array of testLists which contains matched tests with average test duration
+ * @return {object} - testListTime - array of bucket execution time
+ * @return {object} - testLists - array of testLists which contains matched tests with average test duration
  */
 
 module.exports = async (req, res) => {

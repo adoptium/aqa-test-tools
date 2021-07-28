@@ -8,6 +8,7 @@ const bodyParser = require( 'body-parser' );
 const routes = require( './routes' );
 const compression = require( 'compression' );
 const { logger } = require( './Utils' );
+const expressSwagger = require('express-swagger-generator')(app);
 
 app.use( compression() ); // GZIP all assets
 app.use( cors() );
@@ -15,6 +16,31 @@ app.use( bodyParser.urlencoded( { extended: true } ) ); // support encoded bodie
 app.use( bodyParser.json() ); // support json encoded bodies
 
 app.use( '/api', routes );
+
+let options = {
+    swaggerDefinition: {
+        info: {
+            description: 'TRSS server',
+            title: 'TRSS',
+        },
+        produces: [
+            "application/json",
+            "application/xml"
+        ],
+        schemes: ['http', 'https'],
+        securityDefinitions: {
+            JWT: {
+                type: 'apiKey',
+                in: 'header',
+                name: 'Authorization',
+                description: "",
+            }
+        }
+    },
+    basedir: __dirname, //app absolute path
+    files: ['./routes/**/*.js'] //Path to the API handle folder
+};
+expressSwagger(options);
 
 // all environments
 app.set( 'port', process.env.PORT || 3001 );
