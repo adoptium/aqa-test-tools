@@ -3,13 +3,13 @@ module.exports = async ( req, res ) => {
     let { buildId, limit } = req.query;
     if (!limit) limit = 5;
     const db = new TestResultsDB();
-    let query = await db.getSpecificData( { "_id": buildId }, { "_id": 0, "buildName": 1, "buildNum": 1, "type": 1 } );
-    query[0].buildNum = { $lte: query[0].buildNum };
+    let query = await db.getSpecificData( { "_id": buildId }, { "_id": 0, "buildName": 1, "type": 1, "timestamp": 1 } );
+    query[0].timestamp = { $lte: query[0].timestamp };
     const data = await db.aggregate( [
         {
             $match: query[0],
         },
-        { $sort: { 'buildNum': -1 } },
+        { $sort: { 'timestamp': -1 } },
         { $limit: parseInt( limit, 10 ) },
         {
             $project: {
@@ -21,7 +21,6 @@ module.exports = async ( req, res ) => {
                 machine: 1
             }
         },
-        // { $unwind: "$tests" }
     ] );
 
     let result = [];
