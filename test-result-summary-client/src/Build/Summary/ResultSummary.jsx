@@ -4,7 +4,6 @@ import { params, getParams } from '../../utils/query';
 import { fetchData } from '../../utils/Utils';
 import Checkboxes from './Checkboxes';
 import ResultGrid from './ResultGrid';
-import PieChart from './PieChart';
 import Overview from './Overview';
 import TestBreadcrumb from '../TestBreadcrumb';
 import { order, getInfoFromBuildName } from '../../utils/Utils';
@@ -126,8 +125,6 @@ export default class ResultSummary extends Component {
             return <div>
                 <TestBreadcrumb buildId={parentId} />
                 <Overview id={parentId} parentBuildInfo={parentBuildInfo} summary={summary} failedSdkBuilds={failedSdkBuilds}/>
-                <Divider />
-              
                 <Divider />
                 <ResultGrid buildMap={buildMap} selectedPlatforms={selectedPlatforms} selectedJdkVersions={selectedJdkVersions} selectedJdkImpls={selectedJdkImpls} hcvalues={hcvalues} />
                 <Divider />
