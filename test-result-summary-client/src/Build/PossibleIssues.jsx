@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
-import { Table } from 'antd';
+import { Table, Button } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { getParams } from '../utils/query';
+import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
 
 import './table.css';
 
@@ -13,7 +14,11 @@ export default class PossibleIssues extends Component {
 
     async componentDidMount() {
         await this.fetchIssues();
-    }
+    };
+
+    getUserFeedback(repo_name, build_name, issue_name, issue_creator) {
+        console.log(`The details are RepoName: ${repo_name}, buildName: ${build_name}, issueName: ${issue_name}, creator: ${issue_creator}`);
+    }    
 
     async fetchIssues() {
         const { testId, buildName, testName } = getParams( this.props.location.search );
@@ -68,6 +73,14 @@ export default class PossibleIssues extends Component {
                 const issueCreator = <a href={relatedIssues.items[index].user.html_url} target="_blank" rel="noopener noreferrer">{relatedIssues.items[index].user.login}</a>;
                 const createdAt = new Date(relatedIssues.items[index].created_at).toLocaleString();
                 const issueState = relatedIssues.items[index].state;
+                const justIssue = relatedIssues.items[index].title;
+                const justCreator = relatedIssues.items[index].user.login;
+                const userFeedback = <>
+                <Button onClick={this.getUserFeedback(repoName, buildName, justIssue, justCreator)}><SmileOutlined style={{fontSize: '25px', color: 'green'}} /></Button>
+                &nbsp; 
+                <Button onClick={this.getUserFeedback(repoName, buildName, justIssue, justCreator)}><FrownOutlined style={{fontSize: '25px', color: 'red'}} /></Button>
+                </>;
+            
 
                 let relatedDegree = 'Medium';
                 if (repoName.includes(mlIssueRepo)) {
@@ -84,6 +97,7 @@ export default class PossibleIssues extends Component {
                     createdAt,
                     issueState,
                     degree: relatedDegree,
+                    userFeedback,
                 });
             }
             this.setState({
@@ -95,6 +109,8 @@ export default class PossibleIssues extends Component {
             });
         }
     };
+
+    
 
     render() {
         const { error, dataSource} = this.state;
@@ -128,6 +144,11 @@ export default class PossibleIssues extends Component {
                     title: 'Related Degree',
                     dataIndex: 'degree',
                     key: 'degree',
+                },
+                {
+                    title: 'User Feedback',
+                    dataIndex: 'userFeedback',
+                    key: 'userFeedback',
                 },
             ];
 
