@@ -26,11 +26,12 @@
     "cors": "^2.8.5",
     "csv": "^5.5.0",
     "express": "^4.17.1",
+    "express-swagger-generator": "^1.1.17",
     "got": "^9.6.0",
     "jenkins-api": "^0.3.1",
     "jsonwebtoken": "^8.5.1",
     "mathjs": "^7.6.0",
-    "mongodb": "^3.6.9",
+    "mongodb": "^3.6.10",
     "request": "^2.88.2",
     "winston": "^2.4.5"
   },
