@@ -73,14 +73,6 @@ export default class PossibleIssues extends Component {
                 const issueCreator = <a href={relatedIssues.items[index].user.html_url} target="_blank" rel="noopener noreferrer">{relatedIssues.items[index].user.login}</a>;
                 const createdAt = new Date(relatedIssues.items[index].created_at).toLocaleString();
                 const issueState = relatedIssues.items[index].state;
-                const justIssue = relatedIssues.items[index].title;
-                const justCreator = relatedIssues.items[index].user.login;
-                const userFeedback = <>
-                <Button onClick={this.getUserFeedback(repoName, buildName, justIssue, justCreator)}><SmileOutlined style={{fontSize: '25px', color: 'green'}} /></Button>
-                &nbsp; 
-                <Button onClick={this.getUserFeedback(repoName, buildName, justIssue, justCreator)}><FrownOutlined style={{fontSize: '25px', color: 'red'}} /></Button>
-                </>;
-            
 
                 let relatedDegree = 'Medium';
                 if (repoName.includes(mlIssueRepo)) {
@@ -97,7 +89,6 @@ export default class PossibleIssues extends Component {
                     createdAt,
                     issueState,
                     degree: relatedDegree,
-                    userFeedback,
                 });
             }
             this.setState({
@@ -134,6 +125,9 @@ export default class PossibleIssues extends Component {
                     title: 'Created At',
                     dataIndex: 'createdAt',
                     key: 'createdAt',
+                    sorter: (a, b) => {
+                        return a.date.localeCompare(b.date);
+                    }
                 },
                 {
                     title: 'State',
