@@ -75,7 +75,7 @@ export default class PossibleIssues extends Component {
                         relatedDegree = 'High';
                     }
                 }
- 
+
                 dataSource[repoName] = dataSource[repoName] || [];
                 dataSource[repoName].push({
                     key: dataSource[repoName].length,
@@ -118,6 +118,10 @@ export default class PossibleIssues extends Component {
                     title: 'Created At',
                     dataIndex: 'createdAt',
                     key: 'createdAt',
+                    defaultSortOrder: 'descend',
+                    sorter: (a, b) => {
+                        return new Date(a.createdAt) - new Date(b.createdAt);
+                    }
                 },
                 {
                     title: 'State',
@@ -135,7 +139,7 @@ export default class PossibleIssues extends Component {
                 <TestBreadcrumb buildId={buildId} testId={testId} testName={testName} />
                 {
                     Object.keys(dataSource).map((repoName, index) => (
-                        <Table 
+                        <Table
                             key={index}
                             columns={columns}
                             dataSource={dataSource[repoName]}
