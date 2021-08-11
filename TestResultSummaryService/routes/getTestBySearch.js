@@ -55,7 +55,7 @@ searchOutputId = async ( build ) => {
     if ( !build.hasChildren ) {
         if ( build.tests ) {
             build.tests.forEach( test => {
-                rt.testOutputIds[test.testOutputId] = { _id: test._id, buildName: build.buildName, buildNum: build.buildNum, testName: test.testName, testResult: test.testResult, duration: test.duration, machine: build.machine };
+                rt.testOutputIds[test.testOutputId] = { _id: test._id, buildName: build.buildName, buildNum: build.buildNum, buildUrl: build.buildUrl, testName: test.testName, testResult: test.testResult, duration: test.duration, machine: build.machine };
             } );
         }
     } else {
