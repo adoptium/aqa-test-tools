@@ -26,6 +26,7 @@ export default class SearchResult extends Component {
                 duration: element.duration,
                 machine: element.machine,
                 sortMachine: element.machine,
+                buildUrl: element.buildUrl,
             }
             return ret;
         } );
