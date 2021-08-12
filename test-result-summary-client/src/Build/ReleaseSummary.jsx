@@ -1,124 +1,126 @@
 import React, { Component } from 'react';
 import ReactDOM from 'react-dom';
-import { getParams } from '../utils/query';
+import { getParams, params } from '../utils/query';
 import { Tooltip, Card, Alert } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import TestBreadcrumb from './TestBreadcrumb';
 import { fetchData } from '../utils/Utils';
 
-export default class ReleaseSummary extends Component{
+export default class ReleaseSummary extends Component {
     state = {
         body: "Generating Release Summary Report...",
     }
 
-    async componentDidMount(){
+    async componentDidMount() {
         await this.updateData();
     }
 
-    async updateData(){
+    async updateData() {
         const { parentId } = getParams(this.props.location.search);
         const originUrl = window.location.origin;
-        
-        //get build info
+
         const build = await fetchData(`/api/getParents?id=${parentId}`);
-    
-        //add build and test details to report
-        let report = `TRSS [link](${originUrl}/buildDetail?parentId=${parentId}&testSummaryResult=failed&buildNameRegex=%5ETest) \n`;
-        
-        const buildUrl = build[0].buildUrl;
-        const startedBy = build[0].startBy;
-        report += `Build URL ${buildUrl} \nStarted by ${startedBy} \n`;
+        let report = "";
+        if (build && build[0]) {
+            const { buildName, buildUrl, timestamp, startBy } = build[0];
+            report = `#### Release Summary Report for ${buildName} \n`
+                + `TRSS [Build](${originUrl}/buildDetail?parentId=${parentId}&testSummaryResult=failed&buildNameRegex=%5ETest) `
+                + `and TRSS [Grid View](${originUrl}/resultSummary?parentId=${parentId}) \n`
+                + `Jenkins Build URL ${buildUrl} \nStarted by ${startBy} at ${new Date(timestamp).toLocaleString()} \n`;
 
-        //get build history
-        const buildHistory = await fetchData(`/api/getBuildHistory?parentId=${parentId}`);
+            report += "\n --- \n";
 
-        for (let build of buildHistory) {
-            if (build.buildResult !== "SUCCESS") {
-                report += `### ⚠️  [${build.buildName}](${build.buildUrl}) has a build result of ${build.buildResult} ⚠️\n`;
-            }
-        }
-        
-        // get all child builds info based on buildNameRegex
-        const buildNameRegex = "^Test_openjdk.*";
-        const childrenBuilds = await fetchData(`/api/getAllChildBuilds?parentId=${parentId}&buildNameRegex=${buildNameRegex}`);
-
-        for (let testGroup of childrenBuilds) {
-            //Update report with test groups that have not succeeded
-            if (testGroup.buildResult !== "SUCCESS") {
-                const testGroupId = testGroup._id;
-                const testGroupName = testGroup.buildName;
-                const testGroupUrl = testGroup.buildUrl;
-                report += `\n[**${testGroupName}**](${testGroupUrl}) \n`;
-                if (testGroup.tests) {
-                    for (let test of testGroup.tests) {
-                        if (test.testResult === "FAILED") {
-                            const testName = test.testName;
-                            const testId = test._id;
-
-                            //get test history
+            const buildResult = "!SUCCESS";
+            const failedBuilds = await fetchData(`/api/getAllChildBuilds${params({ buildResult, parentId })}`);
+            let failedBuildSummary = {};
+            let failedTestSummary = {};
+            await Promise.all(failedBuilds.map(async ({ _id, buildName, buildUrl, buildResult, tests = [] }) => {
+                const buildInfo = `\n[**${buildName}**](${buildUrl})`;
+                const buildResultStr = buildResult === "UNSTABLE" ? ` ⚠️ ${buildResult} ⚠️\n` : ` ❌ ${buildResult} ❌\n`;
+                if (buildName.startsWith("Test_openjdk")) {
+                    failedTestSummary[buildName] = buildInfo;
+                    failedTestSummary[buildName] += buildResultStr;
+                    const buildId = _id;
+                    await Promise.all(tests.map(async ({ _id, testName, testResult }) => {
+                        if (testResult === "FAILED") {
+                            const testId = _id;
                             const history = await fetchData(`/api/getHistoryPerTest?testId=${testId}&limit=100`);
-
-                            let totalRuns = 0;
                             let totalPasses = 0;
                             for (let testRun of history) {
-                                totalRuns += 1;
                                 if (testRun.tests.testResult === "PASSED") {
                                     totalPasses += 1;
                                 }
                             }
                             //For failed tests, add links to the deep history and possible issues list
-                            report += `${testName} => [deep history ${totalPasses}/${totalRuns} passed](${originUrl}/deepHistory?testId=${testId}) | `
-                                        + `[possible issues](${originUrl}/possibleIssues?buildId=${testGroupId}&buildName=${testGroupName}&testId=${testId}&testName=${testName}) \n`;
+                            failedTestSummary[buildName] += `${testName} => [deep history ${totalPasses}/${history.length} passed](${originUrl}/deepHistory?testId=${testId}) | `
+                                + `[possible issues](${originUrl}/possibleIssues${params({ buildId, buildName, testId, testName })}) \n`;
                         }
-                    }
+                    }));
                 } else {
-                    report += `⚠️ Test Job Failed ⚠️\n`
-                } 
+                    failedBuildSummary[buildName] = buildInfo;
+                    failedBuildSummary[buildName] += buildResultStr;
+                }
+            }));
+
+            if (failedBuildSummary || failedTestSummary) {
+                Object.keys(failedBuildSummary).sort().map(buildName => {
+                    report += failedBuildSummary[buildName];
+                });
+                report += "\n --- \n";
+                Object.keys(failedTestSummary).sort().map(buildName => {
+                    report += failedTestSummary[buildName];
+                });
+            } else {
+                report += "Congratulation! There is no failure!";
             }
+
+        } else {
+            report = `Cannot find the build information (${parentId})in Database!`;
         }
+
         this.setState({
             body: report
         });
     }
 
-    copyCodeToClipboard(){
+    copyCodeToClipboard() {
         const markdownText = document.getElementById('markdown-text');
         let range, selection;
 
-        if(document.body.createTextRange){ 
+        if (document.body.createTextRange) {
             range = document.body.createTextRange();
             range.moveToElementText(markdownText);
-            range.select(); 
+            range.select();
         }
-        else if(window.getSelection){
+        else if (window.getSelection) {
             selection = window.getSelection();
             range = document.createRange();
             range.selectNodeContents(markdownText);
             selection.removeAllRanges();
-            selection.addRange(range);   
+            selection.addRange(range);
         }
-        
+
         let alert;
-        if(document.execCommand('Copy')){
-            alert = <Alert message="Successfully copied to clipboard" type="success" showIcon/>;
+        if (document.execCommand('Copy')) {
+            alert = <Alert message="Successfully copied to clipboard" type="success" showIcon />;
         }
-        else{
-            alert = <Alert message="Failed to copy to clipboard" type="error" showIcon/>;
+        else {
+            alert = <Alert message="Failed to copy to clipboard" type="error" showIcon />;
         }
         ReactDOM.render(alert, document.getElementById("copy-status"));
     }
 
-    render(){
+    render() {
         const { body } = this.state;
-        const { parentId, buildName} = getParams(this.props.location.search);
+        const { parentId, buildName } = getParams(this.props.location.search);
         const title = "Release Summary Report for " + buildName;
-        return(
+        return (
             <div>
                 <TestBreadcrumb buildId={parentId} />
                 <div id="copy-status"></div>
                 <Card title={title} bordered={true} style={{ width: '100%' }} extra={
                     <Tooltip title="Copy markdown report to clipboard" placement="topRight">
-                        <CopyOutlined id="copy-button" style={{ fontSize: '200%'}} onClick={() => this.copyCodeToClipboard()} />
+                        <CopyOutlined id="copy-button" style={{ fontSize: '200%' }} onClick={() => this.copyCodeToClipboard()} />
                     </Tooltip>
                 }>
                     <pre className="card-body" id="markdown-text">{body}</pre>

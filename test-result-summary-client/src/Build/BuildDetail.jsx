@@ -106,7 +106,7 @@ export default class BuildDetail extends Component {
             <br />
             <BuildTable title={"Children builds"} buildData={childBuildsDataSource} />
             <br />
-            <Link to={{ pathname: '/releaseSummary', search: params({ parentId: parentId, buildName: buildName}) }}>
+            <Link to={{ pathname: '/releaseSummary', search: params({ parentId, buildName }) }}>
                 <Button type="primary">
                     Release Summary Report
                 </Button>
