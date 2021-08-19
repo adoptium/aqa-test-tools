@@ -1,16 +1,20 @@
 const { MongoClient, ObjectID } = require('mongodb');
 const ArgParser = require("./ArgParser");
-const credential = ArgParser.getConfigDB() === null ? "" : `${encodeURIComponent(ArgParser.getConfigDB().user)}:${encodeURIComponent(ArgParser.getConfigDB().password)}@`;
-const url = 'mongodb://' + credential + 'localhost:27017/exampleDb';
 
 let db;
 (async function () {
+    let url;
+    let config = ArgParser.getConfigDB()
+    if (config && config.connectionString) {
+        url = config.connectionString;
+    } else {
+        const credential = config === null ? "" : `${encodeURIComponent(config.user)}:${encodeURIComponent(config.password)}@`;
+        const hostname = (process.env.MONGO_CONTAINER_NAME !== undefined ? process.env.MONGO_CONTAINER_NAME : 'localhost');
+        url = 'mongodb://' + credential + hostname + ':27017/exampleDb';
+    }
+
     const dbConnect = await MongoClient.connect(url, { useUnifiedTopology: true });
     db = dbConnect.db("exampleDb");
-    await db.createCollection('testResults');
-    await db.createCollection('output');
-    await db.createCollection('auditLogs');
-    await db.createCollection('user');
 })()
 
 class Database {
