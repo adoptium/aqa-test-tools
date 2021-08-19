@@ -15,6 +15,10 @@ let db;
 
     const dbConnect = await MongoClient.connect(url, { useUnifiedTopology: true });
     db = dbConnect.db("exampleDb");
+    await db.createCollection('testResults');
+    await db.createCollection('output');
+    await db.createCollection('auditLogs');
+    await db.createCollection('user');
 })()
 
 class Database {
