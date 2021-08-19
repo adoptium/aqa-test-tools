@@ -22,7 +22,7 @@ mongod.exe
 
 ```
 cd to TestResultSummaryService folder
-npm install
+npm ci
 npm start
 ```
 
@@ -30,7 +30,7 @@ npm start
 
 ```
 cd to test-result-summary-client folder
-npm install
+npm ci
 npm start
 ``` 
 
@@ -139,3 +139,6 @@ Plugins can be added. Please refer [Plugins ReadMe](./plugins/README.md) for imp
     ```
     This cron job will run exportMongo.sh once every week at Saturday 8am
 - step 3: run command `sudo chmod u+x exportMongo.sh` to grant cron access to shell scipt
+
+## Docker
+go to top directory, run command `docker-compose --env-file .docker.env up`, TRSS will be up at http://localhost:3000
