@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TopLevelBuildTable from './TopLevelBuildTable';
+import BuildComparisonTable from './BuildComparisonTable';
 const { order, fetchData } = require('../utils/Utils');
 export default class TopLevelBuilds extends Component {
 
@@ -47,7 +48,10 @@ export default class TopLevelBuilds extends Component {
                 <div>
                     {Object.keys(builds).sort().map((url, i) => {
                         return builds[url].sort(order).map((buildName, j) => {
-                            return <TopLevelBuildTable url={url} buildName={buildName} type={type} key={j} />
+                            return ( url === "/build/compare" 
+				? <TopLevelBuildTable url={url} buildName={buildName} type={type} key={j} /> 
+				: <BuildComparisonTable url={url} buildName={buildName} type={type} key={j} />
+				);
                         });
                     })}
                 </div>);
