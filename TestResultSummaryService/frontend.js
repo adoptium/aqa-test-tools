@@ -43,7 +43,7 @@ let options = {
 expressSwagger(options);
 
 // all environments
-app.set( 'port', process.env.PORT || 3001 );
+app.set( 'port', process.env.PORT || 3002 );
 
 app.listen( app.get( 'port' ), function() {
     logger.info( 'Express server listening on port ' + app.get( 'port' ) );

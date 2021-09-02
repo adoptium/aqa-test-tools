@@ -4,7 +4,7 @@ WORKDIR /usr/src/app
 
 COPY . .
 
-EXPOSE 3001
+EXPOSE 3002
 CMD npm ci  &&\
     npm start
 

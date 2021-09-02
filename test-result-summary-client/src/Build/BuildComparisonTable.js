@@ -3,7 +3,7 @@ import { CheckOutlined, CloseOutlined, InfoOutlined, LoadingOutlined, QuestionCi
 import { Table, Tooltip, Checkbox, Popconfirm } from 'antd';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
-import { fetchData } from '../utils/Utils';
+import { fetchData, timeConversion } from '../utils/Utils';
 import BuildLink from './BuildLink';
 
 const pageSize = 5;
@@ -28,19 +28,33 @@ export default class BuildCompare extends Component {
         }
     }
 
+    retrieveParams(buildParams) {
+	var params = {}
+    	buildParams.forEach((dict)=> params[dict.name] = dict.value)	
+	return params
+    }
+
     async updateData() {
         const { buildName, url } = this.props;
 console.log(this.props)
         const builds = await fetchData(`/api/getBuildHistory?buildName=${buildName}&url=${url}&limit=120`);
+	//const params=builds.map(build=>this.retrieveParams(build.buildParams))
+	//console.log(params)
     
-        const buildInfo = builds.map(build => ({
+        const buildInfo = builds.map(build => {
+	console.log(build)
+	const params = this.retrieveParams(build.buildParams)
+	console.log(params)
+	return {
             key: build._id,
             build: build,
             date: build.timestamp ? new Date(build.timestamp).toLocaleString() : null,
-            startBy: build.startBy ? build.startBy : "N/A",
-            jenkins: build,
-            keepForever: build.keepForever ? build.keepForever : false
-        }));
+            vendor: build.startBy ? build.startBy : "N/A",
+            impl: params.JDK_IMPL,
+	    version: params.JDK_VERSION,
+	    platform: params.PLATFORM,
+	    time: timeConversion(build.buildDuration)
+        }});
         this.setState({ buildInfo });
 
         await this.updateTotals();
@@ -173,7 +187,7 @@ console.log(this.props)
 
             const renderBuildResults = (value) => {
                 return <div>
-                    <BuildLink id={value._id} link="Failed Builds " buildResult="!SUCCESS" />
+                    <BuildLink id={value._id} link={value.buildName} buildResult={value.buildResult} />
                 </div>;
             };
 
@@ -205,17 +219,14 @@ console.log(this.props)
                 title: 'Vendor',
                 dataIndex: 'vendor',
                 key: 'vendorName',
-                render: renderTotals,
             }, {
                 title: 'JDK Implementation',
                 dataIndex: 'impl',
                 key: 'impl',
-                render: renderTotals,
             }, {
                 title: 'Platforms',
                 dataIndex: 'platform',
                 key: 'platform',
-                render: renderTotals,
             }, {
                 title: 'JDK Version',
                 dataIndex: 'version',
