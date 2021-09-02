@@ -38,18 +38,14 @@ export default class BuildCompare extends Component {
         const { buildName, url } = this.props;
 console.log(this.props)
         const builds = await fetchData(`/api/getBuildHistory?buildName=${buildName}&url=${url}&limit=120`);
-	//const params=builds.map(build=>this.retrieveParams(build.buildParams))
-	//console.log(params)
     
         const buildInfo = builds.map(build => {
-	console.log(build)
 	const params = this.retrieveParams(build.buildParams)
-	console.log(params)
 	return {
             key: build._id,
             build: build,
             date: build.timestamp ? new Date(build.timestamp).toLocaleString() : null,
-            vendor: build.startBy ? build.startBy : "N/A",
+            vendor: "N/A",
             impl: params.JDK_IMPL,
 	    version: params.JDK_VERSION,
 	    platform: params.PLATFORM,

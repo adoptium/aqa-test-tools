@@ -42,13 +42,14 @@ export default class TopLevelBuilds extends Component {
 
     render() {
         const { builds, type } = this.state;
+	const pageUrl=this.props.location.pathname
 
         if (builds && type) {
             return (
                 <div>
                     {Object.keys(builds).sort().map((url, i) => {
                         return builds[url].sort(order).map((buildName, j) => {
-                            return ( url === "/build/compare" 
+                            return ( pageUrl !== "/build/compare" 
 				? <TopLevelBuildTable url={url} buildName={buildName} type={type} key={j} /> 
 				: <BuildComparisonTable url={url} buildName={buildName} type={type} key={j} />
 				);
