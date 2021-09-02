@@ -12,6 +12,7 @@ export default class BuildCompare extends Component {
     state = {
         currentPage: 1,
         buildInfo: [],
+	curColumns: ["select", "buildName", "impl", "version", "date"]
     };
 
     async componentDidMount() {
@@ -247,8 +248,11 @@ console.log(this.props)
             }
             ];
 
+	    const colNames=this.state.curColumns
+	    const activeCols=columns.filter(col=> colNames.includes(col.key))
+	    console.log(columns.filter(col => {return col}))
             return <Table
-                columns={columns}
+		columns={activeCols}
                 dataSource={buildInfo}
                 title={() => <div><b>{buildName}</b> in server {url}</div>}
                 pagination={{ pageSize, onChange: this.onChange }}
