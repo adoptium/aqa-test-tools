@@ -15,6 +15,7 @@
     "mathjs": "^7.6.0",
     "mergely": "^4.3.1",
     "moment": "^2.29.1",
+    "multiselect-react-dropdown": "^2.0.6",
     "npm-check": "^5.9.2",
     "qs": "^6.10.1",
     "react": "^16.14.0",
@@ -28,6 +29,7 @@
     "react-nl2br": "^0.6.1",
     "react-router": "^5.2.0",
     "react-router-dom": "^5.2.0",
+    "react-select": "^4.3.1",
     "react-table": "^6.11.5",
     "sweetalert2": "^10.16.9"
   },

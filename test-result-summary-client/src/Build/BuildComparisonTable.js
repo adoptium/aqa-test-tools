@@ -5,6 +5,23 @@ import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
 import { fetchData, timeConversion } from '../utils/Utils';
 import BuildLink from './BuildLink';
+import { components } from "react-select";
+import { default as ReactSelect } from "react-select";
+
+const Option = (props) => {
+  return (
+    <div>
+      <components.Option {...props}>
+        <input
+          type="checkbox"
+          checked={props.isSelected}
+          onChange={() => null}
+        />{" "}
+        <label>{props.label}</label>
+      </components.Option>
+    </div>
+  );
+};
 
 const pageSize = 5;
 export default class BuildCompare extends Component {
@@ -12,7 +29,34 @@ export default class BuildCompare extends Component {
     state = {
         currentPage: 1,
         buildInfo: [],
-	curColumns: ["select", "buildName", "impl", "version", "date"]
+	optionSelected: [{value: 'Select', label: 'select'}],
+	allColumns: [
+	{
+            value: 'Select',
+            label: 'select',
+        }, {
+            value: 'Build',
+            label: 'build',
+        }, {
+            value: 'JDK Implementation',
+            label: 'impl',
+        }, {
+            value: 'JDK Version',
+            label: 'version',
+        }, {
+            value: 'Start Date',
+            label: 'date',
+        }, {
+            value: 'Platforms',
+            label: 'platform',
+        },  {
+            value: 'Vendor',
+            label: 'vendor',
+        }, {
+            value: 'Duration',
+            label: 'time',
+        }
+	]
     };
 
     async componentDidMount() {
@@ -37,7 +81,6 @@ export default class BuildCompare extends Component {
 
     async updateData() {
         const { buildName, url } = this.props;
-console.log(this.props)
         const builds = await fetchData(`/api/getBuildHistory?buildName=${buildName}&url=${url}&limit=120`);
     
         const buildInfo = builds.map(build => {
@@ -79,22 +122,27 @@ console.log(this.props)
         });
     };
 
-    handleKeepForverClick = async (record) => {
-        const { buildInfo } = this.state;
-        if (record.key) {
-            for (let build of buildInfo) {
-                if (build.key === record.key) {
-                    build.keepForever = !build.keepForever;
-                    await fetch(`/api/updateKeepForever?_id=${build.key}&keepForever=${build.keepForever}`, {
-                        method: 'get'
-                    });
-                    break;
-                }
-            }
-            await new Promise(r => setTimeout(r, 100));
-            this.setState({ buildInfo });
-        }
-    }
+    handleChange = (selected) => {
+      this.setState({
+        optionSelected: selected
+      });
+    };
+
+    editColumns = () =>{
+	var options = this.state.allColumns;
+   	return <ReactSelect
+	  options={options}
+	  isMulti
+	  closeMenuOnSelect={false}
+	  hideSelectedOptions={false}
+	  components={{
+	    Option
+	  }}
+	  onChange={this.handleChange}
+	  allowSelectAll={true}
+	  value={this.state.optionSelected}
+	/> 
+    };
 
     render() {
         const { buildInfo } = this.state;
@@ -148,39 +196,7 @@ console.log(this.props)
                 return null;
             };
 
-            const renderJenkinsLinks = ({ buildName, buildNum, buildUrl, url }) => {
-                // Temporarily support BlueOcean link under folders
-                let blueOcean;
-                if (`${url}`.includes("/jobs") || `${url}`.includes("/build-scripts")) {
-                    let urls = url.split("/job/");
-                    let basicUrl = urls.shift();
-                    urls.push(buildName);
-                    let newUrl = urls.join("%2F");
-                    blueOcean = `${basicUrl}/blue/organizations/jenkins/${newUrl}/detail/${buildName}/${buildNum}`;
-                } else {
-                    blueOcean = `${url}/blue/organizations/jenkins/${buildName}/detail/${buildName}/${buildNum}`;
-                }
-                return <div><a href={buildUrl} target="_blank" rel="noopener noreferrer">{buildName} #{buildNum}</a><br /><a href={blueOcean} target="_blank" rel="noopener noreferrer">Blue Ocean</a></div>;
-            };
 
-            const renderTotals = (value, row, index) => {
-                if (!value) return <div>N/A</div>;
-                const { failed = 0, passed = 0, disabled = 0, skipped = 0, total = 0 } = value;
-                const buildResult = row.build.buildResult;
-                const id = row.build._id;
-                return <>
-                    <Link to={{ pathname: '/resultSummary', search: params({ parentId: id }) }}
-                        style={{ color: buildResult === "SUCCESS" ? "#2cbe4e" : (buildResult === "FAILURE" ? "#f50" : "#DAA520") }}>Grid
-                    </Link>
-                    <div>
-                        <BuildLink id={id} label="Failed: " link={failed} testSummaryResult="failed" buildNameRegex="^Test.*" />
-                        <BuildLink id={id} label="Passed: " link={passed} testSummaryResult="passed" buildNameRegex="^Test.*" />
-                        <BuildLink id={id} label="Disabled: " link={disabled} testSummaryResult="disabled" buildNameRegex="^Test.*" />
-                        <BuildLink id={id} label="Skipped: " link={skipped} testSummaryResult="skipped" buildNameRegex="^Test.*" />
-                        <BuildLink id={id} label="Total: " link={total} testSummaryResult="total" buildNameRegex="^Test.*" />
-                    </div>
-                </>;
-            };
 
             const renderBuildResults = (value) => {
                 return <div>
@@ -197,7 +213,7 @@ console.log(this.props)
                 return;
             };
 
-            const columns = [
+	    const columns=[
 	    {
                 title: 'Select',
                 dataIndex: 'select',
@@ -246,17 +262,30 @@ console.log(this.props)
                     return a.time.localeCompare(b.time);
                 }
             }
-            ];
-
-	    const colNames=this.state.curColumns
-	    const activeCols=columns.filter(col=> colNames.includes(col.key))
-	    console.log(columns.filter(col => {return col}))
-            return <Table
-		columns={activeCols}
-                dataSource={buildInfo}
-                title={() => <div><b>{buildName}</b> in server {url}</div>}
-                pagination={{ pageSize, onChange: this.onChange }}
-            />;
+	    ];
+	    
+	    const getOptions =() => {
+	    	var activeOptions = [];
+		if (this.state.optionSelected.length < 2) {
+		   const optionSelected = this.state.allColumns.slice(0,5)
+		   this.setState({ optionSelected }) 
+		}	
+            	columns.forEach(c => {
+	    	    this.state.optionSelected.forEach(col => {
+	    	        if (col.value === c.title) { activeOptions.push(c)}
+	    	    })
+	    	})
+		return activeOptions
+	    }
+            return <div>
+			{this.editColumns()}
+			<Table
+			columns={getOptions()}
+	                dataSource={buildInfo}
+	                title={() => <div><b>Server:</b> {url}</div>}
+	                pagination={{ pageSize, onChange: this.onChange }}
+	                />;
+		</div>
         } else {
             return null;
         }
