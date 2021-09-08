@@ -7,6 +7,8 @@ import { fetchData, timeConversion } from '../utils/Utils';
 import BuildLink from './BuildLink';
 import { components } from "react-select";
 import { default as ReactSelect } from "react-select";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 
 const Option = (props) => {
   return (
@@ -29,6 +31,8 @@ export default class BuildCompare extends Component {
     state = {
         currentPage: 1,
         buildInfo: [],
+	startDate: new Date(1610188860945), // earlier this year for demo
+	endDate: new Date(),
 	optionSelected: [{value: 'Select', label: 'select'}],
 	allColumns: [
 	{
@@ -83,18 +87,21 @@ export default class BuildCompare extends Component {
         const { buildName, url } = this.props;
         const builds = await fetchData(`/api/getBuildHistory?buildName=${buildName}&url=${url}&limit=120`);
     
-        const buildInfo = builds.map(build => {
+        const info = builds.map(build => {
 	const params = this.retrieveParams(build.buildParams)
+	const date = build.timestamp ? new Date(build.timestamp) : null
 	return {
             key: build._id,
             build: build,
-            date: build.timestamp ? new Date(build.timestamp).toLocaleString() : null,
+            date: (date > this.state.startDate && date < this.state.endDate) ? date.toLocaleString() : null,
             vendor: "N/A",
             impl: params.JDK_IMPL,
 	    version: params.JDK_VERSION,
 	    platform: params.PLATFORM,
 	    time: timeConversion(build.buildDuration)
         }});
+
+	const buildInfo = info.filter(build => build.date)
         this.setState({ buildInfo });
 
         await this.updateTotals();
@@ -143,6 +150,37 @@ export default class BuildCompare extends Component {
 	  value={this.state.optionSelected}
 	/> 
     };
+	
+    async setStartDate (startDate){
+	this.setState({startDate})
+        await this.updateData();
+    }
+
+    async setEndDate(endDate){
+	this.setState({endDate})
+        await this.updateData();
+    }
+
+    dateRangePicker = () =>{
+	return <div>
+	  <b>Date Range: </b>
+     	  <DatePicker
+     	    selected={this.state.startDate}
+     	    selectsStart
+     	    startDate={this.state.startDate}
+     	    endDate={this.state.endDate}
+     	    onChange={date => this.setStartDate(new Date(date))}
+     	  />
+     	  <DatePicker
+     	    selected={this.state.endDate}
+     	    selectsEnd
+     	    startDate={this.state.startDate}
+     	    endDate={this.state.endDate}
+     	    minDate={this.state.startDate}
+     	    onChange={date => this.setEndDate(new Date(date))}
+     	  />
+	</div>
+    }
 
     render() {
         const { buildInfo } = this.state;
@@ -195,8 +233,6 @@ export default class BuildCompare extends Component {
                 }
                 return null;
             };
-
-
 
             const renderBuildResults = (value) => {
                 return <div>
@@ -253,7 +289,7 @@ export default class BuildCompare extends Component {
                 key: 'date',
                 sorter: (a, b) => {
                     return a.date.localeCompare(b.date);
-                }
+                },
             },  {
                 title: 'Duration',
                 dataIndex: 'time',
@@ -278,6 +314,7 @@ export default class BuildCompare extends Component {
 		return activeOptions
 	    }
             return <div>
+			{this.dateRangePicker()}
 			{this.editColumns()}
 			<Table
 			columns={getOptions()}
