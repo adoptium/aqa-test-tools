@@ -85,8 +85,7 @@ export default class BuildCompare extends Component {
 
     async updateData() {
         const { buildUrlList } = this.props;
-        console.log(this.props);
-        //for every build name and url, you need to call the function and push the data to the list
+        // consolidates all build information into the buildsList array
         const buildsList = []
         for (let i = 0; buildUrlList && i < buildUrlList.length; i++) {
             const buildName = buildUrlList[i][0];
@@ -96,7 +95,6 @@ export default class BuildCompare extends Component {
                 buildsList.push(builds[j]);
             }
         }
-        console.log(buildsList);
         const info = buildsList.map(build => {
             const params = this.retrieveParams(build.buildParams)
             const date = build.timestamp ? new Date(build.timestamp) : null
