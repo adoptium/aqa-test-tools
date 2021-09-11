@@ -42,20 +42,39 @@ export default class TopLevelBuilds extends Component {
 
     render() {
         const { builds, type } = this.state;
-	const pageUrl=this.props.location.pathname
+	    const pageUrl=this.props.location.pathname
+
+        // if (builds && type) {
+        //     return (
+        //         <div>
+        //             {Object.keys(builds).sort().map((url, i) => {
+        //                 return builds[url].sort(order).map((buildName, j) => {
+        //                     return ( pageUrl !== "/build/compare" 
+		// 		? <TopLevelBuildTable url={url} buildName={buildName} type={type} key={j} /> 
+		// 		: <BuildComparisonTable url={url} buildName={buildName} type={type} key={j} />
+		// 		);
+        //                 });
+        //             })}
+        //         </div>);
+        // } else {
+        //     return null;
+        // }
 
         if (builds && type) {
-            return (
-                <div>
-                    {Object.keys(builds).sort().map((url, i) => {
-                        return builds[url].sort(order).map((buildName, j) => {
-                            return ( pageUrl !== "/build/compare" 
-				? <TopLevelBuildTable url={url} buildName={buildName} type={type} key={j} /> 
-				: <BuildComparisonTable url={url} buildName={buildName} type={type} key={j} />
-				);
-                        });
-                    })}
-                </div>);
+            if( pageUrl !== "/build/compare" ) {
+                Object.keys(builds).sort().map((url, i) => {
+                    return builds[url].sort(order).map((buildName, j) => {
+                        return <TopLevelBuildTable url={url} buildName={buildName} type={type} key={j} />
+                    });
+                })
+            } else {
+                const buildUrlList = [];
+                Object.keys(builds).map((url, index) => ( 
+                    buildUrlList.push([builds[url], url])
+                    // console.log("this is my key " + url + " and this is my value " + builds[url])
+                ))
+                return <BuildComparisonTable buildUrlList={buildUrlList} type={type} />
+            }
         } else {
             return null;
         }
