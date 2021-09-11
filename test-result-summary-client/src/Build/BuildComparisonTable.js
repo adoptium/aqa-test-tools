@@ -79,31 +79,39 @@ export default class BuildCompare extends Component {
 
     retrieveParams(buildParams) {
 	var params = {}
-    	buildParams.forEach((dict)=> params[dict.name] = dict.value)	
+    	buildParams.forEach((dict)=> params[dict.name] = dict.value)
 	return params
     }
 
     async updateData() {
-        const { buildName, url } = this.props;
-        const builds = await fetchData(`/api/getBuildHistory?buildName=${buildName}&url=${url}&limit=120`);
-    
-        const info = builds.map(build => {
-	const params = this.retrieveParams(build.buildParams)
-	const date = build.timestamp ? new Date(build.timestamp) : null
-	return {
-            key: build._id,
-            build: build,
-            date: (date > this.state.startDate && date < this.state.endDate) ? date.toLocaleString() : null,
-            vendor: "N/A",
-            impl: params.JDK_IMPL,
-	    version: params.JDK_VERSION,
-	    platform: params.PLATFORM,
-	    time: timeConversion(build.buildDuration)
+        const { buildUrlList } = this.props;
+        // consolidates all build information into the buildsList array
+        const buildsList = []
+        for (let i = 0; buildUrlList && i < buildUrlList.length; i++) {
+            const buildName = buildUrlList[i][0];
+            const url = buildUrlList[i][1];
+            const builds = await fetchData(`/api/getBuildHistory?buildName=${buildName}&url=${url}&limit=120`);
+            for (let j = 0; builds && j < builds.length; j++) {
+                buildsList.push(builds[j]);
+            }
+        }
+        const info = buildsList.map(build => {
+            const params = this.retrieveParams(build.buildParams)
+            const date = build.timestamp ? new Date(build.timestamp) : null
+            return {
+                key: build._id,
+                build: build,
+                date: (date > this.state.startDate && date < this.state.endDate) ? date.toLocaleString() : null,
+                vendor: "N/A",
+                impl: params.JDK_IMPL,
+            version: params.JDK_VERSION,
+            platform: params.PLATFORM,
+            time: timeConversion(build.buildDuration)
         }});
-
-	const buildInfo = info.filter(build => build.date)
+    
+        const buildInfo = info.filter(build => build.date)
         this.setState({ buildInfo });
-
+    
         await this.updateTotals();
     }
 
@@ -148,9 +156,9 @@ export default class BuildCompare extends Component {
 	  onChange={this.handleChange}
 	  allowSelectAll={true}
 	  value={this.state.optionSelected}
-	/> 
+	/>
     };
-	
+
     async setStartDate (startDate){
 	this.setState({startDate})
         await this.updateData();
@@ -299,13 +307,13 @@ export default class BuildCompare extends Component {
                 }
             }
 	    ];
-	    
+
 	    const getOptions =() => {
 	    	var activeOptions = [];
 		if (this.state.optionSelected.length < 2) {
 		   const optionSelected = this.state.allColumns.slice(0,5)
-		   this.setState({ optionSelected }) 
-		}	
+		   this.setState({ optionSelected })
+		}
             	columns.forEach(c => {
 	    	    this.state.optionSelected.forEach(col => {
 	    	        if (col.value === c.title) { activeOptions.push(c)}
@@ -319,7 +327,6 @@ export default class BuildCompare extends Component {
 			<Table
 			columns={getOptions()}
 	                dataSource={buildInfo}
-	                title={() => <div><b>Server:</b> {url}</div>}
 	                pagination={{ pageSize, onChange: this.onChange }}
 	                />;
 		</div>
