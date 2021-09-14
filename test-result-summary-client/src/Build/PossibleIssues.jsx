@@ -11,6 +11,7 @@ export default class PossibleIssues extends Component {
     state = {
         error: null,
         dataSource: {},
+        loading: true,
     };
 
     async componentDidMount() {
@@ -107,7 +108,8 @@ export default class PossibleIssues extends Component {
                 });
             }
             this.setState({
-                dataSource
+                dataSource,
+                loading: false,
             });
         } else {
             this.setState({
@@ -117,7 +119,7 @@ export default class PossibleIssues extends Component {
     };
 
     render() {
-        const { error, dataSource} = this.state;
+        const { error, dataSource, loading} = this.state;
         const { buildId, testId, testName } = getParams( this.props.location.search );
 
         if (error) {
@@ -162,7 +164,7 @@ export default class PossibleIssues extends Component {
 
             return <div>
                 <TestBreadcrumb buildId={buildId} testId={testId} testName={testName} />
-                {
+                {!loading && (Object.keys(dataSource).length > 0 ? (
                     Object.keys(dataSource).map((repoName, index) => (
                         <Table
                             key={index}
@@ -172,6 +174,9 @@ export default class PossibleIssues extends Component {
                             title={() => repoName}
                         />
                     ))
+                ) : (
+                    <span>No Possible Issues Found</span> 
+                ))
                 }
             </div>
         }
