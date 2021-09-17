@@ -102,7 +102,8 @@ export default class PossibleIssues extends Component {
           ""
         );
         const createdAt = new Date(relatedIssues.items[index].created_at);
-        if (createdAt < oldDate) {
+        const is_opne = relatedIssues.items[index].state;
+        if (createdAt < oldDate && is_opne == "closed") {
           continue;
         }
         createdAt = createdAt.toLocaleString();
