@@ -11,6 +11,7 @@ export default class PossibleIssues extends Component {
     state = {
         error: null,
         dataSource: {},
+        loading: true,
     };
 
     async componentDidMount() {
@@ -66,19 +67,26 @@ export default class PossibleIssues extends Component {
         if (buildName.includes('j9') || buildName.includes('ibm')) {
             additionalRepo = "+repo:eclipse-openj9/openj9";
         }
-        const response = await fetch(`https://api.github.com/search/issues?q=${generalTestName}+state:open+repo:adoptium/aqa-tests` +
+        const response = await fetch(`https://api.github.com/search/issues?q=${generalTestName}+repo:adoptium/aqa-tests` +
                     `+repo:AdoptOpenJDK/openjdk-infrastructure+repo:adoptium/aqa-build+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`, {
             method: 'get'
         });
+        var oldDate = new Date();
+        oldDate.setMonth(oldDate.getMonth() - 6);
         if (response.ok) {
             const relatedIssues = await response.json();
             let dataSource = {};
             const repoUrlAPIPrefix = "https://api.github.com/repos/";
             for (let index = 0; index < relatedIssues.items.length; index++) {
+                const createdAt = new Date(relatedIssues.items[index].created_at);
+                const is_opne = relatedIssues.items[index].state;
+                if (createdAt < oldDate && is_opne == "closed") {
+                  continue;
+                }
+                createdAt = createdAt.toLocaleString();
                 const repoName = relatedIssues.items[index].repository_url.replace(repoUrlAPIPrefix, "");
                 const issue = <a href={relatedIssues.items[index].html_url} target="_blank" rel="noopener noreferrer">{relatedIssues.items[index].title}</a>;
                 const issueCreator = <a href={relatedIssues.items[index].user.html_url} target="_blank" rel="noopener noreferrer">{relatedIssues.items[index].user.login}</a>;
-                const createdAt = new Date(relatedIssues.items[index].created_at).toLocaleString();
                 const issueState = relatedIssues.items[index].state;
                 const issueFullName = relatedIssues.items[index].title;
                 const creatorName = relatedIssues.items[index].user.login;
@@ -107,7 +115,8 @@ export default class PossibleIssues extends Component {
                 });
             }
             this.setState({
-                dataSource
+                dataSource,
+                loading: false,
             });
         } else {
             this.setState({
@@ -117,7 +126,7 @@ export default class PossibleIssues extends Component {
     };
 
     render() {
-        const { error, dataSource} = this.state;
+        const { error, dataSource, loading} = this.state;
         const { buildId, testId, testName } = getParams( this.props.location.search );
 
         if (error) {
@@ -162,7 +171,7 @@ export default class PossibleIssues extends Component {
 
             return <div>
                 <TestBreadcrumb buildId={buildId} testId={testId} testName={testName} />
-                {
+                {!loading && (Object.keys(dataSource).length > 0 ? (
                     Object.keys(dataSource).map((repoName, index) => (
                         <Table
                             key={index}
@@ -172,6 +181,9 @@ export default class PossibleIssues extends Component {
                             title={() => repoName}
                         />
                     ))
+                ) : (
+                    <span>No Possible Issues Found</span> 
+                ))
                 }
             </div>
         }
