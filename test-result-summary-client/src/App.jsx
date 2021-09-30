@@ -11,7 +11,7 @@ import { TestCompare } from './TestCompare/';
 import { ThirdPartyAppView } from './ThirdPartyAppView/';
 import { PerfCompare } from './PerfCompare/';
 import { TabularView } from './TabularView/';
-import { AllTestsInfo, BuildDetail, DeepHistory, GitNewIssue, TestPerPlatform, PossibleIssues, TopLevelBuilds, ResultSummary, ReleaseSummary } from './Build/';
+import { AllTestsInfo, BuildDetail, DeepHistory, GitNewIssue, TestPerPlatform, PossibleIssues, TopLevelBuilds, ResultSummary, ReleaseSummary} from './Build/';
 import { SearchResult } from './Search/';
 import { Settings } from './Settings/';
 
@@ -54,6 +54,7 @@ export default class App extends Component {
                             </SubMenu>
                             <Menu.Item key="4"><Link to="/dashboard">Dashboard</Link></Menu.Item>
                             <Menu.Item key="5"><Link to="/ThirdPartyAppView">Third Party Applications</Link></Menu.Item>
+                            <Menu.Item key="6"><Link to="/build/compare">By Version</Link></Menu.Item>
                         </Menu>
                     </Sider>
                     <Layout style={{ padding: '0 24px 24px' }}>
@@ -77,6 +78,7 @@ export default class App extends Component {
                                 <Route path="/resultSummary" component={ResultSummary} />
                                 <Route path="/ThirdPartyAppView" component={ThirdPartyAppView} />
                                 <Route path="/releaseSummary" component={ReleaseSummary}/>
+                                <Route path="/build/:action" component={TopLevelBuilds}/>
                             </Content>
                         </ErrorBoundary>
                     </Layout>

@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TopLevelBuildTable from './TopLevelBuildTable';
+import BuildComparisonTable from './BuildComparisonTable';
 const { order, fetchData } = require('../utils/Utils');
 export default class TopLevelBuilds extends Component {
 
@@ -37,20 +38,24 @@ export default class TopLevelBuilds extends Component {
         this.setState({ builds, type });
     }
 
-
-
     render() {
         const { builds, type } = this.state;
+	    const pageUrl=this.props.location.pathname
 
         if (builds && type) {
-            return (
-                <div>
-                    {Object.keys(builds).sort().map((url, i) => {
-                        return builds[url].sort(order).map((buildName, j) => {
-                            return <TopLevelBuildTable url={url} buildName={buildName} type={type} key={j} />
-                        });
-                    })}
-                </div>);
+            if( pageUrl !== "/build/compare" ) {
+                Object.keys(builds).sort().map((url, i) => {
+                    return builds[url].sort(order).map((buildName, j) => {
+                        return <TopLevelBuildTable url={url} buildName={buildName} type={type} key={j} />
+                    });
+                })
+            } else {
+                const buildUrlList = [];
+                Object.keys(builds).map((url, index) => ( 
+                    buildUrlList.push([builds[url], url])
+                ))
+                return <BuildComparisonTable buildUrlList={buildUrlList} type={type} />
+            }
         } else {
             return null;
         }

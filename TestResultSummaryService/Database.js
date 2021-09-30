@@ -15,10 +15,22 @@ let db;
 
     const dbConnect = await MongoClient.connect(url, { useUnifiedTopology: true });
     db = dbConnect.db("exampleDb");
-    await db.createCollection('testResults');
-    await db.createCollection('output');
-    await db.createCollection('auditLogs');
-    await db.createCollection('user');
+    await db.createCollection('testResults').catch(err => {
+      if (err.code !== 48) throw err;
+      return db.collection('testResults');
+    });
+    await db.createCollection('output').catch(err => {
+      if (err.code !== 48) throw err;
+      return db.collection('output');
+    });
+    await db.createCollection('auditLogs').catch(err => {
+      if (err.code !== 48) throw err;
+      return db.collection('auditLogs');
+    });
+    await db.createCollection('user').catch(err => {
+      if (err.code !== 48) throw err;
+      return db.collection('user');
+    });
 })()
 
 class Database {
