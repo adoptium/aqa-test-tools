@@ -34,7 +34,7 @@ export default class App extends Component {
                         style={{ lineHeight: '64px', background: '#14003c' }}
                     >
                     <Menu.Item key="1"><a href="https://adoptium.net/" style={{lineHeight: '250%'}}><AdoptiumLogo style={{height: '3.5em', paddingTop: '1em'}}/></a></Menu.Item>
-                    <Menu.Item style={{top: '-1em'}} key="2"><Link to="/dashboard">Test Results Summary Service</Link></Menu.Item>
+                    <Menu.Item style={{ background: '#14003C'}} key="2"><Link to="/dashboard">Test Results Summary Service</Link></Menu.Item>
                     </Menu>
                 </Header>
                 <Layout>
