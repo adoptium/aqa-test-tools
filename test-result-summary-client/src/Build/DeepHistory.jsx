@@ -151,6 +151,9 @@ export default class DeepHistory extends Component {
             title: 'Start Time',
             dataIndex: 'startTime',
             key: 'startTime',
+            sorter: (a, b) => {
+                return a.startTime.localeCompare(b.startTime);
+            }
         },
         {
             title: 'Action',
