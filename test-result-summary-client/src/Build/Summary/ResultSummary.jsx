@@ -118,6 +118,7 @@ export default class ResultSummary extends Component {
             failedSdkBuilds,
         });
     }
+    
 
     render() {
         const { buildMap, selectedPlatforms, allPlatforms, selectedJdkVersions, allJdkVersions, selectedJdkImpls, allJdkImpls, summary, parentBuildInfo, failedSdkBuilds } = this.state;
