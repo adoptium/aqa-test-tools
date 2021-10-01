@@ -3,15 +3,18 @@ const { TestResultsDB } = require('../Database');
 /**
  * getTestByVersionInfo returns the latest test builds with matched version
  * 
- * @param {string} regex required. regex to match against java -version output
- * @param {string} platform Optional. Test platform (i.e., x86-64_linux)
- * @param {number} jdkVersion Optional. JDK version (i.e., 8, 11, etc)
- * @param {string} impl Optional. JDK impl (i.e., j9, hs, etc)
- * @param {string} level Optional. Test level (i.e., sanity, extended, special)
- * @param {string} group Optional. Test group (i.e., functional, system, openjdk, perf, etc)
- * @param {string} buildResult Optional. The result of the build (i.e., SUCCESS, UNSTABLE, FAILURE)
+ * @route GET /api/getTestByVersionInfo
+ * @group Test - Operations about test
+ * @param {string} regex.query - Optional. Required. regex to match against java -version output
+ * The program will query all tests that contain this name.
+ * @param {string} platform.query - Optional. Test platform - eg: x86-64_linux
+ * @param {number} jdkVersion.query - Optional. JDK version - eg: 8, 11
+ * @param {string} impl.query - Optional. JDK impl - eg: j9, hs
+ * @param {string} level.query - Optional. Test level - eg: sanity, extended, special
+ * @param {string} group.query - Optional. Test group - eg: functional, system, openjdk, perf, external
+ * @param {string} buildResult.query - Optional. The result of the build (i.e., SUCCESS, UNSTABLE, FAILURE)
  * Default is SUCCESS
- * @return {object}
+ * @return {object} - testLists - array of testLists which contains matched tests with average test duration
  */
 
 module.exports = async (req, res) => {
