@@ -6,6 +6,7 @@ const { TestResultsDB, ObjectID } = require('../Database');
  * All params are optional. If none is provided, all platforms/jdkVersions/impls/levels/groups will 
  * be considered.
  * 
+ * @route GET /api/compareTestDuration
  * @param {string} url Required. Jenkins server url (it is used to identify the build).
  * @param {string} rootBuildName Required. The root build that the test is in.
  * @param {string} testName Optional. Test Name (i.e., jdk_math_0, jdk_math, etc). 
