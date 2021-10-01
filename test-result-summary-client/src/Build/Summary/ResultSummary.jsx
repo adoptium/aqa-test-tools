@@ -127,7 +127,6 @@ export default class ResultSummary extends Component {
                 <TestBreadcrumb buildId={parentId} />
                 <Overview id={parentId} parentBuildInfo={parentBuildInfo} summary={summary} failedSdkBuilds={failedSdkBuilds}/>
                 <Divider />
-                <Divider />
                 <ResultGrid buildMap={buildMap} selectedPlatforms={selectedPlatforms} selectedJdkVersions={selectedJdkVersions} selectedJdkImpls={selectedJdkImpls} hcvalues={hcvalues} />
                 <Divider />
                 <Checkboxes name="Platforms" onChange={selectedPlatforms => this.setState({ selectedPlatforms })} value={selectedPlatforms} options={allPlatforms} />
