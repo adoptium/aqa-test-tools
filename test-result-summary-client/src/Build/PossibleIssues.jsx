@@ -78,9 +78,9 @@ export default class PossibleIssues extends Component {
             let dataSource = {};
             const repoUrlAPIPrefix = "https://api.github.com/repos/";
             for (let index = 0; index < relatedIssues.items.length; index++) {
-                const createdAt = new Date(relatedIssues.items[index].created_at);
+                let createdAt = new Date(relatedIssues.items[index].created_at);
                 const is_opne = relatedIssues.items[index].state;
-                if (createdAt < oldDate && is_opne == "closed") {
+                if (createdAt < oldDate && is_opne === "closed") {
                   continue;
                 }
                 createdAt = createdAt.toLocaleString();
