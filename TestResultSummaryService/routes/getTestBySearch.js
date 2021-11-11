@@ -1,10 +1,15 @@
 const { TestResultsDB, OutputDB, ObjectID } = require( '../Database' );
 module.exports = async ( req, res ) => {
-    let { buildId, searchText } = req.query;
+    let { buildId = undefined, searchText } = req.query;
     const testResultsDB = new TestResultsDB();
     const outputDB = new OutputDB();
 
-    const build = await testResultsDB.getSpecificData( { _id: new ObjectID( buildId ) }, { _id: 1, buildName: 1, buildNum: 1, buildResult: 1, buildUrl: 1, type: 1, hasChildren: 1, tests: 1, buildOutputId: 1, timestamp: 1, url: 1, testSummary: 1, machine: 1 } );
+    let query = {};
+    if ( buildId ) {
+        query = { _id: new ObjectID( buildId ) };
+    }
+
+    const build = await testResultsDB.getSpecificData( query, { _id: 1, buildName: 1, buildNum: 1, buildResult: 1, buildUrl: 1, type: 1, hasChildren: 1, tests: 1, buildOutputId: 1, timestamp: 1, url: 1, testSummary: 1, machine: 1 } );
 
     const allOutputIds = await searchOutputId( build[0] );
 
