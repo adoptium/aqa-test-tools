@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import TopLevelBuildTable from './TopLevelBuildTable';
+import { SearchOutput } from '../Search';
 const { order, fetchData } = require('../utils/Utils');
 export default class TopLevelBuilds extends Component {
 
@@ -45,6 +46,7 @@ export default class TopLevelBuilds extends Component {
         if (builds && type) {
             return (
                 <div>
+                    <SearchOutput />
                     {Object.keys(builds).sort().map((url, i) => {
                         return builds[url].sort(order).map((buildName, j) => {
                             return <TopLevelBuildTable url={url} buildName={buildName} type={type} key={j} />
