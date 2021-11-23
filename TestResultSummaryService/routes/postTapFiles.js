@@ -1,4 +1,3 @@
-const { TestResultsDB, ObjectID } = require('../Database');
 const Tap = require('../parsers/Tap');
 const Parsers = require( `../parsers/` );
 
@@ -11,10 +10,10 @@ const Parsers = require( `../parsers/` );
  */
 
 module.exports = async (req, res) => {
-  const zip = '/users/amanda/Documents/test/TEST.zip';
+  const zip = '/users/amanda/Documents/test/not_ok.zip';
   const path = require('path');
   const tapParser = Parsers["Tap"];
-  console.log(tapParser.canParse(zip));
-  tapParser.parse(zip);
-  res.send("HM");
+  const results = await tapParser.parse(zip);
+  console.log("HUHS")
+  res.send("HUH");
 } 

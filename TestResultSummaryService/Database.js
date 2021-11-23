@@ -26,6 +26,10 @@ class Database {
         return this.col.insertOne(data);
     }
 
+    insertMany(data) {
+        return this.col.insertMany(data);
+    }
+
     getData(query, fields = {}) {
         return this.col.find(query, fields);
     }
