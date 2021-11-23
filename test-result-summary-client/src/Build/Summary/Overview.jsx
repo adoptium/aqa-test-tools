@@ -36,9 +36,7 @@ export default class Overview extends Component {
                                 <Tooltip title="Pass % = (Passed/Executed) * 100"><span style={{ fontSize: "38px" }}>{passPercentage ? passPercentage.toFixed(2) + "%" : "N/A"}</span></Tooltip>
                             </div>
                         </Col>
-                        <Col span={6}>
-                            <div style={{ fontSize: "38px", color: buildResult === "SUCCESS" ? "#2cbe4e" : (buildResult === "FAILURE" ? "#f50" : "#DAA520") }}>{buildResult}</div>
-                        </Col>
+                        
                         <Col span={6}>
                             <div>Build Started at: {moment(parentBuildInfo.timestamp).format(DAY_FORMAT)}</div>
                             <div>Build Started by: {parentBuildInfo.startBy}</div>
