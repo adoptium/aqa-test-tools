@@ -34,7 +34,7 @@ export default class App extends Component {
                         style={{ lineHeight: '64px', background: '#14003c' }}
                     >
                     <Menu.Item key="1"><a href="https://adoptium.net/" style={{lineHeight: '250%'}}><AdoptiumLogo style={{height: '3.5em', paddingTop: '1em'}}/></a></Menu.Item>
-                    <Menu.Item style={{ background: '#14003C'}} key="2"><Link to="/dashboard">Test Results Summary Service</Link></Menu.Item>
+                    <Menu.Item style={{top: '-1em'}} key="2"><Link to="/dashboard">Test Results Summary Service</Link></Menu.Item>
                     </Menu>
                 </Header>
                 <Layout>
@@ -46,6 +46,7 @@ export default class App extends Component {
                             style={{ height: '100%', borderRight: 0 }}
                         >
                             <Menu.Item key="1"><Link to="/tests/Test">By Pipeline</Link></Menu.Item>
+                            <Menu.Item key="6"><Link to="/tests/AQAvitCert">AQAvit Certification</Link></Menu.Item>
                             <Menu.Item key="2"><Link to="/testCompare">Test Compare</Link></Menu.Item>
                             <SubMenu key="3" title={<span>Perf Related</span>}>
                                 <Menu.Item key="sub1"><Link to="/tests/Perf">Perf Test</Link></Menu.Item>
@@ -54,6 +55,7 @@ export default class App extends Component {
                             </SubMenu>
                             <Menu.Item key="4"><Link to="/dashboard">Dashboard</Link></Menu.Item>
                             <Menu.Item key="5"><Link to="/ThirdPartyAppView">Third Party Applications</Link></Menu.Item>
+
                         </Menu>
                     </Sider>
                     <Layout style={{ padding: '0 24px 24px' }}>
