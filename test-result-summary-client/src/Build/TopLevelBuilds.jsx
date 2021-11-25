@@ -34,7 +34,6 @@ export default class TopLevelBuilds extends Component {
         }
         if (type === "AQAvitCert"){
             results = await fetchData(`/api/getTopLevelBuildNames?type=Test&AQAvitCert=true`);
-            console.log(results)
 
         }            
         const builds = {};
