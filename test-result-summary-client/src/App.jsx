@@ -55,7 +55,6 @@ export default class App extends Component {
                             </SubMenu>
                             <Menu.Item key="4"><Link to="/dashboard">Dashboard</Link></Menu.Item>
                             <Menu.Item key="5"><Link to="/ThirdPartyAppView">Third Party Applications</Link></Menu.Item>
-
                         </Menu>
                     </Sider>
                     <Layout style={{ padding: '0 24px 24px' }}>

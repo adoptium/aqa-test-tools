@@ -27,7 +27,16 @@ export default class TopLevelBuilds extends Component {
 
     async updateData(type) {
         if (!type) type = "Test";
-        const results = await fetchData(`/api/getTopLevelBuildNames?type=${type}`);
+        let results = "";
+        if (type === "Test"){
+            results = await fetchData(`/api/getTopLevelBuildNames?type=${type}`);
+
+        }
+        if (type === "AQAvitCert"){
+            results = await fetchData(`/api/getTopLevelBuildNames?type=Test&AQAvitCert=true`);
+            console.log(results)
+
+        }            
         const builds = {};
         for (let i = 0; results && i < results.length; i++) {
             const url = results[i]._id.url;
