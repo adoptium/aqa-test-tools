@@ -11,7 +11,7 @@ let testResultDb = null
 let timestamp = Date.now()
 class Tap extends Parser {
     static canParse(filePath) {
-        var path = require('path')
+        let path = require('path')
         if (filePath) {
             if (path.extname(filePath) == '.zip') {
                 return true;
@@ -31,10 +31,10 @@ class Tap extends Parser {
         outputDb = new OutputDB();
         testResultDb = new TestResultsDB();
         const tapFiles = this.getTapFileNames(files);
-        var buildDuration = [0];
-        var buildResult = ["SUCCESS"];
-        var testBuilds = []; 
-        var finalBuilds = [];
+        let buildDuration = [0];
+        let buildResult = ["SUCCESS"];
+        let testBuilds = []; 
+        let finalBuilds = [];
         
         // create root build / return id
         const rootId = await this.getRootId(tapFiles[0]);
@@ -65,7 +65,7 @@ class Tap extends Parser {
     static async getRootId(file) {
         const rootnameRegex = /^(Test_openjdk(\w+)_(\w+))/i;
         const buildData = {
-            url: "www.test.com", //WILL DO
+            url: "www.test.com", //TODO
             buildName: file.match(rootnameRegex)[0], 
             buildNameStr: file.match(rootnameRegex)[0], 
             type: "Build",
@@ -86,12 +86,12 @@ class Tap extends Parser {
         const groupedTestList = this.groupTestList(testListFiles)
         const testList = [];
         const artificialParentBuild = [];
-        var topLevelBuildDuration = [0];
-        var topLevelBuildResult = ["SUCCESS"];
+        let topLevelBuildDuration = [0];
+        let topLevelBuildResult = ["SUCCESS"];
         
         for (const [key, value] of groupedTestList.entries()){
             const buildData = {
-                url: "www.test.com", //WILL DO  
+                url: "www.test.com", //TODO
                 buildName: key,
                 buildNameStr: key,
                 rootBuildId,
@@ -123,17 +123,17 @@ class Tap extends Parser {
 
     static async getTestBuilds(tapFiles, rootBuildId, parentId) {
         const testList = [];
-        var topLevelBuildDuration = [0];
-        var topLevelBuildResult = ["SUCCESS"];
+        let topLevelBuildDuration = [0];
+        let topLevelBuildResult = ["SUCCESS"];
 
-        for (var i = 0; i < tapFiles.length; i++) {
+        for (let i = 0; i < tapFiles.length; i++) {
             const [testBuildInfo, buildDuration, testSummary, buildResult] = await this.getTapFileTests(tapFiles[i]); 
             this.updateBuildDurationAndResult(topLevelBuildDuration, buildDuration, topLevelBuildResult, buildResult)
 
             const testStatus = await testResultDb.insertMany(testBuildInfo);  
             const tests = testStatus.ops;
             const buildData = {
-                url: "www.test.com", // INSERTED URL
+                url: "www.test.com", //TODO
                 buildName: tapFiles[i].replace(".tap", ""),
                 buildNameStr: tapFiles[i].replace(".tap", ""),
                 rootBuildId,
@@ -159,14 +159,14 @@ class Tap extends Parser {
 
 
     static async getTapFileTests(file) {
-        var fs = require('fs');
-        var fileArray = fs.readFileSync(filePath.concat('/' + file), "utf8").split("\n");
-        var testSummaryMap = new Map([["total", 0], ["executed", 0], ["passed", 0], ["failed", 0], ["disabled", 0], ["skipped", 0]])
-        var counter = 0;
-        var testBuilds = [];
-        var buildDuration = 0;
-        var buildData;
-        var buildResult = "SUCCESS";
+        let fs = require('fs');
+        let fileArray = fs.readFileSync(filePath.concat('/' + file), "utf8").split("\n");
+        let testSummaryMap = new Map([["total", 0], ["executed", 0], ["passed", 0], ["failed", 0], ["disabled", 0], ["skipped", 0]])
+        let counter = 0;
+        let testBuilds = [];
+        let buildDuration = 0;
+        let buildData;
+        let buildResult = "SUCCESS";
         
         while (counter < fileArray.length) {
             if (fileArray[counter].includes("ok")) {
@@ -213,8 +213,8 @@ class Tap extends Parser {
 
     static async getUnstableBuildInfo(fileArray, counter, tapInfo) {
         const beginningOutputRegex = /[|]$/i
-        var output = null
-        var testOutputId = null
+        let output = null
+        let testOutputId = null
 
         while (!fileArray[counter].match(beginningOutputRegex) && !fileArray[counter].includes("duration_ms")) {
             counter++;
@@ -284,7 +284,7 @@ class Tap extends Parser {
     }
 
     static async getOutput(fileArray, counter) {
-        var output = "";
+        let output = "";
         counter++;
         while (!fileArray[counter].includes("duration_ms")) {
             output += fileArray[counter];
@@ -319,7 +319,7 @@ class Tap extends Parser {
         const testListMap = new Map();
         for (var i = 0; i < testListFile.length; i++) {
             const parentName = this.getStrippedTestListName(testListFile[i])
-            var existingParent = testListMap.get(parentName);
+            let existingParent = testListMap.get(parentName);
             if (!existingParent) {
                 testListMap.set(parentName, [testListFile[i]]);
             }
