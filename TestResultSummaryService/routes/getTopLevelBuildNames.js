@@ -2,24 +2,50 @@ const { TestResultsDB, ObjectID } = require('../Database');
 module.exports = async (req, res) => {
     let { type } = req.query;
     const db = new TestResultsDB();
-    const result = await db.aggregate([
-        {
-            $match: {
-                parentId: { $exists: false },
-                type: type
+    let result = ""
+    if ( req.query.AQAvitCert ){
+        result = await db.aggregate([
+            {
+                $match: {
+                    parentId: { $exists: false },
+                    type: type,
+                    AQAvitCert : true
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        url: '$url',
+                        buildName: '$buildName'
+                    },
+                }
+            },
+            {
+                $sort: { _id: 1 }
             }
-        },
-        {
-            $group: {
-                _id: {
-                    url: '$url',
-                    buildName: '$buildName'
-                },
+        ]); 
+    }
+    else {
+        result = await db.aggregate([
+            {
+                $match: {
+                    parentId: { $exists: false },
+                    type: type
+                }
+            },
+            {
+                $group: {
+                    _id: {
+                        url: '$url',
+                        buildName: '$buildName'
+                    },
+                }
+            },
+            {
+                $sort: { _id: 1 }
             }
-        },
-        {
-            $sort: { _id: 1 }
-        }
-    ]);
+        ]);
+    }
+    
     res.send(result);
 }
