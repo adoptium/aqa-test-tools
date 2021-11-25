@@ -32,7 +32,7 @@ export default class TopLevelBuilds extends Component {
             results = await fetchData(`/api/getTopLevelBuildNames?type=${type}`);
 
         }
-        if (type === "AQAvitCert"){
+        else if (type === "AQAvitCert"){
             results = await fetchData(`/api/getTopLevelBuildNames?type=Test&AQAvitCert=true`);
 
         }            
