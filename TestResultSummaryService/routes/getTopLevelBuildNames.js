@@ -4,11 +4,11 @@ module.exports = async (req, res) => {
     let { type, AQAvitCert} = req.query;
     const db = new TestResultsDB();
     
-    let query = {}
-    query.parentId = { $exists: false }
-    query.type = type
+    let query = {};
+    query.parentId = { $exists: false };
+    query.type = type;
     if (AQAvitCert) {
-        query.AQAvitCert = AQAvitCert
+        query.AQAvitCert = AQAvitCert;
     }
     let result = await db.aggregate([
         {
