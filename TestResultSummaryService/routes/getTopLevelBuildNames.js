@@ -1,13 +1,18 @@
+const { query } = require('winston');
 const { TestResultsDB, ObjectID } = require('../Database');
 module.exports = async (req, res) => {
-    let { type } = req.query;
+    let { type, AQAvitCert} = req.query;
     const db = new TestResultsDB();
-    const result = await db.aggregate([
+    
+    let query = {};
+    query.parentId = { $exists: false };
+    query.type = type;
+    if (AQAvitCert) {
+        query.AQAvitCert = AQAvitCert;
+    }
+    let result = await db.aggregate([
         {
-            $match: {
-                parentId: { $exists: false },
-                type: type
-            }
+            $match: query
         },
         {
             $group: {
@@ -22,4 +27,5 @@ module.exports = async (req, res) => {
         }
     ]);
     res.send(result);
+ 
 }

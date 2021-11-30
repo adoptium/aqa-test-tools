@@ -46,6 +46,7 @@ export default class App extends Component {
                             style={{ height: '100%', borderRight: 0 }}
                         >
                             <Menu.Item key="1"><Link to="/tests/Test">By Pipeline</Link></Menu.Item>
+                            <Menu.Item key="6"><Link to="/tests/AQAvitCert">AQAvit Certification</Link></Menu.Item>
                             <Menu.Item key="2"><Link to="/testCompare">Test Compare</Link></Menu.Item>
                             <SubMenu key="3" title={<span>Perf Related</span>}>
                                 <Menu.Item key="sub1"><Link to="/tests/Perf">Perf Test</Link></Menu.Item>
