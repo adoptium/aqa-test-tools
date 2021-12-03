@@ -5,13 +5,13 @@ const ObjectID = require( 'mongodb' ).ObjectID;
 const path = require('path');
 const { TestResultsDB, OutputDB } = require('../Database');
 
-let filePath = null
+
 let outputDb = null;
 let testResultDb = null
-let timestamp = Date.now()
+let zipPath = null;
+const timestamp = Date.now()
 class Tap extends Parser {
     static canParse(filePath) {
-        let path = require('path')
         if (filePath) {
             if (path.extname(filePath) == '.zip') {
                 return true;
@@ -24,10 +24,9 @@ class Tap extends Parser {
         }
     }
 
-    static async parse(zipPath) {   
+    static async parse(zip) {   
+        zipPath = zip
         const files = await decompress(zipPath,  "dist"); // unzipping
-        const zipName = path.basename(zipPath).replace(".zip", "")
-        filePath = path.join(__dirname, '../dist/' + zipName) 
         outputDb = new OutputDB();
         testResultDb = new TestResultsDB();
         const tapFiles = this.getTapFileNames(files);
@@ -160,6 +159,9 @@ class Tap extends Parser {
 
     static async getTapFileTests(file) {
         let fs = require('fs');
+        const zipName = path.basename(zipPath).replace(".zip", "")
+        const filePath = path.join(__dirname, '../dist/' + zipName) 
+
         let fileArray = fs.readFileSync(filePath.concat('/' + file), "utf8").split("\n");
         let testSummaryMap = new Map([["total", 0], ["executed", 0], ["passed", 0], ["failed", 0], ["disabled", 0], ["skipped", 0]])
         let counter = 0;

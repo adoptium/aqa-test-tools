@@ -12,7 +12,7 @@ const Parsers = require( `../parsers/` );
 
 module.exports = async (req, res) => {
   //const zip = req.query.url;
-  const zip = '/users/amanda/Documents/test/example_tap.zip';
+  const zip = __dirname;
   const tapParser = Parsers["Tap"];
 
   if (tapParser.canParse(zip) == false) {
