@@ -51,5 +51,6 @@ app.post( '/auth/verify', wrap( require( "./jwt/verify" ) ) );
 app.post( '/getParentSpecificData', wrap( require( "./getParentSpecificData" ) ) );
 app.post( '/getSpecificData', wrap( require( "./getSpecificData" ) ) );
 app.post( '/upsertBuildList', wrap( require( "./upsertBuildList" ) ) );
+app.post( '/postTapFiles', wrap( require( "./postTapFiles" ) ) );
 
 module.exports = app;

@@ -4,4 +4,5 @@ module.exports = {
     BenchmarkParser: require( `./BenchmarkParser`),
     ParentBuild: require( `./ParentBuild` ),
     Test: require( `./Test` ),
+    Tap: require( `./Tap` ),
 };
