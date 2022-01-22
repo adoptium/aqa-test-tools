@@ -5,6 +5,8 @@ import { params } from '../../utils/query';
 import moment from 'moment';
 import BuildLink from '../BuildLink';
 import renderDuration from '../Duration';
+import './Overview.css';
+
 const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
 
 export default class Overview extends Component {
@@ -17,11 +19,13 @@ export default class Overview extends Component {
             const buildName = parentBuildInfo.buildName;
 
             return <div>
-                <div style={{ textAlign: "center", fontSize: "28px" }}><a href={parentBuildInfo.buildUrl} target="_blank" rel="noopener noreferrer">{buildName} #{parentBuildInfo.buildNum}</a> Test Summary</div>
+                <div className="overview-header"><a href={parentBuildInfo.buildUrl} target="_blank" rel="noopener noreferrer">{buildName} #{parentBuildInfo.buildNum}</a> Test Summary</div>
                 <Link to={{ pathname: '/releaseSummary', search: params({ parentId: id, buildName }) }}>
-                    <Button type="primary">
-                        Release Summary Report
-                    </Button>
+                    <div className="overview-report-link">
+                        <Button type="primary">
+                            Release Summary Report
+                        </Button>
+                    </div>
                 </Link>
                 <Divider>SDK Build Results</Divider>
                 <div style={{ fontSize: "18px" }}>
