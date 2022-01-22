@@ -156,6 +156,11 @@ export default class PossibleIssues extends Component {
                     title: 'State',
                     dataIndex: 'issueState',
                     key: 'issueState',
+                    sorter: (a, b) => {
+                        if (a.issueState === b.issueState) return 0;
+                        else if (a.issueState === 'open') return -1;
+                        else return 1; 
+                    }
                 },
                 {
                     title: 'Related Degree',
