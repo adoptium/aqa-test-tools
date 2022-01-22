@@ -1,5 +1,7 @@
 import React, { Component } from 'react';
-import { Divider, Row, Col, Tooltip } from 'antd';
+import { Link } from 'react-router-dom';
+import { Button, Divider, Row, Col, Tooltip } from 'antd';
+import { params } from '../../utils/query';
 import moment from 'moment';
 import BuildLink from '../BuildLink';
 import renderDuration from '../Duration';
@@ -12,9 +14,15 @@ export default class Overview extends Component {
             const { passed = 0, failed = 0, disabled = 0, skipped = 0, executed = 0, total = 0 } = summary;
             const passPercentage = (parseInt(passed) / parseInt(executed)) * 100;
             const buildResult = parentBuildInfo.buildResult;
+            const buildName = parentBuildInfo.buildName;
 
             return <div>
-                <div style={{ textAlign: "center", fontSize: "28px" }}><a href={parentBuildInfo.buildUrl} target="_blank" rel="noopener noreferrer">{parentBuildInfo.buildName} #{parentBuildInfo.buildNum}</a> Test Summary</div>
+                <div style={{ textAlign: "center", fontSize: "28px" }}><a href={parentBuildInfo.buildUrl} target="_blank" rel="noopener noreferrer">{buildName} #{parentBuildInfo.buildNum}</a> Test Summary</div>
+                <Link to={{ pathname: '/releaseSummary', search: params({ parentId: id, buildName }) }}>
+                    <Button type="primary">
+                        Release Summary Report
+                    </Button>
+                </Link>
                 <Divider>SDK Build Results</Divider>
                 <div style={{ fontSize: "18px" }}>
                     {(failedSdkBuilds && failedSdkBuilds.length)  ? <BuildLink id={id} label="SDK Builds and Smoke Tests " link="Failed" buildNameRegex="^(jdk[0-9]{1,2}|Build_)" buildResult="!SUCCESS" /> : <div>SDK builds and Smoke Tests Passed</div>}
