@@ -26,7 +26,7 @@ describe("Integration test for allTestsInfo", () => {
     cy.get(".ant-table-thead").find("th").eq(1).contains("Action");
     cy.get(".ant-table-thead").find("th").eq(2).contains("Duration");
     cy.get(".ant-table-thead").find("th").eq(3).contains("Machine");
-    
+
     cy.get(".ant-table-thead")
       .find("th")
       .eq(0)
