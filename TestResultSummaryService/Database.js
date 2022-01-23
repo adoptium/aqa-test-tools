@@ -15,10 +15,13 @@ let db;
 
     const dbConnect = await MongoClient.connect(url, { useUnifiedTopology: true });
     db = dbConnect.db("exampleDb");
-    await db.createCollection('testResults');
-    await db.createCollection('output');
-    await db.createCollection('auditLogs');
-    await db.createCollection('user');
+    for (let collection of ['testResults', 'output', 'auditLogs', 'user']) {
+        try {
+            await db.createCollection(collection);
+        } catch (e) {
+            // do nothing. The collection may already exist
+        }
+    }
 })()
 
 class Database {
@@ -202,7 +205,7 @@ class Database {
         matchQuery.buildResult = { $regex: buildResultRegex };
         matchQuery.hasChildren = false;
         matchQuery.tests = {
-            "$exists": true, 
+            "$exists": true,
             "$ne": null
         };
 
