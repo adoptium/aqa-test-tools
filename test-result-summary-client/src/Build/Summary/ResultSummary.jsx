@@ -103,7 +103,6 @@ export default class ResultSummary extends Component {
         jdkVersionOpts = [...new Set(jdkVersionOpts)].sort(order);
         jdkImplOpts = [...new Set(jdkImplOpts)].sort(order);
 
-
         this.setState({
             buildMap,
             summary,
@@ -119,8 +118,10 @@ export default class ResultSummary extends Component {
     }
 
     render() {
+
         const { buildMap, selectedPlatforms, allPlatforms, selectedJdkVersions, allJdkVersions, selectedJdkImpls, allJdkImpls, summary, parentBuildInfo, failedSdkBuilds } = this.state;
         const { parentId } = getParams(this.props.location.search);
+
         if (buildMap && parentBuildInfo) {
             return <div>
                 <TestBreadcrumb buildId={parentId} />
