@@ -65,24 +65,13 @@ npm start
 https://trss.adoptium.net/
 
 ## Deployment Instructions
-- on TRSS production server machine, cd to source code folder and update the code
+- run the deployment scripts/deployment.sh
+
 ```
-cd /home/jenkins/openjdk-test-tools
-git pull
+cd TestResultSummaryService/scripts
+./deployment.sh
 ```
 
-- if new module is added, then run `npm ci`
-- if the change is in test-result-summary-client (react client), build client code
-```
-cd /home/jenkins/openjdk-test-tools/test-result-summary-client
-npm run build
-```
-
-- restart the service
-```
-sudo service TRSSFrontend restart
-sudo service TRSSBackend restart
-```
 
 - log message can be found by using the following cmd
 ```
