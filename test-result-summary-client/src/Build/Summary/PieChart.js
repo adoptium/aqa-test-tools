@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import Highcharts from 'highcharts';
 import HighchartsReact from 'highcharts-react-official';
-import drilldown from "highcharts/modules/drilldown.js";
+import drilldown from 'highcharts/modules/drilldown.js';
 import './Graph.css';
 
 drilldown(Highcharts);
@@ -19,17 +19,31 @@ export default class PieChart extends Component {
     }
 
     componentDidUpdate(prevProps) {
-        const { buildMap, selectedPlatforms, selectedJdkVersions, selectedJdkImpls } = this.props;
-        if (prevProps.buildMap !== buildMap
-            || prevProps.selectedPlatforms !== selectedPlatforms
-            || prevProps.selectedJdkVersions !== selectedJdkVersions
-            || prevProps.selectedJdkImpls !== selectedJdkImpls) {
+        const {
+            buildMap,
+            selectedPlatforms,
+            selectedJdkVersions,
+            selectedJdkImpls,
+        } = this.props;
+        if (
+            prevProps.buildMap !== buildMap ||
+            prevProps.selectedPlatforms !== selectedPlatforms ||
+            prevProps.selectedJdkVersions !== selectedJdkVersions ||
+            prevProps.selectedJdkImpls !== selectedJdkImpls
+        ) {
             this.updateData();
         }
     }
 
     updateData() {
-        const { buildMap, selectedPlatforms, selectedJdkVersions, selectedJdkImpls, hcvalues, dataKey } = this.props;
+        const {
+            buildMap,
+            selectedPlatforms,
+            selectedJdkVersions,
+            selectedJdkImpls,
+            hcvalues,
+            dataKey,
+        } = this.props;
         const { hclevels, hcgroups } = hcvalues;
         if (buildMap) {
             const buildData = {};
@@ -41,21 +55,39 @@ export default class PieChart extends Component {
                 disabled: 0,
                 skipped: 0,
             };
-            selectedPlatforms.forEach(platform => {
+            selectedPlatforms.forEach((platform) => {
                 if (!buildMap[platform]) return;
-                selectedJdkVersions.forEach(version => {
+                selectedJdkVersions.forEach((version) => {
                     if (!buildMap[platform][version]) return;
-                    selectedJdkImpls.forEach(impl => {
+                    selectedJdkImpls.forEach((impl) => {
                         if (!buildMap[platform][version][impl]) return;
-                        hclevels.forEach(level => {
-                            if (!buildMap[platform][version][impl][level]) return;
-                            hcgroups.sort().forEach(group => {
-                                if (!buildMap[platform][version][impl][level][group]) return;
-                                const newData = buildMap[platform][version][impl][level][group];
+                        hclevels.forEach((level) => {
+                            if (!buildMap[platform][version][impl][level])
+                                return;
+                            hcgroups.sort().forEach((group) => {
+                                if (
+                                    !buildMap[platform][version][impl][level][
+                                        group
+                                    ]
+                                )
+                                    return;
+                                const newData =
+                                    buildMap[platform][version][impl][level][
+                                        group
+                                    ];
                                 if (!newData.testSummary) return;
-                                const { total, executed, passed, failed, disabled, skipped } = newData.testSummary;
+                                const {
+                                    total,
+                                    executed,
+                                    passed,
+                                    failed,
+                                    disabled,
+                                    skipped,
+                                } = newData.testSummary;
 
-                                buildData[group] = buildData[group] || { ...initialValues };
+                                buildData[group] = buildData[group] || {
+                                    ...initialValues,
+                                };
                                 buildData[group].total += total;
                                 buildData[group].executed += executed;
                                 buildData[group].passed += passed;
@@ -63,7 +95,9 @@ export default class PieChart extends Component {
                                 buildData[group].disabled += disabled;
                                 buildData[group].skipped += skipped;
 
-                                buildData[group][level] = buildData[group][level] || { ...initialValues };
+                                buildData[group][level] = buildData[group][
+                                    level
+                                ] || { ...initialValues };
                                 const value = buildData[group][level];
                                 buildData[group][level] = {
                                     total: value.total + total,
@@ -72,7 +106,7 @@ export default class PieChart extends Component {
                                     failed: value.failed + failed,
                                     disabled: value.disabled + disabled,
                                     skipped: value.skipped + skipped,
-                                }
+                                };
                             });
                         });
                     });
@@ -80,32 +114,40 @@ export default class PieChart extends Component {
             });
 
             const drilldownSeries = [];
-            const pieChartData = Object.keys(buildData).sort().map(key => {
-                const drilldownData = hclevels.map(level => {
-                    buildData[key][level] = buildData[key][level] || {};
-                    buildData[key][level][dataKey] = buildData[key][level][dataKey] || 0;
-                    return [level, buildData[key][level][dataKey]];
-                });
-                if (drilldownData.length > 0) {
-                    drilldownSeries.push({
-                        name: key,
-                        id: key,
-                        data: drilldownData
+            const pieChartData = Object.keys(buildData)
+                .sort()
+                .map((key) => {
+                    const drilldownData = hclevels.map((level) => {
+                        buildData[key][level] = buildData[key][level] || {};
+                        buildData[key][level][dataKey] =
+                            buildData[key][level][dataKey] || 0;
+                        return [level, buildData[key][level][dataKey]];
                     });
-                }
-                return {
-                    name: key,
-                    y: buildData[key][dataKey],
-                    drilldown: key
-                }
-
-            });
+                    if (drilldownData.length > 0) {
+                        drilldownSeries.push({
+                            name: key,
+                            id: key,
+                            data: drilldownData,
+                        });
+                    }
+                    return {
+                        name: key,
+                        y: buildData[key][dataKey],
+                        drilldown: key,
+                    };
+                });
             this.setState({ pieChartData, drilldownSeries });
         }
     }
     render() {
         const { pieChartData, drilldownSeries } = this.state;
-        const { name, showInLegend = false, dataLabels = false, colors = undefined, dataKey } = this.props;
+        const {
+            name,
+            showInLegend = false,
+            dataLabels = false,
+            colors = undefined,
+            dataKey,
+        } = this.props;
 
         if (!pieChartData) return null;
 
@@ -114,18 +156,25 @@ export default class PieChart extends Component {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
                 plotShadow: false,
-                type: 'pie'
+                type: 'pie',
             },
             title: {
-                text: name
+                text: name,
             },
             subtitle: {
                 text: 'Click the slices to view levels',
             },
             tooltip: {
                 formatter: function () {
-                    return this.point.name + '<b> ' + this.point.percentage.toFixed(2) + '% </b><br/><b> ' + this.y + `</b> ${dataKey} tests`;
-                }
+                    return (
+                        this.point.name +
+                        '<b> ' +
+                        this.point.percentage.toFixed(2) +
+                        '% </b><br/><b> ' +
+                        this.y +
+                        `</b> ${dataKey} tests`
+                    );
+                },
             },
             plotOptions: {
                 pie: {
@@ -135,37 +184,47 @@ export default class PieChart extends Component {
                         enabled: dataLabels,
                         formatter: function () {
                             if (this.y > 0) {
-                                return this.point.name + ': ' + Highcharts.numberFormat(this.point.percentage, 2) + ' %'
+                                return (
+                                    this.point.name +
+                                    ': ' +
+                                    Highcharts.numberFormat(
+                                        this.point.percentage,
+                                        2
+                                    ) +
+                                    ' %'
+                                );
                             }
-                        }
+                        },
                     },
                     colors,
                     shadow: true,
-                    showInLegend
-                }
+                    showInLegend,
+                },
             },
             series: [
                 {
                     events: {
-                        click: e => {
+                        click: (e) => {
                             this.categoryClicked(e);
-                        }
+                        },
                     },
-                    name: "Test Groups",
+                    name: 'Test Groups',
                     colorByPoint: true,
-                    data: pieChartData
-
-                }],
+                    data: pieChartData,
+                },
+            ],
             drilldown: {
-                series: drilldownSeries
-            }
-        }
-        return <div className="chart">
-            <HighchartsReact
-                allowChartUpdate={this.allowChartUpdate}
-                highcharts={Highcharts}
-                options={options}
-            />
-        </div>;
+                series: drilldownSeries,
+            },
+        };
+        return (
+            <div className="chart">
+                <HighchartsReact
+                    allowChartUpdate={this.allowChartUpdate}
+                    highcharts={Highcharts}
+                    options={options}
+                />
+            </div>
+        );
     }
 }

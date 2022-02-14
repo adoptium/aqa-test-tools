@@ -13,4 +13,4 @@ module.exports = async (req, res) => {
     } catch (e) {
         res.send({ result: e.toString() });
     }
-}
+};

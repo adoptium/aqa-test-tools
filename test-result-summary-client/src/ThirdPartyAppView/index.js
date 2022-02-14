@@ -1,1 +1,1 @@
-export { default as ThirdPartyAppView } from "./ThirdPartyAppView";
+export { default as ThirdPartyAppView } from './ThirdPartyAppView';

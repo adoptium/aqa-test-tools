@@ -10,18 +10,23 @@ module.exports = async (req, res) => {
 
         const userDB = new UserDB();
         // TODO: need to check if user is created
-        const result = await userDB.populateDB({ name, email, company, hashedPassword });
+        const result = await userDB.populateDB({
+            name,
+            email,
+            company,
+            hashedPassword,
+        });
 
         if (result && result.insertedCount === 1) {
             //TODO: use real secret code
-            const secretCode = "supersecret";
+            const secretCode = 'supersecret';
             // create a token
             const token = jwt.sign({ id: result.ops[0]._id }, secretCode, {
-                expiresIn: 86400 // expires in 24 hrs
+                expiresIn: 86400, // expires in 24 hrs
             });
             res.status(200).send({ auth: true, token: token });
         } else {
-            res.status(500).send("There was a problem registering the user.")
+            res.status(500).send('There was a problem registering the user.');
         }
     }
-}
+};

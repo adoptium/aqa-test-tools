@@ -1,8 +1,8 @@
 const { TestResultsDB, ObjectID } = require('../Database');
 
 /*
-* updateComments API updates comments field based on _id
-*/
+ * updateComments API updates comments field based on _id
+ */
 module.exports = async (req, res) => {
     const { _id, comments } = req.query;
     if (_id) {
@@ -14,4 +14,4 @@ module.exports = async (req, res) => {
     } else {
         res.json({ error: true });
     }
-}
+};

@@ -1,4 +1,3 @@
-
 # Plugins
 
 Users can create their own plugins. The plugin files can be added under `plugins` folder or they can be stored in another repo. The program will try to find all available files under `plugins` folder at runtime.
@@ -14,4 +13,4 @@ module.exports.onBuildDone = async (task, { testResultsDB, logger }) => {
 
 ## Available functions
 
-`onBuildDone` -  it will be invoked when the status of the build is `Done`.
+`onBuildDone` - it will be invoked when the status of the build is `Done`.

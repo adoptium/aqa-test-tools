@@ -1,14 +1,14 @@
 export default class LocalStorage {
-    constructor( keyName ) {
+    constructor(keyName) {
         this.keyName = keyName;
     }
     get() {
-        return localStorage.getItem( this.keyName );
+        return localStorage.getItem(this.keyName);
     }
-    set( keyValue ) {
-        return localStorage.setItem( this.keyName, keyValue );
+    set(keyValue) {
+        return localStorage.setItem(this.keyName, keyValue);
     }
     reset() {
-        return localStorage.removeItem( this.keyName );
+        return localStorage.removeItem(this.keyName);
     }
 }

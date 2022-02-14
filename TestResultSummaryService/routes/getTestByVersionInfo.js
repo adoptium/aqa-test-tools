@@ -2,7 +2,7 @@ const { TestResultsDB } = require('../Database');
 
 /**
  * getTestByVersionInfo returns the latest test builds with matched version
- * 
+ *
  * @route GET /api/getTestByVersionInfo
  * @group Test - Operations about test
  * @param {string} regex.query - Optional. Required. regex to match against java -version output
@@ -18,10 +18,12 @@ const { TestResultsDB } = require('../Database');
  */
 
 module.exports = async (req, res) => {
-    const { regex, platform, jdkVersion, impl, level, group, buildResult } = req.query;
+    const { regex, platform, jdkVersion, impl, level, group, buildResult } =
+        req.query;
     if (regex) {
         let buildNameRegex = `^Test.*`;
-        if (jdkVersion) buildNameRegex = `${buildNameRegex}_openjdk${jdkVersion}.*`;
+        if (jdkVersion)
+            buildNameRegex = `${buildNameRegex}_openjdk${jdkVersion}.*`;
         if (impl) buildNameRegex = `${buildNameRegex}${impl}_.*`;
         if (level) buildNameRegex = `${buildNameRegex}${level}..*`;
         if (group) buildNameRegex = `${buildNameRegex}${group}_.*`;
@@ -35,12 +37,12 @@ module.exports = async (req, res) => {
             { $match: matchQuery },
             {
                 $group: {
-                    _id: "$buildName",
+                    _id: '$buildName',
                     buildNum: { $last: '$buildNum' },
                     buildUrl: { $last: '$buildUrl' },
                     javaVersion: { $last: '$javaVersion' },
                     timestamp: { $last: '$timestamp' },
-                }
+                },
             },
             {
                 $project: {
@@ -49,18 +51,16 @@ module.exports = async (req, res) => {
                     buildUrl: 1,
                     javaVersion: 1,
                     timestamp: 1,
-                }
+                },
             },
-            { $sort: { 'timestamp': -1 } },
-
+            { $sort: { timestamp: -1 } },
         ];
         const testResultsDB = new TestResultsDB();
         const result = await testResultsDB.aggregate(aggregateQuery);
         res.send(result);
     } else {
         res.send({
-            error: "Please provide regex to match against java -version output"
+            error: 'Please provide regex to match against java -version output',
         });
     }
-
-}
+};
