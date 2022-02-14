@@ -10,21 +10,26 @@ parse = () => {
             if (fs.existsSync(file)) {
                 _config = require(file);
             } else {
-                logger.warn("Cannot find the config file: ", argv);
+                logger.warn('Cannot find the config file: ', argv);
             }
         }
     }
-}
+};
 
 getConfig = () => {
     return _config;
-}
+};
 
 getConfigDB = () => {
-    if (_config && _config.DB && ((_config.DB.user && _config.DB.password) || _config.DB.connectionString)) {
+    if (
+        _config &&
+        _config.DB &&
+        ((_config.DB.user && _config.DB.password) ||
+            _config.DB.connectionString)
+    ) {
         return _config.DB;
     }
     return null;
-}
+};
 
 module.exports = { parse, getConfig, getConfigDB };

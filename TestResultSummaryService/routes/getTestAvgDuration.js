@@ -2,7 +2,7 @@ const { TestResultsDB } = require('../Database');
 
 /**
  * getTestAvgDuration calculates the average test duration from the most recent matched test builds (default limit is 500)
- * 
+ *
  * All params are optional. If none is provided, all platforms/jdkVersions/impls/levels/groups will be considered.
  *
  * @route GET /api/getTestAvgDuration
@@ -50,4 +50,4 @@ module.exports = async (req, res) => {
         }
         res.send({ testListTime, testLists });
     }
-}
+};

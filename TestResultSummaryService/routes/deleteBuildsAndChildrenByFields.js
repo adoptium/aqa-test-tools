@@ -18,7 +18,10 @@ async function deleteBuildsAndChildrenByFields(query) {
         const result = await new TestResultsDB().getData(query).toArray();
 
         for (let i = 0; i < result.length; i++) {
-            logger.debug("deleteBuildsAndChildrenByFields: ", result[i].buildUrl);
+            logger.debug(
+                'deleteBuildsAndChildrenByFields: ',
+                result[i].buildUrl
+            );
             await deleteBuild(result[i]);
         }
         return result;
@@ -28,7 +31,9 @@ async function deleteBuildsAndChildrenByFields(query) {
 
 async function deleteBuild(build) {
     const testResultsDB = new TestResultsDB();
-    const children = await testResultsDB.getData({ parentId: build._id }).toArray();
+    const children = await testResultsDB
+        .getData({ parentId: build._id })
+        .toArray();
     for (let i = 0; i < children.length; i++) {
         await deleteBuild(children[i]);
     }

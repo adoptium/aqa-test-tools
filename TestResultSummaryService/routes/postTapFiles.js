@@ -3,7 +3,6 @@ const Parsers = require( `../parsers/` );
 const AdmZip = require('adm-zip');
 const axios = require('axios');
 
-
 /**
  * postTapFiles inserts a number of TestResult objects based on the Tap files in the zip
  * @route POST /api/postTapFiles

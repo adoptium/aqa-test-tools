@@ -1,1 +1,1 @@
-export { default as BuildStatus } from "./BuildStatus";
+export { default as BuildStatus } from './BuildStatus';

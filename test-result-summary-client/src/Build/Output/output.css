@@ -1,37 +1,37 @@
 .test-output-wrapper {
-	border-radius: 3px;
-	transition: background-color 0.2s ease-in-out;
+    border-radius: 3px;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .test-output {
-	margin: 20px;
-	font-family: monospace;
-	white-space: pre-wrap;
-	transition: color 0.2s ease-in-out;
+    margin: 20px;
+    font-family: monospace;
+    white-space: pre-wrap;
+    transition: color 0.2s ease-in-out;
 }
 
 .test-output-wrapper.black {
-	background: #222;
+    background: #222;
 }
 
 .test-output-wrapper.white {
-	background: #EEE;
+    background: #eee;
 }
 
 .test-output-wrapper.black .test-output {
-	color: #22da26;
+    color: #22da26;
 }
 
 .test-output-wrapper.white .test-output {
-	color: #222;
+    color: #222;
 }
 
 .test-wrapper {
-	position: relative;
+    position: relative;
 }
 
 .switch-wrapper {
-	position: absolute;
-	top: 4px;
-	right: 4px;
+    position: absolute;
+    top: 4px;
+    right: 4px;
 }
