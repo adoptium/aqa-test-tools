@@ -10,14 +10,14 @@ export default class SearchOutput extends Component {
     };
 
     onSearch = () => {
-        this.setState( { redirect: true } ,()=>{
-            this.setState( { redirect: false } );
+        this.setState({ redirect: true }, () => {
+            this.setState({ redirect: false });
         });
-    }
+    };
 
-    onInputChange = e => {
-        this.setState( { searchText: e.target.value } );
-    }
+    onInputChange = (e) => {
+        this.setState({ searchText: e.target.value });
+    };
 
     render() {
         const { buildId } = this.props;
@@ -25,19 +25,28 @@ export default class SearchOutput extends Component {
 
         const Search = Input.Search;
 
-        return <div>
-            {this.state.redirect && <Redirect to={{ pathname: '/searchResult', search: params( { buildId, searchText } ) }} />}
-            <Row>
-                <Col span={8} offset={16}>
-                    <Search
-                        style={{ margin: '10px 0' }}
-                        placeholder="Search output..."
-                        value={this.state.searchText}
-                        onChange={this.onInputChange}
-                        onSearch={this.onSearch}
+        return (
+            <div>
+                {this.state.redirect && (
+                    <Redirect
+                        to={{
+                            pathname: '/searchResult',
+                            search: params({ buildId, searchText }),
+                        }}
                     />
-                </Col>
-            </Row>
-        </div>
+                )}
+                <Row>
+                    <Col span={8} offset={16}>
+                        <Search
+                            style={{ margin: '10px 0' }}
+                            placeholder="Search output..."
+                            value={this.state.searchText}
+                            onChange={this.onInputChange}
+                            onSearch={this.onSearch}
+                        />
+                    </Col>
+                </Row>
+            </div>
+        );
     }
 }

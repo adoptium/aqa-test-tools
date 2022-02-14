@@ -11,70 +11,86 @@ import {
 
 import { Checkbox, Table, Tooltip, Input } from 'antd';
 import { fetchData } from '../../../utils/Utils';
-import ServerSelector from "./ServerSelector";
+import ServerSelector from './ServerSelector';
 import Highlighter from 'react-highlight-words';
 
 const getList = (selected, serverSelected, buildInfo) => {
     if (selected[serverSelected]) {
         return selected[serverSelected];
     } else if (buildInfo && buildInfo[serverSelected]) {
-        return buildInfo[serverSelected].default || buildInfo[serverSelected].builds;
+        return (
+            buildInfo[serverSelected].default ||
+            buildInfo[serverSelected].builds
+        );
     }
-}
+};
 
 let buildInfoMap = null;
 
 export class BuildStatusSetting extends Component {
-    onChange = list => {
+    onChange = (list) => {
         const { selected, serverSelected } = this.props;
         this.props.onChange({
             selected: {
                 ...selected,
                 [serverSelected]: list,
-            }
+            },
         });
-    }
-    onServerChange = obj => {
+    };
+    onServerChange = (obj) => {
         this.props.onChange({ serverSelected: obj.target.value });
-    }
+    };
 
     render() {
         const { selected = {}, serverSelected } = this.props;
         if (!buildInfoMap) {
-            return <div/>;
+            return <div />;
         }
         const obj = buildInfoMap[serverSelected] || [];
 
-        const options = obj.builds.map(buildName => {
+        const options = obj.builds.map((buildName) => {
             return {
-                label: buildName, value: buildName
+                label: buildName,
+                value: buildName,
             };
         });
 
         const list = getList(selected, serverSelected, buildInfoMap);
-        return <div style={{ maxWidth: 400 }}>
-            <ServerSelector servers={Object.keys(buildInfoMap)} serverSelected={serverSelected} onChange={this.onServerChange} />
-            {serverSelected && <Checkbox.Group options={options} value={list} onChange={this.onChange} />}
-        </div>
+        return (
+            <div style={{ maxWidth: 400 }}>
+                <ServerSelector
+                    servers={Object.keys(buildInfoMap)}
+                    serverSelected={serverSelected}
+                    onChange={this.onServerChange}
+                />
+                {serverSelected && (
+                    <Checkbox.Group
+                        options={options}
+                        value={list}
+                        onChange={this.onChange}
+                    />
+                )}
+            </div>
+        );
     }
 }
 
 export default class BuildStatus extends Component {
-    static Title = props => {
-        const url = props.title ? props.title : "";
+    static Title = (props) => {
+        const url = props.title ? props.title : '';
         return `${props.serverSelected} ${url}`;
     };
     static Setting = BuildStatusSetting;
-    static defaultSize = { w: 4, h: 4 }
+    static defaultSize = { w: 4, h: 4 };
     static defaultSettings = {
-        serverSelected: "AdoptOpenJDK"
-    }
+        serverSelected: 'AdoptOpenJDK',
+    };
 
     state = {
         builds: {},
         filterDropdownVisible: false,
         searchText: '',
-        map: {}
+        map: {},
     };
 
     async componentDidMount() {
@@ -102,39 +118,43 @@ export default class BuildStatus extends Component {
         if (!list) {
             return;
         }
-        await Promise.all(list.map(async buildName => {
-            const url = buildInfoMap[serverSelected].url;
-            if (force || !this.state.builds[buildName]) {
-                const encodeUrl = encodeURIComponent(url);
-                const data = await fetchData(`/api/getLastBuildInfo?url=${encodeUrl}&buildName=${buildName}`);
-                let result = null;
-                let buildNum = null;
-                let buildUrl = null;
-                if (data && data.result) {
-                    if (data.result.building) {
-                        result = "Running";
+        await Promise.all(
+            list.map(async (buildName) => {
+                const url = buildInfoMap[serverSelected].url;
+                if (force || !this.state.builds[buildName]) {
+                    const encodeUrl = encodeURIComponent(url);
+                    const data = await fetchData(
+                        `/api/getLastBuildInfo?url=${encodeUrl}&buildName=${buildName}`
+                    );
+                    let result = null;
+                    let buildNum = null;
+                    let buildUrl = null;
+                    if (data && data.result) {
+                        if (data.result.building) {
+                            result = 'Running';
+                        } else {
+                            result = data.result.result;
+                        }
+                        buildUrl = data.result.url;
+                        buildNum = data.result.number;
                     } else {
-                        result = data.result.result;
+                        buildUrl = url + '/job/' + buildName;
                     }
-                    buildUrl = data.result.url;
-                    buildNum = data.result.number;
-                } else {
-                    buildUrl = url + "/job/" + buildName;
+                    this.state.builds[buildName] = {
+                        buildName,
+                        result,
+                        url: buildUrl,
+                        buildNum,
+                    };
+                    this.setState(this.state.builds);
                 }
-                this.state.builds[buildName] = {
-                    buildName,
-                    result,
-                    url: buildUrl,
-                    buildNum
-                };
-                this.setState(this.state.builds);
-            }
-        }));
-    }
+            })
+        );
+    };
 
-    onInputChange = e => {
+    onInputChange = (e) => {
         this.setState({ searchText: e.target.value });
-    }
+    };
 
     render() {
         const { builds, filterDropdownVisible, searchText } = this.state;
@@ -143,31 +163,38 @@ export default class BuildStatus extends Component {
         let data = [];
 
         if (builds && list) {
-            list.map(listItem => {
+            list.map((listItem) => {
                 const build = builds[listItem];
                 if (!build || !build.url) return null;
 
                 //Set build platform value
-                let platform = "n/a";
-                if (build.buildName.startsWith("Test")) {
-                    let openj9Platform = build.buildName.split('-').slice(-2).join("-");
+                let platform = 'n/a';
+                if (build.buildName.startsWith('Test')) {
+                    let openj9Platform = build.buildName
+                        .split('-')
+                        .slice(-2)
+                        .join('-');
                     platform = openj9Platform;
-                } else if (build.buildName.includes("openjdk")) {
-                    let adoptPlatform = build.buildName.split('_').slice(-2).reverse().join("_");
+                } else if (build.buildName.includes('openjdk')) {
+                    let adoptPlatform = build.buildName
+                        .split('_')
+                        .slice(-2)
+                        .reverse()
+                        .join('_');
                     platform = adoptPlatform;
-                } 
+                }
 
                 //Set build.result value
                 let info = build.result;
-                info = (info ? info : "Cannot connect").toLowerCase();
+                info = (info ? info : 'Cannot connect').toLowerCase();
                 // change first char to upper case
-                info = info.replace(/^\w/, c => c.toUpperCase());
+                info = info.replace(/^\w/, (c) => c.toUpperCase());
                 build.result = info;
 
                 //Set jdk version value
                 const jdkRegex = /jdk\d+/i;
-                let jdk = "n/a";
-                let m = jdkRegex.exec(build.buildName)
+                let jdk = 'n/a';
+                let m = jdkRegex.exec(build.buildName);
                 if (m !== null) {
                     jdk = m[0];
                 }
@@ -175,18 +202,18 @@ export default class BuildStatus extends Component {
 
                 //Set Java impl value
                 const javaImplRegex = /_(j9|hs|sap|ibm)_/i;
-                let javaImpl = "n/a";
+                let javaImpl = 'n/a';
                 m = javaImplRegex.exec(build.buildName);
                 if (m !== null) {
                     javaImpl = m[1];
                 }
 
-                if (javaImpl === "n/a" && build.url.match(/openj9/i)) {
-                    javaImpl = "j9";
+                if (javaImpl === 'n/a' && build.url.match(/openj9/i)) {
+                    javaImpl = 'j9';
                 }
                 javaImpl = javaImpl.toUpperCase();
-                javaImpl = javaImpl.replace("J9", "OpenJ9");
-                javaImpl = javaImpl.replace("HS", "HotSpot");
+                javaImpl = javaImpl.replace('J9', 'OpenJ9');
+                javaImpl = javaImpl.replace('HS', 'HotSpot');
 
                 data.push({
                     key: build.buildName + build.buildNum,
@@ -201,92 +228,133 @@ export default class BuildStatus extends Component {
         }
 
         const renderResult = (value, row, index) => {
-            let icon = "";
-            if (value === "Success") {
-                icon = <CheckOutlined style={{ fontSize: 16, color: '#43ed2d' }} />;
-            } else if (value === "Running") {
-                icon = <LoadingOutlined style={{ fontSize: 16, color: '#43ed2d' }} />;
-            } else if (value === "Failure") {
-                icon = <CloseOutlined style={{ fontSize: 16, color: '#f50' }} />;
-            } else if (value === "Unstable") {
-                icon = <ExclamationCircleOutlined style={{ fontSize: 16, color: '#DAA520' }} />;
-            } else if (value === "Cannot connect") {
-                icon = <QuestionOutlined style={{ fontSize: 16, color: '#DAA520' }} />;
+            let icon = '';
+            if (value === 'Success') {
+                icon = (
+                    <CheckOutlined style={{ fontSize: 16, color: '#43ed2d' }} />
+                );
+            } else if (value === 'Running') {
+                icon = (
+                    <LoadingOutlined
+                        style={{ fontSize: 16, color: '#43ed2d' }}
+                    />
+                );
+            } else if (value === 'Failure') {
+                icon = (
+                    <CloseOutlined style={{ fontSize: 16, color: '#f50' }} />
+                );
+            } else if (value === 'Unstable') {
+                icon = (
+                    <ExclamationCircleOutlined
+                        style={{ fontSize: 16, color: '#DAA520' }}
+                    />
+                );
+            } else if (value === 'Cannot connect') {
+                icon = (
+                    <QuestionOutlined
+                        style={{ fontSize: 16, color: '#DAA520' }}
+                    />
+                );
             } else {
                 icon = <InfoOutlined style={{ fontSize: 16, color: '#f50' }} />;
             }
             return <Tooltip title={value}>{icon}</Tooltip>;
         };
 
-        const columns = [{
-            title: 'Build Name',
-            dataIndex: 'buildName',
-            render: (value, record) => {
-                return <a key={value} href={record.url} target="_blank" rel="noopener noreferrer">{value}</a>
+        const columns = [
+            {
+                title: 'Build Name',
+                dataIndex: 'buildName',
+                render: (value, record) => {
+                    return (
+                        <a
+                            key={value}
+                            href={record.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {value}
+                        </a>
+                    );
+                },
+                filterDropdown: (
+                    <div className="custom-filter-dropdown">
+                        <Input
+                            ref={(ele) => (this.searchInput = ele)}
+                            placeholder="Search test name"
+                            value={searchText}
+                            onChange={this.onInputChange}
+                            onPressEnter={this.onSearch}
+                        />
+                    </div>
+                ),
+                filterDropdownVisible,
+                onFilterDropdownVisibleChange: (visible) => {
+                    this.setState(
+                        {
+                            filterDropdownVisible: visible,
+                        },
+                        () => this.searchInput.focus()
+                    );
+                },
+                defaultSortOrder: 'descend',
+                sorter: (a, b) => a.buildName.localeCompare(b.buildName),
             },
-            filterDropdown: (
-                <div className="custom-filter-dropdown">
-                    <Input
-                        ref={ele => this.searchInput = ele}
-                        placeholder="Search test name"
-                        value={searchText}
-                        onChange={this.onInputChange}
-                        onPressEnter={this.onSearch}
-                    />
-                </div>
-            ),
-            filterDropdownVisible,
-            onFilterDropdownVisibleChange: visible => {
-                this.setState({
-                    filterDropdownVisible: visible,
-                }, () => this.searchInput.focus());
+            {
+                title: 'Build Num',
+                dataIndex: 'buildNum',
+                defaultSortOrder: 'descend',
+                sorter: (a, b) => a.buildNum - b.buildNum,
             },
-            defaultSortOrder: 'descend',
-            sorter: (a, b) => a.buildName.localeCompare(b.buildName)
-        }, {
-            title: 'Build Num',
-            dataIndex: 'buildNum',
-            defaultSortOrder: 'descend',
-            sorter: (a, b) => a.buildNum - b.buildNum,
-        }, {
-            title: 'JDK Version',
-            dataIndex: 'jdk',
-            defaultSortOrder: 'descend',
-            sorter: (a, b) => a.jdk.localeCompare(b.jdk)
-        }, {
-            title: 'Java Impl',
-            dataIndex: 'javaImpl',
-            defaultSortOrder: 'descend',
-            sorter: (a, b) => a.javaImpl.localeCompare(b.javaImpl)
-        }, {
-            title: 'Platform',
-            dataIndex: 'platform',
-            defaultSortOrder: 'descend',
-            sorter: (a, b) => a.platform.localeCompare(b.platform)
-        }, {
-            title: 'Result',
-            dataIndex: 'result',
-            render: renderResult,
-            filters: [{
-                text: 'Success',
-                value: 'Success',
-            }, {
-                text: 'Running',
-                value: 'Running',
-            }, {
-                text: 'Failure',
-                value: 'Failure',
-            }, {
-                text: 'Unstable',
-                value: 'Unstable',
-            }, {
-                text: 'Cannot connect',
-                value: 'Cannot connect',
-            }],
-            filterMultiple: false,
-            onFilter: (value, record) => record.result.indexOf(value) === 0,
-            sorter: (a, b) => a.result.localeCompare(b.result)
-        }];
+            {
+                title: 'JDK Version',
+                dataIndex: 'jdk',
+                defaultSortOrder: 'descend',
+                sorter: (a, b) => a.jdk.localeCompare(b.jdk),
+            },
+            {
+                title: 'Java Impl',
+                dataIndex: 'javaImpl',
+                defaultSortOrder: 'descend',
+                sorter: (a, b) => a.javaImpl.localeCompare(b.javaImpl),
+            },
+            {
+                title: 'Platform',
+                dataIndex: 'platform',
+                defaultSortOrder: 'descend',
+                sorter: (a, b) => a.platform.localeCompare(b.platform),
+            },
+            {
+                title: 'Result',
+                dataIndex: 'result',
+                render: renderResult,
+                filters: [
+                    {
+                        text: 'Success',
+                        value: 'Success',
+                    },
+                    {
+                        text: 'Running',
+                        value: 'Running',
+                    },
+                    {
+                        text: 'Failure',
+                        value: 'Failure',
+                    },
+                    {
+                        text: 'Unstable',
+                        value: 'Unstable',
+                    },
+                    {
+                        text: 'Cannot connect',
+                        value: 'Cannot connect',
+                    },
+                ],
+                filterMultiple: false,
+                onFilter: (value, record) => record.result.indexOf(value) === 0,
+                sorter: (a, b) => a.result.localeCompare(b.result),
+            },
+        ];
 
         function onChange(pagination, filters, sorter) {
             console.log('params', pagination, filters, sorter);
@@ -294,23 +362,29 @@ export default class BuildStatus extends Component {
 
         if (searchText) {
             const reg = new RegExp(searchText, 'gi');
-            data = data.filter(record => !!record.buildName.match(reg)).map(record => {
-                return {
-                    ...record,
-                    testName: <Highlighter
-                        searchWords={searchText.split(' ')}
-                        autoEscape
-                        textToHighlight={record.testName}
-                    />
-                };
-            });
+            data = data
+                .filter((record) => !!record.buildName.match(reg))
+                .map((record) => {
+                    return {
+                        ...record,
+                        testName: (
+                            <Highlighter
+                                searchWords={searchText.split(' ')}
+                                autoEscape
+                                textToHighlight={record.testName}
+                            />
+                        ),
+                    };
+                });
         }
 
-        return <Table
-            columns={columns}
-            dataSource={data}
-            onChange={onChange}
-            pagination={{ pageSize: 6 }}
-        />;
+        return (
+            <Table
+                columns={columns}
+                dataSource={data}
+                onChange={onChange}
+                pagination={{ pageSize: 6 }}
+            />
+        );
     }
 }

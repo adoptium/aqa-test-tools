@@ -13,60 +13,155 @@ export default class Overview extends Component {
     render() {
         const { id, parentBuildInfo, summary, failedSdkBuilds } = this.props;
         if (id && parentBuildInfo) {
-            const { passed = 0, failed = 0, disabled = 0, skipped = 0, executed = 0, total = 0 } = summary;
-            const passPercentage = (parseInt(passed) / parseInt(executed)) * 100;
+            const {
+                passed = 0,
+                failed = 0,
+                disabled = 0,
+                skipped = 0,
+                executed = 0,
+                total = 0,
+            } = summary;
+            const passPercentage =
+                (parseInt(passed) / parseInt(executed)) * 100;
             const buildResult = parentBuildInfo.buildResult;
             const buildName = parentBuildInfo.buildName;
 
-            return <div>
-                <div className="overview-header"><a href={parentBuildInfo.buildUrl} target="_blank" rel="noopener noreferrer">{buildName} #{parentBuildInfo.buildNum}</a> Test Summary</div>
-                <Link to={{ pathname: '/releaseSummary', search: params({ parentId: id, buildName }) }}>
-                    <div className="overview-report-link">
-                        <Button type="primary">
-                            Release Summary Report
-                        </Button>
+            return (
+                <div>
+                    <div className="overview-header">
+                        <a
+                            href={parentBuildInfo.buildUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            {buildName} #{parentBuildInfo.buildNum}
+                        </a>{' '}
+                        Test Summary
                     </div>
-                </Link>
-                <Divider>SDK Build Results</Divider>
-                <div style={{ fontSize: "18px" }}>
-                    {(failedSdkBuilds && failedSdkBuilds.length)  ? <BuildLink id={id} label="SDK Builds and Smoke Tests " link="Failed" buildNameRegex="^(jdk[0-9]{1,2}|Build_)" buildResult="!SUCCESS" /> : <div>SDK builds and Smoke Tests Passed</div>}
-                </div>
+                    <Link
+                        to={{
+                            pathname: '/releaseSummary',
+                            search: params({ parentId: id, buildName }),
+                        }}
+                    >
+                        <div className="overview-report-link">
+                            <Button type="primary">
+                                Release Summary Report
+                            </Button>
+                        </div>
+                    </Link>
+                    <Divider>SDK Build Results</Divider>
+                    <div style={{ fontSize: '18px' }}>
+                        {failedSdkBuilds && failedSdkBuilds.length ? (
+                            <BuildLink
+                                id={id}
+                                label="SDK Builds and Smoke Tests "
+                                link="Failed"
+                                buildNameRegex="^(jdk[0-9]{1,2}|Build_)"
+                                buildResult="!SUCCESS"
+                            />
+                        ) : (
+                            <div>SDK builds and Smoke Tests Passed</div>
+                        )}
+                    </div>
 
-                <Divider>AQA Test Results</Divider>
-                <div style={{ fontSize: "18px" }}>
-                    <Row>
-                        <Col span={6}>
-                            <BuildLink id={id} label="Executed: " link={executed} testSummaryResult="executed" buildNameRegex="^Test.*" /><br />
-                            <BuildLink id={id} label="Failed: " link={failed} testSummaryResult="failed" buildNameRegex="^Test.*" /><br />
-                            <BuildLink id={id} label="Passed: " link={passed} testSummaryResult="passed" buildNameRegex="^Test.*" /><br />
-                            <BuildLink id={id} label="Disabled: " link={disabled} testSummaryResult="disabled" buildNameRegex="^Test.*" /><br />
-                            <BuildLink id={id} label="Skipped: " link={skipped} testSummaryResult="skipped" buildNameRegex="^Test.*" /><br />
-                            <BuildLink id={id} label="Total: " link={total} testSummaryResult="total" buildNameRegex="^Test.*" /><br />
-                        </Col>
-                        <Col span={6}>
-                            <div>
-                                <Tooltip title="Pass % = (Passed/Executed) * 100"><span style={{ fontSize: "38px" }}>{passPercentage ? passPercentage.toFixed(2) + "%" : "N/A"}</span></Tooltip>
-                            </div>
-                        </Col>
-                        
-                        <Col span={6}>
-                            <div>Build Started at: {moment(parentBuildInfo.timestamp).format(DAY_FORMAT)}</div>
-                            <div>Build Started by: {parentBuildInfo.startBy}</div>
-                            <div>Build Duration: {renderDuration(parentBuildInfo.buildDuration)}</div>
-                            <div>Machine: {parentBuildInfo.machine}</div>
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={6} />
-                        <Col span={6}>
-                            <div>Pass Percentage</div>
-                        </Col>
-                        <Col span={6}>
-                            <div>Build Result</div>
-                        </Col>
-                    </Row>
+                    <Divider>AQA Test Results</Divider>
+                    <div style={{ fontSize: '18px' }}>
+                        <Row>
+                            <Col span={6}>
+                                <BuildLink
+                                    id={id}
+                                    label="Executed: "
+                                    link={executed}
+                                    testSummaryResult="executed"
+                                    buildNameRegex="^Test.*"
+                                />
+                                <br />
+                                <BuildLink
+                                    id={id}
+                                    label="Failed: "
+                                    link={failed}
+                                    testSummaryResult="failed"
+                                    buildNameRegex="^Test.*"
+                                />
+                                <br />
+                                <BuildLink
+                                    id={id}
+                                    label="Passed: "
+                                    link={passed}
+                                    testSummaryResult="passed"
+                                    buildNameRegex="^Test.*"
+                                />
+                                <br />
+                                <BuildLink
+                                    id={id}
+                                    label="Disabled: "
+                                    link={disabled}
+                                    testSummaryResult="disabled"
+                                    buildNameRegex="^Test.*"
+                                />
+                                <br />
+                                <BuildLink
+                                    id={id}
+                                    label="Skipped: "
+                                    link={skipped}
+                                    testSummaryResult="skipped"
+                                    buildNameRegex="^Test.*"
+                                />
+                                <br />
+                                <BuildLink
+                                    id={id}
+                                    label="Total: "
+                                    link={total}
+                                    testSummaryResult="total"
+                                    buildNameRegex="^Test.*"
+                                />
+                                <br />
+                            </Col>
+                            <Col span={6}>
+                                <div>
+                                    <Tooltip title="Pass % = (Passed/Executed) * 100">
+                                        <span style={{ fontSize: '38px' }}>
+                                            {passPercentage
+                                                ? passPercentage.toFixed(2) +
+                                                  '%'
+                                                : 'N/A'}
+                                        </span>
+                                    </Tooltip>
+                                </div>
+                            </Col>
+
+                            <Col span={6}>
+                                <div>
+                                    Build Started at:{' '}
+                                    {moment(parentBuildInfo.timestamp).format(
+                                        DAY_FORMAT
+                                    )}
+                                </div>
+                                <div>
+                                    Build Started by: {parentBuildInfo.startBy}
+                                </div>
+                                <div>
+                                    Build Duration:{' '}
+                                    {renderDuration(
+                                        parentBuildInfo.buildDuration
+                                    )}
+                                </div>
+                                <div>Machine: {parentBuildInfo.machine}</div>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={6} />
+                            <Col span={6}>
+                                <div>Pass Percentage</div>
+                            </Col>
+                            <Col span={6}>
+                                <div>Build Result</div>
+                            </Col>
+                        </Row>
+                    </div>
                 </div>
-            </div>;
+            );
         }
         return null;
     }
