@@ -1,52 +1,54 @@
 {
-  "name": "test-result-summary-client",
-  "version": "0.1.0",
-  "private": true,
-  "dependencies": {
-    "@ant-design/compatible": "^1.0.8",
-    "antd": "^4.16.3",
-    "classnames": "^2.3.1",
-    "codemirror": "^5.62.0",
-    "highcharts": "^9.1.2",
-    "highcharts-react-official": "^2.2.2",
-    "highstock-release": "^6.0.4",
-    "history": "^4.10.1",
-    "jquery": "^3.6.0",
-    "mathjs": "^7.6.0",
-    "mergely": "^4.3.1",
-    "moment": "^2.29.1",
-    "npm-check": "^5.9.2",
-    "qs": "^6.10.1",
-    "react": "^16.14.0",
-    "react-day-picker": "^7.4.10",
-    "react-dom": "^16.14.0",
-    "react-grid-layout": "^0.16.6",
-    "react-highcharts": "^16.1.0",
-    "react-highlight-words": "^0.16.0",
-    "react-jsx-highcharts": "^3.6.1",
-    "react-jsx-highstock": "^3.6.1",
-    "react-nl2br": "^0.6.1",
-    "react-router": "^5.2.0",
-    "react-router-dom": "^5.2.0",
-    "react-table": "^6.11.5",
-    "sweetalert2": "^10.16.9"
-  },
-  "scripts": {
-    "start": "react-app-rewired start",
-    "build": "react-app-rewired build",
-    "test": "react-app-rewired test --env=jsdom",
-    "cy": "cypress open"
-  },
-  "proxy": "http://localhost:3001",
-  "devDependencies": {
-    "cypress": "^8.6.0",
-    "react-app-rewired": "^2.1.8",
-    "react-scripts": "^3.4.4"
-  },
-  "browserslist": [
-    ">0.2%",
-    "not dead",
-    "not ie <= 11",
-    "not op_mini all"
-  ]
+    "name": "test-result-summary-client",
+    "version": "0.1.0",
+    "private": true,
+    "dependencies": {
+        "@ant-design/compatible": "^1.0.8",
+        "antd": "^4.16.3",
+        "classnames": "^2.3.1",
+        "codemirror": "^5.62.0",
+        "highcharts": "^9.1.2",
+        "highcharts-react-official": "^2.2.2",
+        "highstock-release": "^6.0.4",
+        "history": "^4.10.1",
+        "jquery": "^3.6.0",
+        "mathjs": "^7.6.0",
+        "mergely": "^4.3.1",
+        "moment": "^2.29.1",
+        "npm-check": "^5.9.2",
+        "qs": "^6.10.1",
+        "react": "^16.14.0",
+        "react-day-picker": "^7.4.10",
+        "react-dom": "^16.14.0",
+        "react-grid-layout": "^0.16.6",
+        "react-highcharts": "^16.1.0",
+        "react-highlight-words": "^0.16.0",
+        "react-jsx-highcharts": "^3.6.1",
+        "react-jsx-highstock": "^3.6.1",
+        "react-nl2br": "^0.6.1",
+        "react-router": "^5.2.0",
+        "react-router-dom": "^5.2.0",
+        "react-table": "^6.11.5",
+        "sweetalert2": "^10.16.9"
+    },
+    "scripts": {
+        "start": "react-app-rewired start",
+        "build": "react-app-rewired build",
+        "test": "react-app-rewired test --env=jsdom",
+        "cy": "cypress open",
+        "prettier": "npx prettier --write ."
+    },
+    "proxy": "http://localhost:3001",
+    "devDependencies": {
+        "cypress": "^8.6.0",
+        "prettier": "2.5.1",
+        "react-app-rewired": "^2.1.8",
+        "react-scripts": "^3.4.4"
+    },
+    "browserslist": [
+        ">0.2%",
+        "not dead",
+        "not ie <= 11",
+        "not op_mini all"
+    ]
 }
