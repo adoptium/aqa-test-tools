@@ -1,5 +1,6 @@
 const Parser = require('./Parser');
 const Utils = require(`./Utils`);
+
 const ObjectID = require('mongodb').ObjectID;
 const path = require('path');
 const { TestResultsDB, OutputDB } = require('../Database');
@@ -7,6 +8,7 @@ const { TestResultsDB, OutputDB } = require('../Database');
 let outputDb = null;
 let testResultDb = null;
 let fileData = null;
+
 const timestamp = Date.now();
 class Tap extends Parser {
     static canParse(filePath) {
