@@ -63,6 +63,7 @@ export default class Output extends Component {
                     artifactory: null,
                     output: result.output,
                     result: info.buildResult,
+                    buildUrl: info.buildUrl,
                 };
             }
             data.error = info.error ? `${info.buildUrl}: ${info.error}` : '';
