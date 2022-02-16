@@ -1,5 +1,8 @@
 const Tap = require('../parsers/Tap');
 const Parsers = require( `../parsers/` );
+const AdmZip = require('adm-zip');
+const axios = require('axios');
+
 
 /**
  * postTapFiles inserts a number of TestResult objects based on the Tap files in the zip
@@ -11,14 +14,19 @@ const Parsers = require( `../parsers/` );
  */
 
 module.exports = async (req, res) => {
-  //const zip = req.query.url;
-  const zip = __dirname;
+  const url = req.query.url;
   const tapParser = Parsers["Tap"];
 
-  if (tapParser.canParse(zip) == false) {
-    res.send({ error: `invalid zipfile: ${zip}` })
+  if (tapParser.canParse(url) == false) {
+    res.send({ error: `invalid zipfile: ${url}` })
   } else {
-    const status = await tapParser.parse(zip); 
+    const { data }  = await axios.get(url, { 
+        responseType: "arraybuffer"
+    });
+
+    const zip = new AdmZip(data);
+
+    const status = await tapParser.parse(zip.getEntries());
     res.send(status);
   }
-} 
+}
