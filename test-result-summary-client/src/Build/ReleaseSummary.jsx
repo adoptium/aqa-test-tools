@@ -23,12 +23,14 @@ export default class ReleaseSummary extends Component {
         let report = '';
         if (build && build[0]) {
             const { buildName, buildUrl, timestamp, startBy } = build[0];
-            report = 
+            report =
                 `#### Release Summary Report for ${buildName} \n` +
                 `**Report generated at:** ${new Date().toUTCString()} \n \n` +
                 `TRSS [Build](${originUrl}/buildDetail?parentId=${parentId}&testSummaryResult=failed&buildNameRegex=%5ETest) ` +
                 `and TRSS [Grid View](${originUrl}/resultSummary?parentId=${parentId}) \n` +
-                `Jenkins Build URL ${buildUrl} \nStarted by ${startBy} at ${new Date(timestamp).toLocaleString()} \n`;
+                `Jenkins Build URL ${buildUrl} \nStarted by ${startBy} at ${new Date(
+                        timestamp
+                    ).toLocaleString()} \n`;
 
             report += '\n --- \n';
 
