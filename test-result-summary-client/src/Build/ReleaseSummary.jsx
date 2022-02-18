@@ -29,8 +29,8 @@ export default class ReleaseSummary extends Component {
                 `TRSS [Build](${originUrl}/buildDetail?parentId=${parentId}&testSummaryResult=failed&buildNameRegex=%5ETest) ` +
                 `and TRSS [Grid View](${originUrl}/resultSummary?parentId=${parentId}) \n` +
                 `Jenkins Build URL ${buildUrl} \nStarted by ${startBy} at ${new Date(
-                        timestamp
-                    ).toLocaleString()} \n`;
+                    timestamp
+                ).toLocaleString()} \n`;
 
             report += '\n --- \n';
 
