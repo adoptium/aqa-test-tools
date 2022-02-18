@@ -23,24 +23,28 @@ export default class SearchResult extends Component {
     }
 
     async updateData() {
-        const { buildId, searchText } = getParams( this.props.location.search );
-        const result = await fetchData(`/api/getTestBySearch${params({ buildId, searchText })}`);
+        const { buildId, searchText } = getParams(this.props.location.search);
+        const result = await fetchData(
+            `/api/getTestBySearch${params({ buildId, searchText })}`
+        );
 
-        this.setState( {
+        this.setState({
             builds: result.builds,
             tests: result.tests,
-        } );
+        });
     }
 
     render() {
         const { builds, tests } = this.state;
-        const { buildId, searchText } = getParams( this.props.location.search );
-        return <div>
-            <SearchOutput buildId={buildId} />
-            {<TestBreadcrumb buildId={ buildId } />}
-            {<SearchTestResult tests={tests} searchText={searchText} />}
-            <br />
-            {<SearchBuildResult builds={builds} searchText={searchText} />}
-        </div>
+        const { buildId, searchText } = getParams(this.props.location.search);
+        return (
+            <div>
+                <SearchOutput buildId={buildId} />
+                {<TestBreadcrumb buildId={buildId} />}
+                {<SearchTestResult tests={tests} searchText={searchText} />}
+                <br />
+                {<SearchBuildResult builds={builds} searchText={searchText} />}
+            </div>
+        );
     }
 }

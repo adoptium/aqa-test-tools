@@ -1,1 +1,1 @@
-export { default as PerfCompare } from "./PerfCompare";
+export { default as PerfCompare } from './PerfCompare';

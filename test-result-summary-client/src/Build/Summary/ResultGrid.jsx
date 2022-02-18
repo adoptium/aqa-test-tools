@@ -1,4 +1,4 @@
-import React, { Component ,Fragment} from 'react';
+import React, { Component, Fragment } from 'react';
 import { params } from '../../utils/query';
 
 import {
@@ -25,23 +25,38 @@ class Cell extends Component {
                     return (
                         <Fragment key={y}>
                             {hcgroups.sort().map((group, x) => {
-                                let target = level + "." + group;
+                                let target = level + '.' + group;
                                 if (!(groups && groups[group])) {
                                     return (
-                                        <div className="cell" style={{ gridColumn: x + 1, gridRow: y + 1 }} key={x}>
-                                            <Tooltip title={target}><StopOutlined /></Tooltip>
+                                        <div
+                                            className="cell"
+                                            style={{
+                                                gridColumn: x + 1,
+                                                gridRow: y + 1,
+                                            }}
+                                            key={x}
+                                        >
+                                            <Tooltip title={target}>
+                                                <StopOutlined />
+                                            </Tooltip>
                                         </div>
                                     );
                                 }
                                 const result = groups[group].buildResult;
-                                let element = "";
+                                let element = '';
                                 if (!groups[group].testSummary) {
                                     element = (
                                         <div>
                                             {target} <br />
                                             Build Result: {result} <br />
                                             Result Summary: N/A <br />
-                                            <a href={groups[group].buildUrl} target="_blank" rel="noopener noreferrer">Jenkins Link</a>
+                                            <a
+                                                href={groups[group].buildUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                Jenkins Link
+                                            </a>
                                         </div>
                                     );
                                 } else {
@@ -49,30 +64,92 @@ class Cell extends Component {
                                         <div>
                                             Test Target: {target} <br />
                                             Build Result: {result} <br />
-                                            Result Summary: {Object.keys(groups[group].testSummary).map((key) => {
-                                                return <div key={key}>{key}: {groups[group].testSummary[key]}</div>;
+                                            Result Summary:{' '}
+                                            {Object.keys(
+                                                groups[group].testSummary
+                                            ).map((key) => {
+                                                return (
+                                                    <div key={key}>
+                                                        {key}:{' '}
+                                                        {
+                                                            groups[group]
+                                                                .testSummary[
+                                                                key
+                                                            ]
+                                                        }
+                                                    </div>
+                                                );
                                             })}
-                                            {group === 'perf' ? "Build Result is from TestBenchmarkParser (not CI build)" : ""} <br />
-                                            <a href={groups[group].buildUrl} target="_blank" rel="noopener noreferrer">Jenkins Link</a>
+                                            {group === 'perf'
+                                                ? 'Build Result is from TestBenchmarkParser (not CI build)'
+                                                : ''}{' '}
+                                            <br />
+                                            <a
+                                                href={groups[group].buildUrl}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                            >
+                                                Jenkins Link
+                                            </a>
                                         </div>
                                     );
                                 }
-                                let icon = "";
-                                if (result === "SUCCESS") {
-                                    icon = <CheckCircleOutlined style={{ color: "white" }} />;
-                                } else if (result === "UNSTABLE") {
-                                    icon = <WarningOutlined style={{ color: "white" }} />;
-                                } else if (result === "ABORTED") {
-                                    icon = <MinusCircleOutlined style={{ color: "white" }} />;
+                                let icon = '';
+                                if (result === 'SUCCESS') {
+                                    icon = (
+                                        <CheckCircleOutlined
+                                            style={{ color: 'white' }}
+                                        />
+                                    );
+                                } else if (result === 'UNSTABLE') {
+                                    icon = (
+                                        <WarningOutlined
+                                            style={{ color: 'white' }}
+                                        />
+                                    );
+                                } else if (result === 'ABORTED') {
+                                    icon = (
+                                        <MinusCircleOutlined
+                                            style={{ color: 'white' }}
+                                        />
+                                    );
                                 } else {
-                                    icon = <ExclamationCircleOutlined style={{ color: "white" }} />;
+                                    icon = (
+                                        <ExclamationCircleOutlined
+                                            style={{ color: 'white' }}
+                                        />
+                                    );
                                 }
-                                const linkInfo = <Link to={{ pathname: '/allTestsInfo', search: params({ buildId: groups[group].buildId, limit: 5, hasChildren: groups[group].hasChildren }) }} target="_blank">{icon}</Link>;
-                                return <div className={`cell ${result}`} style={{ gridColumn: x + 1, gridRow: y + 1 }} key={x}>
-                                    <Tooltip title={<div>{element}</div>}>
-                                        {linkInfo}
-                                    </Tooltip>
-                                </div>
+                                const linkInfo = (
+                                    <Link
+                                        to={{
+                                            pathname: '/allTestsInfo',
+                                            search: params({
+                                                buildId: groups[group].buildId,
+                                                limit: 5,
+                                                hasChildren:
+                                                    groups[group].hasChildren,
+                                            }),
+                                        }}
+                                        target="_blank"
+                                    >
+                                        {icon}
+                                    </Link>
+                                );
+                                return (
+                                    <div
+                                        className={`cell ${result}`}
+                                        style={{
+                                            gridColumn: x + 1,
+                                            gridRow: y + 1,
+                                        }}
+                                        key={x}
+                                    >
+                                        <Tooltip title={<div>{element}</div>}>
+                                            {linkInfo}
+                                        </Tooltip>
+                                    </div>
+                                );
                             })}
                         </Fragment>
                     );
@@ -85,36 +162,88 @@ class Block extends Component {
     render() {
         const { data = {}, selectedJdkImpls, hcvalues } = this.props;
 
-        return <div className="nested-wrapper" >
-            {selectedJdkImpls.map((jdkImpl, x) => {
-                return <Fragment key={x}>
-                    <div className="box jdk-impl" style={{ gridColumn: x + 1, gridRow: 1 }} >{jdkImpl}</div>
-                    <div style={{ gridColumn: x + 1, gridRow: 2 }}><Cell data={data[jdkImpl]} hcvalues={hcvalues} /></div>
-                </Fragment>
-            })}
-        </div>;
+        return (
+            <div className="nested-wrapper">
+                {selectedJdkImpls.map((jdkImpl, x) => {
+                    return (
+                        <Fragment key={x}>
+                            <div
+                                className="box jdk-impl"
+                                style={{ gridColumn: x + 1, gridRow: 1 }}
+                            >
+                                {jdkImpl}
+                            </div>
+                            <div style={{ gridColumn: x + 1, gridRow: 2 }}>
+                                <Cell
+                                    data={data[jdkImpl]}
+                                    hcvalues={hcvalues}
+                                />
+                            </div>
+                        </Fragment>
+                    );
+                })}
+            </div>
+        );
     }
 }
 
 export default class ResultGrid extends Component {
     render() {
-        const { buildMap, selectedPlatforms, selectedJdkVersions, selectedJdkImpls, hcvalues } = this.props;
+        const {
+            buildMap,
+            selectedPlatforms,
+            selectedJdkVersions,
+            selectedJdkImpls,
+            hcvalues,
+        } = this.props;
 
         if (buildMap) {
-            return <div className="wrapper">
-                {selectedPlatforms.map((platform, y) => {
-                    const jdkVersions = buildMap[platform];
-                    return <Fragment key={y}>
-                        {selectedJdkVersions.map((version, x) => {
-                            return <Fragment key={x}>
-                                <div className="box jdk-version-header" style={{ gridColumn: x + 2, gridRow: 1 }} >JDK {version}</div>
-                                <div style={{ gridColumn: x + 2, gridRow: y + 2 }} ><Block data={jdkVersions[version]} selectedJdkImpls={selectedJdkImpls} hcvalues={hcvalues} /></div>
+            return (
+                <div className="wrapper">
+                    {selectedPlatforms.map((platform, y) => {
+                        const jdkVersions = buildMap[platform];
+                        return (
+                            <Fragment key={y}>
+                                {selectedJdkVersions.map((version, x) => {
+                                    return (
+                                        <Fragment key={x}>
+                                            <div
+                                                className="box jdk-version-header"
+                                                style={{
+                                                    gridColumn: x + 2,
+                                                    gridRow: 1,
+                                                }}
+                                            >
+                                                JDK {version}
+                                            </div>
+                                            <div
+                                                style={{
+                                                    gridColumn: x + 2,
+                                                    gridRow: y + 2,
+                                                }}
+                                            >
+                                                <Block
+                                                    data={jdkVersions[version]}
+                                                    selectedJdkImpls={
+                                                        selectedJdkImpls
+                                                    }
+                                                    hcvalues={hcvalues}
+                                                />
+                                            </div>
+                                        </Fragment>
+                                    );
+                                })}
+                                <div
+                                    className="box platform-header"
+                                    style={{ gridColumn: 1, gridRow: y + 2 }}
+                                >
+                                    {platform}
+                                </div>
                             </Fragment>
-                        })}
-                        <div className="box platform-header" style={{ gridColumn: 1, gridRow: y + 2 }}>{platform}</div>
-                    </Fragment>
-                })}
-            </div>;
+                        );
+                    })}
+                </div>
+            );
         } else {
             return null;
         }

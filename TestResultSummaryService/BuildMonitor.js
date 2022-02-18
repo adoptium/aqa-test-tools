@@ -4,27 +4,33 @@ const ObjectID = require('mongodb').ObjectID;
 const Promise = require('bluebird');
 const { TestResultsDB, AuditLogsDB } = require('./Database');
 const { logger } = require('./Utils');
-const { deleteBuildsAndChildrenByFields } = require('./routes/deleteBuildsAndChildrenByFields');
+const {
+    deleteBuildsAndChildrenByFields,
+} = require('./routes/deleteBuildsAndChildrenByFields');
 
 class BuildMonitor {
     async execute(task) {
         let { buildUrl, type, streaming } = task;
         if (!buildUrl || !type) {
-            logger.error("BuildMonitor: Invalid buildUrl and/or type", buildUrl, type);
+            logger.error(
+                'BuildMonitor: Invalid buildUrl and/or type',
+                buildUrl,
+                type
+            );
             return;
         }
         const { buildName, url } = this.getBuildInfo(buildUrl);
         if (!buildName) {
-            logger.error("BuildMonitor: Cannot parse buildUrl ", buildUrl);
+            logger.error('BuildMonitor: Cannot parse buildUrl ', buildUrl);
             return;
         }
-        logger.debug("BuildMonitor: url", url, "buildName", buildName);
+        logger.debug('BuildMonitor: url', url, 'buildName', buildName);
 
         const jenkinsInfo = new JenkinsInfo();
         const allBuilds = await jenkinsInfo.getAllBuilds(url, buildName);
         if (!Array.isArray(allBuilds)) {
-            logger.error("allBuilds:", allBuilds);
-            logger.error("BuildMonitor: Cannot find the build ", buildUrl);
+            logger.error('allBuilds:', allBuilds);
+            logger.error('BuildMonitor: Cannot find the build ', buildUrl);
             return;
         }
         // sort the allBuilds to make sure build number is in
@@ -42,12 +48,16 @@ class BuildMonitor {
         const testResults = new TestResultsDB();
         for (let i = 0; i < limit; i++) {
             const buildNum = parseInt(allBuilds[i].id, 10);
-            const buildsInDB = await testResults.getData({ url, buildName, buildNum }).toArray();
+            const buildsInDB = await testResults
+                .getData({ url, buildName, buildNum })
+                .toArray();
             if (!buildsInDB || buildsInDB.length === 0) {
-                let status = "NotDone";
-                if (streaming === "Yes") {
-                    status = "Streaming";
-                    logger.info(`Set build ${url} ${buildName} ${buildNum} status to Streaming `);
+                let status = 'NotDone';
+                if (streaming === 'Yes') {
+                    status = 'Streaming';
+                    logger.info(
+                        `Set build ${url} ${buildName} ${buildNum} status to Streaming `
+                    );
                 }
                 const keepForever = false;
                 const buildData = {
@@ -55,15 +65,19 @@ class BuildMonitor {
                     buildName,
                     buildNum,
                     buildDuration: null,
-                    buildResult: allBuilds[i].result ? allBuilds[i].result : null,
-                    timestamp: allBuilds[i].timestamp ? allBuilds[i].timestamp : null,
-                    type: type === "FVT" ? "Test" : type,
+                    buildResult: allBuilds[i].result
+                        ? allBuilds[i].result
+                        : null,
+                    timestamp: allBuilds[i].timestamp
+                        ? allBuilds[i].timestamp
+                        : null,
+                    type: type === 'FVT' ? 'Test' : type,
                     keepForever,
                     status,
                 };
                 const _id = await new DataManager().createBuild(buildData);
                 await new AuditLogsDB().insertAuditLogs({
-                    action: "[createBuild]",
+                    action: '[createBuild]',
                     _id,
                     url,
                     buildName,
@@ -77,28 +91,27 @@ class BuildMonitor {
         }
     }
 
-
     getBuildInfo(buildUrl) {
         // remove space and last /
-        buildUrl = buildUrl.trim().replace(/\/$/, "");
+        buildUrl = buildUrl.trim().replace(/\/$/, '');
 
         let url = null;
         let buildName = null;
 
         //split based on / and buildName should be the last element
-        let tokens = buildUrl.split("/");
+        let tokens = buildUrl.split('/');
         if (tokens && tokens.length > 1) {
             buildName = tokens.pop();
         }
 
-        if (buildUrl.includes("/view/")) {
+        if (buildUrl.includes('/view/')) {
             tokens = buildUrl.split(/\/view\//);
             // set url to domain only
             if (tokens && tokens.length > 1) {
                 url = tokens[0];
             }
-        } else if (buildUrl.includes("/job/")) {
-            url = buildUrl.replace("/job/" + buildName, "");
+        } else if (buildUrl.includes('/job/')) {
+            url = buildUrl.replace('/job/' + buildName, '');
         }
         return { buildName, url };
     }
@@ -112,10 +125,22 @@ class BuildMonitor {
         if (!deleteForever) {
             query.keepForever = { $ne: true };
         }
-        const allBuildsInDB = await testResults.getData( query ).sort({ buildNum: 1 }).toArray();
+        const allBuildsInDB = await testResults
+            .getData(query)
+            .sort({ buildNum: 1 })
+            .toArray();
         if (allBuildsInDB && allBuildsInDB.length > numBuildsToKeep) {
-            const endIndex = Math.max(0, allBuildsInDB.length - numBuildsToKeep);
-            return Promise.all(allBuildsInDB.slice(0, endIndex).map(build => deleteBuildsAndChildrenByFields({ _id: build._id })));
+            const endIndex = Math.max(
+                0,
+                allBuildsInDB.length - numBuildsToKeep
+            );
+            return Promise.all(
+                allBuildsInDB
+                    .slice(0, endIndex)
+                    .map((build) =>
+                        deleteBuildsAndChildrenByFields({ _id: build._id })
+                    )
+            );
         }
     }
 
@@ -123,7 +148,7 @@ class BuildMonitor {
         let date = new Date();
         date.setDate(date.getDate() - parseInt(numDaysToKeep, 10));
         const auditLogs = new AuditLogsDB();
-        await auditLogs.deleteMany({ "timestamp": { $lt: new Date(date) } });
+        await auditLogs.deleteMany({ timestamp: { $lt: new Date(date) } });
     }
 }
 module.exports = BuildMonitor;

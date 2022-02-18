@@ -1,1 +1,1 @@
-export { default as TestCompare } from "./TestCompare";
+export { default as TestCompare } from './TestCompare';

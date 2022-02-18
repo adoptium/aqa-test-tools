@@ -1,9 +1,9 @@
 const { query } = require('winston');
 const { TestResultsDB, ObjectID } = require('../Database');
 module.exports = async (req, res) => {
-    let { type, AQAvitCert} = req.query;
+    let { type, AQAvitCert } = req.query;
     const db = new TestResultsDB();
-    
+
     let query = {};
     query.parentId = { $exists: false };
     query.type = type;
@@ -12,20 +12,19 @@ module.exports = async (req, res) => {
     }
     let result = await db.aggregate([
         {
-            $match: query
+            $match: query,
         },
         {
             $group: {
                 _id: {
                     url: '$url',
-                    buildName: '$buildName'
+                    buildName: '$buildName',
                 },
-            }
+            },
         },
         {
-            $sort: { _id: 1 }
-        }
+            $sort: { _id: 1 },
+        },
     ]);
     res.send(result);
- 
-}
+};

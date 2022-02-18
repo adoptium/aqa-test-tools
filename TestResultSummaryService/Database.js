@@ -1,20 +1,30 @@
 const { MongoClient, ObjectID } = require('mongodb');
-const ArgParser = require("./ArgParser");
+const ArgParser = require('./ArgParser');
 
 let db;
 (async function () {
     let url;
-    let config = ArgParser.getConfigDB()
+    let config = ArgParser.getConfigDB();
     if (config && config.connectionString) {
         url = config.connectionString;
     } else {
-        const credential = config === null ? "" : `${encodeURIComponent(config.user)}:${encodeURIComponent(config.password)}@`;
-        const hostname = (process.env.MONGO_CONTAINER_NAME !== undefined ? process.env.MONGO_CONTAINER_NAME : 'localhost');
+        const credential =
+            config === null
+                ? ''
+                : `${encodeURIComponent(config.user)}:${encodeURIComponent(
+                      config.password
+                  )}@`;
+        const hostname =
+            process.env.MONGO_CONTAINER_NAME !== undefined
+                ? process.env.MONGO_CONTAINER_NAME
+                : 'localhost';
         url = 'mongodb://' + credential + hostname + ':27017/exampleDb';
     }
 
-    const dbConnect = await MongoClient.connect(url, { useUnifiedTopology: true });
-    db = dbConnect.db("exampleDb");
+    const dbConnect = await MongoClient.connect(url, {
+        useUnifiedTopology: true,
+    });
+    db = dbConnect.db('exampleDb');
     for (let collection of ['testResults', 'output', 'auditLogs', 'user']) {
         try {
             await db.createCollection(collection);
@@ -22,7 +32,7 @@ let db;
             // do nothing. The collection may already exist
         }
     }
-})()
+})();
 
 class Database {
     populateDB(data) {
@@ -69,7 +79,8 @@ class Database {
         if (query.buildNum) query.buildNum = parseInt(query.buildNum, 10);
         if (query._id) query._id = new ObjectID(query._id);
         if (query.parentId) query.parentId = new ObjectID(query.parentId);
-        if (query["tests._id"]) query["tests._id"] = new ObjectID(query["tests._id"]);
+        if (query['tests._id'])
+            query['tests._id'] = new ObjectID(query['tests._id']);
         const result = await this.aggregate([
             {
                 $match: query,
@@ -85,15 +96,15 @@ class Database {
         const result = await this.aggregate([
             {
                 $match: {
-                    "tests._id": new ObjectID(testId)
-                }
+                    'tests._id': new ObjectID(testId),
+                },
             },
-            { $unwind: "$tests" },
+            { $unwind: '$tests' },
             {
                 $match: {
-                    "tests._id": new ObjectID(testId)
-                }
-            }
+                    'tests._id': new ObjectID(testId),
+                },
+            },
         ]);
         return result;
     }
@@ -116,44 +127,46 @@ class Database {
             }
             matchQuery = { url, buildName, buildNum };
         } else {
-            return { error: `Cannot find id ${id}, url ${url}, buildName ${buildName} or buildNum ${buildNum}` };
+            return {
+                error: `Cannot find id ${id}, url ${url}, buildName ${buildName} or buildNum ${buildNum}`,
+            };
         }
-
 
         let buildNameRegex = `^Test.*`;
         if (query.level) buildNameRegex = `${buildNameRegex}${query.level}..*`;
         if (query.group) buildNameRegex = `${buildNameRegex}${query.group}-.*`;
-        if (query.platform) buildNameRegex = `${buildNameRegex}${query.platform}`;
+        if (query.platform)
+            buildNameRegex = `${buildNameRegex}${query.platform}`;
 
         const result = await this.aggregate([
             { $match: matchQuery },
             {
                 $graphLookup: {
-                    from: "testResults",
-                    startWith: "$_id",
-                    connectFromField: "_id",
-                    connectToField: "parentId",
-                    as: "childBuilds",
-                }
+                    from: 'testResults',
+                    startWith: '$_id',
+                    connectFromField: '_id',
+                    connectToField: 'parentId',
+                    as: 'childBuilds',
+                },
             },
             {
                 $project: {
-                    "childBuilds": "$childBuilds"
-                }
+                    childBuilds: '$childBuilds',
+                },
             },
-            { $unwind: "$childBuilds" },
-            { $match: { "childBuilds.buildName": { $regex: buildNameRegex } } },
+            { $unwind: '$childBuilds' },
+            { $match: { 'childBuilds.buildName': { $regex: buildNameRegex } } },
             {
                 $group: {
                     _id: {},
-                    total: { $sum: "$childBuilds.testSummary.total" },
-                    executed: { $sum: "$childBuilds.testSummary.executed" },
-                    passed: { $sum: "$childBuilds.testSummary.passed" },
-                    failed: { $sum: "$childBuilds.testSummary.failed" },
-                    disabled: { $sum: "$childBuilds.testSummary.disabled" },
-                    skipped: { $sum: "$childBuilds.testSummary.skipped" },
-                }
-            }
+                    total: { $sum: '$childBuilds.testSummary.total' },
+                    executed: { $sum: '$childBuilds.testSummary.executed' },
+                    passed: { $sum: '$childBuilds.testSummary.passed' },
+                    failed: { $sum: '$childBuilds.testSummary.failed' },
+                    disabled: { $sum: '$childBuilds.testSummary.disabled' },
+                    skipped: { $sum: '$childBuilds.testSummary.skipped' },
+                },
+            },
         ]);
         return result[0] || {};
     }
@@ -165,17 +178,20 @@ class Database {
             { $match: info },
             {
                 $graphLookup: {
-                    from: "testResults",
-                    startWith: "$parentId",
-                    connectFromField: "parentId",
-                    connectToField: "_id",
-                    as: "buildHierarchy",
-                }
+                    from: 'testResults',
+                    startWith: '$parentId',
+                    connectFromField: 'parentId',
+                    connectToField: '_id',
+                    as: 'buildHierarchy',
+                },
             },
         ]);
 
         if (result && result.length > 0) {
-            if (result[0].buildHierarchy && result[0].buildHierarchy.length > 0) {
+            if (
+                result[0].buildHierarchy &&
+                result[0].buildHierarchy.length > 0
+            ) {
                 return result[0].buildHierarchy[0]._id;
             }
             // if no result or no build hierarchy, this is a root build. Set rootBuildId = _id
@@ -185,9 +201,20 @@ class Database {
     }
 
     async getAvgDuration(info) {
-        const { matchQuery = {}, testName, platform, jdkVersion, impl, level, group, buildResult, limit = 500 } = info;
+        const {
+            matchQuery = {},
+            testName,
+            platform,
+            jdkVersion,
+            impl,
+            level,
+            group,
+            buildResult,
+            limit = 500,
+        } = info;
         let buildNameRegex = `^Test.*`;
-        if (jdkVersion) buildNameRegex = `${buildNameRegex}_openjdk${jdkVersion}.*`;
+        if (jdkVersion)
+            buildNameRegex = `${buildNameRegex}_openjdk${jdkVersion}.*`;
         if (impl) buildNameRegex = `${buildNameRegex}${impl}_.*`;
         if (level) buildNameRegex = `${buildNameRegex}${level}..*`;
         if (group) buildNameRegex = `${buildNameRegex}${group}_.*`;
@@ -205,24 +232,24 @@ class Database {
         matchQuery.buildResult = { $regex: buildResultRegex };
         matchQuery.hasChildren = false;
         matchQuery.tests = {
-            "$exists": true,
-            "$ne": null
+            $exists: true,
+            $ne: null,
         };
 
         // the aggregate order is important. Please change with caution
         const aggregateQuery = [
             { $match: matchQuery },
-            { $sort: { 'timestamp': -1 } },
+            { $sort: { timestamp: -1 } },
             { $limit: parseInt(limit, 10) },
-            { $unwind: "$tests" }
+            { $unwind: '$tests' },
         ];
 
         if (testName) {
             let testNameRegex = `.*${testName}.*`;
             const testNameQuery = {
                 $match: {
-                    "tests.testName": { $regex: testNameRegex }
-                }
+                    'tests.testName': { $regex: testNameRegex },
+                },
             };
             aggregateQuery.push(testNameQuery);
         }
@@ -234,21 +261,21 @@ class Database {
                 buildNum: 1,
                 machine: 1,
                 buildUrl: 1,
-                "tests.testName": 1,
-                "tests.duration": 1,
-            }
+                'tests.testName': 1,
+                'tests.duration': 1,
+            },
         };
 
         const groupQuery = {
             $group: {
-                _id: "$tests.testName",
-                avgDuration: { $avg: "$tests.duration" }
+                _id: '$tests.testName',
+                avgDuration: { $avg: '$tests.duration' },
             },
         };
 
         aggregateQuery.push(projectQuery);
         aggregateQuery.push(groupQuery);
-        aggregateQuery.push({ $sort: { 'avgDuration': -1 } });
+        aggregateQuery.push({ $sort: { avgDuration: -1 } });
         const result = await this.aggregate(aggregateQuery);
         return result;
     }
@@ -262,7 +289,7 @@ class Database {
             buildName,
             buildNum,
             status,
-            action
+            action,
         });
     }
 }
@@ -308,4 +335,12 @@ class UserDB extends Database {
     }
 }
 
-module.exports = { TestResultsDB, OutputDB, BuildListDB, ApplicationTestsDB, AuditLogsDB, UserDB, ObjectID };
+module.exports = {
+    TestResultsDB,
+    OutputDB,
+    BuildListDB,
+    ApplicationTestsDB,
+    AuditLogsDB,
+    UserDB,
+    ObjectID,
+};

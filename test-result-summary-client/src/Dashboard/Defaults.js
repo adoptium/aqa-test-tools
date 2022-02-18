@@ -7,10 +7,10 @@ export default {
                 y: 0,
                 settings: {
                     serverSelected: 'AdoptOpenJDK',
-                    title: "https://ci.adoptopenjdk.net",
-                }
+                    title: 'https://ci.adoptopenjdk.net',
+                },
             },
-        ]
+        ],
     },
     Perf: {
         widgets: [
@@ -20,9 +20,9 @@ export default {
                 y: 0,
                 settings: {
                     serverSelected: 'AdoptOpenJDK',
-                    buildSelected: 'Test_openjdk8_j9_sanity.perf_x86-64_linux'
-                }
+                    buildSelected: 'Test_openjdk8_j9_sanity.perf_x86-64_linux',
+                },
             },
-        ]
-    }
-}
+        ],
+    },
+};

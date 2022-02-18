@@ -1,1 +1,1 @@
-export { default as TabularView } from "./TabularView";
+export { default as TabularView } from './TabularView';
