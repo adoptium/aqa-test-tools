@@ -9,6 +9,10 @@ Project for logging test results and viewing history. Should be abstract enough 
 -   MongoDB 4.0.6 and above
 -   Access to [Jenkins Instances](https://ci.adoptopenjdk.net)
 
+## Code formatter
+
+-   Install prettier extension for your IDE (i.e., [Prettier Formatter for Visual Studio Code](https://marketplace.visualstudio.com/items?itemName=esbenp.prettier-vscode)). Your code will be auto fomatted on save.
+
 ## Local run/development steps
 
 Execute the following commands after installing Node + npm + mongoDB and cloning the repository:
