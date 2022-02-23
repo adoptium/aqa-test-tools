@@ -1,13 +1,14 @@
 const Parser = require('./Parser');
 const Utils = require(`./Utils`);
-const decompress = require('decompress');
+
 const ObjectID = require('mongodb').ObjectID;
 const path = require('path');
 const { TestResultsDB, OutputDB } = require('../Database');
 
 let outputDb = null;
 let testResultDb = null;
-let zipPath = null;
+let fileData = null;
+
 const timestamp = Date.now();
 class Tap extends Parser {
     static canParse(filePath) {
@@ -22,14 +23,21 @@ class Tap extends Parser {
         }
     }
 
-    static async parse(zip) {
-        zipPath = zip;
-        const files = await decompress(zipPath, 'dist'); // unzipping
+    static async parse(files) {
+        // Create DBs
         outputDb = new OutputDB();
         testResultDb = new TestResultsDB();
-        const tapFiles = this.getTapFileNames(files);
+
+        // Get file names and data
+        const [tapFiles, tapFileData] = this.getTapFiles(files);
+
+        fileData = tapFileData;
+
+        // Add build duration and result variables
         let buildDuration = [0];
         let buildResult = ['SUCCESS'];
+
+        // initiate test and final build arrays
         let testBuilds = [];
         let finalBuilds = [];
 
@@ -67,6 +75,7 @@ class Tap extends Parser {
             );
             testBuilds.push(regularBuildData);
         }
+
         const insertedTestBuilds = await testResultDb.insertMany(
             testBuilds.flat()
         );
@@ -107,11 +116,11 @@ class Tap extends Parser {
         let topLevelBuildDuration = [0];
         let topLevelBuildResult = ['SUCCESS'];
 
-        for (const [key, value] of groupedTestList.entries()) {
+        for (const [parent, children] of groupedTestList.entries()) {
             const buildData = {
                 url: 'www.test.com', //TODO
-                buildName: key,
-                buildNameStr: key,
+                buildName: parent,
+                buildNameStr: parent,
                 rootBuildId,
                 parentBuildId: rootBuildId,
                 type: 'Build',
@@ -127,7 +136,7 @@ class Tap extends Parser {
             const parentStatus = await testResultDb.populateDB(buildData);
             const parentId = parentStatus.insertedId;
             const [testBuildInfo, buildDuration, buildResult] =
-                await this.getTestBuilds(value, rootBuildId, parentId);
+                await this.getTestBuilds(children, rootBuildId, parentId);
 
             // update info based on all tap file results
             this.updateBuildDurationAndResult(
@@ -160,9 +169,9 @@ class Tap extends Parser {
         let topLevelBuildDuration = [0];
         let topLevelBuildResult = ['SUCCESS'];
 
-        for (let i = 0; i < tapFiles.length; i++) {
+        for (let tapFile of tapFiles) {
             const [testBuildInfo, buildDuration, testSummary, buildResult] =
-                await this.getTapFileTests(tapFiles[i]);
+                await this.getTapFileTests(tapFile);
             this.updateBuildDurationAndResult(
                 topLevelBuildDuration,
                 buildDuration,
@@ -174,8 +183,8 @@ class Tap extends Parser {
             const tests = testStatus.ops;
             const buildData = {
                 url: 'www.test.com', //TODO
-                buildName: tapFiles[i].replace('.tap', ''),
-                buildNameStr: tapFiles[i].replace('.tap', ''),
+                buildName: tapFile.replace('.tap', ''),
+                buildNameStr: tapFile.replace('.tap', ''),
                 rootBuildId,
                 parentBuildId: parentId,
                 type: 'Test',
@@ -198,13 +207,8 @@ class Tap extends Parser {
     }
 
     static async getTapFileTests(file) {
-        let fs = require('fs');
-        const zipName = path.basename(zipPath).replace('.zip', '');
-        const filePath = path.join(__dirname, '../dist/' + zipName);
+        const fileArray = fileData.get(file);
 
-        let fileArray = fs
-            .readFileSync(filePath.concat('/' + file), 'utf8')
-            .split('\n');
         let testSummaryMap = new Map([
             ['total', 0],
             ['executed', 0],
@@ -354,18 +358,21 @@ class Tap extends Parser {
         return [counter, outputId];
     }
 
-    static getTapFileNames(files) {
-        const cleanFiles = [];
-        for (var i = 0; i < files.length; i++) {
-            const zipName = files[0].path;
-            if (files[i].path.startsWith(zipName)) {
-                const strippedTapName = files[i].path.split('/')[1];
-                if (strippedTapName != '') {
-                    cleanFiles.push(strippedTapName);
-                }
+    static getTapFiles(files) {
+        let fileNames = [];
+        let fileData = new Map();
+
+        for (var file of files) {
+            if (file.name !== '' && !file.name.startsWith('.')) {
+                fileNames.push(file.name);
+                fileData.set(
+                    file.name,
+                    file.getData().toString('utf8').split('\n')
+                );
             }
         }
-        return cleanFiles;
+
+        return [fileNames, fileData];
     }
 
     static partitionTapFiles(tapFiles) {
@@ -375,21 +382,21 @@ class Tap extends Parser {
         ];
     }
 
-    static groupTestList(testListFile) {
+    static groupTestList(testListFiles) {
         const testListMap = new Map();
-        for (var i = 0; i < testListFile.length; i++) {
-            const parentName = this.getStrippedTestListName(testListFile[i]);
+        for (var i = 0; i < testListFiles.length; i++) {
+            const parentName = this.getTestListParentName(testListFiles[i]);
             let existingParent = testListMap.get(parentName);
             if (!existingParent) {
-                testListMap.set(parentName, [testListFile[i]]);
+                testListMap.set(parentName, [testListFiles[i]]);
             } else {
-                existingParent.push(testListFile[i]);
+                existingParent.push(testListFiles[i]);
             }
         }
         return testListMap;
     }
 
-    static getStrippedTestListName(testListFile) {
+    static getTestListParentName(testListFile) {
         const regex = /testList_[0-9]_/i;
         return testListFile.replace(regex, '').replace('.tap', '');
     }
