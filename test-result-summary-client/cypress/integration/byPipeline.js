@@ -12,6 +12,7 @@ describe('Integration test with visual testing', () => {
 
     it('Loads Grid view', () => {
         cy.contains('Grid').click();
+        cy.url().should('include', '/resultSummary');
         cy.contains('Test_openjdk11_hs_extended.openjdk_x86-64_linux #31');
         cy.contains('Test Summary');
         cy.contains('Passed: 40');
