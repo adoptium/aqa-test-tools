@@ -29,7 +29,9 @@
         "react-router": "^5.2.0",
         "react-router-dom": "^5.2.0",
         "react-table": "^6.11.5",
-        "sweetalert2": "^10.16.9"
+        "sweetalert2": "^10.16.9",
+        "react-app-rewired": "^2.1.8",
+        "react-scripts": "^3.4.4"
     },
     "scripts": {
         "start": "react-app-rewired start",
@@ -41,9 +43,7 @@
     "proxy": "http://localhost:3001",
     "devDependencies": {
         "cypress": "^8.6.0",
-        "prettier": "2.5.1",
-        "react-app-rewired": "^2.1.8",
-        "react-scripts": "^3.4.4"
+        "prettier": "2.5.1"
     },
     "browserslist": [
         ">0.2%",
