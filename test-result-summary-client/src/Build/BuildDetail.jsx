@@ -133,15 +133,6 @@ export default class BuildDetail extends Component {
                     title={'Children builds'}
                     buildData={childBuildsDataSource}
                 />
-                <br />
-                <Link
-                    to={{
-                        pathname: '/releaseSummary',
-                        search: params({ parentId, buildName }),
-                    }}
-                >
-                    <Button type="primary">Release Summary Report</Button>
-                </Link>
             </div>
         );
     }
