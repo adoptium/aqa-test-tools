@@ -87,7 +87,25 @@ export default class ReleaseSummary extends Component {
                                                         testName,
                                                     }
                                                 )}) \n` +
-                                                `Java -version ${javaVersion} \n`;
+                                                `Java -version ${javaVersion} \n` +
+                                                `**Failed Tests** \n` +
+                                                tests
+                                                    .map((test) => {
+                                                        if (
+                                                            test.testResult ===
+                                                            'FAILED'
+                                                        ) {
+                                                            return `- ❌ [${test.testName}](${originUrl}/output/test?id=${test._id})❌\n`;
+                                                        }
+                                                        if (
+                                                            test.testResult ===
+                                                            'SKIPPED'
+                                                        ) {
+                                                            return `- ⏩ [${test.testName}](${originUrl}/output/test?id=${test._id})⏩\n`;
+                                                        }
+                                                    })
+                                                    .join('') +
+                                                `\n`;
                                         }
                                     }
                                 )
