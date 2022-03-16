@@ -47,6 +47,7 @@ export default class ReleaseSummary extends Component {
                         buildName,
                         buildUrl,
                         buildResult,
+                        javaVersion,
                         tests = [],
                     }) => {
                         const buildInfo = `\n[**${buildName}**](${buildUrl})`;
@@ -85,7 +86,8 @@ export default class ReleaseSummary extends Component {
                                                         testId,
                                                         testName,
                                                     }
-                                                )}) \n`;
+                                                )}) \n` +
+                                                `Java -version ${javaVersion} \n`;
                                         }
                                     }
                                 )
