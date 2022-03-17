@@ -95,6 +95,9 @@ export default class ReleaseSummary extends Component {
                         } else {
                             failedBuildSummary[buildName] = buildInfo;
                             failedBuildSummary[buildName] += buildResultStr;
+                            failedBuildSummary[
+                                buildName
+                            ] += `**Java -version**: ${javaVersion} \n`;
                         }
                     }
                 )
