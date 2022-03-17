@@ -96,6 +96,7 @@ export default class ReleaseSummary extends Component {
                             failedBuildSummary[buildName] = buildInfo;
                             failedBuildSummary[buildName] += buildResultStr;
                             failedBuildSummary[buildName] +=
+                                `**Java -version**: ${javaVersion} \n` +
                                 `**Failed Tests** \n` +
                                 tests
                                     .map((test) => {
