@@ -101,7 +101,7 @@ export default class ReleaseSummary extends Component {
                                 tests
                                     .map((test) => {
                                         if (test.testResult === 'FAILED') {
-                                            return `- ❌ [${test.testName}](${originUrl}/output/test?id=${test._id})❌\n`;
+                                            return `- ❌ [${test.testName}](${originUrl}/output/test?id=${test._id}) ❌\n`;
                                         }
                                     })
                                     .join('') +
