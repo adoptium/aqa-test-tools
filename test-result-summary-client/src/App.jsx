@@ -89,7 +89,7 @@ export default class App extends Component {
                                 </Menu.Item>
                                 <Menu.Item key="6">
                                     <Link to="/tests/AQAvitCert">
-                                        AQAvit Certification
+                                        AQAvit Verification
                                     </Link>
                                 </Menu.Item>
                                 <Menu.Item key="2">
