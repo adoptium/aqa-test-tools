@@ -87,7 +87,19 @@ export default class ReleaseSummary extends Component {
                                                         testName,
                                                     }
                                                 )}) \n` +
-                                                `**Java -version**: ${javaVersion} \n`;
+                                                `**Java -version**: ${javaVersion} \n` +
+                                                `**Failed Tests** \n` +
+                                                tests
+                                                    .map((test) => {
+                                                        if (
+                                                            test.testResult ===
+                                                            'FAILED'
+                                                        ) {
+                                                            return `- ❌ [${test.testName}](${originUrl}/output/test?id=${test._id}) ❌\n`;
+                                                        }
+                                                    })
+                                                    .join('') +
+                                                `\n`;
                                         }
                                     }
                                 )
@@ -95,17 +107,9 @@ export default class ReleaseSummary extends Component {
                         } else {
                             failedBuildSummary[buildName] = buildInfo;
                             failedBuildSummary[buildName] += buildResultStr;
-                            failedBuildSummary[buildName] +=
-                                `**Java -version**: ${javaVersion} \n` +
-                                `**Failed Tests** \n` +
-                                tests
-                                    .map((test) => {
-                                        if (test.testResult === 'FAILED') {
-                                            return `- ❌ [${test.testName}](${originUrl}/output/test?id=${test._id}) ❌\n`;
-                                        }
-                                    })
-                                    .join('') +
-                                `\n`;
+                            failedBuildSummary[
+                                buildName
+                            ] += `**Java -version**: ${javaVersion} \n`;
                         }
                     }
                 )
