@@ -88,7 +88,7 @@ export default class ReleaseSummary extends Component {
                                             }
                                             //For failed tests, add links to the deep history and possible issues list
                                             failedTestSummary[buildName] +=
-                                                `${testName} => [deep history ${totalPasses}/${history.length} passed](${originUrl}/deepHistory?testId=${testId}) | ` +
+                                                `[${testName}](${originUrl}/output/test?id=${_id}) => [deep history ${totalPasses}/${history.length} passed](${originUrl}/deepHistory?testId=${testId}) | ` +
                                                 `[possible issues](${originUrl}/possibleIssues${params(
                                                     {
                                                         buildId,
