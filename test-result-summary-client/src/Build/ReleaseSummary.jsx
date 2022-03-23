@@ -58,6 +58,16 @@ export default class ReleaseSummary extends Component {
                         if (buildName.startsWith('Test_openjdk')) {
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
+                            if (!buildName.includes('_testList')) {
+                                failedTestSummary[buildName] += `
+                                <details>
+                                    <summary>java -version output</summary>
+                                    <br/>
+                                    \`\`\`${javaVersion}\`\`\`
+                                </details>
+                                \n
+                                `;
+                            }
                             const buildId = _id;
                             await Promise.all(
                                 tests.map(
@@ -87,21 +97,6 @@ export default class ReleaseSummary extends Component {
                                                         testName,
                                                     }
                                                 )}) \n`;
-
-                                            if (
-                                                !buildName.includes('_testList')
-                                            ) {
-                                                failedTestSummary[
-                                                    buildName
-                                                ] += `
-                                                <details>
-                                                    <summary>java -version output</summary>
-                                                    <br/>
-                                                    \`\`\`${javaVersion}\`\`\`
-                                                </details>
-                                                \n
-                                                `;
-                                            }
                                         }
                                     }
                                 )
@@ -109,16 +104,6 @@ export default class ReleaseSummary extends Component {
                         } else {
                             failedBuildSummary[buildName] = buildInfo;
                             failedBuildSummary[buildName] += buildResultStr;
-                            if (!buildName.includes('_testList')) {
-                                failedBuildSummary[buildName] += `
-                                <details>
-                                    <summary>java -version output</summary>
-                                    <br/>
-                                    \`\`\`${javaVersion}\`\`\`
-                                </details>
-                                \n
-                                `;
-                            }
                         }
                     }
                 )
