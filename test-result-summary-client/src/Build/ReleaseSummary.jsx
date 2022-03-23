@@ -100,6 +100,21 @@ export default class ReleaseSummary extends Component {
                                                     })
                                                     .join('') +
                                                 `\n`;
+
+                                            if (
+                                                !buildName.includes('_testList')
+                                            ) {
+                                                failedTestSummary[
+                                                    buildName
+                                                ] += `
+                                                <details>
+                                                    <summary>java -version output</summary>
+                                                    <br/>
+                                                    \`\`\`${javaVersion}\`\`\`
+                                                </details>
+                                                \n
+                                                `;
+                                            }
                                         }
                                     }
                                 )
@@ -107,9 +122,16 @@ export default class ReleaseSummary extends Component {
                         } else {
                             failedBuildSummary[buildName] = buildInfo;
                             failedBuildSummary[buildName] += buildResultStr;
-                            failedBuildSummary[
-                                buildName
-                            ] += `**Java -version**: ${javaVersion} \n`;
+                            if (!buildName.includes('_testList')) {
+                                failedBuildSummary[buildName] += `
+                                <details>
+                                    <summary>java -version output</summary>
+                                    <br/>
+                                    \`\`\`${javaVersion}\`\`\`
+                                </details>
+                                \n
+                                `;
+                            }
                         }
                     }
                 )
