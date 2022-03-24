@@ -59,14 +59,13 @@ export default class ReleaseSummary extends Component {
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
                             if (!buildName.includes('_testList')) {
-                                failedTestSummary[buildName] += `
-                                <details>
-                                    <summary>java -version output</summary>
-                                    <br/>
-                                    \`\`\`${javaVersion}\`\`\`
-                                </details>
-                                \n
-                                `;
+                                const javaVersionDropdown = `<details>
+                                <summary>java -version output</summary>
+                                <br/>
+                                \`\`\`${javaVersion}\`\`\`
+                            </details> \n`;
+                                failedTestSummary[buildName] +=
+                                    javaVersionDropdown;
                             }
                             const buildId = _id;
                             await Promise.all(
