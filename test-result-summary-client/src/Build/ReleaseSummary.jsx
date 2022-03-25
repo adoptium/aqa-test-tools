@@ -63,6 +63,23 @@ export default class ReleaseSummary extends Component {
                                 tests.map(
                                     async ({ _id, testName, testResult }) => {
                                         if (testResult === 'FAILED') {
+                                            // fetch build data
+                                            const buildData = await fetchData(
+                                                `/api/getData?_id=${buildId}`
+                                            );
+                                            let { rerunLink } = buildData[0];
+                                            if (rerunLink) {
+                                                rerunLink = rerunLink.replace(
+                                                    /(\WTARGET=)([^&]*)/gi,
+                                                    '$1' + testName
+                                                );
+                                            }
+
+                                            // set rerun in grinder link
+                                            const rerunLinkInfo = rerunLink
+                                                ? `${nl}[Rerun in Grinder](${rerunLink}) ${nl}${nl}`
+                                                : ``;
+
                                             const testId = _id;
                                             const history = await fetchData(
                                                 `/api/getHistoryPerTest?testId=${testId}&limit=100`
@@ -86,7 +103,8 @@ export default class ReleaseSummary extends Component {
                                                         testId,
                                                         testName,
                                                     }
-                                                )}) ${nl}`;
+                                                )})` +
+                                                `${rerunLinkInfo}`;
                                         }
                                     }
                                 )
