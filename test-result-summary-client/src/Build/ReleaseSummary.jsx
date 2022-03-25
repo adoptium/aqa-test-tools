@@ -20,10 +20,36 @@ export default class ReleaseSummary extends Component {
         const originUrl = window.location.origin;
 
         const build = await fetchData(`/api/getParents?id=${parentId}`);
-        let report = '';
+
         const nl = `\n`;
+        let report = '';
+
         if (build && build[0]) {
             const { buildName, buildUrl, timestamp, startBy } = build[0];
+
+            // TODO: This code was taken from GitNewIssue but will the rerun link will show undefined for
+            //       some buildIds
+            // fetch build data
+            const buildData = await fetchData(`/api/getData?_id=${parentId}`);
+            const { artifactory, machine, javaVersion } = buildData[0];
+            let { rerunLink } = {
+                ...buildData[0],
+                buildName,
+                buildUrl,
+                timestamp,
+            };
+
+            if (rerunLink) {
+                rerunLink = rerunLink.replace(
+                    /(\WTARGET=)([^&]*)/gi,
+                    '$1' + buildName
+                );
+            }
+
+            const rerunLinkInfo = rerunLink
+                ? `[Rerun in Grinder](${rerunLink}) ${nl}`
+                : ``;
+
             report =
                 `#### Release Summary Report for ${buildName} ${nl}` +
                 `**Report generated at:** ${new Date().toUTCString()} ${nl} ${nl}` +
@@ -31,7 +57,8 @@ export default class ReleaseSummary extends Component {
                 `and TRSS [Grid View](${originUrl}/resultSummary?parentId=${parentId}) ${nl}` +
                 `Jenkins Build URL ${buildUrl} ${nl}Started by ${startBy} at ${new Date(
                     timestamp
-                ).toLocaleString()} ${nl}`;
+                ).toLocaleString()} ${nl}` +
+                rerunLinkInfo;
 
             report += `${nl} --- ${nl}`;
 
@@ -63,23 +90,6 @@ export default class ReleaseSummary extends Component {
                                 tests.map(
                                     async ({ _id, testName, testResult }) => {
                                         if (testResult === 'FAILED') {
-                                            // fetch build data
-                                            const buildData = await fetchData(
-                                                `/api/getData?_id=${buildId}`
-                                            );
-                                            let { rerunLink } = buildData[0];
-                                            if (rerunLink) {
-                                                rerunLink = rerunLink.replace(
-                                                    /(\WTARGET=)([^&]*)/gi,
-                                                    '$1' + testName
-                                                );
-                                            }
-
-                                            // set rerun in grinder link
-                                            const rerunLinkInfo = rerunLink
-                                                ? `${nl}[Rerun in Grinder](${rerunLink}) ${nl}${nl}`
-                                                : ``;
-
                                             const testId = _id;
                                             const history = await fetchData(
                                                 `/api/getHistoryPerTest?testId=${testId}&limit=100`
@@ -103,8 +113,7 @@ export default class ReleaseSummary extends Component {
                                                         testId,
                                                         testName,
                                                     }
-                                                )})` +
-                                                `${rerunLinkInfo}`;
+                                                )}) ${nl}`;
                                         }
                                     }
                                 )
