@@ -28,7 +28,7 @@ export default class ReleaseSummary extends Component {
             const { buildName, buildUrl, timestamp, startBy } = build[0];
 
             // fetch build data
-            const buildData = await fetchData(`/api/getData?_id=${parentId}`);
+            let buildData = await fetchData(`/api/getData?_id=${parentId}`);
             let { rerunLink } = buildData ? buildData[0] : null;
             if (rerunLink) {
                 rerunLink = rerunLink.replace(
@@ -37,8 +37,8 @@ export default class ReleaseSummary extends Component {
                 );
             }
 
-            const rerunLinkInfo = rerunBuildLink
-                ? `[Rerun in Grinder](${rerunBuildLink}) ${nl}`
+            let rerunLinkInfo = rerunLink
+                ? `[Rerun in Grinder](${rerunLink}) ${nl}`
                 : ``;
 
             report =
@@ -69,21 +69,35 @@ export default class ReleaseSummary extends Component {
                         javaVersion,
                         tests = [],
                     }) => {
+                        buildData = await fetchData(`/api/getData?_id=${_id}`);
+                        rerunLink = buildData ? buildData[0]?.rerunLink : null;
+                        if (rerunLink) {
+                            rerunLink = rerunLink.replace(
+                                /(\WTARGET=)([^&]*)/gi,
+                                '$1' + buildName
+                            );
+                        }
+
                         const buildInfo = `${nl}[**${buildName}**](${buildUrl})`;
                         const buildResultStr =
                             buildResult === 'UNSTABLE'
                                 ? ` ⚠️ ${buildResult} ⚠️${nl}`
                                 : ` ❌ ${buildResult} ❌${nl}`;
+                        const rerunParentLink = rerunLink
+                            ? `[Rerun all](${rerunLink})`
+                            : ``;
 
                         if (buildName.startsWith('Test_openjdk')) {
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
+                            failedTestSummary[buildName] += rerunParentLink;
                             if (!buildName.includes('_testList')) {
                                 const javaVersionBlock = `\`\`\`\n${javaVersion}\n\`\`\``;
                                 const javaVersionDropdown = `<details><summary>java -version output</summary>\n\n${javaVersionBlock}\n</details>\n\n`;
                                 failedTestSummary[buildName] +=
                                     javaVersionDropdown;
                             }
+
                             const buildId = _id;
                             await Promise.all(
                                 tests.map(
@@ -113,22 +127,10 @@ export default class ReleaseSummary extends Component {
                                                 }
                                             )})`;
 
-                                            if (rerunBuildLink) {
-                                                rerunBuildLink =
-                                                    rerunBuildLink.replace(
-                                                        /(\WTARGET=)([^&]*)/gi,
-                                                        '$1' + testName
-                                                    );
-                                            }
-
-                                            const rerunTestInfo = rerunBuildLink
-                                                ? ` | [rerun](${rerunBuildLink})`
-                                                : ``;
-
                                             //For failed tests, add links to the deep history and possible issues list
                                             failedTestSummary[buildName] +=
                                                 `${testLink} => ${deepHistory} | ` +
-                                                `${possibleIssues}${rerunTestInfo} ${nl}`;
+                                                `${possibleIssues} ${nl}`;
                                         }
                                     }
                                 )
