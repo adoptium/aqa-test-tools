@@ -107,6 +107,14 @@ export default class ReleaseSummary extends Component {
                                             const history = await fetchData(
                                                 `/api/getHistoryPerTest?testId=${testId}&limit=100`
                                             );
+                                            if (rerunLink) {
+                                                rerunLink = rerunLink.replace(
+                                                    /(\WTARGET=)([^&]*)/gi,
+                                                    '$1' +
+                                                        buildName +
+                                                        `&nbsp;TESTLIST=${testName}`
+                                                );
+                                            }
                                             let totalPasses = 0;
                                             for (let testRun of history) {
                                                 if (
@@ -126,11 +134,14 @@ export default class ReleaseSummary extends Component {
                                                     testName,
                                                 }
                                             )})`;
+                                            const rerunChildLink = rerunLink
+                                                ? ` | [rerun](${rerunLink})`
+                                                : ``;
 
                                             //For failed tests, add links to the deep history and possible issues list
                                             failedTestSummary[buildName] +=
                                                 `${testLink} => ${deepHistory} | ` +
-                                                `${possibleIssues} ${nl}`;
+                                                `${possibleIssues}${rerunChildLink}${nl}`;
                                         }
                                     }
                                 )
