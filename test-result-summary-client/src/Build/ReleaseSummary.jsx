@@ -60,7 +60,7 @@ export default class ReleaseSummary extends Component {
                             failedTestSummary[buildName] += buildResultStr;
                             if (!buildName.includes('_testList')) {
                                 const javaVersionBlock = `\`\`\`\n${javaVersion}\n\`\`\``;
-                                const javaVersionDropdown = `<details><summary>java -version output</summary><br/>\n\n${javaVersionBlock}\n</details>\n\n`;
+                                const javaVersionDropdown = `<details><summary>java -version output</summary>\n\n${javaVersionBlock}\n</details>\n\n`;
                                 failedTestSummary[buildName] +=
                                     javaVersionDropdown;
                             }
