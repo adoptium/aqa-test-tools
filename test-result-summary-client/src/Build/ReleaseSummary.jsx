@@ -58,6 +58,12 @@ export default class ReleaseSummary extends Component {
                         if (buildName.startsWith('Test_openjdk')) {
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
+                            if (!buildName.includes('_testList')) {
+                                const javaVersionBlock = `\`\`\`\n${javaVersion}\n\`\`\``;
+                                const javaVersionDropdown = `<details><summary>java -version output</summary>\n\n${javaVersionBlock}\n</details>\n\n`;
+                                failedTestSummary[buildName] +=
+                                    javaVersionDropdown;
+                            }
                             const buildId = _id;
                             await Promise.all(
                                 tests.map(
@@ -78,7 +84,7 @@ export default class ReleaseSummary extends Component {
                                             }
                                             //For failed tests, add links to the deep history and possible issues list
                                             failedTestSummary[buildName] +=
-                                                `${testName} => [deep history ${totalPasses}/${history.length} passed](${originUrl}/deepHistory?testId=${testId}) | ` +
+                                                `[${testName}](${originUrl}/output/test?id=${_id}) => [deep history ${totalPasses}/${history.length} passed](${originUrl}/deepHistory?testId=${testId}) | ` +
                                                 `[possible issues](${originUrl}/possibleIssues${params(
                                                     {
                                                         buildId,
@@ -86,8 +92,7 @@ export default class ReleaseSummary extends Component {
                                                         testId,
                                                         testName,
                                                     }
-                                                )}) \n` +
-                                                `**Java -version**: ${javaVersion} \n`;
+                                                )}) \n`;
                                         }
                                     }
                                 )
@@ -95,17 +100,6 @@ export default class ReleaseSummary extends Component {
                         } else {
                             failedBuildSummary[buildName] = buildInfo;
                             failedBuildSummary[buildName] += buildResultStr;
-                            failedBuildSummary[buildName] +=
-                                `**Java -version**: ${javaVersion} \n` +
-                                `**Failed Tests** \n` +
-                                tests
-                                    .map((test) => {
-                                        if (test.testResult === 'FAILED') {
-                                            return `- ❌ [${test.testName}](${originUrl}/output/test?id=${test._id})❌\n`;
-                                        }
-                                    })
-                                    .join('') +
-                                `\n`;
                         }
                     }
                 )
