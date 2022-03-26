@@ -30,22 +30,22 @@ export default class ReleaseSummary extends Component {
             // fetch build data
             const buildData = await fetchData(`/api/getData?_id=${parentId}`);
             const { artifactory, machine, javaVersion } = buildData[0];
-            let { rerunLink } = {
+            let { rerunLink: rerunBuildLink } = {
                 ...buildData[0],
                 buildName,
                 buildUrl,
                 timestamp,
             };
 
-            if (rerunLink) {
-                rerunLink = rerunLink.replace(
+            if (rerunBuildLink) {
+                rerunBuildLink = rerunBuildLink.replace(
                     /(\WTARGET=)([^&]*)/gi,
                     '$1' + buildName
                 );
             }
 
-            const rerunLinkInfo = rerunLink
-                ? `[Rerun in Grinder](${rerunLink}) ${nl}`
+            const rerunLinkInfo = rerunBuildLink
+                ? `[Rerun in Grinder](${rerunBuildLink}) ${nl}`
                 : ``;
 
             report =
@@ -81,12 +81,13 @@ export default class ReleaseSummary extends Component {
                             buildResult === 'UNSTABLE'
                                 ? ` ⚠️ ${buildResult} ⚠️${nl}`
                                 : ` ❌ ${buildResult} ❌${nl}`;
+                        const javaVersionBlock = `\`\`\`\n${javaVersion}\n\`\`\``;
+                        const javaVersionDropdown = `<details><summary>java -version output</summary>\n\n${javaVersionBlock}\n</details>\n\n`;
+
                         if (buildName.startsWith('Test_openjdk')) {
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
                             if (!buildName.includes('_testList')) {
-                                const javaVersionBlock = `\`\`\`\n${javaVersion}\n\`\`\``;
-                                const javaVersionDropdown = `<details><summary>java -version output</summary>\n\n${javaVersionBlock}\n</details>\n\n`;
                                 failedTestSummary[buildName] +=
                                     javaVersionDropdown;
                             }
