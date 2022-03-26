@@ -30,7 +30,7 @@ export default class ReleaseSummary extends Component {
             // fetch build data
             const buildData = await fetchData(`/api/getData?_id=${parentId}`);
             const { artifactory, machine, javaVersion } = buildData[0];
-            let { rerunLink: rerunBuildLink } = {
+            let { rerunBuildLink } = {
                 ...buildData[0],
                 buildName,
                 buildUrl,
@@ -109,17 +109,33 @@ export default class ReleaseSummary extends Component {
                                                     totalPasses += 1;
                                                 }
                                             }
+                                            const testLink = `[${testName}](${originUrl}/output/test?id=${_id})`;
+                                            const deepHistory = `[deep history ${totalPasses}/${history.length} passed](${originUrl}/deepHistory?testId=${testId})`;
+                                            const possibleIssues = `[possible issues](${originUrl}/possibleIssues${params(
+                                                {
+                                                    buildId,
+                                                    buildName,
+                                                    testId,
+                                                    testName,
+                                                }
+                                            )})`;
+
+                                            if (rerunBuildLink) {
+                                                rerunBuildLink =
+                                                    rerunBuildLink.replace(
+                                                        /(\WTARGET=)([^&]*)/gi,
+                                                        '$1' + testName
+                                                    );
+                                            }
+
+                                            const rerunTestInfo = rerunBuildLink
+                                                ? ` | [rerun](${rerunBuildLink})`
+                                                : ``;
+
                                             //For failed tests, add links to the deep history and possible issues list
                                             failedTestSummary[buildName] +=
-                                                `[${testName}](${originUrl}/output/test?id=${_id}) => [deep history ${totalPasses}/${history.length} passed](${originUrl}/deepHistory?testId=${testId}) | ` +
-                                                `[possible issues](${originUrl}/possibleIssues${params(
-                                                    {
-                                                        buildId,
-                                                        buildName,
-                                                        testId,
-                                                        testName,
-                                                    }
-                                                )}) ${nl}`;
+                                                `${testLink} => ${deepHistory} | ` +
+                                                `${possibleIssues}${rerunTestInfo} ${nl}`;
                                         }
                                     }
                                 )
