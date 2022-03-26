@@ -29,7 +29,7 @@ export default class ReleaseSummary extends Component {
 
             // fetch build data
             const buildData = await fetchData(`/api/getData?_id=${parentId}`);
-            let { rerunLink } = buildData[0];
+            let { rerunLink } = buildData ? buildData[0] : null;
             if (rerunLink) {
                 rerunLink = rerunLink.replace(
                     /(\WTARGET=)([^&]*)/gi,
