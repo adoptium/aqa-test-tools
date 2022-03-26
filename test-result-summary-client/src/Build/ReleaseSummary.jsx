@@ -27,8 +27,6 @@ export default class ReleaseSummary extends Component {
         if (build && build[0]) {
             const { buildName, buildUrl, timestamp, startBy } = build[0];
 
-            // TODO: This code was taken from GitNewIssue but will the rerun link will show undefined for
-            //       some buildIds
             // fetch build data
             const buildData = await fetchData(`/api/getData?_id=${parentId}`);
             const { artifactory, machine, javaVersion } = buildData[0];
