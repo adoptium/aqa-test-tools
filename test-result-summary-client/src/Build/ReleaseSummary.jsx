@@ -29,14 +29,7 @@ export default class ReleaseSummary extends Component {
 
             // fetch build data
             const buildData = await fetchData(`/api/getData?_id=${parentId}`);
-            const { artifactory, machine, javaVersion } = buildData[0];
-            let { rerunLink } = {
-                ...buildData[0],
-                buildName,
-                buildUrl,
-                timestamp,
-            };
-
+            let { rerunLink } = buildData[0];
             if (rerunLink) {
                 rerunLink = rerunLink.replace(
                     /(\WTARGET=)([^&]*)/gi,
