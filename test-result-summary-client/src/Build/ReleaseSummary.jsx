@@ -20,9 +20,16 @@ export default class ReleaseSummary extends Component {
         const originUrl = window.location.origin;
 
         const build = await fetchData(`/api/getParents?id=${parentId}`);
+
         let report = '';
         const nl = `\n`;
         if (build && build[0]) {
+            const buildData = await fetchData(`/api/getData?_id=${parentId}`);
+            let { rerunLink } = buildData ? buildData[0] : null;
+            const rerunLinkInfo = rerunLink
+                ? `Rerun [all](${rerunLink}) ${nl}`
+                : `${nl}`;
+
             const { buildName, buildUrl, timestamp, startBy } = build[0];
             report =
                 `#### Release Summary Report for ${buildName} ${nl}` +
@@ -31,7 +38,8 @@ export default class ReleaseSummary extends Component {
                 `and TRSS [Grid View](${originUrl}/resultSummary?parentId=${parentId}) ${nl}` +
                 `Jenkins Build URL ${buildUrl} ${nl}Started by ${startBy} at ${new Date(
                     timestamp
-                ).toLocaleString()} ${nl}`;
+                ).toLocaleString()} ${nl}` +
+                rerunLinkInfo;
 
             report += `${nl} --- ${nl}`;
 
