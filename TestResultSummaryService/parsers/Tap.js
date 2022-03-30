@@ -10,19 +10,6 @@ class Tap extends Parser {
     static outputDb = null;
     static testResultDb = null;
     static fileData = null;
-    static i = 50;
-
-    static canParse(filePath) {
-        if (filePath) {
-            if (path.extname(filePath) == '.zip') {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
 
     static async parse(files) {
         // Create DBs
@@ -402,7 +389,7 @@ class Tap extends Parser {
     }
 
     static getTestListParentName(testListFile) {
-        const regex = /_testList_[0-9]/i;
+        const regex = /_testList_[0-9]+/i;
         return testListFile.replace(regex, '').replace('.tap', '');
     }
 

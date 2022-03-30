@@ -1,4 +1,3 @@
-const Tap = require('../parsers/Tap');
 const Parsers = require(`../parsers/`);
 const AdmZip = require('adm-zip');
 const axios = require('axios');
@@ -13,12 +12,11 @@ const axios = require('axios');
  */
 
 module.exports = async (req, res) => {
-    const url = req.query.url;
-    const tapParser = Parsers['Tap'];
+    try {
+        const url = req.query.url;
+        const tapParser = Parsers['Tap'];
 
-    if (tapParser.canParse(url) == false) {
-        res.send({ error: `invalid zipfile: ${url}` });
-    } else {
+        // TODO: Use got instead of axios
         const { data } = await axios.get(url, {
             responseType: 'arraybuffer',
         });
@@ -27,5 +25,7 @@ module.exports = async (req, res) => {
 
         const status = await tapParser.parse(zip.getEntries());
         res.send(status);
+    } catch (err) {
+        res.send({ result: e.toString() });
     }
 };
