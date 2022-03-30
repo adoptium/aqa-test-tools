@@ -50,7 +50,7 @@ export default class Output extends Component {
                 buildUrl: dataInfo.buildUrl,
             };
         } else {
-            const results = await fetchData(`/api/getData?_id=${testId} `);
+            const results = await fetchData(`/api/getData?_id=${id} `);
             const info = results[0];
             if (info && info.buildOutputId) {
                 const result = await fetchData(
