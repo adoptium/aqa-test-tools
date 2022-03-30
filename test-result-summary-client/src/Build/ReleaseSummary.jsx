@@ -28,7 +28,7 @@ export default class ReleaseSummary extends Component {
             let { rerunLink } = buildData ? buildData[0] : null;
             const rerunLinkInfo = rerunLink
                 ? `Rerun [all](${rerunLink}) ${nl}`
-                : `${nl}`;
+                : ``;
 
             const { buildName, buildUrl, timestamp, startBy } = build[0];
             report =
