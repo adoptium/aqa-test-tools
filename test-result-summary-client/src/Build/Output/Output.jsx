@@ -29,9 +29,9 @@ export default class Output extends Component {
 
     async updateData(outputType) {
         let data = {};
-        const { testId } = getParams(this.props.location.search);
+        const { id } = getParams(this.props.location.search);
         if (outputType === 'test') {
-            const info = await fetchData(`/api/getTestById?id=${testId} `);
+            const info = await fetchData(`/api/getTestById?id=${id} `);
             const result = await fetchData(
                 `/api/getOutputById?id=${info.testOutputId}`
             );
