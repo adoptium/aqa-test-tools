@@ -29,9 +29,9 @@ export default class Output extends Component {
 
     async updateData(outputType) {
         let data = {};
-        const { id } = getParams(this.props.location.search);
+        const { testId } = getParams(this.props.location.search);
         if (outputType === 'test') {
-            const info = await fetchData(`/api/getTestById?id=${id} `);
+            const info = await fetchData(`/api/getTestById?id=${testId} `);
             const result = await fetchData(
                 `/api/getOutputById?id=${info.testOutputId}`
             );
@@ -50,7 +50,7 @@ export default class Output extends Component {
                 buildUrl: dataInfo.buildUrl,
             };
         } else {
-            const results = await fetchData(`/api/getData?_id=${id} `);
+            const results = await fetchData(`/api/getData?_id=${testId} `);
             const info = results[0];
             if (info && info.buildOutputId) {
                 const result = await fetchData(
