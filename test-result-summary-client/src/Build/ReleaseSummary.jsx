@@ -24,12 +24,6 @@ export default class ReleaseSummary extends Component {
         let report = '';
         const nl = `\n`;
         if (build && build[0]) {
-            const buildData = await fetchData(`/api/getData?_id=${parentId}`);
-            let { rerunLink } = buildData ? buildData[0] : null;
-            const rerunLinkInfo = rerunLink
-                ? `Rerun [all](${rerunLink}) ${nl}`
-                : ``;
-
             const { buildName, buildUrl, timestamp, startBy } = build[0];
             report =
                 `#### Release Summary Report for ${buildName} ${nl}` +
@@ -38,8 +32,7 @@ export default class ReleaseSummary extends Component {
                 `and TRSS [Grid View](${originUrl}/resultSummary?parentId=${parentId}) ${nl}` +
                 `Jenkins Build URL ${buildUrl} ${nl}Started by ${startBy} at ${new Date(
                     timestamp
-                ).toLocaleString()} ${nl}` +
-                rerunLinkInfo;
+                ).toLocaleString()} ${nl}`;
 
             report += `${nl} --- ${nl}`;
 
@@ -60,11 +53,20 @@ export default class ReleaseSummary extends Component {
                         tests = [],
                     }) => {
                         const buildInfo = `${nl}[**${buildName}**](${buildUrl})`;
-                        const buildResultStr =
+                        let buildResultStr =
                             buildResult === 'UNSTABLE'
                                 ? ` ⚠️ ${buildResult} ⚠️${nl}`
                                 : ` ❌ ${buildResult} ❌${nl}`;
                         if (buildName.startsWith('Test_openjdk')) {
+                            const buildData = await fetchData(
+                                `/api/getData?_id=${_id}`
+                            );
+                            let { rerunLink } = buildData ? buildData[0] : null;
+                            const rerunLinkInfo = rerunLink
+                                ? `Rerun [all](${rerunLink}) ${nl}`
+                                : ``;
+                            buildResultStr += rerunLinkInfo;
+
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
                             if (!buildName.includes('_testList')) {
