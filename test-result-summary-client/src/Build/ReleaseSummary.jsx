@@ -70,6 +70,12 @@ export default class ReleaseSummary extends Component {
                                 tests.map(
                                     async ({ _id, testName, testResult }) => {
                                         if (testResult === 'FAILED') {
+                                            if (rerunLink) {
+                                                rerunLink = rerunLink.replace(
+                                                    /(\WTARGET=)([^&]*)/gi,
+                                                    '$1' + testName
+                                                );
+                                            }
                                             const rerunChildLink = rerunLink
                                                 ? ` | [rerun](${rerunLink}) \n`
                                                 : `\n`;
