@@ -1,40 +1,35 @@
 const Parser = require('./Parser');
 const Utils = require(`./Utils`);
-const decompress = require('decompress');
+
 const ObjectID = require('mongodb').ObjectID;
 const path = require('path');
 const { TestResultsDB, OutputDB } = require('../Database');
 
-let outputDb = null;
-let testResultDb = null;
-let zipPath = null;
 const timestamp = Date.now();
 class Tap extends Parser {
-    static canParse(filePath) {
-        if (filePath) {
-            if (path.extname(filePath) == '.zip') {
-                return true;
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
+    static outputDb = null;
+    static testResultDb = null;
+    static fileData = null;
 
-    static async parse(zip) {
-        zipPath = zip;
-        const files = await decompress(zipPath, 'dist'); // unzipping
-        outputDb = new OutputDB();
-        testResultDb = new TestResultsDB();
-        const tapFiles = this.getTapFileNames(files);
+    static async parse(files) {
+        // Create DBs
+        this.outputDb = new OutputDB();
+        this.testResultDb = new TestResultsDB();
+
+        // Get file names and data
+        const [tapFiles, tapFileData, rootName] = this.getTapFiles(files);
+        this.fileData = tapFileData;
+
+        // Add build duration and result variables
         let buildDuration = [0];
         let buildResult = ['SUCCESS'];
+
+        // initiate test and final build arrays
         let testBuilds = [];
         let finalBuilds = [];
 
         // create root build / return id
-        const rootId = await this.getRootId(tapFiles[0]);
+        const rootId = await this.getRootId(rootName);
 
         // split tap files to two groups: ones with testlist in the name vs. not
         const [testListFiles, regularFiles] = this.partitionTapFiles(tapFiles);
@@ -67,7 +62,8 @@ class Tap extends Parser {
             );
             testBuilds.push(regularBuildData);
         }
-        const insertedTestBuilds = await testResultDb.insertMany(
+
+        const insertedTestBuilds = await this.testResultDb.insertMany(
             testBuilds.flat()
         );
         finalBuilds.push(insertedTestBuilds.ops);
@@ -76,17 +72,18 @@ class Tap extends Parser {
             buildDuration: buildDuration[0],
             buildResult: buildResult[0],
         });
-        finalBuilds.push(await testResultDb.findOne({ _id: rootId }));
+        finalBuilds.push(await this.testResultDb.findOne({ _id: rootId }));
+
         return finalBuilds.flat();
     }
 
-    static async getRootId(file) {
-        const rootnameRegex = /^(Test_openjdk(\w+)_(\w+))/i;
+    static async getRootId(rootName) {
         const buildData = {
             url: 'www.test.com', //TODO
-            buildName: file.match(rootnameRegex)[0],
-            buildNameStr: file.match(rootnameRegex)[0],
-            type: 'Build',
+            buildName: rootName,
+            buildNameStr: rootName,
+            buildNum: timestamp,
+            type: 'Test',
             status: 'Done',
             timestamp,
             buildDuration: '',
@@ -96,7 +93,7 @@ class Tap extends Parser {
             startBy: '', // TODO
         };
 
-        const rootStatus = await testResultDb.populateDB(buildData);
+        const rootStatus = await this.testResultDb.populateDB(buildData);
         return rootStatus.insertedId;
     }
 
@@ -107,13 +104,13 @@ class Tap extends Parser {
         let topLevelBuildDuration = [0];
         let topLevelBuildResult = ['SUCCESS'];
 
-        for (const [key, value] of groupedTestList.entries()) {
+        for (const [parent, children] of groupedTestList.entries()) {
             const buildData = {
                 url: 'www.test.com', //TODO
-                buildName: key,
-                buildNameStr: key,
+                buildName: parent,
+                buildNameStr: parent,
                 rootBuildId,
-                parentBuildId: rootBuildId,
+                parentId: rootBuildId,
                 type: 'Build',
                 status: 'Done',
                 buildDuration: '',
@@ -124,10 +121,11 @@ class Tap extends Parser {
                 timestamp,
             };
 
-            const parentStatus = await testResultDb.populateDB(buildData);
+            const parentStatus = await this.testResultDb.populateDB(buildData);
             const parentId = parentStatus.insertedId;
+
             const [testBuildInfo, buildDuration, buildResult] =
-                await this.getTestBuilds(value, rootBuildId, parentId);
+                await this.getTestBuilds(children, rootBuildId, parentId);
 
             // update info based on all tap file results
             this.updateBuildDurationAndResult(
@@ -143,7 +141,7 @@ class Tap extends Parser {
 
             testList.push(testBuildInfo);
             artificialParentBuild.push(
-                await testResultDb.findOne({ _id: parentId })
+                await this.testResultDb.findOne({ _id: parentId })
             );
         }
 
@@ -160,9 +158,9 @@ class Tap extends Parser {
         let topLevelBuildDuration = [0];
         let topLevelBuildResult = ['SUCCESS'];
 
-        for (let i = 0; i < tapFiles.length; i++) {
+        for (let tapFile of tapFiles) {
             const [testBuildInfo, buildDuration, testSummary, buildResult] =
-                await this.getTapFileTests(tapFiles[i]);
+                await this.getTapFileTests(tapFile);
             this.updateBuildDurationAndResult(
                 topLevelBuildDuration,
                 buildDuration,
@@ -170,14 +168,12 @@ class Tap extends Parser {
                 buildResult
             );
 
-            const testStatus = await testResultDb.insertMany(testBuildInfo);
-            const tests = testStatus.ops;
             const buildData = {
                 url: 'www.test.com', //TODO
-                buildName: tapFiles[i].replace('.tap', ''),
-                buildNameStr: tapFiles[i].replace('.tap', ''),
+                buildName: tapFile.replace('.tap', ''),
+                buildNameStr: tapFile.replace('.tap', ''),
                 rootBuildId,
-                parentBuildId: parentId,
+                parentId,
                 type: 'Test',
                 status: 'Done',
                 buildDuration,
@@ -189,7 +185,7 @@ class Tap extends Parser {
                 sdkResource: 'release',
                 startBy: '', //TODO
                 testSummary,
-                tests,
+                tests: testBuildInfo,
                 timestamp,
             };
             testList.push(buildData);
@@ -198,13 +194,8 @@ class Tap extends Parser {
     }
 
     static async getTapFileTests(file) {
-        let fs = require('fs');
-        const zipName = path.basename(zipPath).replace('.zip', '');
-        const filePath = path.join(__dirname, '../dist/' + zipName);
+        const fileArray = this.fileData.get(file);
 
-        let fileArray = fs
-            .readFileSync(filePath.concat('/' + file), 'utf8')
-            .split('\n');
         let testSummaryMap = new Map([
             ['total', 0],
             ['executed', 0],
@@ -286,6 +277,7 @@ class Tap extends Parser {
 
         const duration_ms = this.getDurationMs(fileArray[counter]);
         const buildData = {
+            _id: new ObjectID(),
             testOutputId,
             testName: tapInfo.testName,
             testResult: tapInfo.status.toUpperCase(),
@@ -301,6 +293,7 @@ class Tap extends Parser {
         }
         const duration_ms = this.getDurationMs(fileArray[counter]);
         const buildData = {
+            _id: new ObjectID(),
             testOutputId: null,
             testName: tapInfo.testName,
             testResult: tapInfo.status.toUpperCase(),
@@ -311,7 +304,7 @@ class Tap extends Parser {
     }
 
     static async updateBuild(id, updatedInfo) {
-        return await testResultDb.update(
+        return await this.testResultDb.update(
             { _id: new ObjectID(id) },
             { $set: updatedInfo }
         );
@@ -325,7 +318,7 @@ class Tap extends Parser {
             testSummaryMap.set('disabled', testSummaryMap.get('disabled') + 1);
         } else if (tapInfo.status == 'skipped') {
             testSummaryMap.set('skipped', testSummaryMap.get('skipped') + 1);
-        } else if (tapInfo.status == 'ok') {
+        } else if (tapInfo.status == 'passed') {
             testSummaryMap.set('executed', testSummaryMap.get('executed') + 1);
             testSummaryMap.set('passed', testSummaryMap.get('passed') + 1);
         }
@@ -349,23 +342,29 @@ class Tap extends Parser {
             counter++;
         }
 
-        const outputStatus = await outputDb.populateDB({ output });
+        const outputStatus = await this.outputDb.populateDB({ output });
         const outputId = outputStatus.insertedId;
         return [counter, outputId];
     }
 
-    static getTapFileNames(files) {
-        const cleanFiles = [];
-        for (var i = 0; i < files.length; i++) {
-            const zipName = files[0].path;
-            if (files[i].path.startsWith(zipName)) {
-                const strippedTapName = files[i].path.split('/')[1];
-                if (strippedTapName != '') {
-                    cleanFiles.push(strippedTapName);
-                }
+    static getTapFiles(files) {
+        let fileNames = [];
+        let fileData = new Map();
+        let rootName;
+
+        for (var file of files) {
+            if (file.isDirectory) {
+                rootName = file.entryName.replace('/', '');
+            } else if (file.name !== '' && !file.name.startsWith('.')) {
+                fileNames.push(file.name);
+                fileData.set(
+                    file.name,
+                    file.getData().toString('utf8').split('\n')
+                );
             }
         }
-        return cleanFiles;
+
+        return [fileNames, fileData, rootName];
     }
 
     static partitionTapFiles(tapFiles) {
@@ -375,22 +374,22 @@ class Tap extends Parser {
         ];
     }
 
-    static groupTestList(testListFile) {
+    static groupTestList(testListFiles) {
         const testListMap = new Map();
-        for (var i = 0; i < testListFile.length; i++) {
-            const parentName = this.getStrippedTestListName(testListFile[i]);
+        for (var i = 0; i < testListFiles.length; i++) {
+            const parentName = this.getTestListParentName(testListFiles[i]);
             let existingParent = testListMap.get(parentName);
             if (!existingParent) {
-                testListMap.set(parentName, [testListFile[i]]);
+                testListMap.set(parentName, [testListFiles[i]]);
             } else {
-                existingParent.push(testListFile[i]);
+                existingParent.push(testListFiles[i]);
             }
         }
         return testListMap;
     }
 
-    static getStrippedTestListName(testListFile) {
-        const regex = /testList_[0-9]_/i;
+    static getTestListParentName(testListFile) {
+        const regex = /_testList_[0-9]+/i;
         return testListFile.replace(regex, '').replace('.tap', '');
     }
 
