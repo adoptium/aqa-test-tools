@@ -49,6 +49,7 @@ export default class ReleaseSummary extends Component {
                         buildResult,
                         javaVersion,
                         tests = [],
+                        rerunLink,
                     }) => {
                         const buildInfo = `\n[**${buildName}**](${buildUrl})`;
                         const buildResultStr =
@@ -69,6 +70,9 @@ export default class ReleaseSummary extends Component {
                                 tests.map(
                                     async ({ _id, testName, testResult }) => {
                                         if (testResult === 'FAILED') {
+                                            const rerunChildLink = rerunLink
+                                                ? ` | [rerun](${rerunLink}) \n`
+                                                : `\n`;
                                             const testId = _id;
                                             const history = await fetchData(
                                                 `/api/getHistoryPerTest?testId=${testId}&limit=100`
@@ -92,7 +96,8 @@ export default class ReleaseSummary extends Component {
                                                         testId,
                                                         testName,
                                                     }
-                                                )}) \n`;
+                                                )})` +
+                                                rerunChildLink;
                                         }
                                     }
                                 )
