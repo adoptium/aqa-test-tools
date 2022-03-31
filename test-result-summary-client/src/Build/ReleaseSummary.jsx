@@ -54,7 +54,7 @@ export default class ReleaseSummary extends Component {
                         rerunLink,
                     }) => {
                         const buildInfo = `${nl}[**${buildName}**](${buildUrl})`;
-                        let buildResultStr =
+                        const buildResultStr =
                             buildResult === 'UNSTABLE'
                                 ? ` ⚠️ ${buildResult} ⚠️${nl}`
                                 : ` ❌ ${buildResult} ❌${nl}`;
