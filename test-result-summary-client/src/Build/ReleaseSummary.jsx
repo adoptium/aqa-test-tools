@@ -51,25 +51,24 @@ export default class ReleaseSummary extends Component {
                         buildResult,
                         javaVersion,
                         tests = [],
+                        rerunLink,
                     }) => {
                         const buildInfo = `${nl}[**${buildName}**](${buildUrl})`;
                         let buildResultStr =
                             buildResult === 'UNSTABLE'
                                 ? ` ⚠️ ${buildResult} ⚠️${nl}`
                                 : ` ❌ ${buildResult} ❌${nl}`;
+
                         if (buildName.startsWith('Test_openjdk')) {
-                            const buildData = await fetchData(
-                                `/api/getData?_id=${_id}`
-                            );
-                            let { rerunLink } = buildData ? buildData[0] : null;
                             const rerunLinkInfo = rerunLink
                                 ? `Rerun [all](${rerunLink}) ${nl}`
                                 : ``;
-                            buildResultStr += rerunLinkInfo;
 
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
+
                             if (!buildName.includes('_testList')) {
+                                failedTestSummary[buildName] += rerunLinkInfo;
                                 const javaVersionBlock = `\`\`\`${nl}${javaVersion}${nl}\`\`\``;
                                 const javaVersionDropdown = `<details><summary>java -version output</summary>${nl}${nl}${javaVersionBlock}${nl}</details>${nl}${nl}`;
                                 failedTestSummary[buildName] +=
