@@ -20,19 +20,21 @@ export default class ReleaseSummary extends Component {
         const originUrl = window.location.origin;
 
         const build = await fetchData(`/api/getParents?id=${parentId}`);
+
         let report = '';
+        const nl = `\n`;
         if (build && build[0]) {
             const { buildName, buildUrl, timestamp, startBy } = build[0];
             report =
-                `#### Release Summary Report for ${buildName} \n` +
-                `**Report generated at:** ${new Date().toUTCString()} \n \n` +
+                `#### Release Summary Report for ${buildName} ${nl}` +
+                `**Report generated at:** ${new Date().toUTCString()} ${nl} ${nl}` +
                 `TRSS [Build](${originUrl}/buildDetail?parentId=${parentId}&testSummaryResult=failed&buildNameRegex=%5ETest) ` +
-                `and TRSS [Grid View](${originUrl}/resultSummary?parentId=${parentId}) \n` +
-                `Jenkins Build URL ${buildUrl} \nStarted by ${startBy} at ${new Date(
+                `and TRSS [Grid View](${originUrl}/resultSummary?parentId=${parentId}) ${nl}` +
+                `Jenkins Build URL ${buildUrl} ${nl}Started by ${startBy} at ${new Date(
                     timestamp
-                ).toLocaleString()} \n`;
+                ).toLocaleString()} ${nl}`;
 
-            report += '\n --- \n';
+            report += `${nl} --- ${nl}`;
 
             const buildResult = '!SUCCESS';
             const failedBuilds = await fetchData(
@@ -51,17 +53,24 @@ export default class ReleaseSummary extends Component {
                         tests = [],
                         rerunLink,
                     }) => {
-                        const buildInfo = `\n[**${buildName}**](${buildUrl})`;
+                        const buildInfo = `${nl}[**${buildName}**](${buildUrl})`;
                         const buildResultStr =
                             buildResult === 'UNSTABLE'
-                                ? ` ⚠️ ${buildResult} ⚠️\n`
-                                : ` ❌ ${buildResult} ❌\n`;
+                                ? ` ⚠️ ${buildResult} ⚠️${nl}`
+                                : ` ❌ ${buildResult} ❌${nl}`;
+
                         if (buildName.startsWith('Test_openjdk')) {
+                            const rerunLinkInfo = rerunLink
+                                ? `Rerun [all](${rerunLink}) ${nl}`
+                                : ``;
+
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
+
                             if (!buildName.includes('_testList')) {
-                                const javaVersionBlock = `\`\`\`\n${javaVersion}\n\`\`\``;
-                                const javaVersionDropdown = `<details><summary>java -version output</summary>\n\n${javaVersionBlock}\n</details>\n\n`;
+                                failedTestSummary[buildName] += rerunLinkInfo;
+                                const javaVersionBlock = `\`\`\`${nl}${javaVersion}${nl}\`\`\``;
+                                const javaVersionDropdown = `<details><summary>java -version output</summary>${nl}${nl}${javaVersionBlock}${nl}</details>${nl}${nl}`;
                                 failedTestSummary[buildName] +=
                                     javaVersionDropdown;
                             }
@@ -102,8 +111,7 @@ export default class ReleaseSummary extends Component {
                                                         testId,
                                                         testName,
                                                     }
-                                                )})` +
-                                                rerunChildLink;
+                                                )}) ${nl}`;
                                         }
                                     }
                                 )
@@ -122,7 +130,7 @@ export default class ReleaseSummary extends Component {
                     .map((buildName) => {
                         report += failedBuildSummary[buildName];
                     });
-                report += '\n --- \n';
+                report += `${nl} --- ${nl}`;
                 Object.keys(failedTestSummary)
                     .sort()
                     .map((buildName) => {
