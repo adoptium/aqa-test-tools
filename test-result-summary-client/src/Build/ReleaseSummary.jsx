@@ -130,7 +130,7 @@ export default class ReleaseSummary extends Component {
                                                         testId,
                                                         testName,
                                                     }
-                                                )}) ${nl}`;
+                                                )})${rerunChildLink}`;
                                         }
                                     }
                                 )
