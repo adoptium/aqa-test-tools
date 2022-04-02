@@ -9,6 +9,7 @@ import { fetchData } from '../utils/Utils';
 export default class ReleaseSummary extends Component {
     state = {
         body: 'Generating Release Summary Report...',
+        failedTests: [],
     };
 
     async componentDidMount() {
@@ -60,19 +61,37 @@ export default class ReleaseSummary extends Component {
                                 : ` ❌ ${buildResult} ❌${nl}`;
 
                         if (buildName.startsWith('Test_openjdk')) {
-                            const rerunLinkInfo = rerunLink
-                                ? `Rerun [all](${rerunLink}) ${nl}`
+                            tests.forEach((test) => {
+                                if (test.testResult === 'FAILED') {
+                                    if (
+                                        !this.state.failedTests.includes(
+                                            test.testName
+                                        )
+                                    ) {
+                                        this.state.failedTests.push(
+                                            test.testName
+                                        );
+                                    }
+                                }
+                            });
+                            const rerunFailedLink = rerunLink
+                                ? rerunLink.replace(
+                                      /(\WTARGET=)([^&]*)/gi,
+                                      '$1' + this.state.failedTests
+                                  )
                                 : ``;
 
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
 
                             if (!buildName.includes('_testList')) {
-                                failedTestSummary[buildName] += rerunLinkInfo;
-                                const javaVersionBlock = `\`\`\`${nl}${javaVersion}${nl}\`\`\``;
-                                const javaVersionDropdown = `<details><summary>java -version output</summary>${nl}${nl}${javaVersionBlock}${nl}</details>${nl}${nl}`;
+                                const rerunLinkInfo = rerunLink
+                                    ? `Rerun [all](${rerunLink}) | [failed](${rerunFailedLink}) tests`
+                                    : ``;
+                                const javaVersionBlock = `\`\`\`\n${javaVersion}\n\`\`\``;
+                                const javaVersionDropdown = `<details><summary>java -version output</summary>\n\n${javaVersionBlock}\n</details>\n\n`;
                                 failedTestSummary[buildName] +=
-                                    javaVersionDropdown;
+                                    rerunLinkInfo + javaVersionDropdown;
                             }
                             const buildId = _id;
                             await Promise.all(
