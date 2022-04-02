@@ -89,7 +89,7 @@ export default class ReleaseSummary extends Component {
                                     ? `Rerun [all](${rerunLink}) | [failed](${rerunFailedLink}) tests`
                                     : ``;
                                 const javaVersionBlock = `\`\`\`${nl}${javaVersion}${nl}\`\`\``;
-                                const javaVersionDropdown = `<details><summary>java -version output</summary>${n}${n}${javaVersionBlock}${n}</details>${n}${n}`;
+                                const javaVersionDropdown = `<details><summary>java -version output</summary>${nl}${nl}${javaVersionBlock}${nl}</details>${nl}${nl}`;
                                 failedTestSummary[buildName] +=
                                     rerunLinkInfo + javaVersionDropdown;
                             }
@@ -105,8 +105,8 @@ export default class ReleaseSummary extends Component {
                                                 );
                                             }
                                             const rerunChildLink = rerunLink
-                                                ? ` | [rerun](${rerunLink}) ${n}`
-                                                : `${n}`;
+                                                ? ` | [rerun](${rerunLink}) ${nl}`
+                                                : `${nl}`;
                                             const testId = _id;
                                             const history = await fetchData(
                                                 `/api/getHistoryPerTest?testId=${testId}&limit=100`
