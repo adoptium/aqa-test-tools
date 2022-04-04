@@ -77,7 +77,9 @@ export default class ReleaseSummary extends Component {
                             const rerunFailedLink = rerunLink
                                 ? rerunLink.replace(
                                       /(\WTARGET=)([^&]*)/gi,
-                                      '$1' + this.state.failedTests
+                                      '$1' +
+                                          `testList%20TESTLIST=` +
+                                          this.state.failedTests
                                   )
                                 : ``;
 
