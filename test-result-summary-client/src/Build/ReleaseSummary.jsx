@@ -98,15 +98,16 @@ export default class ReleaseSummary extends Component {
                                 tests.map(
                                     async ({ _id, testName, testResult }) => {
                                         if (testResult === 'FAILED') {
-                                            if (rerunLink) {
-                                                rerunLink = rerunLink.replace(
-                                                    /(\WTARGET=)([^&]*)/gi,
-                                                    '$1' + testName
-                                                );
-                                            }
                                             const rerunChildLink = rerunLink
-                                                ? ` | [rerun](${rerunLink}) ${nl}`
-                                                : `${nl}`;
+                                                ? rerunLink.replace(
+                                                      /(\WTARGET=)([^&]*)/gi,
+                                                      '$1' + testName
+                                                  )
+                                                : ``;
+                                            const rerunChildLinkInfo =
+                                                rerunChildLink
+                                                    ? ` | [rerun](${rerunChildLink}) ${nl}`
+                                                    : `${nl}`;
                                             const testId = _id;
                                             const history = await fetchData(
                                                 `/api/getHistoryPerTest?testId=${testId}&limit=100`
@@ -130,7 +131,7 @@ export default class ReleaseSummary extends Component {
                                                         testId,
                                                         testName,
                                                     }
-                                                )})${rerunChildLink}`;
+                                                )})${rerunChildLinkInfo}`;
                                         }
                                     }
                                 )
