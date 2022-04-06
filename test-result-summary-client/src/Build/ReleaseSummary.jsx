@@ -9,7 +9,6 @@ import { fetchData } from '../utils/Utils';
 export default class ReleaseSummary extends Component {
     state = {
         body: 'Generating Release Summary Report...',
-        failedTests: [],
     };
 
     async componentDidMount() {
@@ -61,34 +60,12 @@ export default class ReleaseSummary extends Component {
                                 : ` ❌ ${buildResult} ❌${nl}`;
 
                         if (buildName.startsWith('Test_openjdk')) {
-                            tests.forEach((test) => {
-                                if (test.testResult === 'FAILED') {
-                                    if (
-                                        !this.state.failedTests.includes(
-                                            test.testName
-                                        )
-                                    ) {
-                                        this.state.failedTests.push(
-                                            test.testName
-                                        );
-                                    }
-                                }
-                            });
-                            const rerunFailedLink = rerunLink
-                                ? rerunLink.replace(
-                                      /(\WTARGET=)([^&]*)/gi,
-                                      '$1' +
-                                          `testList%20TESTLIST=` +
-                                          this.state.failedTests
-                                  )
-                                : ``;
-
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
 
                             if (!buildName.includes('_testList')) {
                                 const rerunLinkInfo = rerunLink
-                                    ? `Rerun [all](${rerunLink}) | [failed](${rerunFailedLink}) tests`
+                                    ? `Rerun [all](${rerunLink})`
                                     : ``;
                                 const javaVersionBlock = `\`\`\`${nl}${javaVersion}${nl}\`\`\``;
                                 const javaVersionDropdown = `<details><summary>java -version output</summary>${nl}${nl}${javaVersionBlock}${nl}</details>${nl}${nl}`;
