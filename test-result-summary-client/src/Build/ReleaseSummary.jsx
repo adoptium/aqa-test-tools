@@ -61,7 +61,7 @@ export default class ReleaseSummary extends Component {
 
                         if (buildName.startsWith('Test_openjdk')) {
                             const rerunLinkInfo = rerunLink
-                                ? `Rerun [all](${rerunLink}) ${nl}`
+                                ? `Rerun [all](${rerunLink})${nl}`
                                 : ``;
 
                             failedTestSummary[buildName] = buildInfo;
@@ -79,6 +79,16 @@ export default class ReleaseSummary extends Component {
                                 tests.map(
                                     async ({ _id, testName, testResult }) => {
                                         if (testResult === 'FAILED') {
+                                            const rerunChildLink = rerunLink
+                                                ? rerunLink.replace(
+                                                      /(\WTARGET=)([^&]*)/gi,
+                                                      '$1' + testName
+                                                  )
+                                                : ``;
+                                            const rerunChildLinkInfo =
+                                                rerunChildLink
+                                                    ? ` | [rerun](${rerunChildLink}) ${nl}`
+                                                    : `${nl}`;
                                             const testId = _id;
                                             const history = await fetchData(
                                                 `/api/getHistoryPerTest?testId=${testId}&limit=100`
@@ -102,7 +112,7 @@ export default class ReleaseSummary extends Component {
                                                         testId,
                                                         testName,
                                                     }
-                                                )}) ${nl}`;
+                                                )})${rerunChildLinkInfo}`;
                                         }
                                     }
                                 )
