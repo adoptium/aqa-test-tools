@@ -60,17 +60,19 @@ export default class ReleaseSummary extends Component {
                                 : ` ❌ ${buildResult} ❌${nl}`;
 
                         if (buildName.startsWith('Test_openjdk')) {
+                            const rerunLinkInfo = rerunLink
+                                ? `Rerun [all](${rerunLink})${nl}`
+                                : ``;
+
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
 
                             if (!buildName.includes('_testList')) {
-                                const rerunLinkInfo = rerunLink
-                                    ? `Rerun [all](${rerunLink})`
-                                    : ``;
+                                failedTestSummary[buildName] += rerunLinkInfo;
                                 const javaVersionBlock = `\`\`\`${nl}${javaVersion}${nl}\`\`\``;
                                 const javaVersionDropdown = `<details><summary>java -version output</summary>${nl}${nl}${javaVersionBlock}${nl}</details>${nl}${nl}`;
                                 failedTestSummary[buildName] +=
-                                    rerunLinkInfo + javaVersionDropdown;
+                                    javaVersionDropdown;
                             }
                             const buildId = _id;
                             await Promise.all(
