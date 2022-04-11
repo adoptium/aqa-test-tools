@@ -60,10 +60,11 @@ export default class ResultSummary extends Component {
                 parentId,
             })}`
         );
+        let javaVersion = null;
         const buildMap = {};
         let jdkVersionOpts = [];
         let jdkImplOpts = [];
-        builds.map((build, i) => {
+        builds.forEach((build) => {
             const buildName = build.buildName.toLowerCase();
             if (getInfoFromBuildName(buildName)) {
                 const { jdkVersion, jdkImpl, level, group, platform } =
@@ -156,6 +157,10 @@ export default class ResultSummary extends Component {
                     }
                 }
             }
+
+            if (!javaVersion && build.javaVersion) {
+                javaVersion = build.javaVersion;
+            }
         });
         const platformOpts = Object.keys(buildMap).sort();
         jdkVersionOpts = [...new Set(jdkVersionOpts)].sort(order);
@@ -172,6 +177,7 @@ export default class ResultSummary extends Component {
             selectedJdkImpls: jdkImplOpts,
             allJdkImpls: jdkImplOpts,
             failedSdkBuilds,
+            javaVersion,
         });
     }
 
@@ -187,6 +193,7 @@ export default class ResultSummary extends Component {
             summary,
             parentBuildInfo,
             failedSdkBuilds,
+            javaVersion,
         } = this.state;
         const { parentId } = getParams(this.props.location.search);
 
@@ -199,6 +206,7 @@ export default class ResultSummary extends Component {
                         parentBuildInfo={parentBuildInfo}
                         summary={summary}
                         failedSdkBuilds={failedSdkBuilds}
+                        javaVersion={javaVersion}
                     />
                     <Divider />
                     <ResultGrid

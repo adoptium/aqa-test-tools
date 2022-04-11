@@ -11,7 +11,8 @@ const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
 
 export default class Overview extends Component {
     render() {
-        const { id, parentBuildInfo, summary, failedSdkBuilds } = this.props;
+        const { id, parentBuildInfo, summary, failedSdkBuilds, javaVersion } =
+            this.props;
         if (id && parentBuildInfo) {
             const {
                 passed = 0,
@@ -50,7 +51,9 @@ export default class Overview extends Component {
                             </Button>
                         </div>
                     </Link>
-                    <Divider>SDK Build Results</Divider>
+                    <Divider style={{ fontSize: '20px' }}>
+                        SDK Build Results
+                    </Divider>
                     <div style={{ fontSize: '18px' }}>
                         {failedSdkBuilds && failedSdkBuilds.length ? (
                             <BuildLink
@@ -65,8 +68,24 @@ export default class Overview extends Component {
                         )}
                     </div>
 
-                    <Divider>AQA Test Results</Divider>
+                    <Divider style={{ fontSize: '20px' }}>
+                        AQA Test Results
+                    </Divider>
                     <div style={{ fontSize: '18px' }}>
+                        <Row>
+                            <Col span={6}>
+                                <Divider>Test Summary</Divider>
+                            </Col>
+                            <Col span={6}>
+                                <Divider>Pass Percentage</Divider>
+                            </Col>
+                            <Col span={6}>
+                                <Divider>Build Result</Divider>
+                            </Col>
+                            <Col span={6}>
+                                <Divider>Build Metadata</Divider>
+                            </Col>
+                        </Row>
                         <Row>
                             <Col span={6}>
                                 <BuildLink
@@ -133,30 +152,32 @@ export default class Overview extends Component {
 
                             <Col span={6}>
                                 <div>
-                                    Build Started at:{' '}
+                                    <strong>Build Started at:</strong>{' '}
                                     {moment(parentBuildInfo.timestamp).format(
                                         DAY_FORMAT
                                     )}
                                 </div>
                                 <div>
-                                    Build Started by: {parentBuildInfo.startBy}
+                                    <strong>Build Started by:</strong>{' '}
+                                    {parentBuildInfo.startBy}
                                 </div>
                                 <div>
-                                    Build Duration:{' '}
+                                    <strong>Build Duration:</strong>{' '}
                                     {renderDuration(
                                         parentBuildInfo.buildDuration
                                     )}
                                 </div>
-                                <div>Machine: {parentBuildInfo.machine}</div>
+                                <div>
+                                    <strong>Machine:</strong>{' '}
+                                    {parentBuildInfo.machine}
+                                </div>
                             </Col>
-                        </Row>
-                        <Row>
-                            <Col span={6} />
+
                             <Col span={6}>
-                                <div>Pass Percentage</div>
-                            </Col>
-                            <Col span={6}>
-                                <div>Build Result</div>
+                                <div>
+                                    <strong>java -version:</strong>{' '}
+                                    {javaVersion}
+                                </div>
                             </Col>
                         </Row>
                     </div>
