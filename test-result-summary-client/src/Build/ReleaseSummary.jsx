@@ -129,13 +129,13 @@ export default class ReleaseSummary extends Component {
                 Object.keys(failedBuildSummary)
                     .sort()
                     .map((buildName) => {
-                        report += failedBuildSummary[buildName];
+                        return (report += failedBuildSummary[buildName]);
                     });
                 report += `${nl} --- ${nl}`;
                 Object.keys(failedTestSummary)
                     .sort()
                     .map((buildName) => {
-                        report += failedTestSummary[buildName];
+                        return (report += failedTestSummary[buildName]);
                     });
             } else {
                 report += 'Congratulation! There is no failure!';

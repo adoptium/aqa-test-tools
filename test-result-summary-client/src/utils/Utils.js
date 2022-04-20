@@ -10,7 +10,7 @@ export const getInfoFromBuildName = (buildName) => {
         /^Test_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl)?)(_.+)?$/i;
     const tokens = buildName.match(regex);
     if (Array.isArray(tokens) && tokens.length > 5) {
-        const [_, jdkVersion, jdkImpl, level, group, platform] = tokens;
+        const [, jdkVersion, jdkImpl, level, group, platform] = tokens;
         return { jdkVersion, jdkImpl, level, group, platform };
     }
     return null;

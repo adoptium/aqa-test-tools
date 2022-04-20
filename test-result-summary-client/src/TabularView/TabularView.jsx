@@ -855,9 +855,9 @@ export default class TabularView extends Component {
                     testDataObject.platformsSpecificData;
                 Object.keys(consolidatedDataObject.platformsSpecificData).map(
                     function (key, index) {
-                        consolidatedDataObject.platformsSpecificData[
+                        return (consolidatedDataObject.platformsSpecificData[
                             key
-                        ].relativeComparison = 0;
+                        ].relativeComparison = 0);
                     }
                 );
             }
@@ -892,9 +892,9 @@ export default class TabularView extends Component {
                     baselineDataObject.platformsSpecificData;
                 Object.keys(consolidatedDataObject.platformsSpecificData).map(
                     function (key, index) {
-                        consolidatedDataObject.platformsSpecificData[
+                        return (consolidatedDataObject.platformsSpecificData[
                             key
-                        ].relativeComparison = 0;
+                        ].relativeComparison = 0);
                     }
                 );
                 consolidatedDataObject.benchmarkNVM =
