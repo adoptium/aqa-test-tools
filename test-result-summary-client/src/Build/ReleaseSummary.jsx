@@ -79,16 +79,26 @@ export default class ReleaseSummary extends Component {
                                 tests.map(
                                     async ({ _id, testName, testResult }) => {
                                         if (testResult === 'FAILED') {
-                                            const rerunChildLink = rerunLink
-                                                ? rerunLink.replace(
-                                                      /(\WTARGET=)([^&]*)/gi,
-                                                      '$1' + testName
-                                                  )
-                                                : ``;
-                                            const rerunChildLinkInfo =
-                                                rerunChildLink
-                                                    ? ` | [rerun](${rerunChildLink}) ${nl}`
-                                                    : `${nl}`;
+                                            let rerunChildLinkInfo = `${nl}`;
+                                            if (
+                                                testName !== 'Post Test' &&
+                                                testName !== 'Pre Test'
+                                            ) {
+                                                const encodeTestName =
+                                                    encodeURIComponent(
+                                                        testName
+                                                    );
+                                                const rerunChildLink = rerunLink
+                                                    ? rerunLink.replace(
+                                                          /(\WTARGET=)([^&]*)/gi,
+                                                          '$1' + encodeTestName
+                                                      )
+                                                    : ``;
+                                                if (rerunChildLink) {
+                                                    rerunChildLinkInfo = ` | [rerun](${rerunChildLink}) ${nl}`;
+                                                }
+                                            }
+
                                             const testId = _id;
                                             const history = await fetchData(
                                                 `/api/getHistoryPerTest?testId=${testId}&limit=100`
