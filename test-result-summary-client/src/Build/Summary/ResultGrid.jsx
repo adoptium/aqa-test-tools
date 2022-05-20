@@ -18,6 +18,12 @@ class Cell extends Component {
     render() {
         const { data = {}, hcvalues } = this.props;
         const { hclevels, hcgroups } = hcvalues;
+
+        const buildGroupMap = {
+            'sanity.build': 'JDK Build',
+            'extended.build': 'Smoke Test',
+            'special.build': 'TBD',
+        };
         return (
             <div className="nested-wrapper padding">
                 {hclevels.map((level, y) => {
@@ -26,6 +32,8 @@ class Cell extends Component {
                         <Fragment key={y}>
                             {hcgroups.sort().map((group, x) => {
                                 let target = level + '.' + group;
+                                let targetValue = target;
+                                targetValue = buildGroupMap[target] ?? target;
                                 if (!(groups && groups[group])) {
                                     return (
                                         <div
@@ -36,7 +44,7 @@ class Cell extends Component {
                                             }}
                                             key={x}
                                         >
-                                            <Tooltip title={target}>
+                                            <Tooltip title={targetValue}>
                                                 <StopOutlined />
                                             </Tooltip>
                                         </div>
@@ -47,7 +55,7 @@ class Cell extends Component {
                                 if (!groups[group].testSummary) {
                                     element = (
                                         <div>
-                                            {target} <br />
+                                            {targetValue} <br />
                                             Build Result: {result} <br />
                                             Result Summary: N/A <br />
                                             <a
@@ -62,7 +70,7 @@ class Cell extends Component {
                                 } else {
                                     element = (
                                         <div>
-                                            Test Target: {target} <br />
+                                            Test Target: {targetValue} <br />
                                             Build Result: {result} <br />
                                             Result Summary:{' '}
                                             {Object.keys(
@@ -120,7 +128,8 @@ class Cell extends Component {
                                         />
                                     );
                                 }
-                                const linkInfo = (
+
+                                let linkInfo = (
                                     <Link
                                         to={{
                                             pathname: '/allTestsInfo',
@@ -136,6 +145,21 @@ class Cell extends Component {
                                         {icon}
                                     </Link>
                                 );
+                                if (target === 'sanity.build') {
+                                    linkInfo = (
+                                        <Link
+                                            to={{
+                                                pathname: '/output/build',
+                                                search: params({
+                                                    id: groups[group].buildId,
+                                                }),
+                                            }}
+                                            target="_blank"
+                                        >
+                                            {icon}
+                                        </Link>
+                                    );
+                                }
                                 return (
                                     <div
                                         className={`cell ${result}`}

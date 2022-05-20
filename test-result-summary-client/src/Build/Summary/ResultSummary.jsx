@@ -10,7 +10,15 @@ import { order, getInfoFromBuildName } from '../../utils/Utils';
 
 const hcvalues = {
     hclevels: ['sanity', 'extended', 'special'],
-    hcgroups: ['functional', 'openjdk', 'system', 'external', 'perf', 'jck'],
+    hcgroups: [
+        'build',
+        'functional',
+        'openjdk',
+        'system',
+        'external',
+        'perf',
+        'jck',
+    ],
 };
 
 export default class ResultSummary extends Component {
@@ -47,6 +55,13 @@ export default class ResultSummary extends Component {
             })}`
         );
 
+        // get all SDK builds info
+        const sdkBuilds = await fetchData(
+            `/api/getAllChildBuilds${params({
+                buildNameRegex: '^(jdk[0-9]{1,2}|Build_)',
+                parentId,
+            })}`
+        );
         // get all child builds info based on buildNameRegex
         const buildNameRegex = '^Test_openjdk.*';
         const testSummaryResult = undefined;
@@ -64,6 +79,81 @@ export default class ResultSummary extends Component {
         const buildMap = {};
         let jdkVersionOpts = [];
         let jdkImplOpts = [];
+
+        sdkBuilds.forEach((build) => {
+            const buildName = build.buildName.toLowerCase();
+            let level = 'sanity';
+            let group = 'build';
+            if (buildName.includes('_smoketests')) {
+                level = 'extended';
+            }
+
+            const temp = buildName.split('-');
+            let suffix = temp[temp.length - 1];
+            suffix = suffix.replace('_smoketests', '');
+            let jdkImpl = suffix;
+            if (suffix === 'openj9') {
+                jdkImpl = 'j9';
+            } else if (suffix === 'temurin') {
+                jdkImpl = 'hs';
+            }
+
+            let jdkVersion, platform;
+
+            if (buildName.startsWith('jdk')) {
+                // SDK build and Smoke test platform format does not match with test build. Need to match the platform value.
+                // For example, jdk18-linux-aarch64-openj9, jdk18-linux-s390x-openj9_SmokeTests, jdk11u-alpine-linux-aarch64-temurin, etc
+                const regex = /^jdk(\d+).?-(\w+)-(\w+)-(\w+)$/i;
+                const tokens = buildName.match(regex);
+                if (Array.isArray(tokens) && tokens.length > 4) {
+                    jdkVersion = tokens[1];
+                    if (buildName.includes('alpine-linux')) {
+                        platform = `${tokens[4]}_alpine-linux`;
+                    } else if (buildName.includes('-x64')) {
+                        platform = `x86-64_${tokens[2]}`;
+                    } else {
+                        platform = `${tokens[3]}_${tokens[2]}`;
+                    }
+                }
+            } else if (buildName.startsWith('build')) {
+                const regex = /Build_JDK(.+?)_(.+?_.+?(_xl|_fips)?)(_.+)?$/i;
+                const tokens = buildName.match(regex);
+                if (Array.isArray(tokens) && tokens.length > 3) {
+                    jdkVersion = tokens[1];
+                    platform = tokens[2];
+                }
+                if (buildName.includes('zos')) {
+                    jdkImpl = 'ibm';
+                } else {
+                    jdkImpl = 'j9';
+                }
+            }
+
+            if (jdkVersion && jdkImpl && level && group && platform) {
+                buildMap[platform] = buildMap[platform] || {};
+                buildMap[platform][jdkVersion] =
+                    buildMap[platform][jdkVersion] || {};
+                buildMap[platform][jdkVersion][jdkImpl] =
+                    buildMap[platform][jdkVersion][jdkImpl] || {};
+                buildMap[platform][jdkVersion][jdkImpl][level] =
+                    buildMap[platform][jdkVersion][jdkImpl][level] || {};
+                buildMap[platform][jdkVersion][jdkImpl][level][group] =
+                    buildMap[platform][jdkVersion][jdkImpl][level][group] || {};
+
+                jdkVersionOpts.push(jdkVersion);
+                jdkImplOpts.push(jdkImpl);
+
+                buildMap[platform][jdkVersion][jdkImpl][level][group] = {
+                    buildResult: build.buildResult,
+                    testSummary: build.testSummary,
+                    buildUrl: build.buildUrl,
+                    buildId: build._id,
+                    hasChildren: build.hasChildren,
+                };
+            } else {
+                console.warn(`Cannot match ${buildName}`);
+            }
+        });
         builds.forEach((build) => {
             const buildName = build.buildName.toLowerCase();
             if (getInfoFromBuildName(buildName)) {
