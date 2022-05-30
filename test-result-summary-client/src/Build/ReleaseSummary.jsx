@@ -140,13 +140,14 @@ export default class ReleaseSummary extends Component {
             if (failedBuildSummary || failedTestSummary) {
                 Object.keys(failedBuildSummary)
                     .sort()
-                    .map((buildName) => {
+                    .forEach((buildName) => {
                         report += failedBuildSummary[buildName];
                     });
+
                 report += `${nl} --- ${nl}`;
                 Object.keys(failedTestSummary)
                     .sort()
-                    .map((buildName) => {
+                    .forEach((buildName) => {
                         report += failedTestSummary[buildName];
                     });
             } else {

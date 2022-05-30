@@ -853,13 +853,13 @@ export default class TabularView extends Component {
             } else {
                 consolidatedDataObject.platformsSpecificData =
                     testDataObject.platformsSpecificData;
-                Object.keys(consolidatedDataObject.platformsSpecificData).map(
-                    function (key, index) {
-                        consolidatedDataObject.platformsSpecificData[
-                            key
-                        ].relativeComparison = 0;
-                    }
-                );
+                Object.keys(
+                    consolidatedDataObject.platformsSpecificData
+                ).forEach(function (key, index) {
+                    consolidatedDataObject.platformsSpecificData[
+                        key
+                    ].relativeComparison = 0;
+                });
             }
             newArray.push(consolidatedDataObject);
         }
@@ -890,13 +890,13 @@ export default class TabularView extends Component {
                 let consolidatedDataObject = {};
                 consolidatedDataObject.platformsSpecificData =
                     baselineDataObject.platformsSpecificData;
-                Object.keys(consolidatedDataObject.platformsSpecificData).map(
-                    function (key, index) {
-                        consolidatedDataObject.platformsSpecificData[
-                            key
-                        ].relativeComparison = 0;
-                    }
-                );
+                Object.keys(
+                    consolidatedDataObject.platformsSpecificData
+                ).forEach(function (key, index) {
+                    consolidatedDataObject.platformsSpecificData[
+                        key
+                    ].relativeComparison = 0;
+                });
                 consolidatedDataObject.benchmarkNVM =
                     baselineDataObject.benchmarkNVM;
                 newArray.push(consolidatedDataObject);
