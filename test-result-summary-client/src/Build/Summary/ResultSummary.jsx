@@ -29,7 +29,7 @@ export default class ResultSummary extends Component {
         allJdkVersions: [],
         selectedJdkImpls: [],
         allJdkImpls: [],
-        failedSdkBuilds: [],
+        sdkBuilds: [],
     };
     async componentDidMount() {
         await this.updateData();
@@ -44,16 +44,6 @@ export default class ResultSummary extends Component {
         // get build information
         const buildInfo = await fetchData(`/api/getData?_id=${parentId}`);
         const parentBuildInfo = buildInfo[0] || {};
-
-        // get failed SDK build
-        // need to support different SDK build names: jdk8u-linux-aarch64-openj9 and Build_JDK8_ppc64_aix_Nightly
-        const failedSdkBuilds = await fetchData(
-            `/api/getAllChildBuilds${params({
-                buildResult: '!SUCCESS',
-                buildNameRegex: '^(jdk[0-9]{1,2}|Build_)',
-                parentId,
-            })}`
-        );
 
         // get all SDK builds info
         const sdkBuilds = await fetchData(
@@ -266,7 +256,7 @@ export default class ResultSummary extends Component {
             allJdkVersions: jdkVersionOpts,
             selectedJdkImpls: jdkImplOpts,
             allJdkImpls: jdkImplOpts,
-            failedSdkBuilds,
+            sdkBuilds,
             javaVersion,
         });
     }
@@ -282,7 +272,7 @@ export default class ResultSummary extends Component {
             allJdkImpls,
             summary,
             parentBuildInfo,
-            failedSdkBuilds,
+            sdkBuilds,
             javaVersion,
         } = this.state;
         const { parentId } = getParams(this.props.location.search);
@@ -295,7 +285,7 @@ export default class ResultSummary extends Component {
                         id={parentId}
                         parentBuildInfo={parentBuildInfo}
                         summary={summary}
-                        failedSdkBuilds={failedSdkBuilds}
+                        sdkBuilds={sdkBuilds}
                         javaVersion={javaVersion}
                     />
                     <Divider />
