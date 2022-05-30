@@ -140,7 +140,7 @@ export default class GitNewissue extends Component {
                   `${nl}${nl}`
                 : ``;
         const javaVersionInfo = javaVersion
-            ? `**Java Version**${nl}` + `${javaVersion}${nl}`
+            ? `**Java Version**${nl}${javaVersion}${nl}`
             : ``;
         const failureOutputInfo = failureOutput
             ? `${nl}**Console Output**${nl}` +

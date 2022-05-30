@@ -24,7 +24,7 @@ export default class Overview extends Component {
             } = summary;
             const passPercentage =
                 (parseInt(passed) / parseInt(executed)) * 100;
-            const buildResult = parentBuildInfo.buildResult;
+
             const buildName = parentBuildInfo.buildName;
 
             return (

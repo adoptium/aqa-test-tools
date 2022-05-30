@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Button, Table } from 'antd';
+import { Table } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { SearchOutput } from '../Search/';
 import { getParams, params } from '../utils/query';
 import { fetchData } from '../utils/Utils';
 import BuildTable from './BuildTable';
-import { Link } from 'react-router-dom';
 
 export default class BuildDetail extends Component {
     state = {
