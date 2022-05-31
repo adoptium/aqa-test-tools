@@ -78,22 +78,27 @@ export default class ResultSummary extends Component {
                 level = 'extended';
             }
 
-            const temp = buildName.split('-');
-            let suffix = temp[temp.length - 1];
-            suffix = suffix.replace('_smoketests', '');
-            let jdkImpl = suffix;
-            if (suffix === 'openj9') {
-                jdkImpl = 'j9';
-            } else if (suffix === 'temurin') {
-                jdkImpl = 'hs';
-            }
-
-            let jdkVersion, platform;
+            let jdkVersion, platform, jdkImpl;
 
             if (buildName.startsWith('jdk')) {
                 // SDK build and Smoke test platform format does not match with test build. Need to match the platform value.
-                // For example, jdk18-linux-aarch64-openj9, jdk18-linux-s390x-openj9_SmokeTests, jdk11u-alpine-linux-aarch64-temurin, etc
-                const regex = /^jdk(\d+).?-(\w+)-(\w+)-(\w+)$/i;
+                // For example, jdk18-linux-aarch64-openj9
+                // jdk18-linux-s390x-openj9_SmokeTests
+                // jdk11u-alpine-linux-aarch64-temurin
+                // jdk11u-aix-ppc64-openj9-ibm
+                const temp = buildName.split('-');
+                let suffix = temp[temp.length - 1];
+                suffix = suffix.replace('_smoketests', '');
+                jdkImpl = suffix;
+                if (suffix === 'openj9') {
+                    jdkImpl = 'j9';
+                } else if (suffix === 'temurin') {
+                    jdkImpl = 'hs';
+                }
+                if (buildName.includes('openj9-ibm')) {
+                    jdkImpl = 'j9';
+                }
+                const regex = /^jdk(\d+).?-(\w+)-(\w+)-(\w+)/i;
                 const tokens = buildName.match(regex);
                 if (Array.isArray(tokens) && tokens.length > 4) {
                     jdkVersion = tokens[1];
