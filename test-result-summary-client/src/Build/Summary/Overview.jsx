@@ -11,7 +11,7 @@ const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
 
 export default class Overview extends Component {
     render() {
-        const { id, parentBuildInfo, summary, failedSdkBuilds, javaVersion } =
+        const { id, parentBuildInfo, summary, sdkBuilds, javaVersion } =
             this.props;
         if (id && parentBuildInfo) {
             const {
@@ -52,25 +52,35 @@ export default class Overview extends Component {
                         </div>
                     </Link>
                     <Divider style={{ fontSize: '20px' }}>
-                        SDK Build Results
+                        Build and AQA Test Results
                     </Divider>
                     <div style={{ fontSize: '18px' }}>
-                        {failedSdkBuilds && failedSdkBuilds.length ? (
-                            <BuildLink
-                                id={id}
-                                label="SDK Builds and Smoke Tests "
-                                link="Failed"
-                                buildNameRegex="^(jdk[0-9]{1,2}|Build_)"
-                                buildResult="!SUCCESS"
-                            />
+                        {sdkBuilds && sdkBuilds.length === 0 ? (
+                            <div>
+                                <b>Warning</b>: No JDK Builds get triggered in
+                                this pipeline. Please check TRSS{' '}
+                                <Link
+                                    to={{
+                                        pathname: '/buildDetail',
+                                        search: params({ parentId: id }),
+                                    }}
+                                    target="_blank"
+                                >
+                                    build details
+                                </Link>{' '}
+                                or Jenkins{' '}
+                                <a
+                                    href={parentBuildInfo.buildUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    {buildName} #{parentBuildInfo.buildNum}
+                                </a>
+                            </div>
                         ) : (
-                            <div>SDK builds and Smoke Tests Passed</div>
+                            <div />
                         )}
                     </div>
-
-                    <Divider style={{ fontSize: '20px' }}>
-                        AQA Test Results
-                    </Divider>
                     <div style={{ fontSize: '18px' }}>
                         <Row>
                             <Col span={6}>
