@@ -14,6 +14,7 @@ import { TabularView } from './TabularView/';
 import {
     AllTestsInfo,
     BuildDetail,
+    Builds,
     DeepHistory,
     GitNewIssue,
     TestPerPlatform,
@@ -178,6 +179,7 @@ export default class App extends Component {
                                         path="/buildDetail"
                                         component={BuildDetail}
                                     />
+                                    <Route path="/builds" component={Builds} />
                                     <Route
                                         path="/allTestsInfo"
                                         component={AllTestsInfo}

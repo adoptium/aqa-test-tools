@@ -436,7 +436,18 @@ export default class TopLevelBuildTable extends Component {
                     dataSource={buildInfo}
                     title={() => (
                         <div>
-                            <b>{buildName}</b> in server {url}
+                            <Link
+                                to={{
+                                    pathname: '/builds',
+                                    search: params({
+                                        buildName,
+                                        url,
+                                        type,
+                                    }),
+                                }}
+                            >
+                                <b>{buildName}</b> in server {url}
+                            </Link>
                         </div>
                     )}
                     pagination={{ pageSize, onChange: this.onChange }}
