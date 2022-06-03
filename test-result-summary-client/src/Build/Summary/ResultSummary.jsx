@@ -106,6 +106,8 @@ export default class ResultSummary extends Component {
                         platform = `${tokens[4]}_alpine-linux`;
                     } else if (buildName.includes('-x64')) {
                         platform = `x86-64_${tokens[2]}`;
+                    } else if (buildName.includes('x86-32')) {
+                        platform = `x86-32_${tokens[2]}`;
                     } else {
                         platform = `${tokens[3]}_${tokens[2]}`;
                     }
