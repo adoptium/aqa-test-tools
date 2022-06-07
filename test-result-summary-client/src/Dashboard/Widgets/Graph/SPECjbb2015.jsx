@@ -271,7 +271,7 @@ export default class SPECjbb2015 extends Component {
                         })}
                     </YAxis>
                     <DateRangePickers axisId="xAxis" />
-                    <RangeSelector>
+                    <RangeSelector verticalAlign="bottom">
                         <RangeSelector.Button count={1} type="day">
                             1d
                         </RangeSelector.Button>
