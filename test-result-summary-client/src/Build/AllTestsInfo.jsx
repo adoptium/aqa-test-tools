@@ -118,9 +118,7 @@ export default class Build extends Component {
                             testResult: 'N/A',
                         });
                     }
-                    const found = tests.find(
-                        (t) => t.testName === test.testName
-                    );
+                    const found = tests.find((t) => t._id === test._id);
                     if (found) {
                         const { testResult, _id } = found;
                         ret[i] = {

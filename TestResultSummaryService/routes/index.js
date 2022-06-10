@@ -44,6 +44,7 @@ app.get('/getTotals', wrap(require('./getTotals')));
 app.get('/parseJenkinsUrl', wrap(require('./parseJenkinsUrl')));
 app.get('/populateDB', wrap(require('./populateDB')));
 app.get('/getFeedbackUrl', wrap(require('./getFeedbackUrl')));
+app.get('/testParser', wrap(require('./test/testParser')));
 
 app.get('/updateComments', wrap(require('./updateComments')));
 app.get('/updateKeepForever', wrap(require('./updateKeepForever')));
