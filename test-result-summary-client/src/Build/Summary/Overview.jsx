@@ -27,6 +27,14 @@ export default class Overview extends Component {
 
             const buildName = parentBuildInfo.buildName;
 
+            let warningMsg = '';
+            if (sdkBuilds && sdkBuilds.length === 0) {
+                warningMsg = 'No JDK Builds got triggered in this pipeline. ';
+            }
+            if (summary && Object.keys(summary).length === 0) {
+                warningMsg +=
+                    'No AQA Test Builds got triggered in this pipeline. ';
+            }
             return (
                 <div>
                     <div className="overview-header">
@@ -55,10 +63,9 @@ export default class Overview extends Component {
                         Build and AQA Test Results
                     </Divider>
                     <div style={{ fontSize: '18px' }}>
-                        {sdkBuilds && sdkBuilds.length === 0 ? (
+                        {warningMsg ? (
                             <div>
-                                <b>Warning</b>: No JDK Builds get triggered in
-                                this pipeline. Please check TRSS{' '}
+                                <b>Warning</b>: {warningMsg} Please check TRSS{' '}
                                 <Link
                                     to={{
                                         pathname: '/buildDetail',
