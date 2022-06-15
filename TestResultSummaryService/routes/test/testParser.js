@@ -1,4 +1,4 @@
-const fs = require('fs/promises');
+const fs = require('fs').promises;
 const DataManager = require('../../DataManager');
 module.exports = async (req, res) => {
     let { file, buildName } = req.query;
