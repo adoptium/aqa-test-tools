@@ -2,10 +2,10 @@
 
 ![](./diagrams/aqaTestToolsRoadmap.jpg)
 
-## Deep AQATik
+## Deep AQAtik
 
 ![](images/deep_aqatik_design.png)
 
 ## References
 
-- [Deep AQATik presentation](presentations/Deep_AQATik.pdf)
+- [Deep AQAtik presentation](presentations/Deep_AQATik.pdf)
