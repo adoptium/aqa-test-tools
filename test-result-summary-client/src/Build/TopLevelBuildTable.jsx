@@ -5,6 +5,7 @@ import {
     InfoOutlined,
     LoadingOutlined,
     QuestionCircleOutlined,
+    ApartmentOutlined
 } from '@ant-design/icons';
 import { Table, Tooltip, Checkbox, Popconfirm } from 'antd';
 import { Link } from 'react-router-dom';
@@ -137,6 +138,16 @@ export default class TopLevelBuildTable extends Component {
                     }
                     return (
                         <div>
+                            <Tooltip title="Build tree">
+                                <Link
+                                    to={{
+                                        pathname: "/buildTreeView",
+                                        search: params({parentId: value._id}),
+                                    }}
+                                >
+                                    <ApartmentOutlined/>
+                                </Link>
+                            </Tooltip>
                             <Link
                                 to={{
                                     pathname: '/buildDetail',
@@ -151,7 +162,7 @@ export default class TopLevelBuildTable extends Component {
                                             : '#DAA520',
                                 }}
                             >
-                                Build #{value.buildNum}{' '}
+                                {' '}Build #{value.buildNum}{' '}
                                 <Tooltip title={value.buildResult}>
                                     {icon}
                                 </Tooltip>

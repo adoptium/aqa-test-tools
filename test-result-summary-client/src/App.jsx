@@ -22,6 +22,7 @@ import {
     TopLevelBuilds,
     ResultSummary,
     ReleaseSummary,
+    BuildTreeView
 } from './Build/';
 import { SearchResult } from './Search/';
 import { Settings } from './Settings/';
@@ -178,6 +179,10 @@ export default class App extends Component {
                                     <Route
                                         path="/buildDetail"
                                         component={BuildDetail}
+                                    />
+                                    <Route
+                                        path="/buildTreeView"
+                                        component={BuildTreeView}
                                     />
                                     <Route path="/builds" component={Builds} />
                                     <Route
