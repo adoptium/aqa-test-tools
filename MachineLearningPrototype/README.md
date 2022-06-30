@@ -39,7 +39,7 @@ User can navigate at http://127.0.0.1:5000
 
 Note:
 - stop the server by pressing CTRL+C
-- quit the environment use `deactiavate`
+- quit the environment use `deactivate`
 
 
 ## Production server
