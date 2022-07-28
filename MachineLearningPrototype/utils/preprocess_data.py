@@ -93,13 +93,13 @@ def extract_jenkins_link_and_testname(content):
     return jenkins_links, test_names
 
 
-def create_models_datasets(data_path, data_extra_path):
+def create_models_datasets(data_path, data_extra_path, train_data):
     data = []
     label = []
 
     files = os.listdir(data_path)
 
-    if 'JenkinsData' in data_path:
+    if not train_data:
         for file in files:
             if (file.endswith('txt')):
                 # test_label needs to remove .txt and trailing links (_http...) in file name, e.g. from openj9_1.txt and openj9_1_httpxxx.txt
@@ -108,7 +108,7 @@ def create_models_datasets(data_path, data_extra_path):
                 with open(os.path.join(data_path, file)) as f:
                     data.append(f.read())
 
-    if 'GitHubData' in data_path:
+    if train_data:
         for file in files:
             if file.endswith('txt'):
                 cur_train_label = file.strip(".txt")
