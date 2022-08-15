@@ -9,7 +9,7 @@ import TestBreadcrumb from '../TestBreadcrumb';
 import { order, getInfoFromBuildName } from '../../utils/Utils';
 
 const hcvalues = {
-    hclevels: ['sanity', 'extended', 'special'],
+    hclevels: ['dev', 'sanity', 'extended', 'special'],
     hcgroups: [
         'build',
         'functional',
