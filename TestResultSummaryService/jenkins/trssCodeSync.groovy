@@ -15,8 +15,8 @@ node(TRSS_NODE) {
 			git pull
 			echo "Update TRSS client..."
 			cd test-result-summary-client
-			echo "npm ci --production"
-			npm ci --production
+			echo "npm ci --production --legacy-peer-deps"
+			npm ci --production --legacy-peer-deps
 			echo "npm run build"
 			CI=false npm run build
 			echo "Update TRSS server..."
