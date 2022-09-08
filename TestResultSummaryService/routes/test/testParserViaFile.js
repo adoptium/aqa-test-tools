@@ -1,11 +1,9 @@
 const fs = require('fs').promises;
 const DataManager = require('../../DataManager');
 module.exports = async (req, res) => {
-    let { file, buildName } = req.query;
-    if (!buildName)
-        buildName =
-            'Test_openjdk17_j9_sanity.functional_aarch64_mac_testList_2';
-    if (!file) file = 'jobOutput.txt';
+    const buildName =
+        'Test_openjdk17_j9_sanity.functional_aarch64_mac_testList_2';
+    let file = 'jobOutput.txt';
     file = `${__dirname}/${file}`;
 
     try {

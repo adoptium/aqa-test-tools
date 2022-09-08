@@ -9,12 +9,21 @@ const routes = require('./routes');
 const compression = require('compression');
 const { logger } = require('./Utils');
 const expressSwagger = require('express-swagger-generator')(app);
+const rateLimit = require('express-rate-limit');
 
 app.use(compression()); // GZIP all assets
 app.use(cors());
 app.use(bodyParser.urlencoded({ extended: true })); // support encoded bodies
 app.use(bodyParser.json()); // support json encoded bodies
 
+const apiLimiter = rateLimit({
+    windowMs: 1 * 60 * 1000, // 1 minutes
+    max: 1000, // Limit each IP to 1000 requests per `window`
+    standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+    legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+app.use('/api', apiLimiter);
 app.use('/api', routes);
 
 let options = {
