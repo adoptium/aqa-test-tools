@@ -1,5 +1,6 @@
 const Parser = require('./Parser');
 const regexRunningTest = /.*?Running test (.*?) \.\.\.\r?/;
+const testSeparator = /.*?===============================================\r?/;
 const regexFinishTime = /(.*?) Finish Time\: .* Epoch Time \(ms\)\: (\d+).*/;
 const regexStartTime = /(.*?) Start Time\: .* Epoch Time \(ms\)\: (\d+).*/;
 const TestBenchmarkParser = require(`./TestBenchmarkParser`);
@@ -59,8 +60,16 @@ class Test extends Parser {
         let nonTestStr = '';
         let preTestDone = false;
         let postTestDone = false;
+        let testStartLine = -1;
+        let lineCounter = 0;
         for await (const line of rl) {
-            if ((m = line.match(regexRunningTest)) !== null) {
+            lineCounter++;
+            if ((m = line.match(testSeparator)) !== null) {
+                testStartLine = lineCounter;
+            } else if (
+                lineCounter === testStartLine + 1 &&
+                (m = line.match(regexRunningTest)) !== null
+            ) {
                 if (!preTestDone) {
                     results.push({
                         testName: preTest,
