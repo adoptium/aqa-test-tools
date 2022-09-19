@@ -9,7 +9,7 @@ import TestBreadcrumb from '../TestBreadcrumb';
 import { order, getInfoFromBuildName } from '../../utils/Utils';
 
 const hcvalues = {
-    hclevels: ['sanity', 'extended', 'special'],
+    hclevels: ['dev', 'sanity', 'extended', 'special'],
     hcgroups: [
         'build',
         'functional',
@@ -86,6 +86,8 @@ export default class ResultSummary extends Component {
                 // jdk18-linux-s390x-openj9_SmokeTests
                 // jdk11u-alpine-linux-aarch64-temurin
                 // jdk11u-aix-ppc64-openj9-ibm
+                // jdk11u-linux-x64-openj9-criu
+                // jdk17u-linux-x64-openj9-criu_SmokeTests
                 const temp = buildName.split('-');
                 let suffix = temp[temp.length - 1];
                 suffix = suffix.replace('_smoketests', '');
@@ -95,7 +97,7 @@ export default class ResultSummary extends Component {
                 } else if (suffix === 'temurin') {
                     jdkImpl = 'hs';
                 }
-                if (buildName.includes('openj9-ibm')) {
+                if (buildName.includes('openj9')) {
                     jdkImpl = 'j9';
                 }
                 const regex = /^jdk(\d+).?-(\w+)-(\w+)-(\w+)/i;
@@ -110,6 +112,9 @@ export default class ResultSummary extends Component {
                         platform = `x86-32_${tokens[2]}`;
                     } else {
                         platform = `${tokens[3]}_${tokens[2]}`;
+                    }
+                    if (buildName.includes('-criu')) {
+                        platform = platform + '_criu';
                     }
                 }
             } else if (buildName.startsWith('build')) {
