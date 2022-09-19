@@ -1,8 +1,12 @@
+import os
+import json
 import re
 import requests
-import json
-import os
 import pandas as pd
+import nltk
+from tqdm.notebook import tqdm
+import time
+nltk.download('punkt')
 
 
 def remove_time_stamp(content):
@@ -101,8 +105,9 @@ def create_models_datasets(data_path, data_extra_path, train_data):
 
     if not train_data:
         for file in files:
-            if (file.endswith('txt')):
-                # test_label needs to remove .txt and trailing links (_http...) in file name, e.g. from openj9_1.txt and openj9_1_httpxxx.txt
+            if file.endswith('txt'):
+                # test_label needs to remove .txt and trailing links (_http...) in file name,
+                # e.g. from openj9_1.txt and openj9_1_httpxxx.txt
                 cur_test_label = file.strip(".txt").split("_http")[0]
                 label.append("jenkins_" + cur_test_label)
                 with open(os.path.join(data_path, file)) as f:
@@ -130,3 +135,52 @@ def create_models_datasets(data_path, data_extra_path, train_data):
     df_data['content'] = [remove_time_stamp(content) for content in df_data['content']]
 
     return df_data
+
+
+# function to remove stopwords
+def remove_stopwords(tokens, stop_words):
+    filtered_words = [w for w in tokens if not w in stop_words]
+    return filtered_words
+
+
+# lemmatization with nltk
+def do_lem(tokens, lemmatizer):
+    tokens = [lemmatizer.lemmatize(w) for w in tokens]
+    return tokens
+
+
+# keeps only neighboring words of a predefined list of words
+def keep_neighboring_words(key_value, matches, neighboring_words):
+    result_dict = {}
+    for key, value in key_value.items():
+        indices = (i for i, word in enumerate(key_value[key]) if any(word in x for x in matches))
+        final_words = []
+        for ind in indices:
+            final_words.append(key_value[key][ind - neighboring_words:ind + 1]
+                               + key_value[key][ind:ind + neighboring_words])
+
+        result_dict[key]=[item for sublist in final_words for item in sublist]
+    return result_dict
+
+
+def clean_text(df_to_clean, stop_words, lemmatizer):
+
+    tag_data = {}
+
+    for idx, doc in enumerate(tqdm(df_to_clean.iterrows(), total=df_to_clean.shape[0])):
+        time.sleep(0.5)
+        words = df_to_clean.iloc[idx]['content'].lower()
+
+        # remove punctuation
+        tokenizer = nltk.RegexpTokenizer(r"\w+")
+        # tokenize texts
+        nltk_tokens = tokenizer.tokenize(words)
+        # remove stopwords
+        nltk_tokens = remove_stopwords(nltk_tokens, stop_words)
+        # apply lemmatization
+        words = do_lem(nltk_tokens, lemmatizer())
+
+        tag = df_to_clean.iloc[idx]['labels']
+        tag_data[tag] = words
+
+    return tag, tag_data
