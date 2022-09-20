@@ -9,6 +9,7 @@ import time
 nltk.download('punkt', quiet=True)
 
 
+
 def remove_time_stamp(content):
     if not content:
         return content
@@ -136,7 +137,6 @@ def create_models_datasets(data_path, data_extra_path, train_data):
 
     return df_data
 
-
 # function to remove stopwords
 def remove_stopwords(tokens, stop_words):
     filtered_words = [w for w in tokens if not w in stop_words]
@@ -184,3 +184,4 @@ def clean_text(df_to_clean, stop_words, lemmatizer):
         tag_data[tag] = words
 
     return tag, tag_data
+
