@@ -6,7 +6,7 @@ import pandas as pd
 import nltk
 from tqdm.notebook import tqdm
 import time
-nltk.download('punkt')
+nltk.download('punkt', quiet=True)
 
 
 def remove_time_stamp(content):
