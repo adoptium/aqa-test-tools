@@ -107,6 +107,7 @@ export default class Build extends Component {
                     buildName: buildData[0].buildName,
                     buildId: buildData[0]._id,
                     buildUrl: buildData[0].buildUrl,
+                    rerunUrl: buildData[0].rerunLink,
                 };
                 ret.action = {
                     testId: test._id,

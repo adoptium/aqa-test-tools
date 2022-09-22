@@ -6,6 +6,7 @@ import {
     HistoryOutlined,
     QuestionCircleOutlined,
     LinkOutlined,
+    SyncOutlined,
 } from '@ant-design/icons';
 import { Table, Tooltip, Divider } from 'antd';
 import { params } from '../utils/query';
@@ -84,7 +85,7 @@ export default class TestTable extends Component {
 
         const renderAction = (value, row) => {
             const { testId } = value;
-            const { buildId, buildUrl } = row;
+            const { buildId, buildUrl, rerunUrl } = row;
 
             return (
                 <span>
@@ -131,6 +132,17 @@ export default class TestTable extends Component {
                         <Tooltip title="Jenkins Link">
                             {' '}
                             <LinkOutlined />{' '}
+                        </Tooltip>{' '}
+                    </a>
+                    <Divider type="vertical" />
+                    <a
+                        target="_blank"
+                        href={rerunUrl}
+                        rel="noopener noreferrer"
+                    >
+                        <Tooltip title="Rerun Grinder">
+                            {' '}
+                            <SyncOutlined />{' '}
                         </Tooltip>{' '}
                     </a>
                 </span>
