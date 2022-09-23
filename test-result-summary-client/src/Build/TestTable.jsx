@@ -86,6 +86,15 @@ export default class TestTable extends Component {
         const renderAction = (value, row) => {
             const { testId } = value;
             const { buildId, buildUrl, rerunUrl } = row;
+            const testName = testData.testName;
+            let rerunLink = row.rerunUrl;
+
+            if (rerunLink) {
+                rerunLink = rerunLink.replace(
+                    /(\WTARGET=)([^&]*)/gi,
+                    '$1' + testName
+                );
+            }
 
             return (
                 <span>
@@ -137,7 +146,7 @@ export default class TestTable extends Component {
                     <Divider type="vertical" />
                     <a
                         target="_blank"
-                        href={rerunUrl}
+                        href={rerunLink}
                         rel="noopener noreferrer"
                     >
                         <Tooltip title="Rerun Grinder">
