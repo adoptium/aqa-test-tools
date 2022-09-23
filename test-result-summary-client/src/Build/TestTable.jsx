@@ -84,10 +84,9 @@ export default class TestTable extends Component {
         }
 
         const renderAction = (value, row) => {
-            const { testId } = value;
+            const { testId, testName } = value;
             const { buildId, buildUrl, rerunUrl } = row;
-            const testName = testData.testName;
-            let rerunLink = row.rerunUrl;
+            let rerunLink = rerunUrl;
 
             if (rerunLink) {
                 rerunLink = rerunLink.replace(
