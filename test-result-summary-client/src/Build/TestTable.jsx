@@ -93,6 +93,7 @@ export default class TestTable extends Component {
                     /(\WTARGET=)([^&]*)/gi,
                     '$1' + testName
                 );
+                rerunLink = rerunLink.replaceAll('&amp;', '&');
             }
 
             return (
