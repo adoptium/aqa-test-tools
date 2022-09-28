@@ -65,6 +65,7 @@ export default class ResultSummary extends Component {
                 parentId,
             })}`
         );
+        let childBuildsResult = '';
         let javaVersion = null;
         const buildMap = {};
         let jdkVersionOpts = [];
@@ -154,6 +155,16 @@ export default class ResultSummary extends Component {
                 };
             } else {
                 console.warn(`Cannot match ${buildName}`);
+            }
+
+            if (build.status != 'Done') {
+                childBuildsResult = 'PROGRESSING';
+            } else if (childBuildsResult == '') {
+                if (build.buildResult == 'FAILIURE') {
+                    childBuildsResult = 'FAILIURE';
+                } else if (build.buildResult == 'UNSTABLE') {
+                    childBuildsResult = 'UNSTABLE';
+                }
             }
         });
         builds.forEach((build) => {
@@ -253,7 +264,22 @@ export default class ResultSummary extends Component {
             if (!javaVersion && build.javaVersion) {
                 javaVersion = build.javaVersion;
             }
+
+            if (build.status != 'Done') {
+                childBuildsResult = 'PROGRESSING';
+            } else if (childBuildsResult == '') {
+                if (build.buildResult == 'FAILIURE') {
+                    childBuildsResult = 'FAILIURE';
+                } else if (build.buildResult == 'UNSTABLE') {
+                    childBuildsResult = 'UNSTABLE';
+                }
+            }
         });
+
+        if (childBuildsResult == '') {
+            childBuildsResult = 'SUCCESS';
+        }
+
         const platformOpts = Object.keys(buildMap).sort();
         jdkVersionOpts = [...new Set(jdkVersionOpts)].sort(order);
         jdkImplOpts = [...new Set(jdkImplOpts)].sort(order);
@@ -268,6 +294,7 @@ export default class ResultSummary extends Component {
             allJdkVersions: jdkVersionOpts,
             selectedJdkImpls: jdkImplOpts,
             allJdkImpls: jdkImplOpts,
+            childBuildsResult,
             sdkBuilds,
             javaVersion,
         });
@@ -284,6 +311,7 @@ export default class ResultSummary extends Component {
             allJdkImpls,
             summary,
             parentBuildInfo,
+            childBuildsResult,
             sdkBuilds,
             javaVersion,
         } = this.state;
@@ -297,6 +325,7 @@ export default class ResultSummary extends Component {
                         id={parentId}
                         parentBuildInfo={parentBuildInfo}
                         summary={summary}
+                        childBuildsResult={childBuildsResult}
                         sdkBuilds={sdkBuilds}
                         javaVersion={javaVersion}
                     />
