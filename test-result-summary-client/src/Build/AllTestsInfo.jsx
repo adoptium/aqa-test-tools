@@ -22,7 +22,7 @@ export default class Build extends Component {
         const { buildId, limit, hasChildren } = getParams(
             this.props.location.search
         );
-        const hasChildrenBool = hasChildren === 'true';
+        let hasChildrenBool = hasChildren === 'true';
         let limitParam = '';
         if (limit) {
             limitParam = `&limit=${limit}`;
@@ -37,15 +37,20 @@ export default class Build extends Component {
         let errorMsg = '';
 
         // if it is a parallel build.
+        if (!hasChildrenBool) {
+            const buildData = await fetchData(`/api/getData?_id=${buildId} `);
+            if (buildData && buildData[0].tests !== undefined) {
+                hasChildrenBool = true;
+            }
+            buildIds.push(buildId);
+        }
         if (hasChildrenBool) {
             const childrenBuilds = await fetchData(
                 `/api/getChildBuilds?parentId=${buildId}`
             );
-            buildIds = childrenBuilds.map(
-                (childrenBuilds) => childrenBuilds._id
+            buildIds.push(
+                ...childrenBuilds.map((childrenBuilds) => childrenBuilds._id)
             );
-        } else {
-            buildIds.push(buildId);
         }
 
         await Promise.all(

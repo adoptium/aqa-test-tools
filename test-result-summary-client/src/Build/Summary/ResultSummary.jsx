@@ -156,6 +156,7 @@ export default class ResultSummary extends Component {
                 console.warn(`Cannot match ${buildName}`);
             }
         });
+        builds.sort((a, b) => a.buildName.localeCompare(b.buildName));
         builds.forEach((build) => {
             const buildName = build.buildName.toLowerCase();
             if (getInfoFromBuildName(buildName)) {
