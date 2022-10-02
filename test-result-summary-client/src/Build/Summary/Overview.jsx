@@ -1,17 +1,11 @@
 import React, { Component } from 'react';
-import {
-    CheckOutlined,
-    CloseOutlined,
-    InfoOutlined,
-    LoadingOutlined,
-    ApartmentOutlined,
-} from '@ant-design/icons';
 import { Link } from 'react-router-dom';
 import { Button, Divider, Row, Col, Tooltip } from 'antd';
 import { params } from '../../utils/query';
 import moment from 'moment';
 import BuildLink from '../BuildLink';
 import renderDuration from '../Duration';
+import BuildStatus from './BuildStatus';
 import './Overview.css';
 
 const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
@@ -26,69 +20,7 @@ export default class Overview extends Component {
             sdkBuilds,
             javaVersion,
         } = this.props;
-
-        const renderFvTestBuild = (value) => {
-            if (value) {
-                let icon = '';
-                if (value == 'PROGRESSING') {
-                    icon = (
-                        <LoadingOutlined
-                            style={{ fontSize: 16, color: '#DAA520' }}
-                        />
-                    );
-                } else if (value === 'SUCCESS') {
-                    icon = (
-                        <CheckOutlined
-                            style={{ fontSize: 16, color: '#2cbe4e' }}
-                        />
-                    );
-                } else if (value === 'FAILURE') {
-                    icon = (
-                        <CloseOutlined
-                            style={{ fontSize: 16, color: '#f50' }}
-                        />
-                    );
-                } else {
-                    icon = (
-                        <InfoOutlined style={{ fontSize: 16, color: '#f50' }} />
-                    );
-                }
-                return (
-                    <div>
-                        <Tooltip title="Build tree">
-                            <Link
-                                to={{
-                                    pathname: '/buildTreeView',
-                                    search: params({ parentId: id }),
-                                }}
-                            >
-                                <ApartmentOutlined />
-                            </Link>
-                        </Tooltip>
-                        <Link
-                            to={{
-                                pathname: '/buildDetail',
-                                search: params({ parentId: id }),
-                            }}
-                            style={{
-                                color:
-                                    value === 'SUCCESS'
-                                        ? '#2cbe4e'
-                                        : value === 'FAILURE'
-                                        ? '#f50'
-                                        : '#DAA520',
-                            }}
-                        >
-                            {' '}
-                            Build #{parentBuildInfo.buildNum}{' '}
-                            <Tooltip title={value}>{icon}</Tooltip>
-                        </Link>
-                        <br />
-                    </div>
-                );
-            }
-            return null;
-        };
+        console.log('cb', childBuildsResult);
 
         if (id && parentBuildInfo) {
             const {
@@ -115,7 +47,13 @@ export default class Overview extends Component {
             return (
                 <div>
                     <div className="overview-header">
-                        <div>{renderFvTestBuild(childBuildsResult)}</div>{' '}
+                        <div>
+                            <BuildStatus
+                                status={childBuildsResult}
+                                id={id}
+                                buildNum={parentBuildInfo.buildNum}
+                            />
+                        </div>{' '}
                         <a
                             href={parentBuildInfo.buildUrl}
                             target="_blank"

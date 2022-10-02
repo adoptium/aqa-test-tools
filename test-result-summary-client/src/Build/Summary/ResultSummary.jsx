@@ -65,8 +65,14 @@ export default class ResultSummary extends Component {
                 parentId,
             })}`
         );
-        let childBuildsResult = '';
+        let childBuildsResult = 0;
         let javaVersion = null;
+        const buildResultPriority = {
+            ABORT: 3,
+            FAILIURE: 2,
+            UNSTABLE: 1,
+            SUCCESS: 0,
+        };
         const buildMap = {};
         let jdkVersionOpts = [];
         let jdkImplOpts = [];
@@ -159,12 +165,11 @@ export default class ResultSummary extends Component {
 
             if (build.status != 'Done') {
                 childBuildsResult = 'PROGRESSING';
-            } else if (childBuildsResult == '') {
-                if (build.buildResult == 'FAILIURE') {
-                    childBuildsResult = 'FAILIURE';
-                } else if (build.buildResult == 'UNSTABLE') {
-                    childBuildsResult = 'UNSTABLE';
-                }
+            } else {
+                childBuildsResult = Math.max(
+                    buildResultPriority[build.buildResult],
+                    childBuildsResult
+                );
             }
         });
         builds.forEach((build) => {
@@ -267,12 +272,11 @@ export default class ResultSummary extends Component {
 
             if (build.status != 'Done') {
                 childBuildsResult = 'PROGRESSING';
-            } else if (childBuildsResult == '') {
-                if (build.buildResult == 'FAILIURE') {
-                    childBuildsResult = 'FAILIURE';
-                } else if (build.buildResult == 'UNSTABLE') {
-                    childBuildsResult = 'UNSTABLE';
-                }
+            } else {
+                childBuildsResult = Math.max(
+                    buildResultPriority[build.buildResult],
+                    childBuildsResult
+                );
             }
         });
 
@@ -295,6 +299,7 @@ export default class ResultSummary extends Component {
             selectedJdkImpls: jdkImplOpts,
             allJdkImpls: jdkImplOpts,
             childBuildsResult,
+            buildResultPriority,
             sdkBuilds,
             javaVersion,
         });
@@ -312,12 +317,22 @@ export default class ResultSummary extends Component {
             summary,
             parentBuildInfo,
             childBuildsResult,
+            buildResultPriority,
             sdkBuilds,
             javaVersion,
         } = this.state;
+
+        const getKeyByValue = (object, value) => {
+            return Object.keys(object).find((key) => object[key] === value);
+        };
+
         const { parentId } = getParams(this.props.location.search);
 
         if (buildMap && parentBuildInfo) {
+            const childBuildsResultString = getKeyByValue(
+                buildResultPriority,
+                childBuildsResult
+            );
             return (
                 <div>
                     <TestBreadcrumb buildId={parentId} />
@@ -325,7 +340,7 @@ export default class ResultSummary extends Component {
                         id={parentId}
                         parentBuildInfo={parentBuildInfo}
                         summary={summary}
-                        childBuildsResult={childBuildsResult}
+                        childBuildsResult={childBuildsResultString}
                         sdkBuilds={sdkBuilds}
                         javaVersion={javaVersion}
                     />
