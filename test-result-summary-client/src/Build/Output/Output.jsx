@@ -2,7 +2,11 @@ import React, { Component } from 'react';
 import { getParams } from '../../utils/query';
 import { fetchData } from '../../utils/Utils';
 import { Col, Row, Switch, Tooltip, Divider } from 'antd';
-import { DownloadOutlined, LinkOutlined } from '@ant-design/icons';
+import {
+    DownloadOutlined,
+    LinkOutlined,
+    SyncOutlined,
+} from '@ant-design/icons';
 import TestBreadcrumb from '../TestBreadcrumb';
 import classnames from 'classnames';
 import AlertMsg from '../AlertMsg';
@@ -48,6 +52,7 @@ export default class Output extends Component {
                 output: result.output,
                 result: info.testResult,
                 buildUrl: dataInfo.buildUrl,
+                rerunLink: dataInfo.rerunLink,
             };
         } else {
             const results = await fetchData(`/api/getData?_id=${id} `);
@@ -64,6 +69,7 @@ export default class Output extends Component {
                     output: result.output,
                     result: info.buildResult,
                     buildUrl: info.buildUrl,
+                    rerunLink: info.rerunLink,
                 };
             }
             data.error = info.error ? `${info.buildUrl}: ${info.error}` : '';
@@ -75,6 +81,15 @@ export default class Output extends Component {
 
     renderContent() {
         const { data, outputType, loaded } = this.state;
+
+        if (data.rerunLink) {
+            data.rerunLink = data.rerunLink.replace(
+                /(\WTARGET=)([^&]*)/gi,
+                '$1' + data.name
+            );
+            data.rerunLink = data.rerunLink.replaceAll('&amp;', '&');
+        }
+
         if (!loaded) return 'Loading...';
         if (!outputType) return null;
         return (
@@ -132,6 +147,19 @@ export default class Output extends Component {
                                     {' '}
                                     <LinkOutlined />{' '}
                                 </Tooltip>
+                            </a>
+                        )}
+                        <Divider type="vertical" />
+                        {data.rerunLink && (
+                            <a
+                                target="_blank"
+                                href={data.rerunLink}
+                                rel="noopener noreferrer"
+                            >
+                                <Tooltip title="Rerun Grinder">
+                                    {' '}
+                                    <SyncOutlined />{' '}
+                                </Tooltip>{' '}
                             </a>
                         )}
                     </Col>
