@@ -20,7 +20,6 @@ export default class Overview extends Component {
             sdkBuilds,
             javaVersion,
         } = this.props;
-        console.log('cb', childBuildsResult);
 
         if (id && parentBuildInfo) {
             const {
