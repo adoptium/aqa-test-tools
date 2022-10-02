@@ -123,7 +123,7 @@ export default class Output extends Component {
                     </Col>
                 </Row>
                 <Row justify="end">
-                    <Col span={1}>
+                    <Col>
                         {data.artifactory && (
                             <a
                                 target="_blank"
@@ -136,31 +136,36 @@ export default class Output extends Component {
                                 </Tooltip>{' '}
                             </a>
                         )}
-                        <Divider type="vertical" />
                         {data.buildUrl && (
-                            <a
-                                target="_blank"
-                                href={data.buildUrl}
-                                rel="noopener noreferrer"
-                            >
-                                <Tooltip title="Jenkins Link">
-                                    {' '}
-                                    <LinkOutlined />{' '}
-                                </Tooltip>
-                            </a>
+                            <>
+                                <Divider type="vertical" />
+                                <a
+                                    target="_blank"
+                                    href={data.buildUrl}
+                                    rel="noopener noreferrer"
+                                >
+                                    <Tooltip title="Jenkins Link">
+                                        {' '}
+                                        <LinkOutlined />{' '}
+                                    </Tooltip>
+                                </a>
+                            </>
                         )}
-                        <Divider type="vertical" />
                         {data.rerunLink && (
-                            <a
-                                target="_blank"
-                                href={data.rerunLink}
-                                rel="noopener noreferrer"
-                            >
-                                <Tooltip title="Rerun Grinder">
-                                    {' '}
-                                    <SyncOutlined />{' '}
-                                </Tooltip>{' '}
-                            </a>
+                            <>
+                                <Divider type="vertical" />
+
+                                <a
+                                    target="_blank"
+                                    href={data.rerunLink}
+                                    rel="noopener noreferrer"
+                                >
+                                    <Tooltip title="Rerun Grinder">
+                                        {' '}
+                                        <SyncOutlined />{' '}
+                                    </Tooltip>{' '}
+                                </a>
+                            </>
                         )}
                     </Col>
                 </Row>
