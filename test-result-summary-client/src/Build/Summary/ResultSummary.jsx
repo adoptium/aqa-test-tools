@@ -166,7 +166,7 @@ export default class ResultSummary extends Component {
                 childBuildsResult = 'PROGRESSING';
             } else if (
                 buildResultPriority[build.buildResult] >
-                buildResultPriority[build.buildResult]
+                buildResultPriority[childBuildsResult]
             ) {
                 childBuildsResult = build.buildResult;
             }
