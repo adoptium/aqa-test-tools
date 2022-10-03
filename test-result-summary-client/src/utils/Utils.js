@@ -50,7 +50,11 @@ const getSHA = (type, javaVersion) => {
     return null;
 };
 
+const connectAdoptiumAPI = process.env.REACT_APP_CONNECT_ADOPTIUM_API;
 export const fetchData = async (url) => {
+    if (connectAdoptiumAPI) {
+        url = 'https://trss.adoptium.net' + url;
+    }
     try {
         const response = await fetch(url, {
             method: 'get',
