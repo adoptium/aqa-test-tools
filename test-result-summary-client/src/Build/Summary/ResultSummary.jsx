@@ -77,6 +77,18 @@ export default class ResultSummary extends Component {
         let jdkVersionOpts = [];
         let jdkImplOpts = [];
 
+        const setBuildsStatus = (build, currStatus) => {
+            if (build.status != 'Done' || currStatus == 'PROGRESSING') {
+                return 'PROGRESSING';
+            } else if (
+                buildResultPriority[build.buildResult] >
+                buildResultPriority[childBuildsResult]
+            ) {
+                return build.buildResult;
+            }
+            return currStatus;
+        };
+
         sdkBuilds.forEach((build) => {
             const buildName = build.buildName.toLowerCase();
             let level = 'sanity';
@@ -162,14 +174,8 @@ export default class ResultSummary extends Component {
             } else {
                 console.warn(`Cannot match ${buildName}`);
             }
-            if (build.status != 'Done') {
-                childBuildsResult = 'PROGRESSING';
-            } else if (
-                buildResultPriority[build.buildResult] >
-                buildResultPriority[childBuildsResult]
-            ) {
-                childBuildsResult = build.buildResult;
-            }
+
+            childBuildsResult = setBuildsStatus(build, childBuildsResult);
         });
         builds.forEach((build) => {
             const buildName = build.buildName.toLowerCase();
@@ -269,14 +275,7 @@ export default class ResultSummary extends Component {
                 javaVersion = build.javaVersion;
             }
 
-            if (build.status != 'Done') {
-                childBuildsResult = 'PROGRESSING';
-            } else if (
-                buildResultPriority[build.buildResult] >
-                buildResultPriority[childBuildsResult]
-            ) {
-                childBuildsResult = build.buildResult;
-            }
+            childBuildsResult = setBuildsStatus(build, childBuildsResult);
         });
 
         const platformOpts = Object.keys(buildMap).sort();
