@@ -16,6 +16,24 @@ export const getInfoFromBuildName = (buildName) => {
     return null;
 };
 
+export const setBuildsStatus = (build, currStatus) => {
+    const buildResultPriority = {
+        ABORT: 3,
+        FAILIURE: 2,
+        UNSTABLE: 1,
+        SUCCESS: 0,
+    };
+
+    if (build.status != 'Done' || currStatus === 'PROGRESSING') {
+        return 'PROGRESSING';
+    } else if (
+        buildResultPriority[build.buildResult] > buildResultPriority[currStatus]
+    ) {
+        return build.buildResult;
+    }
+    return currStatus;
+};
+
 export const getGitDiffLinks = (before, after, buildName) => {
     const { jdkVersion } = getInfoFromBuildName(buildName);
     const diffLinks = {

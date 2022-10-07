@@ -12,7 +12,7 @@ export default class BuildStatusIcon extends Component {
         const { status } = this.props;
         if (status) {
             let icon = '';
-            if (status == 'PROGRESSING') {
+            if (status === 'PROGRESSING') {
                 icon = (
                     <LoadingOutlined
                         style={{ fontSize: 16, color: '#DAA520' }}

@@ -6,7 +6,11 @@ import Checkboxes from './Checkboxes';
 import ResultGrid from './ResultGrid';
 import Overview from './Overview';
 import TestBreadcrumb from '../TestBreadcrumb';
-import { order, getInfoFromBuildName } from '../../utils/Utils';
+import {
+    order,
+    getInfoFromBuildName,
+    setBuildsStatus,
+} from '../../utils/Utils';
 
 const hcvalues = {
     hclevels: ['dev', 'sanity', 'extended', 'special'],
@@ -67,27 +71,9 @@ export default class ResultSummary extends Component {
         );
         let childBuildsResult = 'SUCCESS';
         let javaVersion = null;
-        const buildResultPriority = {
-            ABORT: 3,
-            FAILIURE: 2,
-            UNSTABLE: 1,
-            SUCCESS: 0,
-        };
         const buildMap = {};
         let jdkVersionOpts = [];
         let jdkImplOpts = [];
-
-        const setBuildsStatus = (build, currStatus) => {
-            if (build.status != 'Done' || currStatus == 'PROGRESSING') {
-                return 'PROGRESSING';
-            } else if (
-                buildResultPriority[build.buildResult] >
-                buildResultPriority[childBuildsResult]
-            ) {
-                return build.buildResult;
-            }
-            return currStatus;
-        };
 
         sdkBuilds.forEach((build) => {
             const buildName = build.buildName.toLowerCase();
