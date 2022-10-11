@@ -8,7 +8,7 @@ import BuildStatusIcon from './BuildStatusIcon.jsx';
 export default class BuildStatus extends Component {
     render() {
         const { status, id, buildNum } = this.props;
-        if (status) {
+        if (status && id && buildNum) {
             return (
                 <div>
                     <Tooltip title="Build tree">

@@ -1,17 +1,11 @@
 import React, { Component } from 'react';
-import {
-    CheckOutlined,
-    CloseOutlined,
-    InfoOutlined,
-    LoadingOutlined,
-    QuestionCircleOutlined,
-    ApartmentOutlined
-} from '@ant-design/icons';
+import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Table, Tooltip, Checkbox, Popconfirm } from 'antd';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
 import { fetchData } from '../utils/Utils';
 import BuildLink from './BuildLink';
+import BuildStatus from './Summary/BuildStatus';
 
 const pageSize = 5;
 export default class TopLevelBuildTable extends Component {
@@ -108,69 +102,17 @@ export default class TopLevelBuildTable extends Component {
         const { buildName, url, type } = this.props;
         if (buildInfo) {
             const renderFvTestBuild = (value) => {
+                console.log('v', value);
                 if (value && value.buildNum) {
-                    let icon = '';
-                    if (value.status !== 'Done') {
-                        icon = (
-                            <LoadingOutlined
-                                style={{ fontSize: 16, color: '#DAA520' }}
-                            />
-                        );
-                        value.buildResult = 'PROGRESSING';
-                    } else if (value.buildResult === 'SUCCESS') {
-                        icon = (
-                            <CheckOutlined
-                                style={{ fontSize: 16, color: '#2cbe4e' }}
-                            />
-                        );
-                    } else if (value.buildResult === 'FAILURE') {
-                        icon = (
-                            <CloseOutlined
-                                style={{ fontSize: 16, color: '#f50' }}
-                            />
-                        );
-                    } else {
-                        icon = (
-                            <InfoOutlined
-                                style={{ fontSize: 16, color: '#f50' }}
-                            />
-                        );
-                    }
                     return (
-                        <div>
-                            <Tooltip title="Build tree">
-                                <Link
-                                    to={{
-                                        pathname: "/buildTreeView",
-                                        search: params({parentId: value._id}),
-                                    }}
-                                >
-                                    <ApartmentOutlined/>
-                                </Link>
-                            </Tooltip>
-                            <Link
-                                to={{
-                                    pathname: '/buildDetail',
-                                    search: params({ parentId: value._id }),
-                                }}
-                                style={{
-                                    color:
-                                        value.buildResult === 'SUCCESS'
-                                            ? '#2cbe4e'
-                                            : value.buildResult === 'FAILURE'
-                                            ? '#f50'
-                                            : '#DAA520',
-                                }}
-                            >
-                                {' '}Build #{value.buildNum}{' '}
-                                <Tooltip title={value.buildResult}>
-                                    {icon}
-                                </Tooltip>
-                            </Link>
-
-                            <br />
+                        <>
+                            <BuildStatus
+                                status={value.buildResult}
+                                id={value._id}
+                                buildNum={value.buildNum}
+                            />
                             {renderPublishName(value)}
-                        </div>
+                        </>
                     );
                 }
                 return null;
@@ -178,6 +120,7 @@ export default class TopLevelBuildTable extends Component {
 
             const renderBuild = (value) => {
                 if (value && value.buildNum) {
+                    console.log('v', value);
                     let result = value.buildResult;
                     if (value.tests && value.tests.length > 0) {
                         result = value.tests[0].testResult;
