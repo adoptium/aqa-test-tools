@@ -102,7 +102,6 @@ export default class TopLevelBuildTable extends Component {
         const { buildName, url, type } = this.props;
         if (buildInfo) {
             const renderFvTestBuild = (value) => {
-                console.log('v', value);
                 if (value && value.buildNum) {
                     return (
                         <>
@@ -120,7 +119,6 @@ export default class TopLevelBuildTable extends Component {
 
             const renderBuild = (value) => {
                 if (value && value.buildNum) {
-                    console.log('v', value);
                     let result = value.buildResult;
                     if (value.tests && value.tests.length > 0) {
                         result = value.tests[0].testResult;
