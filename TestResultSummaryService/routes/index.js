@@ -35,6 +35,7 @@ app.get('/getParents', wrap(require('./getParents')));
 app.get('/getPerffarmRunCSV', wrap(require('./getPerffarmRunCSV')));
 app.get('/getTabularData', wrap(require('./getTabularData')));
 app.get('/getTabularDropdown', wrap(require('./getTabularDropdown')));
+app.get('/getTestBuildsByMachine', wrap(require('./getTestBuildsByMachine')));
 app.get('/getTestById', wrap(require('./getTestById')));
 app.get('/getTestBySearch', wrap(require('./getTestBySearch')));
 app.get('/getTestByVersionInfo', wrap(require('./getTestByVersionInfo')));
