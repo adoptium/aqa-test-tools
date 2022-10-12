@@ -3,7 +3,7 @@ import { QuestionCircleOutlined } from '@ant-design/icons';
 import { Table, Tooltip, Checkbox, Popconfirm } from 'antd';
 import { Link } from 'react-router-dom';
 import { params } from '../utils/query';
-import { fetchData } from '../utils/Utils';
+import { fetchData, setBuildsStatus } from '../utils/Utils';
 import BuildLink from './BuildLink';
 import BuildStatus from './Summary/BuildStatus';
 
@@ -103,6 +103,10 @@ export default class TopLevelBuildTable extends Component {
         if (buildInfo) {
             const renderFvTestBuild = (value) => {
                 if (value && value.buildNum) {
+                    value.buildResult = setBuildsStatus(
+                        value,
+                        value.buildResult
+                    );
                     return (
                         <>
                             <BuildStatus
