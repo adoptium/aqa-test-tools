@@ -5,11 +5,10 @@ module.exports = async (req, res) => {
     const db = new TestResultsDB();
 
     let query = {};
+    query.machine = { $regex: machineRegex };
+
     if (buildNameRegex) {
         query.buildName = { $regex: buildNameRegex };
-    }
-    if (machineRegex) {
-        query.machine = { $regex: machineRegex };
     }
 
     let result = await db.aggregate([
@@ -17,14 +16,40 @@ module.exports = async (req, res) => {
             $match: query,
         },
         {
+            $group: {
+                _id: '$buildName',
+                machines: {
+                    $addToSet: '$machine',
+                },
+                passes: {
+                    $sum: {
+                        $cond: {
+                            if: { $eq: ['$buildResult', 'SUCCESS'] },
+                            then: 1,
+                            else: 0,
+                        },
+                    },
+                },
+            },
+        },
+        {
             $project: {
-                buildName: '$buildName',
-                machine: '$machine',
+                _id: 0,
+                buildName: '$_id',
+                machines: '$machines',
                 passRate: {
                     $concat: [
-                        { $substr: ['$testSummary.passed', 0, -1] },
+                        { $substr: ['$passes', 0, -1] },
                         '/',
-                        { $substr: ['$testSummary.executed', 0, -1] },
+                        {
+                            $substr: [
+                                {
+                                    $size: '$machines',
+                                },
+                                0,
+                                -1,
+                            ],
+                        },
                     ],
                 },
             },
