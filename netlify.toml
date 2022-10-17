@@ -1,0 +1,5 @@
+[build]
+  base = "test-result-summary-client/"
+  publish = "build/"
+  command = "REACT_APP_CONNECT_ADOPTIUM_API=true CI=false npm run build"
+
