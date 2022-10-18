@@ -1,10 +1,12 @@
-const { query } = require('winston');
-const { TestResultsDB, ObjectID } = require('../Database');
+const { TestResultsDB } = require('../Database');
 module.exports = async (req, res) => {
     let { buildNameRegex, machineRegex } = req.query;
     const db = new TestResultsDB();
 
     let query = {};
+    if (!machineRegex) {
+        res.send({ error: 'Please provide machineRegex' });
+    }
     query.machine = { $regex: machineRegex };
 
     if (buildNameRegex) {
@@ -30,6 +32,9 @@ module.exports = async (req, res) => {
                         },
                     },
                 },
+                total: {
+                    $sum: 1,
+                },
             },
         },
         {
@@ -42,13 +47,7 @@ module.exports = async (req, res) => {
                         { $substr: ['$passes', 0, -1] },
                         '/',
                         {
-                            $substr: [
-                                {
-                                    $size: '$machines',
-                                },
-                                0,
-                                -1,
-                            ],
+                            $substr: ['$total', 0, -1],
                         },
                     ],
                 },
