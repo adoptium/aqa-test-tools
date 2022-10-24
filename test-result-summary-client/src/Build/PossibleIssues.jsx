@@ -218,7 +218,7 @@ export default class PossibleIssues extends Component {
                     dataIndex: 'createdAtStr',
                     key: 'createdAtStr',
                     sorter: (a, b) => {
-                        return new Date(a.createdAt) - new Date(b.createdAt);
+                        return a.createdAt - b.createdAt;
                     },
                 },
                 {
