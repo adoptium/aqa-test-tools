@@ -96,12 +96,14 @@ export default class PossibleIssues extends Component {
             let dataSource = {};
             const repoUrlAPIPrefix = 'https://api.github.com/repos/';
             for (let index = 0; index < relatedIssues.items.length; index++) {
-                let createdAt = new Date(relatedIssues.items[index].created_at);
+                const createdAt = new Date(
+                    relatedIssues.items[index].created_at
+                );
                 const is_opne = relatedIssues.items[index].state;
                 if (createdAt < oldDate && is_opne === 'closed') {
                     continue;
                 }
-                createdAt = createdAt.toLocaleString();
+                const createdAtStr = createdAt.toLocaleString();
                 const repoName = relatedIssues.items[
                     index
                 ].repository_url.replace(repoUrlAPIPrefix, '');
@@ -174,6 +176,7 @@ export default class PossibleIssues extends Component {
                     issue,
                     issueCreator,
                     createdAt,
+                    createdAtStr,
                     issueState,
                     degree: relatedDegree,
                     userFeedback,
@@ -212,9 +215,8 @@ export default class PossibleIssues extends Component {
                 },
                 {
                     title: 'Created At',
-                    dataIndex: 'createdAt',
-                    key: 'createdAt',
-                    defaultSortOrder: 'descend',
+                    dataIndex: 'createdAtStr',
+                    key: 'createdAtStr',
                     sorter: (a, b) => {
                         return new Date(a.createdAt) - new Date(b.createdAt);
                     },
@@ -223,8 +225,10 @@ export default class PossibleIssues extends Component {
                     title: 'State',
                     dataIndex: 'issueState',
                     key: 'issueState',
+                    defaultSortOrder: 'ascend',
                     sorter: (a, b) => {
-                        if (a.issueState === b.issueState) return 0;
+                        if (a.issueState === b.issueState)
+                            return b.createdAt - a.createdAt;
                         else if (a.issueState === 'open') return -1;
                         else return 1;
                     },
