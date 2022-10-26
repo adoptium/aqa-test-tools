@@ -193,7 +193,7 @@ export default class Overview extends Component {
                             <Col span={6}>
                                 <div>
                                     <strong>java -version:</strong>{' '}
-                                    {javaVersion}
+                                    <pre>{javaVersion}</pre>
                                 </div>
                             </Col>
                         </Row>
