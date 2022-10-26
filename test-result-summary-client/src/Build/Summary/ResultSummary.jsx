@@ -6,7 +6,11 @@ import Checkboxes from './Checkboxes';
 import ResultGrid from './ResultGrid';
 import Overview from './Overview';
 import TestBreadcrumb from '../TestBreadcrumb';
-import { order, getInfoFromBuildName } from '../../utils/Utils';
+import {
+    order,
+    getInfoFromBuildName,
+    setBuildsStatus,
+} from '../../utils/Utils';
 
 const hcvalues = {
     hclevels: ['dev', 'sanity', 'extended', 'special'],
@@ -65,6 +69,7 @@ export default class ResultSummary extends Component {
                 parentId,
             })}`
         );
+        let childBuildsResult = 'SUCCESS';
         let javaVersion = null;
         const buildMap = {};
         let jdkVersionOpts = [];
@@ -155,6 +160,8 @@ export default class ResultSummary extends Component {
             } else {
                 console.warn(`Cannot match ${buildName}`);
             }
+
+            childBuildsResult = setBuildsStatus(build, childBuildsResult);
         });
         builds.forEach((build) => {
             const buildName = build.buildName.toLowerCase();
@@ -253,7 +260,10 @@ export default class ResultSummary extends Component {
             if (!javaVersion && build.javaVersion) {
                 javaVersion = build.javaVersion;
             }
+
+            childBuildsResult = setBuildsStatus(build, childBuildsResult);
         });
+
         const platformOpts = Object.keys(buildMap).sort();
         jdkVersionOpts = [...new Set(jdkVersionOpts)].sort(order);
         jdkImplOpts = [...new Set(jdkImplOpts)].sort(order);
@@ -268,6 +278,7 @@ export default class ResultSummary extends Component {
             allJdkVersions: jdkVersionOpts,
             selectedJdkImpls: jdkImplOpts,
             allJdkImpls: jdkImplOpts,
+            childBuildsResult,
             sdkBuilds,
             javaVersion,
         });
@@ -284,9 +295,11 @@ export default class ResultSummary extends Component {
             allJdkImpls,
             summary,
             parentBuildInfo,
+            childBuildsResult,
             sdkBuilds,
             javaVersion,
         } = this.state;
+
         const { parentId } = getParams(this.props.location.search);
 
         if (buildMap && parentBuildInfo) {
@@ -297,6 +310,7 @@ export default class ResultSummary extends Component {
                         id={parentId}
                         parentBuildInfo={parentBuildInfo}
                         summary={summary}
+                        childBuildsResult={childBuildsResult}
                         sdkBuilds={sdkBuilds}
                         javaVersion={javaVersion}
                     />

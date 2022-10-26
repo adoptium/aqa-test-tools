@@ -5,14 +5,22 @@ import { params } from '../../utils/query';
 import moment from 'moment';
 import BuildLink from '../BuildLink';
 import renderDuration from '../Duration';
+import BuildStatus from './BuildStatus';
 import './Overview.css';
 
 const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
 
 export default class Overview extends Component {
     render() {
-        const { id, parentBuildInfo, summary, sdkBuilds, javaVersion } =
-            this.props;
+        const {
+            id,
+            parentBuildInfo,
+            summary,
+            childBuildsResult,
+            sdkBuilds,
+            javaVersion,
+        } = this.props;
+
         if (id && parentBuildInfo) {
             const {
                 passed = 0,
@@ -38,6 +46,13 @@ export default class Overview extends Component {
             return (
                 <div>
                     <div className="overview-header">
+                        <div>
+                            <BuildStatus
+                                status={childBuildsResult}
+                                id={id}
+                                buildNum={parentBuildInfo.buildNum}
+                            />
+                        </div>{' '}
                         <a
                             href={parentBuildInfo.buildUrl}
                             target="_blank"
