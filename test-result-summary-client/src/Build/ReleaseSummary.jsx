@@ -20,6 +20,7 @@ export default class ReleaseSummary extends Component {
         const originUrl = window.location.origin;
 
         const build = await fetchData(`/api/getParents?id=${parentId}`);
+        const buildData = await fetchData(`/api/getData?_id=${parentId} `);
 
         let report = '';
         const nl = `\n`;
@@ -52,6 +53,7 @@ export default class ReleaseSummary extends Component {
                         javaVersion,
                         tests = [],
                         rerunLink,
+                        rerunFailedLink,
                     }) => {
                         const buildInfo = `${nl}[**${buildName}**](${buildUrl})`;
                         const buildResultStr =
@@ -60,10 +62,12 @@ export default class ReleaseSummary extends Component {
                                 : ` ❌ ${buildResult} ❌${nl}`;
 
                         if (buildName.startsWith('Test_openjdk')) {
-                            const rerunLinkInfo = rerunLink
-                                ? `Rerun [all](${rerunLink})${nl}`
-                                : ``;
-
+                            let rerunLinkInfo = '';
+                            if (rerunFailedLink) {
+                                rerunLinkInfo = `Rerun [all](${rerunLink})${nl}`;
+                            } else if (rerunLink) {
+                                rerunLinkInfo = `Rerun (${rerunLink})${nl}`;
+                            }
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
 
