@@ -22,16 +22,22 @@ class DataManager {
     }
 
     async parseOutput(buildName, output) {
-        let parserType = this.findParserType(buildName, output);
-        let parser;
-        if (parserType) {
-            parser = new Parsers[parserType](buildName);
-        } else {
-            parser = new DefaultParser();
-            parserType = 'Default';
+        const parserTypes = await Promise.all(
+            Object.keys(Parsers).map(async (type) => {
+                if (Parsers[type].canParse(buildName, output)) {
+                    const parser = new Parsers[type](buildName);
+                    return await parser.parse(output);
+                }
+            })
+        );
+        let results = parserTypes.filter((element) => {
+            return element !== undefined;
+        });
+        if (results.length === 0) {
+            const parser = new DefaultParser();
+            results = await parser.parse(output);
         }
-        const obj = await parser.parse(output);
-        return { parserType, ...obj };
+        return Object.assign.apply({}, results);
     }
 
     async updateOutput(data) {
@@ -169,7 +175,8 @@ class DataManager {
                 update.buildOutputId = outputId;
             }
             update.hasChildren = true;
-        } else if (tests && tests.length > 0) {
+        }
+        if (tests && tests.length > 0) {
             const testsObj = await Promise.all(
                 tests.map(async ({ testOutput, ...test }) => {
                     let testOutputId = null;
@@ -199,7 +206,8 @@ class DataManager {
             );
             update.tests = testsObj;
             update.hasChildren = false;
-        } else if (build === null) {
+        }
+        if (build === null) {
             const buildOutputId = await this.updateOutput({ id: null, output });
             update.buildOutputId = buildOutputId;
             update.hasChildren = false;

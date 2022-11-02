@@ -163,6 +163,7 @@ export default class ResultSummary extends Component {
 
             childBuildsResult = setBuildsStatus(build, childBuildsResult);
         });
+        builds.sort((a, b) => a.buildName.localeCompare(b.buildName));
         builds.forEach((build) => {
             const buildName = build.buildName.toLowerCase();
             if (getInfoFromBuildName(buildName)) {
