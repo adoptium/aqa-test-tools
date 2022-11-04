@@ -64,9 +64,9 @@ export default class ReleaseSummary extends Component {
                         if (buildName.startsWith('Test_openjdk')) {
                             let rerunLinkInfo = '';
                             if (rerunFailedLink) {
-                                rerunLinkInfo = `Rerun [all](${rerunLink})${nl}`;
+                                rerunLinkInfo = `Rerun [failed](${rerunFailedLink})${nl}`;
                             } else if (rerunLink) {
-                                rerunLinkInfo = `Rerun (${rerunLink})${nl}`;
+                                rerunLinkInfo = `Rerun [all](${rerunLink})${nl}`;
                             }
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
