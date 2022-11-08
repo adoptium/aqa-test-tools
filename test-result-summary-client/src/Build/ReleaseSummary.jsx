@@ -20,7 +20,6 @@ export default class ReleaseSummary extends Component {
         const originUrl = window.location.origin;
 
         const build = await fetchData(`/api/getParents?id=${parentId}`);
-        const buildData = await fetchData(`/api/getData?_id=${parentId} `);
 
         let report = '';
         const nl = `\n`;
