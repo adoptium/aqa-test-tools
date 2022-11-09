@@ -82,6 +82,17 @@ class Parser {
         return rerunLink;
     }
 
+    extractRerunFailedLink(output) {
+        let m;
+        let rerunFailedLink = null;
+        const rerunFailedLinkRegex =
+            /Rerun in Grinder with failed test targets: (.*?)[\r\n]+/;
+        if ((m = rerunFailedLinkRegex.exec(output)) !== null) {
+            rerunFailedLink = m[1];
+        }
+        return rerunFailedLink;
+    }
+
     extractSha(output) {
         let m;
         let releaseInfo = null;

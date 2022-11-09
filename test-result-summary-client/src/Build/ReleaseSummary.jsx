@@ -52,6 +52,7 @@ export default class ReleaseSummary extends Component {
                         javaVersion,
                         tests = [],
                         rerunLink,
+                        rerunFailedLink,
                     }) => {
                         const buildInfo = `${nl}[**${buildName}**](${buildUrl})`;
                         const buildResultStr =
@@ -60,10 +61,12 @@ export default class ReleaseSummary extends Component {
                                 : ` ❌ ${buildResult} ❌${nl}`;
 
                         if (buildName.startsWith('Test_openjdk')) {
-                            const rerunLinkInfo = rerunLink
-                                ? `Rerun [all](${rerunLink})${nl}`
-                                : ``;
-
+                            let rerunLinkInfo = '';
+                            if (rerunFailedLink) {
+                                rerunLinkInfo = `Rerun [failed](${rerunFailedLink})${nl}`;
+                            } else if (rerunLink) {
+                                rerunLinkInfo = `Rerun [all](${rerunLink})${nl}`;
+                            }
                             failedTestSummary[buildName] = buildInfo;
                             failedTestSummary[buildName] += buildResultStr;
 
