@@ -186,6 +186,7 @@ class BuildProcessor {
                 buildUrl: buildInfo.url,
                 timestamp: buildInfo.timestamp,
                 buildParams: task.buildParams,
+                keepForever: task.keepForever,
             });
         }
     }

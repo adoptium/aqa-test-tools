@@ -59,7 +59,6 @@ class BuildMonitor {
                         `Set build ${url} ${buildName} ${buildNum} status to Streaming `
                     );
                 }
-                const keepForever = false;
                 const buildData = {
                     url,
                     buildName,
@@ -72,7 +71,6 @@ class BuildMonitor {
                         ? allBuilds[i].timestamp
                         : null,
                     type: type === 'FVT' ? 'Test' : type,
-                    keepForever,
                     status,
                 };
                 const _id = await new DataManager().createBuild(buildData);
@@ -82,7 +80,6 @@ class BuildMonitor {
                     url,
                     buildName,
                     buildNum,
-                    keepForever,
                     status,
                 });
             } else {
