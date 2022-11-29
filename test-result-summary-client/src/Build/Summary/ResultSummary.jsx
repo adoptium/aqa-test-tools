@@ -111,6 +111,9 @@ export default class ResultSummary extends Component {
                     jdkVersion = tokens[1];
                     if (buildName.includes('alpine-linux')) {
                         platform = `${tokens[4]}_alpine-linux`;
+                        if (buildName.includes('x64')) {
+                            platform = `x86-64_alpine-linux`;
+                        }
                     } else if (buildName.includes('-x64')) {
                         platform = `x86-64_${tokens[2]}`;
                     } else if (buildName.includes('x86-32')) {
