@@ -33,12 +33,6 @@ class BuildProcessor {
                 return;
             }
             task.buildParams = jenkinsInfo.getBuildParams(buildInfo);
-            task.keepForever = false;
-            task.buildParams.forEach((param) => {
-                if (param.name == 'overridePublishName') {
-                    task.keepForever = true;
-                }
-            });
             let output = '';
             if (task.status === 'Streaming') {
                 if (!buildInfo.building) {
@@ -186,7 +180,6 @@ class BuildProcessor {
                 buildUrl: buildInfo.url,
                 timestamp: buildInfo.timestamp,
                 buildParams: task.buildParams,
-                keepForever: task.keepForever,
             });
         }
     }
