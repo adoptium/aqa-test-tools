@@ -35,7 +35,7 @@ class BuildProcessor {
             task.buildParams = jenkinsInfo.getBuildParams(buildInfo);
             task.keepForever = false;
             task.buildParams.forEach((param) => {
-                if (param.name == 'overridePublishName') {
+                if (param.name == 'overridePublishName' && param.value != '') {
                     task.keepForever = true;
                 }
             });
