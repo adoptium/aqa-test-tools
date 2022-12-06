@@ -7,7 +7,7 @@
     "start": "node index.js --configFile=./mediaConf.json "
   },
   "dependencies": {
-    "express": "^4.16.4",
+    "express": "^4.17.3",
     "twitter": "^1.7.1"
   }
 }
