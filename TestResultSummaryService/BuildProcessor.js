@@ -20,6 +20,7 @@ class BuildProcessor {
             buildName,
             buildNum
         );
+
         if (buildInfo) {
             if (buildInfo.code === 404) {
                 /*
