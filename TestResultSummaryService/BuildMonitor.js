@@ -59,6 +59,21 @@ class BuildMonitor {
                         `Set build ${url} ${buildName} ${buildNum} status to Streaming `
                     );
                 }
+                const buildInfo = await jenkinsInfo.getBuildInfo(
+                    url,
+                    buildName,
+                    buildNum
+                );
+                const buildParams = jenkinsInfo.getBuildParams(buildInfo);
+                let keepForever = false;
+                buildParams.forEach((param) => {
+                    if (
+                        param.name == 'overridePublishName' &&
+                        param.value != ''
+                    ) {
+                        keepForever = true;
+                    }
+                });
                 const buildData = {
                     url,
                     buildName,
@@ -71,6 +86,7 @@ class BuildMonitor {
                         ? allBuilds[i].timestamp
                         : null,
                     type: type === 'FVT' ? 'Test' : type,
+                    keepForever,
                     status,
                 };
                 const _id = await new DataManager().createBuild(buildData);
@@ -80,6 +96,7 @@ class BuildMonitor {
                     url,
                     buildName,
                     buildNum,
+                    keepForever,
                     status,
                 });
             } else {
