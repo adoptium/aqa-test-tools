@@ -66,14 +66,16 @@ class BuildMonitor {
                 );
                 const buildParams = jenkinsInfo.getBuildParams(buildInfo);
                 let keepForever = false;
-                buildParams.forEach((param) => {
-                    if (
-                        param.name == 'overridePublishName' &&
-                        param.value != ''
-                    ) {
-                        keepForever = true;
-                    }
-                });
+                if (buildParams) {
+                    buildParams.forEach((param) => {
+                        if (
+                            param.name === 'overridePublishName' &&
+                            param.value !== ''
+                        ) {
+                            keepForever = true;
+                        }
+                    });
+                }
                 const buildData = {
                     url,
                     buildName,
