@@ -59,7 +59,23 @@ class BuildMonitor {
                         `Set build ${url} ${buildName} ${buildNum} status to Streaming `
                     );
                 }
-                const keepForever = false;
+                const buildInfo = await jenkinsInfo.getBuildInfo(
+                    url,
+                    buildName,
+                    buildNum
+                );
+                const buildParams = jenkinsInfo.getBuildParams(buildInfo);
+                let keepForever = false;
+                if (buildParams) {
+                    buildParams.forEach((param) => {
+                        if (
+                            param.name === 'overridePublishName' &&
+                            param.value !== ''
+                        ) {
+                            keepForever = true;
+                        }
+                    });
+                }
                 const buildData = {
                     url,
                     buildName,
