@@ -105,7 +105,8 @@ export default class ResultSummary extends Component {
                 if (buildName.includes('openj9')) {
                     jdkImpl = 'j9';
                 }
-                const regex = /^jdk(\d+).?(?:-prototype|-release)?-(\w+)-(\w+)-(\w+)/i;
+                // use non-capture group to ignore words evaluation and release if present
+                const regex = /^jdk(\d+).?(?:-evaluation|-release)?-(\w+)-(\w+)-(\w+)/i;
                 const tokens = buildName.match(regex);
                 if (Array.isArray(tokens) && tokens.length > 4) {
                     jdkVersion = tokens[1];
@@ -170,8 +171,13 @@ export default class ResultSummary extends Component {
         builds.forEach((build) => {
             const buildName = build.buildName.toLowerCase();
             if (getInfoFromBuildName(buildName)) {
-                const { jdkVersion, jdkImpl, level, group, platform } =
-                    getInfoFromBuildName(buildName);
+                const {
+                    jdkVersion,
+                    jdkImpl,
+                    level,
+                    group,
+                    platform,
+                } = getInfoFromBuildName(buildName);
                 if (jdkVersion && jdkImpl && level && group && platform) {
                     buildMap[platform] = buildMap[platform] || {};
                     buildMap[platform][jdkVersion] =
@@ -191,7 +197,7 @@ export default class ResultSummary extends Component {
                     if (
                         Object.keys(
                             buildMap[platform][jdkVersion][jdkImpl][level][
-                            group
+                                group
                             ]
                         ).length !== 0
                     ) {
@@ -214,13 +220,13 @@ export default class ResultSummary extends Component {
                             ].testSummary = buildMap[platform][jdkVersion][
                                 jdkImpl
                             ][level][group].testSummary || {
-                                    passed: 0,
-                                    failed: 0,
-                                    disabled: 0,
-                                    skipped: 0,
-                                    executed: 0,
-                                    total: 0,
-                                };
+                                passed: 0,
+                                failed: 0,
+                                disabled: 0,
+                                skipped: 0,
+                                executed: 0,
+                                total: 0,
+                            };
                             const {
                                 passed = 0,
                                 failed = 0,
@@ -249,8 +255,9 @@ export default class ResultSummary extends Component {
                             ].testSummary.total += total;
                         }
                     } else {
-                        buildMap[platform][jdkVersion][jdkImpl][level][group] =
-                        {
+                        buildMap[platform][jdkVersion][jdkImpl][level][
+                            group
+                        ] = {
                             buildResult: build.buildResult,
                             testSummary: build.testSummary,
                             buildUrl: build.buildUrl,
