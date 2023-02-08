@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import TextFilter from '../utils/TextFilter';
 import {
     ClusterOutlined,
+    InfoCircleOutlined,
     GithubOutlined,
     HistoryOutlined,
     QuestionCircleOutlined,
@@ -82,6 +83,36 @@ export default class TestTable extends Component {
                 );
             });
         }
+        const renderTestName = (value, row) => {
+            const testName = value;
+            const { buildName } = row;
+            let rerun = false;
+            if (buildName && buildName.includes('_rerun')) {
+                rerun = true;
+            }
+            return (
+                <span>
+                    <div>
+                        {rerun ? (
+                            <>
+                                {testName}
+                                <Tooltip title="Rerun">
+                                    <InfoCircleOutlined
+                                        style={{
+                                            color: 'orange',
+                                            fontSize: '12px',
+                                            verticalAlign: 'top',
+                                        }}
+                                    />
+                                </Tooltip>
+                            </>
+                        ) : (
+                            testName
+                        )}
+                    </div>
+                </span>
+            );
+        };
 
         const renderAction = (value, row) => {
             const { testId, testName } = value;
@@ -202,6 +233,7 @@ export default class TestTable extends Component {
                         handleFilterChange={this.handleFilterChange}
                     />
                 ),
+                render: renderTestName,
             },
             {
                 title: 'Action',
