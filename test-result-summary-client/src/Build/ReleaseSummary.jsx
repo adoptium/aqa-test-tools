@@ -79,39 +79,58 @@ export default class ReleaseSummary extends Component {
                                     ] += `<details><summary>java -version</summary>${nl}${nl}${javaVersionBlock}${nl}</details>${nl}${nl}`;
                                 }
                             }
+
+                            if (buildName.includes('_rerun')) {
+                                failedTestSummary[
+                                    buildName
+                                ] += `<details><summary>Failures in the rerun test build</summary>${nl}${nl}`;
+                            }
                             const buildId = _id;
                             await Promise.all(
                                 tests.map(
                                     async ({ _id, testName, testResult }) => {
+                                        const testId = _id;
                                         if (testResult === 'FAILED') {
-                                            const testId = _id;
-                                            const history = await fetchData(
-                                                `/api/getHistoryPerTest?testId=${testId}&limit=100`
-                                            );
-                                            let totalPasses = 0;
-                                            for (let testRun of history) {
-                                                if (
-                                                    testRun.tests.testResult ===
-                                                    'PASSED'
-                                                ) {
-                                                    totalPasses += 1;
-                                                }
-                                            }
-                                            //For failed tests, add links to the deep history and possible issues list
-                                            failedTestSummary[buildName] +=
-                                                `[${testName}](${originUrl}/output/test?id=${testId}) => [deep history ${totalPasses}/${history.length} passed](${originUrl}/deepHistory?testId=${testId}) | ` +
-                                                `[possible issues](${originUrl}/possibleIssues${params(
-                                                    {
-                                                        buildId,
-                                                        buildName,
-                                                        testId,
-                                                        testName,
+                                            if (buildName.includes('_rerun')) {
+                                                failedTestSummary[
+                                                    buildName
+                                                ] += `[${testName}](${originUrl}/output/test?id=${testId}) ${nl}`;
+                                            } else {
+                                                const history = await fetchData(
+                                                    `/api/getHistoryPerTest?testId=${testId}&limit=100`
+                                                );
+                                                let totalPasses = 0;
+                                                for (let testRun of history) {
+                                                    if (
+                                                        testRun.tests
+                                                            .testResult ===
+                                                        'PASSED'
+                                                    ) {
+                                                        totalPasses += 1;
                                                     }
-                                                )})${nl}`;
+                                                }
+                                                //For failed tests, add links to the deep history and possible issues list
+                                                failedTestSummary[buildName] +=
+                                                    `[${testName}](${originUrl}/output/test?id=${testId}) => [deep history ${totalPasses}/${history.length} passed](${originUrl}/deepHistory?testId=${testId}) | ` +
+                                                    `[possible issues](${originUrl}/possibleIssues${params(
+                                                        {
+                                                            buildId,
+                                                            buildName,
+                                                            testId,
+                                                            testName,
+                                                        }
+                                                    )})${nl}`;
+                                            }
                                         }
                                     }
                                 )
                             );
+
+                            if (buildName.includes('_rerun')) {
+                                failedTestSummary[
+                                    buildName
+                                ] += `${nl}</details>${nl}${nl}`;
+                            }
                         } else {
                             failedBuildSummary[buildName] = buildInfo;
                             failedBuildSummary[buildName] += buildResultStr;

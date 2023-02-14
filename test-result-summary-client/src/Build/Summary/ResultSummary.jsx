@@ -262,7 +262,6 @@ export default class ResultSummary extends Component {
                             buildMap[platform][jdkVersion][jdkImpl][level][
                                 group
                             ].rerunBuildUrl = build.buildUrl;
-                            console.log('build.buildUrl1', build.buildUrl);
                         }
                     } else {
                         buildMap[platform][jdkVersion][jdkImpl][level][group] =
@@ -272,7 +271,6 @@ export default class ResultSummary extends Component {
                                 buildUrl: build.buildUrl,
                                 buildId: build._id,
                                 hasChildren: build.hasChildren,
-
                                 rerunBuildUrl: hasRerun ? build.buildUrl : '',
                             };
                     }
