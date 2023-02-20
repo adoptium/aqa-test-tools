@@ -7,7 +7,7 @@ export default {
                 y: 0,
                 settings: {
                     serverSelected: 'AdoptOpenJDK',
-                    title: 'https://ci.adoptopenjdk.net',
+                    title: 'https://ci.adoptium.net',
                 },
             },
         ],
