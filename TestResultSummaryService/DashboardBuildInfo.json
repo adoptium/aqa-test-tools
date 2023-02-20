@@ -12,7 +12,7 @@
         ]
     },
     "AdoptOpenJDK": {
-        "url": "https://ci.adoptopenjdk.net",
+        "url": "https://ci.adoptium.net",
         "builds": [
             "Test_openjdk8_hs_sanity.openjdk_x86-64_linux",
             "Test_openjdk8_hs_sanity.openjdk_x86-64_mac",

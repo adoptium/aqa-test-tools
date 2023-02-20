@@ -16,13 +16,13 @@ export default class TestCompare extends Component {
             {
                 compareType: 'Baseline',
                 buildUrl:
-                    'https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_sanity.openjdk_x86-64_linux/207/',
+                    'https://ci.adoptium.net/job/Test_openjdk11_j9_sanity.openjdk_x86-64_linux/207/',
                 testName: 'jdk_lang_j9_0',
             },
             {
                 compareType: 'Comparison',
                 buildUrl:
-                    'https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_sanity.openjdk_x86-64_linux/208/',
+                    'https://ci.adoptium.net/job/Test_openjdk11_j9_sanity.openjdk_x86-64_linux/208/',
                 testName: 'jdk_lang_j9_0',
             },
         ],
