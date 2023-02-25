@@ -14,6 +14,7 @@ import {
 import { round } from 'mathjs';
 import { stringify } from 'qs';
 import PerffarmRunJSON from './lib/PerffarmRunJSON';
+import AzDoRunJSON from './lib/AzDoRunJSON';
 import ExtractRelevantJenkinsTestResults from './lib/ExtractRelevantJenkinsTestResults';
 import { getParams } from '../utils/query';
 import './PerfCompare.css';
@@ -23,6 +24,7 @@ const buildTypeExampleURL = {
     Jenkins:
         'https://customJenkinsServer/view/PerfTests/job/Daily-Liberty-Startup/1/',
     Perffarm: 'http://perffarmServer/build_info.php?build_id=212880',
+    AzDo: 'https://dev.azure.com/DevDiv/_build/results?buildId=12345',
 };
 
 export default class PerfCompare extends Component {
@@ -147,6 +149,79 @@ export default class PerfCompare extends Component {
             resBenchmarkRunsJson.baselineCSV
         );
         let testRunJSON = new PerffarmRunJSON(resBenchmarkRunsJson.testCSV);
+
+        baselineRunJSON.init(() => {
+            this.setState({
+                progress: 40,
+                progressStatus: 'active',
+            });
+
+            testRunJSON.init(async () => {
+                this.setState({
+                    benchmarkRuns: {
+                        benchmarkRunBaseline: baselineRunJSON,
+                        benchmarkRunTest: testRunJSON,
+                    },
+                    progress: 60,
+                });
+
+                await this.handleGenerateTable();
+            });
+        });
+    };
+
+    handleGetAzDoRuns = async () => {
+        this.setState({
+            submitStatus: 'submit',
+            progress: 20,
+            progressStatus: 'active',
+        });
+
+        const baselineTestResultsJson = await fetchData(
+            `/api/getAzDoRun?buildId=${this.state.selectedRuns.baselineID}`
+        );
+
+        const testTestResultsJson = await fetchData(
+            `/api/getAzDoRun?buildId=${this.state.selectedRuns.testID}`
+        );
+
+        // Check if the given builds are valid
+        let displayErrorMessage = '';
+        let hasData = false;
+        if (!baselineTestResultsJson || !baselineTestResultsJson.length > 0) {
+            displayErrorMessage = 'Baseline build not found. ';
+        } else {
+            hasData = true;
+        }
+        if (!testTestResultsJson || !testTestResultsJson.length > 0) {
+            displayErrorMessage += 'Test build not found';
+        } else {
+            hasData = true;
+        }
+        // Data received is not valid
+        if (!hasData) {
+            this.setState({
+                inputURL: {
+                    baselineID: '',
+                    testID: '',
+                },
+                selectedRuns: {
+                    baselineID: '',
+                    testID: '',
+                },
+                submitStatus: 'none',
+                progress: 0,
+                progressStatus: '',
+                displayAlert: {
+                    status: true,
+                    message: displayErrorMessage,
+                },
+            });
+            return;
+        }
+
+        let baselineRunJSON = new AzDoRunJSON(baselineTestResultsJson);
+        let testRunJSON = new AzDoRunJSON(testTestResultsJson);
 
         baselineRunJSON.init(() => {
             this.setState({
@@ -338,7 +413,7 @@ export default class PerfCompare extends Component {
             await this.handleGetJenkinsRuns();
 
             // Received a Perffarm Run URL
-        } else {
+        } else if (this.state.buildType === 'Perffarm') {
             const [baselineSchemeWithHostWithPort, baselineBuildNum] =
                 this.state.inputURL.baselineID.split('build_id=');
             const [testSchemeWithHostWithPort, testBuildNum] =
@@ -373,6 +448,39 @@ export default class PerfCompare extends Component {
             });
 
             await this.handleGetPerffarmRuns();
+        } else if (this.state.buildType === 'AzDo') {
+            const baseLineURL = new URL(this.state.inputURL.baselineID);
+            const baselineBuildNum = baseLineURL.searchParams.get('buildId');
+            const testURL = new URL(this.state.inputURL.testID);
+            const testBuildNum = testURL.searchParams.get('buildId');
+
+            // Check if the benchmark and test data is valid
+            if (!baselineBuildNum) {
+                displayErrorMessage += 'Invalid Baseline URL. ';
+            }
+            if (!testBuildNum) {
+                displayErrorMessage += 'Invalid Test URL. ';
+            }
+
+            // Data received is not valid
+            if (displayErrorMessage) {
+                this.setState({
+                    displayAlert: {
+                        status: true,
+                        message: displayErrorMessage,
+                    },
+                });
+                return;
+            }
+
+            await this.setState({
+                selectedRuns: {
+                    baselineID: baselineBuildNum,
+                    testID: testBuildNum,
+                },
+            });
+
+            await this.handleGetAzDoRuns();
         }
     };
 
@@ -462,7 +570,7 @@ export default class PerfCompare extends Component {
                         },
                     };
                 } else {
-                    // perffarm builds
+                    // perffarm builds/azdo builds
                     let runBaseline =
                         this.state.benchmarkRuns.benchmarkRunBaseline;
                     let runTest = this.state.benchmarkRuns.benchmarkRunTest;
@@ -731,6 +839,7 @@ export default class PerfCompare extends Component {
                         <Radio.Button value="Perffarm">
                             Perffarm Run
                         </Radio.Button>
+                        <Radio.Button value="AzDo">AzDo Run</Radio.Button>
                     </Radio.Group>
                     <br />
                     <br />
