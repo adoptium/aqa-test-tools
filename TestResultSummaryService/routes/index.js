@@ -31,6 +31,7 @@ app.get('/getOutputById', wrap(require('./getOutputById')));
 app.get('/getOutputByTestInfo', wrap(require('./getOutputByTestInfo')));
 app.get('/getTestAvgDuration', wrap(require('./getTestAvgDuration')));
 app.get('/getTestInfoByBuildInfo', wrap(require('./getTestInfoByBuildInfo')));
+app.get('/getAzDoRun', wrap(require('./getAzDoRun')));
 app.get('/getParents', wrap(require('./getParents')));
 app.get('/getPerffarmRunCSV', wrap(require('./getPerffarmRunCSV')));
 app.get('/getTabularData', wrap(require('./getTabularData')));
