@@ -19,6 +19,7 @@ app.get('/getAuditLogs', wrap(require('./getAuditLogs')));
 app.get('/getBenchmarkMetricProps', wrap(require('./getBenchmarkMetricProps')));
 app.get('/getBuildHistory', wrap(require('./getBuildHistory')));
 app.get('/getBuildList', wrap(require('./getBuildList')));
+app.get('/getBuildStages', wrap(require('./getBuildStages')));
 app.get('/getChildBuilds', wrap(require('./getChildBuilds')));
 app.get('/getDashboardBuildInfo', wrap(require('./getDashboardBuildInfo')));
 app.get('/getData', wrap(require('./getData')));
