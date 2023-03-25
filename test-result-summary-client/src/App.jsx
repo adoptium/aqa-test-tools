@@ -22,7 +22,7 @@ import {
     TopLevelBuilds,
     ResultSummary,
     ReleaseSummary,
-    BuildTreeView
+    BuildTreeView,
 } from './Build/';
 import { SearchResult } from './Search/';
 import { Settings } from './Settings/';
@@ -51,32 +51,33 @@ export default class App extends Component {
                                 lineHeight: '40px',
                                 background: '#14003c',
                             }}
-                        >
-                            <Menu.Item key="1">
-                                <a
-                                    href="https://adoptium.net/"
-                                    style={{ lineHeight: '250%' }}
-                                >
-                                    <AdoptiumLogo
-                                        style={{
-                                            height: '3.5em',
-                                            paddingTop: '1em',
-                                        }}
-                                    />
-                                </a>
-                            </Menu.Item>
-                            <Menu.Item
-                                style={{
-                                    background: '#14003C',
-                                    paddingTop: '1em',
-                                }}
-                                key="2"
-                            >
-                                <Link to="/dashboard">
-                                    Test Results Summary Service
-                                </Link>
-                            </Menu.Item>
-                        </Menu>
+                            items={[
+                                {
+                                    key: '1',
+                                    style: { lineHeight: '250%' },
+                                    icon: (
+                                        <AdoptiumLogo
+                                            style={{
+                                                height: '3.5em',
+                                                paddingTop: '1em',
+                                            }}
+                                        />
+                                    ),
+                                },
+                                {
+                                    key: '2',
+                                    label: (
+                                        <Link to="/dashboard">
+                                            Test Results Summary Service
+                                        </Link>
+                                    ),
+                                    style: {
+                                        background: '#14003C',
+                                        paddingTop: '1em',
+                                    },
+                                },
+                            ]}
+                        />
                     </Header>
                     <Layout>
                         <Sider width={200} style={{ background: '#fff' }}>
@@ -85,45 +86,79 @@ export default class App extends Component {
                                 defaultSelectedKeys={['1']}
                                 defaultOpenKeys={['3']}
                                 style={{ height: '100%', borderRight: 0 }}
-                            >
-                                <Menu.Item key="1">
-                                    <Link to="/tests/Test">By Pipeline</Link>
-                                </Menu.Item>
-                                <Menu.Item key="6">
-                                    <Link to="/tests/AQAvitCert">
-                                        AQAvit Verification
-                                    </Link>
-                                </Menu.Item>
-                                <Menu.Item key="2">
-                                    <Link to="/testCompare">Test Compare</Link>
-                                </Menu.Item>
-                                <SubMenu
-                                    key="3"
-                                    title={<span>Perf Related</span>}
-                                >
-                                    <Menu.Item key="sub1">
-                                        <Link to="/tests/Perf">Perf Test</Link>
-                                    </Menu.Item>
-                                    <Menu.Item key="sub2">
-                                        <Link to="/perfCompare">
-                                            Perf Compare
-                                        </Link>
-                                    </Menu.Item>
-                                    <Menu.Item key="sub3">
-                                        <Link to="/tabularView">
-                                            Tabular View
-                                        </Link>
-                                    </Menu.Item>
-                                </SubMenu>
-                                <Menu.Item key="4">
-                                    <Link to="/dashboard">Dashboard</Link>
-                                </Menu.Item>
-                                <Menu.Item key="5">
-                                    <Link to="/ThirdPartyAppView">
-                                        Third Party Applications
-                                    </Link>
-                                </Menu.Item>
-                            </Menu>
+                                items={[
+                                    {
+                                        key: '1',
+                                        label: (
+                                            <Link to="/tests/Test">
+                                                By Pipeline
+                                            </Link>
+                                        ),
+                                    },
+                                    {
+                                        key: '6',
+                                        label: (
+                                            <Link to="/tests/AQAvitCert">
+                                                AQAvit Verification
+                                            </Link>
+                                        ),
+                                    },
+                                    {
+                                        key: '2',
+                                        label: (
+                                            <Link to="/testCompare">
+                                                Test Compare
+                                            </Link>
+                                        ),
+                                    },
+                                    {
+                                        key: '3',
+                                        label: 'Perf Related',
+                                        children: [
+                                            {
+                                                key: 'sub1',
+                                                label: (
+                                                    <Link to="/tests/Perf">
+                                                        Perf Test
+                                                    </Link>
+                                                ),
+                                            },
+                                            {
+                                                key: 'sub2',
+                                                label: (
+                                                    <Link to="/perfCompare">
+                                                        Perf Compare
+                                                    </Link>
+                                                ),
+                                            },
+                                            {
+                                                key: 'sub3',
+                                                label: (
+                                                    <Link to="/tabularView">
+                                                        Tabular View
+                                                    </Link>
+                                                ),
+                                            },
+                                        ],
+                                    },
+                                    {
+                                        key: '4',
+                                        label: (
+                                            <Link to="/dashboard">
+                                                Dashboard
+                                            </Link>
+                                        ),
+                                    },
+                                    {
+                                        key: '5',
+                                        label: (
+                                            <Link to="/ThirdPartyAppView">
+                                                Third Party Applications
+                                            </Link>
+                                        ),
+                                    },
+                                ]}
+                            />
                         </Sider>
                         <Layout style={{ padding: '0 24px 24px' }}>
                             <ErrorBoundary>

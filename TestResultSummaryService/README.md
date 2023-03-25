@@ -149,7 +149,7 @@ Plugins can be added. Please refer [Plugins ReadMe](./plugins/README.md) for imp
 
 ## Docker
 
-Go to top directory, run command `docker-compose --env-file .docker.env up`, TRSS will be up at http://localhost:3000
+Go to top directory, run command `docker-compose --env-file .docker.env up --build`, TRSS will be up at http://localhost:3000
 
 Using Docker is a good way to test and development locally. For more details, please see a [recorded demonstration](https://youtu.be/9Adwk2qkL1A) of running TRSS locally in Docker.
 
