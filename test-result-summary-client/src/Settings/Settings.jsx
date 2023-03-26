@@ -1,15 +1,6 @@
 import React, { Component } from 'react';
 import { CheckOutlined, DownOutlined, EditOutlined } from '@ant-design/icons';
-import {
-    Button,
-    Table,
-    Input,
-    Popconfirm,
-    Dropdown,
-    Menu,
-    message,
-    Spin,
-} from 'antd';
+import { Button, Input, Popconfirm, Dropdown, Menu, message } from 'antd';
 import { fetchData } from '../utils/Utils';
 import './settings.css';
 
@@ -249,11 +240,24 @@ export default class Settings extends Component {
                                     null,
                                     record
                                 )}
-                            >
-                                <Menu.Item key="FVT">FVT</Menu.Item>
-                                <Menu.Item key="JCK">JCK</Menu.Item>
-                                <Menu.Item key="Perf">Perf</Menu.Item>
-                            </Menu>
+                                items={[
+                                    {
+                                        key: 'FVT',
+                                        label: 'FVT',
+                                        value: 'FVT',
+                                    },
+                                    {
+                                        key: 'JCK',
+                                        label: 'JCK',
+                                        value: 'JCK',
+                                    },
+                                    {
+                                        key: 'Perf',
+                                        label: 'Perf',
+                                        value: 'Perf',
+                                    },
+                                ]}
+                            />
                         );
                         return (
                             <Dropdown overlay={menu}>
@@ -274,10 +278,19 @@ export default class Settings extends Component {
                                     null,
                                     record
                                 )}
-                            >
-                                <Menu.Item key="No">No</Menu.Item>
-                                <Menu.Item key="Yes">Yes</Menu.Item>
-                            </Menu>
+                                items={[
+                                    {
+                                        key: 'No',
+                                        label: 'No',
+                                        value: 'No',
+                                    },
+                                    {
+                                        key: 'Yes',
+                                        label: 'Yes',
+                                        value: 'Yes',
+                                    },
+                                ]}
+                            />
                         );
                         return (
                             <Dropdown overlay={menu}>
@@ -298,10 +311,19 @@ export default class Settings extends Component {
                                     null,
                                     record
                                 )}
-                            >
-                                <Menu.Item key="No">No</Menu.Item>
-                                <Menu.Item key="Yes">Yes</Menu.Item>
-                            </Menu>
+                                items={[
+                                    {
+                                        key: 'No',
+                                        label: 'No',
+                                        value: 'No',
+                                    },
+                                    {
+                                        key: 'Yes',
+                                        label: 'Yes',
+                                        value: 'Yes',
+                                    },
+                                ]}
+                            />
                         );
                         return (
                             <Dropdown overlay={menu}>

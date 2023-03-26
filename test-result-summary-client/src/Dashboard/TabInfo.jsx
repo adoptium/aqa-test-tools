@@ -108,13 +108,18 @@ export default class TabInfo extends Component {
         });
 
         const menu = (
-            <Menu onClick={this.onAddWidget}>
-                {Object.keys(Widgets)
+            <Menu
+                onClick={this.onAddWidget}
+                items={Object.keys(Widgets)
                     .sort()
                     .map((name, i) => {
-                        return <Menu.Item key={name}>{name}</Menu.Item>;
+                        return {
+                            key: name,
+                            label: name,
+                            value: name,
+                        };
                     })}
-            </Menu>
+            />
         );
 
         return (
