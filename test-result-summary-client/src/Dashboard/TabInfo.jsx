@@ -128,7 +128,7 @@ export default class TabInfo extends Component {
                     <Button type="primary" onClick={this.onReset}>
                         Reset
                     </Button>
-                    <Dropdown overlay={menu}>
+                    <Dropdown menu={menu}>
                         <Button style={{ marginLeft: 8 }}>
                             Add a widget <DownOutlined />
                         </Button>

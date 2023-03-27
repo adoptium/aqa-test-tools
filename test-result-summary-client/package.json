@@ -11,13 +11,12 @@
         "highcharts": "^9.1.2",
         "highcharts-react-official": "^2.2.2",
         "highstock-release": "^6.0.4",
-        "history": "^4.10.1",
-        "jquery": "^3.6.0",
+        "history": "^5.3.0",
+        "jquery": "^3.6.4",
         "mathjs": "^7.6.0",
-        "mergely": "^4.3.1",
+        "mergely": "^4.3.9",
         "moment": "^2.29.4",
-        "npm-check": "^5.9.2",
-        "qs": "^6.10.1",
+        "qs": "^6.11.1",
         "react": "^16.14.0",
         "react-app-rewired": "^2.1.8",
         "react-day-picker": "^7.4.10",
@@ -32,7 +31,7 @@
         "react-router-dom": "^5.2.0",
         "react-scripts": "^5.0.1",
         "react-table": "^6.11.5",
-        "sweetalert2": "^10.16.9"
+        "sweetalert2": "^11.7.3"
     },
     "scripts": {
         "start": "react-app-rewired start",
@@ -44,6 +43,7 @@
     "proxy": "http://localhost:3001",
     "devDependencies": {
         "cypress": "^8.6.0",
+        "npm-check": "^6.0.1",
         "prettier": "2.5.1"
     },
     "browserslist": [

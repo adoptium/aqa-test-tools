@@ -260,7 +260,7 @@ export default class Settings extends Component {
                             />
                         );
                         return (
-                            <Dropdown overlay={menu}>
+                            <Dropdown menu={menu}>
                                 <Button style={{ marginLeft: 8 }}>
                                     {text ? text : 'Type'} <DownOutlined />
                                 </Button>
@@ -293,7 +293,7 @@ export default class Settings extends Component {
                             />
                         );
                         return (
-                            <Dropdown overlay={menu}>
+                            <Dropdown menu={menu}>
                                 <Button style={{ marginLeft: 8 }}>
                                     {text ? text : 'No'} <DownOutlined />
                                 </Button>
@@ -326,7 +326,7 @@ export default class Settings extends Component {
                             />
                         );
                         return (
-                            <Dropdown overlay={menu}>
+                            <Dropdown menu={menu}>
                                 <Button style={{ marginLeft: 8 }}>
                                     {text ? text : 'Yes'} <DownOutlined />
                                 </Button>
