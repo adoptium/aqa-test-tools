@@ -175,7 +175,7 @@ export default class DeepHistory extends Component {
                     </div>
                 ),
                 filterDropdownVisible,
-                onFilterDropdownVisibleChange: (visible) => {
+                onFilterDropdownOpenChange: (visible) => {
                     this.setState(
                         {
                             filterDropdownVisible: visible,

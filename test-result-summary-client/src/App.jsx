@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import { Route } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ConfigProvider, Layout, Menu } from 'antd';
-import enUS from 'antd/lib/locale-provider/en_US';
+import enUS from 'antd/es/calendar/locale/en_US';
 
 import { Dashboard } from './Dashboard/';
 import ErrorBoundary from './ErrorBoundary';

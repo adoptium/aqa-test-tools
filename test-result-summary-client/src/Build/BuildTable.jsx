@@ -1,7 +1,6 @@
 import React, { Component } from 'react';
 import { EditOutlined } from '@ant-design/icons';
 import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
 import { Table, Input } from 'antd';
 import { params } from '../utils/query';
 import { Link } from 'react-router-dom';
@@ -332,25 +331,27 @@ class EditableCell extends Component {
         const { children, dataIndex, record, title } = this.props;
         const { editing } = this.state;
         return editing ? (
-            <Form.Item style={{ margin: 0 }}>
-                {form.getFieldDecorator(dataIndex, {
-                    rules: [
-                        {
-                            // required: true,
-                            message: `${title} is required.`,
-                        },
-                    ],
-                    initialValue: record[dataIndex],
-                })(
-                    <TextArea
-                        style={{ width: 250 }}
-                        autoSize
-                        ref={(node) => (this.input = node)}
-                        onPressEnter={this.save}
-                        onBlur={this.save}
-                    />
-                )}
-            </Form.Item>
+            <Form>
+                <Form.Item style={{ margin: 0 }}>
+                    {form.getFieldDecorator(dataIndex, {
+                        rules: [
+                            {
+                                // required: true,
+                                message: `${title} is required.`,
+                            },
+                        ],
+                        initialValue: record[dataIndex],
+                    })(
+                        <TextArea
+                            style={{ width: 250 }}
+                            autoSize
+                            ref={(node) => (this.input = node)}
+                            onPressEnter={this.save}
+                            onBlur={this.save}
+                        />
+                    )}
+                </Form.Item>
+            </Form>
         ) : (
             <div
                 className="editable-cell-value-wrap"

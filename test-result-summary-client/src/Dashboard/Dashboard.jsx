@@ -1,19 +1,25 @@
 import React, { Component } from 'react';
-import { Tabs } from 'antd';
 import TabInfo from './TabInfo';
-const TabPane = Tabs.TabPane;
+import { Tabs } from 'antd';
 
 export default class Dashboard extends Component {
     render() {
         return (
-            <Tabs type="card">
-                <TabPane tab="Perf" key="1">
-                    <TabInfo tab="Perf" />
-                </TabPane>
-                <TabPane tab="Custom" key="2">
-                    <TabInfo tab="Custom" />
-                </TabPane>
-            </Tabs>
+            <Tabs
+                type="card"
+                items={[
+                    {
+                        label: 'Perf',
+                        key: '1',
+                        children: <TabInfo tab="Perf" />,
+                    },
+                    {
+                        label: 'Custom',
+                        key: '2',
+                        children: <TabInfo tab="Custom" />,
+                    },
+                ]}
+            />
         );
     }
 }
