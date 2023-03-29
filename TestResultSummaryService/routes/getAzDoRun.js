@@ -56,14 +56,12 @@ module.exports = async (req, res) => {
                     // extract worker name from timeline
                     const agentName = results.records.find(
                         (job) =>
-                            job.name ===
-                            `Run ${buildInfo.templateParameters.suite}`
+                            job.name.startsWith(`Run ${buildInfo.templateParameters.suite}`)
                     ).workerName;
                     // find the log with the name of the benchmark
                     const logURL = results.records.find(
                         (job) =>
-                            job.name ===
-                            `Run ${buildInfo.templateParameters.suite}`
+                            job.name.startsWith(`Run ${buildInfo.templateParameters.suite}`)
                     ).log.url;
                     // fetch the log
                     request.get(
