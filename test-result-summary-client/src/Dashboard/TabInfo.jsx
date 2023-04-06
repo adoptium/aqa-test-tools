@@ -107,20 +107,20 @@ export default class TabInfo extends Component {
             l.y = l.y || 0;
         });
 
-        const menu = (
-            <Menu
-                onClick={this.onAddWidget}
-                items={Object.keys(Widgets)
-                    .sort()
-                    .map((name, i) => {
-                        return {
-                            key: name,
-                            label: name,
-                            value: name,
-                        };
-                    })}
-            />
-        );
+        const items=Object.keys(Widgets)
+            .sort()
+            .map((name, i) => {
+                return {
+                    key: name,
+                    label: name,
+                    value: name,
+                };
+            })            
+
+        const menuProps = {
+            items,
+            onClick: this.onAddWidget
+        };
 
         return (
             <div>
@@ -128,7 +128,7 @@ export default class TabInfo extends Component {
                     <Button type="primary" onClick={this.onReset}>
                         Reset
                     </Button>
-                    <Dropdown menu={menu}>
+                    <Dropdown menu={menuProps}>
                         <Button style={{ marginLeft: 8 }}>
                             Add a widget <DownOutlined />
                         </Button>
