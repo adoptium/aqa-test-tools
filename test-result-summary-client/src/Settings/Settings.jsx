@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { CheckOutlined, DownOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Input, Popconfirm, Dropdown, Menu, message } from 'antd';
+import { Button, Table, Input, Popconfirm, Dropdown, Menu, message, Spin } from 'antd';
 import { fetchData } from '../utils/Utils';
 import './settings.css';
 
