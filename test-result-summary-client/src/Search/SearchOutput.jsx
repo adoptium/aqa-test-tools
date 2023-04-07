@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Redirect } from 'react-router';
+import { Navigate } from 'react-router-dom';
 import { Row, Col, Input } from 'antd';
 import { params } from '../utils/query';
 
@@ -28,7 +28,7 @@ export default class SearchOutput extends Component {
         return (
             <div>
                 {this.state.redirect && (
-                    <Redirect
+                    <Navigate
                         to={{
                             pathname: '/searchResult',
                             search: params({ buildId, searchText }),
