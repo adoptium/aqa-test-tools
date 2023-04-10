@@ -1,12 +1,21 @@
-FROM node:16
+FROM node:18
 
 WORKDIR /usr/src/app
 
-COPY . . 
+# Install serve first as it has no dependencies.
+RUN npm install -g serve
 
+# Only copy the npm related dependencies as they change rarely.
+COPY package.json package-lock.json . 
 RUN sed -i 's/localhost/service/g' package.json
+RUN npm ci --legacy-peer-deps
 
-RUN npm ci 
+# Copy the rest of the app and build it.
+COPY . .
+ARG REACT_APP_CONNECT_ADOPTIUM_API
+ENV REACT_APP_CONNECT_ADOPTIUM_API=$REACT_APP_CONNECT_ADOPTIUM_API
+RUN npm run build
 
+WORKDIR /usr/src/app/build
 EXPOSE 3000
-CMD npm start
+ENTRYPOINT ["serve", "--single"]

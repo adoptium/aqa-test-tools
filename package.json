@@ -1,0 +1,15 @@
+{
+  "name": "TRSS",
+  "version": "0.1.0",
+  "description": "TestResultSummaryService",
+  "main": "app.js",
+  "scripts": {
+    "docker": "docker compose --profile prod up --build",
+    "docker-data": "docker compose --profile prod --profile data up --build",
+    "docker-down": "docker compose down",
+    "docker-ui": "REACT_APP_CONNECT_ADOPTIUM_API=enable docker compose up --build"
+  },
+  "author": "",
+  "license": "Apache License Version 2.0",
+  "readmeFilename": "README.md"
+}
