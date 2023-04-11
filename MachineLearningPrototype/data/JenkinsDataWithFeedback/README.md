@@ -1,0 +1,1 @@
+This folder is to store Jenkins test output files, which have been evaluated ML model possible issue suggestion by users.
