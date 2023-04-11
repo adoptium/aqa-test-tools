@@ -6,6 +6,7 @@
 __pycache__/
 GitHubData/
 JenkinsData/
+JenkinsDataWithFeedback/
 TempData/
 deployenv/
 *.joblib
