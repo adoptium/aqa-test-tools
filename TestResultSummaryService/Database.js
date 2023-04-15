@@ -335,6 +335,13 @@ class UserDB extends Database {
     }
 }
 
+class FeedbackDB extends Database {
+    constructor() {
+        super();
+        this.col = db.collection('feedback');
+    }
+}
+
 module.exports = {
     TestResultsDB,
     OutputDB,
@@ -343,4 +350,5 @@ module.exports = {
     AuditLogsDB,
     UserDB,
     ObjectID,
+    FeedbackDB,
 };

@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Table, Button } from 'antd';
+import { Table, Button, notification, Space } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { getParams } from '../utils/query';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
@@ -18,21 +18,50 @@ export default class PossibleIssues extends Component {
         await this.fetchIssues();
     }
 
-    getUserFeedback = async (
+    //issueID, testName, testOutput
+
+    storeIssueFeedback = async (
         repoName,
         buildName,
         issueName,
+        issueNumber,
         issueCreator,
+        testName,
+        testId,
         accuracy
     ) => {
-        const feedback = await fetchData(
-            `/api/getFeedbackUrl?repoName=${repoName}&buildName=${buildName}&issueName=${issueName}&issueCreator=${issueCreator}&accuracy=${accuracy}`
-        );
+        try {
+            const postData = {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    repoName,
+                    buildName,
+                    issueName,
+                    issueNumber,
+                    issueCreator,
+                    accuracy,
+                    testName,
+                    testId,
+                }),
+            };
 
-        if (feedback.error) {
-            console.log(feedback.error);
-        } else {
-            console.log(feedback.output.result);
+            const response = await fetch(`/api/postIssueFeedback`, postData);
+
+            if (response.status === 200) {
+                notification.success({
+                    message: 'Feedback collected',
+                });
+            } else {
+                throw new Error('Write error');
+            }
+        } catch (error) {
+            notification.error({
+                message: 'Unable to collect feedback',
+            });
         }
     };
 
@@ -127,17 +156,23 @@ export default class PossibleIssues extends Component {
                 );
                 const issueState = relatedIssues.items[index].state;
                 const issueFullName = relatedIssues.items[index].title;
+                const issueNumber = relatedIssues.items[index].number;
                 const creatorName = relatedIssues.items[index].user.login;
                 const userFeedback = (
                     <>
                         <Button
-                            onClick={this.getUserFeedback(
-                                repoName,
-                                buildName,
-                                issueFullName,
-                                creatorName,
-                                true
-                            )}
+                            onClick={async () =>
+                                await this.storeIssueFeedback(
+                                    repoName,
+                                    buildName,
+                                    issueFullName,
+                                    issueNumber,
+                                    creatorName,
+                                    testName,
+                                    testId,
+                                    1
+                                )
+                            }
                         >
                             <SmileOutlined
                                 style={{ fontSize: '25px', color: 'green' }}
@@ -145,13 +180,18 @@ export default class PossibleIssues extends Component {
                         </Button>
                         &nbsp;
                         <Button
-                            onClick={this.getUserFeedback(
-                                repoName,
-                                buildName,
-                                issueFullName,
-                                creatorName,
-                                false
-                            )}
+                            onClick={async () =>
+                                await this.storeIssueFeedback(
+                                    repoName,
+                                    buildName,
+                                    issueFullName,
+                                    issueNumber,
+                                    creatorName,
+                                    testName,
+                                    testId,
+                                    0
+                                )
+                            }
                         >
                             <FrownOutlined
                                 style={{ fontSize: '25px', color: 'red' }}

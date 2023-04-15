@@ -64,5 +64,6 @@ app.post('/getParentSpecificData', wrap(require('./getParentSpecificData')));
 app.post('/getSpecificData', wrap(require('./getSpecificData')));
 app.post('/upsertBuildList', wrap(require('./upsertBuildList')));
 app.post('/postTapFiles', wrap(require('./postTapFiles')));
+app.post('/postIssueFeedback', wrap(require('./postIssueFeedback')));
 
 module.exports = app;
