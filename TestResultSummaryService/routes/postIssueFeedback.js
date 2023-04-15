@@ -1,5 +1,4 @@
-var fs = require('fs').promises;
-
+const fs = require('fs').promises;
 const {
     FeedbackDB,
     OutputDB,

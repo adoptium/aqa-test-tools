@@ -3,7 +3,6 @@ import { Table, Button, notification, Space } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { getParams } from '../utils/query';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
-import { fetchData } from '../utils/Utils';
 
 import './table.css';
 
@@ -17,8 +16,6 @@ export default class PossibleIssues extends Component {
     async componentDidMount() {
         await this.fetchIssues();
     }
-
-    //issueID, testName, testOutput
 
     storeIssueFeedback = async (
         repoName,
