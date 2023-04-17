@@ -19,6 +19,7 @@ const Output = () => {
     const [data, setData] = useState(null);
     const [terminalTheme, setTerminalTheme] = useState('white');
     const [loaded, setLoaded] = useState(false);
+    const [outputType, setOutputType] = useState(matchParams.outputType);
 
     useEffect(() => {
         const updateData = async (outputType) => {
@@ -71,13 +72,10 @@ const Output = () => {
             setData(data);
             setTimeout(() => setLoaded(true), 100);
         };
-
         updateData(matchParams.outputType);
     }, [location.search, matchParams.outputType]);
 
     const renderContent = () => {
-        const { data, outputType, loaded } = this.state;
-
         if (data.rerunLink) {
             data.rerunLink = data.rerunLink.replace(
                 /(\WTARGET=)([^&]*)/gi,
@@ -108,7 +106,7 @@ const Output = () => {
                             <Switch
                                 defaultChecked={false}
                                 onChange={(val) =>
-                                    this.setState({
+                                    setTerminalTheme({
                                         terminalTheme: val ? 'black' : 'white',
                                     })
                                 }
@@ -169,7 +167,7 @@ const Output = () => {
                     <div
                         className={classnames(
                             'test-output-wrapper',
-                            this.state.terminalTheme
+                            terminalTheme
                         )}
                     >
                         <div className="test-output">{data.output}</div>
