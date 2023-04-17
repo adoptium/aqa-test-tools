@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation, useParams } from 'react-router-dom';
 import { getParams } from '../../utils/query';
 import { fetchData } from '../../utils/Utils';
 import { Col, Row, Switch, Tooltip, Divider } from 'antd';
@@ -12,74 +13,69 @@ import classnames from 'classnames';
 import AlertMsg from '../AlertMsg';
 import './output.css';
 
-export default class Output extends Component {
-    state = {
-        data: null,
-        terminalTheme: 'white',
-        loaded: false,
-    };
+const Output = () => {
+    const location = useLocation();
+    const matchParams = useParams();
+    const [data, setData] = useState(null);
+    const [terminalTheme, setTerminalTheme] = useState('white');
+    const [loaded, setLoaded] = useState(false);
 
-    async componentDidMount() {
-        await this.updateData(this.props.match.params.outputType);
-    }
-    async componentDidUpdate(nextProps) {
-        if (
-            nextProps.match.params.outputType !==
-            this.props.match.params.outputType
-        ) {
-            await this.updateData(nextProps.match.params.outputType);
-        }
-    }
+    useEffect(() => {
+        const updateData = async (outputType) => {
+            let data = {};
+            const { id } = getParams(location.search);
 
-    async updateData(outputType) {
-        let data = {};
-        const { id } = getParams(this.props.location.search);
-        if (outputType === 'test') {
-            const info = await fetchData(`/api/getTestById?id=${id} `);
-            const result = await fetchData(
-                `/api/getOutputById?id=${info.testOutputId}`
-            );
-            const results = await fetchData(
-                `/api/getData?_id=${info.buildId} `
-            );
-            const dataInfo = results[0];
-
-            data = {
-                testId: info._id,
-                buildId: info.buildId,
-                name: info.testName,
-                artifactory: info.artifactory,
-                output: result.output,
-                result: info.testResult,
-                buildUrl: dataInfo.buildUrl,
-                rerunLink: dataInfo.rerunLink,
-            };
-        } else {
-            const results = await fetchData(`/api/getData?_id=${id} `);
-            const info = results[0];
-            if (info && info.buildOutputId) {
+            if (outputType === 'test') {
+                const info = await fetchData(`/api/getTestById?id=${id}`);
                 const result = await fetchData(
-                    `/api/getOutputById?id=${info.buildOutputId}`
+                    `/api/getOutputById?id=${info.testOutputId}`
                 );
+                const results = await fetchData(
+                    `/api/getData?_id=${info.buildId} `
+                );
+                const dataInfo = results[0];
 
                 data = {
-                    buildId: info._id,
-                    name: info.buildName,
-                    artifactory: null,
+                    testId: info._id,
+                    buildId: info.buildId,
+                    name: info.testName,
+                    artifactory: info.artifactory,
                     output: result.output,
-                    result: info.buildResult,
-                    buildUrl: info.buildUrl,
-                    rerunLink: info.rerunLink,
+                    result: info.testResult,
+                    buildUrl: dataInfo.buildUrl,
+                    rerunLink: dataInfo.rerunLink,
                 };
+            } else {
+                const results = await fetchData(`/api/getData?_id=${id}`);
+                const info = results[0];
+                if (info && info.buildOutputId) {
+                    const result = await fetchData(
+                        `/api/getOutputById?id=${info.buildOutputId}`
+                    );
+
+                    data = {
+                        buildId: info._id,
+                        name: info.buildName,
+                        artifactory: null,
+                        output: result.output,
+                        result: info.buildResult,
+                        buildUrl: info.buildUrl,
+                        rerunLink: info.rerunLink,
+                    };
+                }
+                data.error = info.error
+                    ? `${info.buildUrl}: ${info.error}`
+                    : '';
             }
-            data.error = info.error ? `${info.buildUrl}: ${info.error}` : '';
-        }
 
-        this.setState({ data, outputType });
-        setTimeout(() => this.setState({ loaded: true }), 100);
-    }
+            setData(data);
+            setTimeout(() => setLoaded(true), 100);
+        };
 
-    renderContent() {
+        updateData(matchParams.outputType);
+    }, [location.search, matchParams.outputType]);
+
+    const renderContent = () => {
         const { data, outputType, loaded } = this.state;
 
         if (data.rerunLink) {
@@ -181,25 +177,24 @@ export default class Output extends Component {
                 </Row>
             </div>
         );
-    }
+    };
 
-    render() {
-        const { data } = this.state;
-        if (data) {
-            if (data.error) {
-                return <AlertMsg error={data.error} />;
-            }
-            return (
-                <div className="test-wrapper">
-                    <TestBreadcrumb
-                        buildId={data.buildId}
-                        testId={data.testId}
-                        testName={data.name}
-                    />
-                    {this.renderContent()}
-                </div>
-            );
+    if (data) {
+        if (data.error) {
+            return <AlertMsg error={data.error} />;
         }
-        return null;
+        return (
+            <div className="test-wrapper">
+                <TestBreadcrumb
+                    buildId={data.buildId}
+                    testId={data.testId}
+                    testName={data.name}
+                />
+                {renderContent()}
+            </div>
+        );
     }
-}
+    return null;
+};
+
+export default Output;
