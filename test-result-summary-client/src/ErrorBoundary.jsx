@@ -1,19 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
-export default class ErrorBoundary extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = { hasError: false };
-    }
+const ErrorBoundary = (props) => {
+    const [hasError, setHasError] = useState(false);
 
-    componentDidCatch(error, info) {
-        this.setState({ hasError: true });
-    }
+    useEffect(() => {
+        const errorListener = (error) => {
+            setHasError(true);
+        };
 
-    render() {
-        if (this.state.hasError) {
-            return <h1>Something went wrong.</h1>;
-        }
-        return this.props.children;
+        window.addEventListener('error', errorListener);
+
+        return () => {
+            window.removeEventListener('error', errorListener);
+        };
+    }, []);
+
+    if (hasError) {
+        return <h1>Something went wrong.</h1>;
     }
-}
+    return props.children;
+};
+
+export default ErrorBoundary;
