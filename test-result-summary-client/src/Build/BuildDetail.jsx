@@ -7,19 +7,18 @@ import { fetchData } from '../utils/Utils';
 import BuildTable from './BuildTable';
 import { useLocation } from 'react-router-dom';
 
-const BuildDetail = () => {
+export default function BuildDetail() {
     const [builds, setBuilds] = useState([]);
     const [parent, setParent] = useState([]);
-
     const location = useLocation();
+    const { parentId, buildResult, testSummaryResult, buildNameRegex } =
+        getParams(location.search);
 
     useEffect(() => {
         const updateData = async () => {
-            const { parentId, buildResult, testSummaryResult, buildNameRegex } =
-                getParams(location.search);
-            let fetchedBuilds;
+            let buildsResults;
             if (testSummaryResult || buildNameRegex || buildResult) {
-                fetchedBuilds = await fetchData(
+                buildsResults = await fetchData(
                     `/api/getAllChildBuilds${params({
                         buildResult,
                         testSummaryResult,
@@ -28,17 +27,17 @@ const BuildDetail = () => {
                     })}`
                 );
             } else {
-                fetchedBuilds = await fetchData(
+                buildsResults = await fetchData(
                     `/api/getChildBuilds?parentId=${parentId}`
                 );
             }
 
-            const fetchedParent = await fetchData(
-                `/api/getData?_id=${parentId} `
+            const parentResults = await fetchData(
+                `/api/getData?_id=${parentId}`
             );
 
-            setBuilds(fetchedBuilds);
-            setParent(fetchedParent);
+            setBuilds(buildsResults);
+            setParent(parentResults);
         };
 
         updateData();
@@ -46,12 +45,8 @@ const BuildDetail = () => {
             updateData();
         }, 5 * 60 * 1000);
 
-        return () => {
-            clearInterval(intervalId);
-        };
-    }, [location.search]);
-
-    const { parentId } = getParams(location.search);
+        return () => clearInterval(intervalId);
+    }, [location]);
 
     const childBuildsDataSource = [];
     for (let i = 0; i < builds.length; i++) {
@@ -98,6 +93,7 @@ const BuildDetail = () => {
             key: 'sha',
         },
     ];
+
     const parentBuildsDataSource = [];
     let buildName = '';
     if (parent && parent[0]) {
@@ -113,23 +109,24 @@ const BuildDetail = () => {
     }
 
     return (
-        <div>
-            <TestBreadcrumb buildId={parentId} />
-            <SearchOutput buildId={parentId} />
-            <Table
-                columns={parentBuildColumns}
-                dataSource={parentBuildsDataSource}
-                bordered
-                title={() => buildName}
-                pagination={false}
-            />
-            <br />
-            <BuildTable
-                title={'Children builds'}
-                buildData={childBuildsDataSource}
-            />
-        </div>
+        parent &&
+        parent[0] && (
+            <div>
+                <TestBreadcrumb buildId={parentId} />
+                <SearchOutput buildId={parentId} />
+                <Table
+                    columns={parentBuildColumns}
+                    dataSource={parentBuildsDataSource}
+                    bordered
+                    title={() => buildName}
+                    pagination={false}
+                />
+                <br />
+                <BuildTable
+                    title={'Children builds'}
+                    buildData={childBuildsDataSource}
+                />
+            </div>
+        )
     );
-};
-
-export default BuildDetail;
+}

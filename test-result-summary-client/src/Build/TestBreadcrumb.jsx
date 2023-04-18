@@ -31,6 +31,9 @@ const TestBreadcrumb = ({ buildId, testId, testName }) => {
         } else if (build.type === 'Build') {
             path = '/output/build';
             searchParams = { id: build._id };
+        } else if (build.type === 'Perf') {
+            path = '/output/perf';
+            searchParams = { id: build._id };
         }
 
         return {
