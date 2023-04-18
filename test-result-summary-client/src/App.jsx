@@ -1,8 +1,8 @@
 import React, { Component } from 'react';
-import { Route } from 'react-router';
+import { Route, Routes } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ConfigProvider, Layout, Menu } from 'antd';
-import enUS from 'antd/lib/locale-provider/en_US';
+import enUS from 'antd/es/calendar/locale/en_US';
 
 import { Dashboard } from './Dashboard/';
 import ErrorBoundary from './ErrorBoundary';
@@ -170,84 +170,28 @@ export default class App extends Component {
                                         minHeight: 280,
                                     }}
                                 >
-                                    <Route
-                                        exact
-                                        path="/"
-                                        component={TopLevelBuilds}
-                                    />
-                                    <Route
-                                        path="/admin/settings"
-                                        component={Settings}
-                                    />
-                                    <Route
-                                        path="/dashboard"
-                                        component={Dashboard}
-                                    />
-                                    <Route
-                                        path="/tests/:type"
-                                        component={TopLevelBuilds}
-                                    />
-                                    <Route
-                                        path="/output/:outputType"
-                                        component={Output}
-                                    />
-                                    <Route
-                                        path="/deepHistory"
-                                        component={DeepHistory}
-                                    />
-                                    <Route
-                                        path="/gitNewIssue"
-                                        component={GitNewIssue}
-                                    />
-                                    <Route
-                                        path="/testCompare"
-                                        component={TestCompare}
-                                    />
-                                    <Route
-                                        path="/perfCompare"
-                                        component={PerfCompare}
-                                    />
-                                    <Route
-                                        path="/tabularView"
-                                        component={TabularView}
-                                    />
-                                    <Route
-                                        path="/buildDetail"
-                                        component={BuildDetail}
-                                    />
-                                    <Route
-                                        path="/buildTreeView"
-                                        component={BuildTreeView}
-                                    />
-                                    <Route path="/builds" component={Builds} />
-                                    <Route
-                                        path="/allTestsInfo"
-                                        component={AllTestsInfo}
-                                    />
-                                    <Route
-                                        path="/testPerPlatform"
-                                        component={TestPerPlatform}
-                                    />
-                                    <Route
-                                        path="/possibleIssues"
-                                        component={PossibleIssues}
-                                    />
-                                    <Route
-                                        path="/searchResult"
-                                        component={SearchResult}
-                                    />
-                                    <Route
-                                        path="/resultSummary"
-                                        component={ResultSummary}
-                                    />
-                                    <Route
-                                        path="/ThirdPartyAppView"
-                                        component={ThirdPartyAppView}
-                                    />
-                                    <Route
-                                        path="/releaseSummary"
-                                        component={ReleaseSummary}
-                                    />
+                                    <Routes>
+                                        <Route path="/" element={<TopLevelBuilds />} />
+                                        <Route path="/admin/settings" element={<Settings />} />
+                                        <Route path="/dashboard" element={<Dashboard />} />
+                                        <Route path="/tests/:type" element={<TopLevelBuilds />} />
+                                        <Route path="/output/:outputType" element={<Output />} />
+                                        <Route path="/deepHistory" element={<DeepHistory />} />
+                                        <Route path="/gitNewIssue" element={<GitNewIssue />} />
+                                        <Route path="/testCompare" element={<TestCompare />} />
+                                        <Route path="/perfCompare" element={<PerfCompare />} />
+                                        <Route path="/tabularView" element={<TabularView />} />
+                                        <Route path="/buildDetail" element={<BuildDetail />} />
+                                        <Route path="/buildTreeView" element={<BuildTreeView />} />
+                                        <Route path="/builds" element={<Builds />} />
+                                        <Route path="/allTestsInfo" element={<AllTestsInfo />} />
+                                        <Route path="/testPerPlatform" element={<TestPerPlatform />} />
+                                        <Route path="/possibleIssues" element={<PossibleIssues />} />
+                                        <Route path="/searchResult" element={<SearchResult />} />
+                                        <Route path="/resultSummary" element={<ResultSummary />} />
+                                        <Route path="/ThirdPartyAppView" element={<ThirdPartyAppView />} />
+                                        <Route path="/releaseSummary" element={<ReleaseSummary />} />
+                                    </Routes>
                                 </Content>
                             </ErrorBoundary>
                         </Layout>

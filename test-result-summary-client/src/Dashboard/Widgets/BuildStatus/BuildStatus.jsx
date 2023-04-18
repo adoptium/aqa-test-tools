@@ -289,7 +289,7 @@ export default class BuildStatus extends Component {
                     </div>
                 ),
                 filterDropdownVisible,
-                onFilterDropdownVisibleChange: (visible) => {
+                onFilterDropdownOpenChange: (visible) => {
                     this.setState(
                         {
                             filterDropdownVisible: visible,

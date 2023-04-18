@@ -1,4 +1,5 @@
-import React, { Component } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import TestBreadcrumb from './TestBreadcrumb';
 import { SearchOutput } from '../Search/';
 import { getParams } from '../utils/query';
@@ -7,21 +8,18 @@ import TestTable from './TestTable';
 import AlertMsg from './AlertMsg';
 import './table.css';
 
-export default class Build extends Component {
-    state = {
-        parents: [],
-        testData: [],
-        error: '',
-    };
+const Build = () => {
+    const location = useLocation();
+    const [parents, setParents] = useState([]);
+    const [testData, setTestData] = useState([]);
+    const [error, setError] = useState('');
 
-    async componentDidMount() {
-        await this.updateData();
-    }
+    useEffect(() => {
+        updateData();
+    }, []);
 
-    async updateData() {
-        const { buildId, limit, hasChildren } = getParams(
-            this.props.location.search
-        );
+    const updateData = async () => {
+        const { buildId, limit, hasChildren } = getParams(location.search);
         let hasChildrenBool = hasChildren === 'true';
         let limitParam = '';
         if (limit) {
@@ -32,8 +30,8 @@ export default class Build extends Component {
         let buildIds = [];
 
         // aggregated test results and parent
-        let testData = [];
-        let parents = [];
+        let fetchedTestData = [];
+        let fetchedParents = [];
         let errorMsg = '';
 
         // if it is a parallel build.
@@ -55,13 +53,16 @@ export default class Build extends Component {
 
         await Promise.all(
             buildIds.map(async (buildId) => {
-                const { testResult, parent, error } = await this.getTestResult(
+                const { testResult, parent, error } = await getTestResult(
                     buildId,
                     limitParam
                 );
-                testData = testData.concat(testResult);
-                if (parent.length > parents.length || parents.length === 0) {
-                    parents = parent;
+                fetchedTestData = fetchedTestData.concat(testResult);
+                if (
+                    parent.length > fetchedParents.length ||
+                    fetchedParents.length === 0
+                ) {
+                    fetchedParents = parent;
                 }
                 if (error) {
                     errorMsg = (
@@ -75,7 +76,7 @@ export default class Build extends Component {
             })
         );
 
-        testData.sort((a, b) => {
+        fetchedTestData.sort((a, b) => {
             let rt = a[0].testResult.localeCompare(b[0].testResult);
             if (rt === 0) {
                 return a.key.localeCompare(b.key);
@@ -83,14 +84,12 @@ export default class Build extends Component {
             return rt;
         });
 
-        this.setState({
-            parents,
-            testData,
-            errorMsg,
-        });
-    }
+        setParents(fetchedParents);
+        setTestData(fetchedTestData);
+        setError(errorMsg);
+    };
 
-    async getTestResult(buildId, limitParam) {
+    const getTestResult = async (buildId, limitParam) => {
         const builds = await fetchData(
             `/api/getAllTestsWithHistory?buildId=${buildId}${limitParam}`
         );
@@ -148,23 +147,18 @@ export default class Build extends Component {
             };
         });
         return { testResult, parent, error };
-    }
+    };
 
-    render() {
-        const { testData, parents, errorMsg } = this.state;
-        const { buildId } = getParams(this.props.location.search);
+    const { buildId } = getParams(location.search);
 
-        return (
-            <div>
-                <TestBreadcrumb buildId={buildId} />
-                <AlertMsg error={errorMsg} />
-                <SearchOutput buildId={buildId} />
-                <TestTable
-                    title={'Tests'}
-                    testData={testData}
-                    parents={parents}
-                />
-            </div>
-        );
-    }
-}
+    return (
+        <div>
+            <TestBreadcrumb buildId={buildId} />
+            <AlertMsg error={error} />
+            <SearchOutput buildId={buildId} />
+            <TestTable title={'Tests'} testData={testData} parents={parents} />
+        </div>
+    );
+};
+
+export default Build;
