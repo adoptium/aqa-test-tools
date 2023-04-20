@@ -23,7 +23,7 @@ async function getTestResultData(testId) {
 
 function generateOutputFilename(testName, buildName, buildUrl, buildNum) {
     const domain = new URL(buildUrl).hostname;
-    const fileName = `${testName}_${buildName}_${buildNum}_${domain}`;
+    const fileName = `${testName}_${buildName}_${buildNum}_${domain}.txt`;
 
     return fileName;
 }
@@ -46,7 +46,7 @@ async function getTestOutput(testId) {
 
 async function writeTestOutputToFile(testOutput, fileName) {
     try {
-        const outputPath = `${__dirname}/../../MachineLearningPrototype/data/JenkinsDataWithFeedback/${fileName}.txt`;
+        const outputPath = `${__dirname}/../../MachineLearningPrototype/data/JenkinsDataWithFeedback/${fileName}`;
         await fs.writeFile(outputPath, testOutput);
     } catch (error) {
         throw error;
