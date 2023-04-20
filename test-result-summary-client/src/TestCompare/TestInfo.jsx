@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { UserOutlined } from '@ant-design/icons';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
-import { Input } from 'antd';
+import { Form, Input } from 'antd';
 const FormItem = Form.Item;
 
 export default class TestInfo extends Component {

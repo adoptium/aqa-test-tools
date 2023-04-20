@@ -1,6 +1,4 @@
 import React, { Component } from 'react';
-import { Form } from '@ant-design/compatible';
-import '@ant-design/compatible/assets/index.css';
 import {
     Input,
     Button,
@@ -10,6 +8,7 @@ import {
     Divider,
     Progress,
     Alert,
+    Form,
 } from 'antd';
 import { round } from 'mathjs';
 import { stringify } from 'qs';
@@ -829,49 +828,54 @@ export default class PerfCompare extends Component {
             return (
                 <div>
                     {displayError}
-                    <Radio.Group
-                        value={this.state.buildType}
-                        onChange={this.handleBuildTypeChange.bind(this)}
-                    >
-                        <Radio.Button value="Jenkins">
-                            Jenkins Build
-                        </Radio.Button>
-                        <Radio.Button value="Perffarm">
-                            Perffarm Run
-                        </Radio.Button>
-                        <Radio.Button value="AzDo">AzDo Run</Radio.Button>
-                    </Radio.Group>
-                    <br />
-                    <br />
-                    <Form.Item label="Baseline Run ID">
-                        <Input
-                            placeholder={
-                                this.state.buildType +
-                                ' URL. Ex: ' +
-                                buildTypeExampleURL[this.state.buildType]
-                            }
-                            name="baselineID"
-                            value={this.state.inputURL.baselineID}
-                            onChange={this.handleChange.bind(this)}
-                        />
-                    </Form.Item>
+                    <Form>
+                        <Radio.Group
+                            value={this.state.buildType}
+                            onChange={this.handleBuildTypeChange.bind(this)}
+                        >
+                            <Radio.Button value="Jenkins">
+                                Jenkins Build
+                            </Radio.Button>
+                            <Radio.Button value="Perffarm">
+                                Perffarm Run
+                            </Radio.Button>
+                            <Radio.Button value="AzDo">AzDo Run</Radio.Button>
+                        </Radio.Group>
+                        <br />
+                        <br />
+                        <Form.Item label="Baseline Run ID">
+                            <Input
+                                placeholder={
+                                    this.state.buildType +
+                                    ' URL. Ex: ' +
+                                    buildTypeExampleURL[this.state.buildType]
+                                }
+                                name="baselineID"
+                                value={this.state.inputURL.baselineID}
+                                onChange={this.handleChange.bind(this)}
+                            />
+                        </Form.Item>
 
-                    <Form.Item label="Test Run ID">
-                        <Input
-                            placeholder={
-                                this.state.buildType +
-                                ' URL. Ex: ' +
-                                buildTypeExampleURL[this.state.buildType]
-                            }
-                            name="testID"
-                            value={this.state.inputURL.testID}
-                            onChange={this.handleChange.bind(this)}
-                        />
-                    </Form.Item>
+                        <Form.Item label="Test Run ID">
+                            <Input
+                                placeholder={
+                                    this.state.buildType +
+                                    ' URL. Ex: ' +
+                                    buildTypeExampleURL[this.state.buildType]
+                                }
+                                name="testID"
+                                value={this.state.inputURL.testID}
+                                onChange={this.handleChange.bind(this)}
+                            />
+                        </Form.Item>
 
-                    <Button type="primary" onClick={this.handleParseInputURL}>
-                        Submit
-                    </Button>
+                        <Button
+                            type="primary"
+                            onClick={this.handleParseInputURL}
+                        >
+                            Submit
+                        </Button>
+                    </Form>
                 </div>
             );
         }

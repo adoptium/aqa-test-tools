@@ -1,15 +1,19 @@
 import React from 'react';
-import ReactDOM from 'react-dom';
+import { createRoot } from 'react-dom/client';
 import './index.css';
 import App from './App';
-import { createBrowserHistory } from 'history';
-import { Router, Route } from 'react-router';
+import { Route, Routes } from 'react-router';
+import { BrowserRouter } from 'react-router-dom';
 import { withHighcharts } from 'react-jsx-highcharts';
 import Highcharts from 'highcharts/highstock';
 
-ReactDOM.render(
-    <Router history={createBrowserHistory()}>
-        <Route path="/" component={withHighcharts(App, Highcharts)} />
-    </Router>,
-    document.getElementById('root')
+const WrappedApp = withHighcharts(App, Highcharts);
+
+const root = createRoot(document.getElementById('root'));
+root.render(
+  <BrowserRouter>
+    <Routes>
+      <Route path="/*" element={<WrappedApp />} />
+    </Routes>
+  </BrowserRouter>
 );

@@ -1,23 +1,25 @@
-import React, { Component } from 'react';
-import { Table, Button, notification, Space } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Table, Button } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
 import { getParams } from '../utils/query';
+import { fetchData } from '../utils/Utils';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
+import { useLocation } from 'react-router-dom';
+import { notification } from 'antd';
 
 import './table.css';
 
-export default class PossibleIssues extends Component {
-    state = {
-        error: null,
-        dataSource: {},
-        loading: true,
-    };
+const PossibleIssues = () => {
+    const [dataSource, setDataSource] = useState({});
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState('');
+    const location = useLocation();
 
-    async componentDidMount() {
-        await this.fetchIssues();
-    }
+    useEffect(() => {
+        fetchIssues();
+    }, []);
 
-    storeIssueFeedback = async (
+    const storeIssueFeedback = async (
         repoName,
         buildName,
         issueName,
@@ -62,24 +64,22 @@ export default class PossibleIssues extends Component {
         }
     };
 
-    async fetchIssues() {
-        const { testId, buildName, testName } = getParams(
-            this.props.location.search
-        );
+    const fetchIssues = async () => {
+        const { testId, buildName, testName } = getParams(location.search);
         const generalTestName = testName.replace(/_\d+$/, '');
 
         // fetch test output content
-        const fetchData = await fetch(`/api/getTestById?id=${testId} `, {
+        const info = await fetchData(`/api/getTestById?id=${testId} `, {
             method: 'get',
         });
-        const info = await fetchData.json();
-        const fetchTest = await fetch(
+
+        const result = await fetchData(
             `/api/getOutputById?id=${info.testOutputId}`,
             {
                 method: 'get',
             }
         );
-        const result = await fetchTest.json();
+
         const testOutput = result.output;
 
         // query ML Server for possible issues
@@ -159,7 +159,7 @@ export default class PossibleIssues extends Component {
                     <>
                         <Button
                             onClick={async () =>
-                                await this.storeIssueFeedback(
+                                await storeIssueFeedback(
                                     repoName,
                                     buildName,
                                     issueFullName,
@@ -178,7 +178,7 @@ export default class PossibleIssues extends Component {
                         &nbsp;
                         <Button
                             onClick={async () =>
-                                await this.storeIssueFeedback(
+                                await storeIssueFeedback(
                                     repoName,
                                     buildName,
                                     issueFullName,
@@ -219,92 +219,85 @@ export default class PossibleIssues extends Component {
                     userFeedback,
                 });
             }
-            this.setState({
-                dataSource,
-                loading: false,
-            });
+            setLoading(false);
+            setDataSource(dataSource);
         } else {
-            this.setState({
-                error: response.status + ' ' + response.statusText,
-            });
+            setError(response.status + ' ' + response.statusText);
         }
-    }
+    };
 
-    render() {
-        const { error, dataSource, loading } = this.state;
-        const { buildId, testId, testName } = getParams(
-            this.props.location.search
+    const { buildId, testId, testName } = getParams(location.search);
+
+    if (error) {
+        return <div>Error: {error}</div>;
+    } else {
+        const columns = [
+            {
+                title: 'Possible Issues',
+                dataIndex: 'issue',
+                key: 'issue',
+            },
+            {
+                title: 'Issue Creator',
+                dataIndex: 'issueCreator',
+                key: 'issueCreator',
+            },
+            {
+                title: 'Created At',
+                dataIndex: 'createdAtStr',
+                key: 'createdAtStr',
+                sorter: (a, b) => {
+                    return a.createdAt - b.createdAt;
+                },
+            },
+            {
+                title: 'State',
+                dataIndex: 'issueState',
+                key: 'issueState',
+                defaultSortOrder: 'ascend',
+                sorter: (a, b) => {
+                    if (a.issueState === b.issueState)
+                        return b.createdAt - a.createdAt;
+                    else if (a.issueState === 'open') return -1;
+                    else return 1;
+                },
+            },
+            {
+                title: 'Related Degree',
+                dataIndex: 'degree',
+                key: 'degree',
+            },
+            {
+                title: 'User Feedback',
+                dataIndex: 'userFeedback',
+                key: 'userFeedback',
+            },
+        ];
+
+        return (
+            <div>
+                <TestBreadcrumb
+                    buildId={buildId}
+                    testId={testId}
+                    testName={testName}
+                />
+                {!loading &&
+                    (Object.keys(dataSource).length > 0 ? (
+                        Object.keys(dataSource).map((repoName, index) => (
+                            <Table
+                                key={index}
+                                columns={columns}
+                                dataSource={dataSource[repoName]}
+                                bordered
+                                title={() => repoName}
+                            />
+                        ))
+                    ) : (
+                        <span>No Possible Issues Found</span>
+                    ))}
+            </div>
         );
-
-        if (error) {
-            return <div>Error: {error}</div>;
-        } else {
-            const columns = [
-                {
-                    title: 'Possible Issues',
-                    dataIndex: 'issue',
-                    key: 'issue',
-                },
-                {
-                    title: 'Issue Creator',
-                    dataIndex: 'issueCreator',
-                    key: 'issueCreator',
-                },
-                {
-                    title: 'Created At',
-                    dataIndex: 'createdAtStr',
-                    key: 'createdAtStr',
-                    sorter: (a, b) => {
-                        return a.createdAt - b.createdAt;
-                    },
-                },
-                {
-                    title: 'State',
-                    dataIndex: 'issueState',
-                    key: 'issueState',
-                    defaultSortOrder: 'ascend',
-                    sorter: (a, b) => {
-                        if (a.issueState === b.issueState)
-                            return b.createdAt - a.createdAt;
-                        else if (a.issueState === 'open') return -1;
-                        else return 1;
-                    },
-                },
-                {
-                    title: 'Related Degree',
-                    dataIndex: 'degree',
-                    key: 'degree',
-                },
-                {
-                    title: 'User Feedback',
-                    dataIndex: 'userFeedback',
-                    key: 'userFeedback',
-                },
-            ];
-
-            return (
-                <div>
-                    <TestBreadcrumb
-                        buildId={buildId}
-                        testId={testId}
-                        testName={testName}
-                    />
-                    {!loading &&
-                        (Object.keys(dataSource).length > 0 ? (
-                            Object.keys(dataSource).map((repoName, index) => (
-                                <Table
-                                    key={index}
-                                    columns={columns}
-                                    dataSource={dataSource[repoName]}
-                                    bordered
-                                    title={() => repoName}
-                                />
-                            ))
-                        ) : (
-                            <span>No Possible Issues Found</span>
-                        ))}
-                </div>
-            );
-        }
     }
-}
+};
+
+export default PossibleIssues;

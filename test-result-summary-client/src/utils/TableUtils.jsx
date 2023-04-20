@@ -67,7 +67,7 @@ export const getColumnSearchProps = ({
                       .toLowerCase()
                       .includes(value.toLowerCase())
                 : '',
-        onFilterDropdownVisibleChange: (visible) => {
+        onFilterDropdownOpenChange: (visible) => {
             if (visible) {
                 setTimeout(() => searchInput.select());
             }
