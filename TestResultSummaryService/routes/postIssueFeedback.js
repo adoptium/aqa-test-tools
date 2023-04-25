@@ -21,13 +21,6 @@ async function getTestResultData(testId) {
     }
 }
 
-function generateOutputFilename(testName, buildName, buildUrl, buildNum) {
-    const domain = new URL(buildUrl).hostname;
-    const fileName = `${testName}_${buildName}_${buildNum}_${domain}.txt`;
-
-    return fileName;
-}
-
 async function getTestOutput(testId) {
     try {
         const outputDB = new OutputDB();
@@ -44,10 +37,20 @@ async function getTestOutput(testId) {
     }
 }
 
-async function writeTestOutputToFile(testOutput, fileName) {
+async function writeTestOutputToFile(
+    testName,
+    buildName,
+    buildUrl,
+    buildNum,
+    testOutput
+) {
     try {
+        const domain = new URL(buildUrl).hostname;
+        const fileName = `${testName}_${buildName}_${buildNum}_${domain}.txt`;
         const outputPath = `${__dirname}/../../MachineLearningPrototype/data/JenkinsDataWithFeedback/${fileName}`;
+
         await fs.writeFile(outputPath, testOutput);
+        return fileName;
     } catch (error) {
         throw error;
     }
@@ -67,13 +70,13 @@ module.exports = async (req, res) => {
             accuracy,
         } = req.body;
         const { testOutput, buildUrl, buildNum } = await getTestOutput(testId);
-        const outputFileName = generateOutputFilename(
+        const outputFileName = await writeTestOutputToFile(
             testName,
             buildName,
             buildUrl,
-            buildNum
+            buildNum,
+            testOutput
         );
-        await writeTestOutputToFile(testOutput, outputFileName);
         await db.populateDB({
             repoName,
             issueName,
