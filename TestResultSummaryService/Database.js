@@ -14,11 +14,12 @@ let db;
                 : `${encodeURIComponent(config.user)}:${encodeURIComponent(
                       config.password
                   )}@`;
-        const hostname =
-            process.env.MONGO_CONTAINER_NAME !== undefined
-                ? process.env.MONGO_CONTAINER_NAME
-                : 'localhost';
-        url = 'mongodb://' + credential + hostname + ':27017/exampleDb';
+        const { MONGO_CONTAINER_NAME = 'localhost' } = process.env;
+        url =
+            'mongodb://' +
+            credential +
+            MONGO_CONTAINER_NAME +
+            ':27017/exampleDb';
     }
 
     const dbConnect = await MongoClient.connect(url, {
