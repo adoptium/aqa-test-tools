@@ -1,4 +1,4 @@
-const fs = require('fs').promises;
+const fs = require('fs');
 const {
     FeedbackDB,
     OutputDB,
@@ -49,13 +49,10 @@ async function writeTestOutputToFile(
         const fileName = `${testName}_${buildName}_${buildNum}_${domain}.txt`;
         const outputPath = `${__dirname}/../../MachineLearningPrototype/data/JenkinsDataWithFeedback/${fileName}`;
 
-        const fileExists = await fs.stat(outputPath).then(
-            () => true,
-            () => false
-        );
+        const fileExists = fs.existsSync(outputPath);
 
         if (!fileExists) {
-            await fs.writeFile(outputPath, testOutput);
+            await fs.promises.writeFile(outputPath, testOutput);
         }
 
         return fileName;
