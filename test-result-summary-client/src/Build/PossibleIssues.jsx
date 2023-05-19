@@ -5,6 +5,7 @@ import { getParams } from '../utils/query';
 import { fetchData } from '../utils/Utils';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
 import { useLocation } from 'react-router-dom';
+import { notification } from 'antd';
 
 import './table.css';
 
@@ -18,21 +19,48 @@ const PossibleIssues = () => {
         fetchIssues();
     }, []);
 
-    const getUserFeedback = async (
+    const storeIssueFeedback = async (
         repoName,
         buildName,
         issueName,
+        issueNumber,
         issueCreator,
+        testName,
+        testId,
         accuracy
     ) => {
-        const feedback = await fetchData(
-            `/api/getFeedbackUrl?repoName=${repoName}&buildName=${buildName}&issueName=${issueName}&issueCreator=${issueCreator}&accuracy=${accuracy}`
-        );
+        try {
+            const postData = {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    repoName,
+                    buildName,
+                    issueName,
+                    issueNumber,
+                    issueCreator,
+                    accuracy,
+                    testName,
+                    testId,
+                }),
+            };
 
-        if (feedback.error) {
-            console.log(feedback.error);
-        } else {
-            console.log(feedback.output.result);
+            const response = await fetch(`/api/postIssueFeedback`, postData);
+
+            if (response.status === 200) {
+                notification.success({
+                    message: 'Feedback collected',
+                });
+            } else {
+                throw new Error('Write error');
+            }
+        } catch (error) {
+            notification.error({
+                message: 'Unable to collect feedback',
+            });
         }
     };
 
@@ -125,17 +153,21 @@ const PossibleIssues = () => {
                 );
                 const issueState = relatedIssues.items[index].state;
                 const issueFullName = relatedIssues.items[index].title;
+                const issueNumber = relatedIssues.items[index].number;
                 const creatorName = relatedIssues.items[index].user.login;
                 const userFeedback = (
                     <>
                         <Button
-                            onClick={() =>
-                                getUserFeedback(
+                            onClick={async () =>
+                                await storeIssueFeedback(
                                     repoName,
                                     buildName,
                                     issueFullName,
+                                    issueNumber,
                                     creatorName,
-                                    true
+                                    testName,
+                                    testId,
+                                    1
                                 )
                             }
                         >
@@ -145,13 +177,16 @@ const PossibleIssues = () => {
                         </Button>
                         &nbsp;
                         <Button
-                            onClick={() =>
-                                getUserFeedback(
+                            onClick={async () =>
+                                await storeIssueFeedback(
                                     repoName,
                                     buildName,
                                     issueFullName,
+                                    issueNumber,
                                     creatorName,
-                                    false
+                                    testName,
+                                    testId,
+                                    0
                                 )
                             }
                         >
