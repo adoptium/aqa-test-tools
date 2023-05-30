@@ -140,8 +140,9 @@ class Parser {
         let failed = 0;
         let skipped = 0;
         let disabled = 0;
+        //an example of test result summary: "TOTAL: 69   EXECUTED: 64   PASSED: 64   FAILED: 0   DISABLED: 0   SKIPPED: 5\n"
         const summaryRegex =
-            /\S*\s*?TOTAL:\s*([0-9]*)\s*EXECUTED:\s*([0-9]*)\s*PASSED:\s*([0-9]*)\s*FAILED:\s*([0-9]*)\s*DISABLED:\s*([0-9]*)\s*SKIPPED:\s*([0-9]*)\s*/;
+        /\S*\s*?TOTAL:\s*([0-9]*)\s*EXECUTED:\s*([0-9]*)\s*PASSED:\s*([0-9]*)\s*FAILED:\s*([0-9]*)\s*DISABLED:\s*([0-9]*)\s*SKIPPED:\s*([0-9]*)\s*(\r\n|\r|\n)/;
         if ((m = summaryRegex.exec(output)) !== null) {
             total = parseInt(m[1], 10);
             executed = parseInt(m[2], 10);
