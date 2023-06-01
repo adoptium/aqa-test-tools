@@ -234,33 +234,29 @@ export default class Settings extends Component {
                     title: 'Build Type',
                     dataIndex: 'type',
                     render: (text, record) => {
-                        const menu = (
-                            <Menu
-                                onClick={this.handleTypeClick.bind(
-                                    null,
-                                    record
-                                )}
-                                items={[
-                                    {
-                                        key: 'FVT',
-                                        label: 'FVT',
-                                        value: 'FVT',
-                                    },
-                                    {
-                                        key: 'JCK',
-                                        label: 'JCK',
-                                        value: 'JCK',
-                                    },
-                                    {
-                                        key: 'Perf',
-                                        label: 'Perf',
-                                        value: 'Perf',
-                                    },
-                                ]}
-                            />
-                        );
+                        const items=[
+                            {
+                                key: 'FVT',
+                                label: 'FVT',
+                                value: 'FVT',
+                            },
+                            {
+                                key: 'JCK',
+                                label: 'JCK',
+                                value: 'JCK',
+                            },
+                            {
+                                key: 'Perf',
+                                label: 'Perf',
+                                value: 'Perf',
+                            },
+                        ];
+                        const menuProps = {
+                            items,
+                            onClick: this.handleTypeClick.bind(null, record),
+                        };
                         return (
-                            <Dropdown menu={menu}>
+                            <Dropdown menu={menuProps}>
                                 <Button style={{ marginLeft: 8 }}>
                                     {text ? text : 'Type'} <DownOutlined />
                                 </Button>
@@ -272,30 +268,26 @@ export default class Settings extends Component {
                     title: 'Streaming',
                     dataIndex: 'streaming',
                     render: (text, record) => {
-                        const menu = (
-                            <Menu
-                                onClick={this.handleStreamingClick.bind(
-                                    null,
-                                    record
-                                )}
-                                items={[
-                                    {
-                                        key: 'No',
-                                        label: 'No',
-                                        value: 'No',
-                                    },
-                                    {
-                                        key: 'Yes',
-                                        label: 'Yes',
-                                        value: 'Yes',
-                                    },
-                                ]}
-                            />
-                        );
+                        const items=[
+                            {
+                                key: 'No',
+                                label: 'No',
+                                value: 'No',
+                            },
+                            {
+                                key: 'Yes',
+                                label: 'Yes',
+                                value: 'Yes',
+                            },
+                        ];
+                        const menuProps = {
+                            items,
+                            onClick: this.handleStreamingClick.bind(null, record),
+                        };
                         return (
-                            <Dropdown menu={menu}>
+                            <Dropdown menu={menuProps}>
                                 <Button style={{ marginLeft: 8 }}>
-                                    {text ? text : 'No'} <DownOutlined />
+                                    {text ? text : 'Yes'} <DownOutlined />
                                 </Button>
                             </Dropdown>
                         );
@@ -305,28 +297,24 @@ export default class Settings extends Component {
                     title: 'Monitoring',
                     dataIndex: 'monitoring',
                     render: (text, record) => {
-                        const menu = (
-                            <Menu
-                                onClick={this.handleMonitoringClick.bind(
-                                    null,
-                                    record
-                                )}
-                                items={[
-                                    {
-                                        key: 'No',
-                                        label: 'No',
-                                        value: 'No',
-                                    },
-                                    {
-                                        key: 'Yes',
-                                        label: 'Yes',
-                                        value: 'Yes',
-                                    },
-                                ]}
-                            />
-                        );
+                        const items=[
+                            {
+                                key: 'No',
+                                label: 'No',
+                                value: 'No',
+                            },
+                            {
+                                key: 'Yes',
+                                label: 'Yes',
+                                value: 'Yes',
+                            },
+                        ];
+                        const menuProps = {
+                            items,
+                            onClick: this.handleMonitoringClick.bind(null, record),
+                        };
                         return (
-                            <Dropdown menu={menu}>
+                            <Dropdown menu={menuProps}>
                                 <Button style={{ marginLeft: 8 }}>
                                     {text ? text : 'Yes'} <DownOutlined />
                                 </Button>
