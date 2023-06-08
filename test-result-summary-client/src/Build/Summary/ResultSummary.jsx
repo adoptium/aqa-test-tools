@@ -117,6 +117,7 @@ export default function ResultSummary() {
                         jdkVersion = tokens[1];
                         if (jdkVersion == '') {
                             // JDK_TIP_VERSION is currently 21, needs updating when tip changes
+                            // TODO: automatically discover/populate so it will not need to be manually changed
                             jdkVersion = 21;
                         }
                         if (buildName.includes('alpine-linux')) {
