@@ -1,0 +1,611 @@
+https://github.com/eclipse-openj9/openj9/issues/17203
+
+s390x_linux java/lang/String/concat/ImplicitStringConcatShapes.java Segmentation error vmState=0x00000000 Compiled_method=sun/nio/cs/UTF_8$Decoder.decodeArrayLoop(Ljava/nio/ByteBuffer;Ljava/nio/CharBuffer;)Ljava/nio/charset/CoderResult; #17203
+
+Failure link
+From an internal build(rhel7s390x-4-3):
+
+openjdk version "19.0.2" 2023-01-17
+IBM Semeru Runtime Open Edition 19.0.2+7 (build 19.0.2+7)
+Eclipse OpenJ9 VM 19.0.2+7 (build master-94bbd248a, JRE 19 Linux s390x-64-Bit Compressed References 20230117_89 (JIT enabled, AOT enabled)
+OpenJ9   - 94bbd248a
+OMR      - 8e2bd3aa4
+JCL      - e336ea0f07 based on jdk-19.0.2+7)
+Rerun in Grinder - Change TARGET to run only the failed test targets.
+
+Optional info
+Failure output (captured from console output)
+[2023-04-16T16:01:28.788Z] variation: -Xdump:system:none -Xdump:heap:none -Xdump:system:events=gpf+abort+traceassert+corruptcache -XX:-JITServerTechPreviewMessage Mode501
+[2023-04-16T16:01:28.788Z] JVM_OPTIONS:  -Xdump:system:none -Xdump:heap:none -Xdump:system:events=gpf+abort+traceassert+corruptcache -XX:-JITServerTechPreviewMessage -Xjit -Xgcpolicy:balanced -Xnocompressedrefs 
+
+[2023-04-16T16:16:16.037Z] TEST: java/lang/String/concat/ImplicitStringConcatShapes.java
+
+[2023-04-16T16:16:16.038Z] stderr:
+[2023-04-16T16:16:16.038Z] Unhandled exception
+[2023-04-16T16:16:16.038Z] Type=Segmentation error vmState=0x00000000
+[2023-04-16T16:16:16.038Z] J9Generic_Signal_Number=00000018 Signal_Number=0000000b Error_Value=000000a9 Signal_Code=00000001
+[2023-04-16T16:16:16.038Z] Handler1=000003FF960C48F8 Handler2=000003FF95FB19D8 InaccessibleAddress=FFFFFFFFFFFFF000
+[2023-04-16T16:16:16.038Z] gpr0=000003FF9062CF00 gpr1=000003FF6EBFC508 gpr2=000003FF001219EF gpr3=000000000000000D
+[2023-04-16T16:16:16.038Z] gpr4=000003FF6EBA19E0 gpr5=000003FF910E3288 gpr6=000003FF001219EF gpr7=000003FF001219EF
+[2023-04-16T16:16:16.038Z] gpr8=000003FF6EBFC508 gpr9=0000000000000000 gpr10=000003FF6EBA19E0 gpr11=000003FF6EA80000
+[2023-04-16T16:16:16.038Z] gpr12=000003FF6EAA1A20 gpr13=000003FF9011D700 gpr14=000003FF6ECE4DE0 gpr15=000003FF96C74320
+[2023-04-16T16:16:16.038Z] psw=000003FF50264F6E mask=0705100180000000 fpc=0048fe00 bea=000003FF50262E98
+[2023-04-16T16:16:16.038Z] fpr0 488df6b300000000 (f: 0.000000, d: 3.262755e+41)
+[2023-04-16T16:16:16.038Z] fpr1 be18f00000000000 (f: 0.000000, d: -1.451554e-09)
+[2023-04-16T16:16:16.038Z] fpr2 bddf6b3700000000 (f: 0.000000, d: -1.143010e-10)
+[2023-04-16T16:16:16.038Z] fpr3 3dd064a800000000 (f: 0.000000, d: 5.963807e-11)
+[2023-04-16T16:16:16.038Z] fpr4 3dd40d4880000000 (f: 2147483648.000000, d: 7.294834e-11)
+[2023-04-16T16:16:16.038Z] fpr5 3f31720000000000 (f: 0.000000, d: 2.661943e-04)
+[2023-04-16T16:16:16.038Z] fpr6 b17e5dbf00000000 (f: 0.000000, d: -2.749865e-70)
+[2023-04-16T16:16:16.038Z] fpr7 0000000000000000 (f: 0.000000, d: 0.000000e+00)
+[2023-04-16T16:16:16.038Z] fpr8 000000003497c5b0 (f: 882361792.000000, d: 4.359446e-315)
+[2023-04-16T16:16:16.038Z] fpr9 000000000052d8d8 (f: 5429464.000000, d: 2.682512e-317)
+[2023-04-16T16:16:16.038Z] fpr10 000000003497c8b8 (f: 882362560.000000, d: 4.359450e-315)
+[2023-04-16T16:16:16.038Z] fpr11 0000000000000000 (f: 0.000000, d: 0.000000e+00)
+[2023-04-16T16:16:16.038Z] fpr12 0005f97630ff14e2 (f: 822023424.000000, d: 8.308509e-309)
+[2023-04-16T16:16:16.038Z] fpr13 000003ff1801ce18 (f: 402771488.000000, d: 2.171001e-311)
+[2023-04-16T16:16:16.038Z] fpr14 000000000052d8e0 (f: 5429472.000000, d: 2.682516e-317)
+[2023-04-16T16:16:16.038Z] fpr15 000003ff1801cee8 (f: 402771680.000000, d: 2.171001e-311)
+[2023-04-16T16:16:16.038Z] 
+[2023-04-16T16:16:16.038Z] Compiled_method=sun/nio/cs/UTF_8$Decoder.decodeArrayLoop(Ljava/nio/ByteBuffer;Ljava/nio/CharBuffer;)Ljava/nio/charset/CoderResult;
+[2023-04-16T16:16:16.038Z] Target=2_90_20230117_89 (Linux 3.10.0-1160.88.1.el7.s390x)
+[2023-04-16T16:16:16.038Z] CPU=s390x (4 logical CPUs) (0x1ec5df000 RAM)
+[2023-04-16T16:16:16.038Z] ----------- Stack Backtrace -----------
+[2023-04-16T16:16:16.038Z]  (0x000003FF50264F6E [<unknown>+0x0])
+[2023-04-16T16:16:16.038Z] ---------------------------------------
+[2023-04-16T16:16:16.038Z] JVMDUMP039I Processing dump event "gpf", detail "" at 2023/04/16 09:15:58 - please wait.
+
+[2023-04-16T16:16:16.038Z] TEST RESULT: Error. Agent communication error: java.io.EOFException; check console log for any additional details
+[2023-04-16T16:16:16.038Z] --------------------------------------------------
+[2023-04-16T16:24:13.524Z] Test results: passed: 862; error: 1
+[2023-04-16T16:24:45.763Z] Report written to /home/jenkins/workspace/Test_openjdk19_j9_sanity.openjdk_s390x_linux_testList_1/aqa-tests/TKG/output_16816608879427/jdk_lang_j9_0/report/html/report.html
+[2023-04-16T16:24:45.763Z] Results written to /home/jenkins/workspace/Test_openjdk19_j9_sanity.openjdk_s390x_linux_testList_1/aqa-tests/TKG/output_16816608879427/jdk_lang_j9_0/work
+[2023-04-16T16:24:45.763Z] Error: Some tests failed or other problems occurred.
+[2023-04-16T16:24:45.763Z] -----------------------------------
+[2023-04-16T16:24:45.763Z] jdk_lang_j9_0_FAILED
+Also seen JDK20 s390x_linux(rhel9s390x-svl-rt3-1)
+
+50x internal grinder
+
+Other segmentation errors occurred in the grinder
+
+11:50:23  TEST: java/lang/String/concat/ImplicitStringConcatShapes.java
+
+11:50:23  Unhandled exception in signal handler. Protected function: writeCrashDataToConsole (0x0)
+11:50:23  
+11:50:23  ----------- Stack Backtrace -----------
+11:50:23  Unhandled exception
+11:50:23  Type=Segmentation error vmState=0x00020016
+11:50:23  J9Generic_Signal_Number=00000018 Signal_Number=0000000b Error_Value=00000000 Signal_Code=00000001
+11:50:23  Handler1=000003FF90AC4C98 Handler2=000003FF909B19D8 InaccessibleAddress=0000006100000000
+11:50:23  gpr0=0000000000000168 gpr1=0000000099669966 gpr2=000003FF8C08CDA0 gpr3=000003FF00006F78
+11:50:23  gpr4=000003FF00000003 gpr5=0000000000000001 gpr6=000003FF6E206958 gpr7=0000006100000000
+11:50:23  gpr8=000003FF00006F78 gpr9=0000000000000001 gpr10=000003FF8C08CDA0 gpr11=000003FF6E206958
+11:50:23  gpr12=000003FF91727F50 gpr13=000003FF8AD786F0 gpr14=000003FF8AB9353C gpr15=000003FF906FE7D0
+11:50:23  psw=000003FF8AB916A4 mask=0705200180000000 fpc=00080000 bea=000003FF8AB93536
+11:50:23  fpr0 3f658ed2308158ed (f: 813783296.000000, d: 2.631579e-03)
+11:50:23  fpr1 40c1d00000000000 (f: 0.000000, d: 9.120000e+03)
+11:50:23  fpr2 0000000000000000 (f: 0.000000, d: 0.000000e+00)
+11:50:23  fpr3 000003ff906fe5d0 (f: 2423252480.000000, d: 2.171999e-311)
+11:50:23  fpr4 40c1d00000000000 (f: 0.000000, d: 9.120000e+03)
+11:50:23  fpr5 3f336e21dbeabbfe (f: 3689593856.000000, d: 2.964814e-04)
+11:50:23  fpr6 0000000000000000 (f: 0.000000, d: 0.000000e+00)
+11:50:23  fpr7 0000000000000000 (f: 0.000000, d: 0.000000e+00)
+11:50:23  fpr8 0000000000041000 (f: 266240.000000, d: 1.315400e-318)
+11:50:23  fpr9 0000000000ab1b08 (f: 11213576.000000, d: 5.540243e-317)
+11:50:23  fpr10 000003ff906bf000 (f: 2422992896.000000, d: 2.171999e-311)
+11:50:23  fpr11 0000000000000000 (f: 0.000000, d: 0.000000e+00)
+11:50:23  fpr12 0005f98a003fdaad (f: 4184749.000000, d: 8.308929e-309)
+11:50:23  fpr13 000003ff08017018 (f: 134311968.000000, d: 2.170868e-311)
+11:50:23  fpr14 000003fffe87bcc0 (f: 4270308608.000000, d: 2.172912e-311)
+11:50:23  fpr15 000003ff0c007608 (f: 201356800.000000, d: 2.170901e-311)
+11:50:23  Module=/home/jenkins/workspace/Grinder_iteration_4/openjdkbinary/j2sdk-image/lib/default/libj9gc_full29.so
+11:50:23  Module_base_address=000003FF8AA80000
+11:50:23  Target=2_90_20230117_89 (Linux 5.14.21-150400.24.55-default)
+11:50:23  CPU=s390x (4 logical CPUs) (0x1eaf17000 RAM)
+
+Occurred at JDK17 s390x_linux(svlxtor3)
+
+java version "17.0.7" 2023-04-18
+IBM Semeru Runtime Certified Edition 17.0.7+6 (build 17.0.7+6)
+Eclipse OpenJ9 VM 17.0.7+6 (build master-94bbd248a, JRE 17 Linux s390x-64-Bit Compressed References 20230418_381 (JIT enabled, AOT enabled)
+OpenJ9   - 94bbd248a
+OMR      - 8e2bd3aa4
+JCL      - adf601f4ed based on jdk-17.0.7+6)
+
+[2023-04-16T18:25:10.515Z] variation: -Xdump:system:none -Xdump:heap:none -Xdump:system:events=gpf+abort+traceassert+corruptcache -XX:-JITServerTechPreviewMessage Mode501
+[2023-04-16T18:25:10.515Z] JVM_OPTIONS:  -Xdump:system:none -Xdump:heap:none -Xdump:system:events=gpf+abort+traceassert+corruptcache -XX:-JITServerTechPreviewMessage -Xjit -Xgcpolicy:balanced -Xnocompressedrefs 
+
+[2023-04-16T18:28:29.071Z] TEST: java/lang/String/concat/ImplicitStringConcatShapes.java
+
+[2023-04-16T18:28:29.072Z] stderr:
+[2023-04-16T18:28:29.072Z] Unhandled exception
+[2023-04-16T18:28:29.072Z] Type=Segmentation error vmState=0x00000000
+[2023-04-16T18:28:29.072Z] J9Generic_Signal_Number=00000018 Signal_Number=0000000b Error_Value=00000000 Signal_Code=00000001
+[2023-04-16T18:28:29.072Z] Handler1=000003FFBB4446A8 Handler2=000003FFBB331D48 InaccessibleAddress=FFFFFFFFFFFFF000
+[2023-04-16T18:28:29.072Z] gpr0=000003FFB461F500 gpr1=000003FF975D8E30 gpr2=000003FF975E33C0 gpr3=000003FF953DEC70
+[2023-04-16T18:28:29.072Z] gpr4=000000000000000D gpr5=000003FFB5092428 gpr6=000003FF975D8E30 gpr7=0000000000000000
+[2023-04-16T18:28:29.072Z] gpr8=000003FF001219EF gpr9=000003FF00000000 gpr10=000003FF97500000 gpr11=000003FF973A0000
+[2023-04-16T18:28:29.072Z] gpr12=000003FF001219EF gpr13=000003FFB414AD00 gpr14=000003FF976219E0 gpr15=000003FFBC0F0300
+[2023-04-16T18:28:29.072Z] psw=000003FF7B7EEAFC mask=0705100180000000 fpc=00780000 bea=000003FF7B7ECA68
+[2023-04-16T18:28:29.072Z] fpr0 488df6b360e4d091 (f: 1625608320.000000, d: 3.262755e+41)
+[2023-04-16T18:28:29.072Z] fpr1 c036d171fe99c5fb (f: 4271490560.000000, d: -2.281815e+01)
+[2023-04-16T18:28:29.072Z] fpr2 000000003168b9aa (f: 828946880.000000, d: 4.095542e-315)
+[2023-04-16T18:28:29.072Z] fpr3 3f336e21dbeabbfe (f: 3689593856.000000, d: 2.964814e-04)
+[2023-04-16T18:28:29.072Z] fpr4 488df6b3503b1e5b (f: 1346051712.000000, d: 3.262755e+41)
+[2023-04-16T18:28:29.072Z] fpr5 0000000000000000 (f: 0.000000, d: 0.000000e+00)
+[2023-04-16T18:28:29.072Z] fpr6 3f2eb34eb4f58e02 (f: 3035991552.000000, d: 2.342256e-04)
+[2023-04-16T18:28:29.072Z] fpr7 0000000000000000 (f: 0.000000, d: 0.000000e+00)
+[2023-04-16T18:28:29.072Z] fpr8 00000000008d2840 (f: 9250880.000000, d: 4.570542e-317)
+[2023-04-16T18:28:29.072Z] fpr9 0000000000000000 (f: 0.000000, d: 0.000000e+00)
+[2023-04-16T18:28:29.072Z] fpr10 00000000008d2d28 (f: 9252136.000000, d: 4.571163e-317)
+[2023-04-16T18:28:29.072Z] fpr11 000003ffed27b020 (f: 3978801152.000000, d: 2.172767e-311)
+[2023-04-16T18:28:29.072Z] fpr12 0005f97831aee1a4 (f: 833544640.000000, d: 8.308551e-309)
+[2023-04-16T18:28:29.072Z] fpr13 000003fef4007c98 (f: 4093672704.000000, d: 2.170702e-311)
+[2023-04-16T18:28:29.072Z] fpr14 000003ff9e6465e0 (f: 2657379840.000000, d: 2.172115e-311)
+[2023-04-16T18:28:29.072Z] fpr15 000003fef4007d68 (f: 4093672704.000000, d: 2.170702e-311)
+[2023-04-16T18:28:29.072Z] 
+[2023-04-16T18:28:29.072Z] Compiled_method=sun/nio/cs/UTF_8$Decoder.decodeArrayLoop(Ljava/nio/ByteBuffer;Ljava/nio/CharBuffer;)Ljava/nio/charset/CoderResult;
+[2023-04-16T18:28:29.072Z] Target=2_90_20230418_381 (Linux 5.4.0-125-generic)
+[2023-04-16T18:28:29.072Z] CPU=s390x (8 logical CPUs) (0x3ddae5000 RAM)
+[2023-04-16T18:28:29.072Z] ----------- Stack Backtrace -----------
+[2023-04-16T18:28:29.072Z]  (0x000003FF7B7EEAFC [<unknown>+0x0])
+[2023-04-16T18:28:29.072Z] ---------------------------------------
+[2023-04-16T18:28:29.072Z] JVMDUMP039I Processing dump event "gpf", detail "" at 2023/04/16 18:28:17 - please wait.
+
+[2023-04-16T18:28:29.072Z] TEST RESULT: Error. Agent communication error: java.io.EOFException; check console log for any additional details
+[2023-04-16T18:28:29.072Z] --------------------------------------------------
+[2023-04-16T18:29:14.098Z] Test results: passed: 808; error: 1
+[2023-04-16T18:29:14.098Z] Report written to /home/jenkins/workspace/Test_openjdk17_j9_sanity.openjdk_s390x_linux_testList_0/aqa-tests/TKG/output_16816692733558/jdk_lang_j9_0/report/html/report.html
+[2023-04-16T18:29:14.098Z] Results written to /home/jenkins/workspace/Test_openjdk17_j9_sanity.openjdk_s390x_linux_testList_0/aqa-tests/TKG/output_16816692733558/jdk_lang_j9_0/work
+[2023-04-16T18:29:14.098Z] Error: Some tests failed or other problems occurred.
+[2023-04-16T18:29:14.098Z] -----------------------------------
+[2023-04-16T18:29:14.098Z] jdk_lang_j9_0_FAILED
+This seems a s390x_linux platform issue.
+
+Seems not a very intermittent problem. Looking at that same child grinder I see 10 failures.
+
+Also failed in the open source build, along with other tests.
+https://openj9-jenkins.osuosl.org/job/Test_openjdk20_j9_sanity.openjdk_s390x_linux_Nightly/35/
+java/lang/String/concat/ImplicitStringConcatShapes.java.ImplicitStringConcatShapes
+java/lang/Thread/virtual/stress/PingPong.java#sq.PingPong_sq
+jdk/internal/math/ToDecimal/DoubleToDecimalTest.java.DoubleToDecimalTest
+jdk/internal/math/ToDecimal/FloatToDecimalTest.java.FloatToDecimalTest
+
+Changes between the open source builds
+0b07d1c...ec79e16
+
+It must be caused by #17072 @hzongaro @a7ehuo
+If we can't get a quick fix, we should back out this change.
+
+It must be caused by #17072
+
+That change is specific to Valhalla support, so it doesn't seem likely to be the culprit. Having said that, I'll investigate further.
+
+This jdk11 failure is perhaps related.
+
+https://openj9-jenkins.osuosl.org/job/Test_openjdk11_j9_sanity.openjdk_s390x_linux_Nightly/518
+jdk_lang_j9_0
+java/lang/StringBuilder/HugeCapacity.java
+Cannot contact ub20-390-6: java.lang.InterruptedException
+ACTION: main -- Failed. Unexpected exit from test [exit code: 137]
+
+https://openj9-jenkins.osuosl.org/job/Test_openjdk17_j9_sanity.openjdk_s390x_linux_Nightly/460/
+jdk_lang_j9_0
+java/lang/String/concat/ImplicitStringConcatShapes.java
+crash
+
+The jitdump.20230416.182817.1359209.0006.dmp from https://openj9-jenkins.osuosl.org/job/Test_openjdk20_j9_sanity.openjdk_s390x_linux_Nightly/35 for sun/nio/cs/UTF_8$Decoder.decodeArrayLoop(Ljava/nio/ByteBuffer;Ljava/nio/CharBuffer;)Ljava/nio/charset/CoderResult; doesn't contain any of the array element load or store helper or non-helper calls which are what is updated by #17072. As @hzongaro mentioned above, #17072 is only enabled for Valhalla. The code is guarded by the following code and enabled if value type is enabled.
+
+openj9/runtime/compiler/ilgen/Walker.cpp
+
+Lines 5908 to 5913 in 7bff45e
+
+ if (mayBeValueType && 
+     TR::Compiler->om.areValueTypesEnabled() && 
+     TR::Compiler->om.isValueTypeArrayFlatteningEnabled() && 
+     !TR::Compiler->om.canGenerateArraylets() && 
+     dataType == TR::Address) 
+    { 
+If it's invoked, we should see {load|store}FlattenableArrayElementNonHelperSymbol> or jit{Load|Store}FlattenableArrayElement in the jitdmp log but there is none. So far I'm not sure how #17072 triggers the crash. The change is not invoked based on the jitdump log.
+
+core.20230415.015149.3116093.0001.dmp from https://openj9-jenkins.osuosl.org/job/Test_openjdk20_j9_sanity.openjdk_s390x_linux_Nightly/35 shows the crash happened in runCallInMethod [1].
+
+Before runCallInMethod is invoked, the args->env or currentThread is 0x3ffb8134800(frame 15) [2] which is valid [3]. But by the time it crashed in runCallInMethod, currentThread becomes 0x3ff9d321a20 (frame 14) [2] which looks invalid because there is no j9vmthread 0x3ff9d321a20 [4]. args->methodID in frame 15 shows the j9method is com/sun/javatest/regtest/agent/AgentServer.main([Ljava/lang/String;)V which is not compiled [5].
+
+[1]
+
+#12 <signal handler called>
+#13 0x000003ff7e3065cc in ?? ()
+#14 0x000003ffbe720602 in runCallInMethod (env=0x3ff9d321a20, receiver=<optimized out>, clazz=0x3ffb82ce150, 
+    methodID=0x3ffb8382478, args=0x3ffb8134800)
+    at /home/jenkins/workspace/Build_JDK20_s390x_linux_Nightly/openj9/runtime/vm/callin.cpp:1174
+#15 0x000003ffbe7484fc in gpProtectedRunCallInMethod (entryArg=0x3ffbf3f0d60)
+    at /home/jenkins/workspace/Build_JDK20_s390x_linux_Nightly/openj9/runtime/vm/jnicsup.cpp:305
+#16 0x000003ffbe632ae8 in omrsig_protect (portLibrary=0x3ffbeecffa0 <j9portLibrary>, fn=0x3ffbe8bb948 <signalProtectAndRunGlue>, 
+    fn_arg=0x3ffbf3f0cb0, handler=0x3ffbe7448c8 <structuredSignalHandler>, handler_arg=0x3ffb8134800, flags=506, 
+    result=0x3ffbf3f0ca8) at /home/jenkins/workspace/Build_JDK20_s390x_linux_Nightly/omr/port/unix/omrsignal.c:425
+#17 0x000003ffbe8bb9f8 in gpProtectAndRun (function=0x3ffbe748468 <gpProtectedRunCallInMethod(void*)>, env=0x3ffb8134800, 
+    args=0x3ffbf3f0d60) at /home/jenkins/workspace/Build_JDK20_s390x_linux_Nightly/openj9/runtime/util/jniprotect.c:78
+#18 0x000003ffbe74a616 in gpCheckCallin (env=<optimized out>, receiver=receiver@entry=0x0, cls=<optimized out>, 
+    methodID=<optimized out>, args=args@entry=0x3ffbf3f0e28)
+    at /home/jenkins/workspace/Build_JDK20_s390x_linux_Nightly/openj9/runtime/vm/jnicsup.cpp:493
+#19 0x000003ffbe747dea in callStaticVoidMethod (env=<optimized out>, cls=<optimized out>, methodID=<optimized out>)
+    at /home/jenkins/workspace/Build_JDK20_s390x_linux_Nightly/openj9/runtime/vm/jnicgen.c:384
+#20 0x000003ffbf2053ea in JavaMain (_args=<optimized out>) at src/java.base/share/native/libjli/java.c:553
+--Type <RET> for more, q to quit, c to continue without paging--
+#21 0x000003ffbf2088a0 in ThreadJavaMain (args=<optimized out>) at src/java.base/unix/native/libjli/java_md.c:676
+#22 0x000003ffbf187e66 in start_thread (arg=0x3ffbf3f1900) at pthread_create.c:477
+#23 0x000003ffbeffcbe6 in thread_start () at ../sysdeps/unix/sysv/linux/s390/s390-64/clone.S:65
+[2]
+
+(gdb) fr 15
+#15 0x000003ffbe7484fc in gpProtectedRunCallInMethod (entryArg=0x3ffbf3f0d60)
+    at /home/jenkins/workspace/Build_JDK20_s390x_linux_Nightly/openj9/runtime/vm/jnicsup.cpp:305
+305		runCallInMethod(args->env, args->receiver, args->clazz, args->methodID, args->args);
+(gdb) p *args
+$17 = {env = 0x3ffb8134800, receiver = 0x0, clazz = 0x3ffb82ce150, methodID = 0x3ffb8382478, args = 0x3ffbf3f0e28}
+
+(gdb) down
+#14 0x000003ffbe720602 in runCallInMethod (env=0x3ff9d321a20, receiver=<optimized out>, clazz=0x3ffb82ce150, 
+    methodID=0x3ffb8382478, args=0x3ffb8134800)
+    at /home/jenkins/workspace/Build_JDK20_s390x_linux_Nightly/openj9/runtime/vm/callin.cpp:1174
+1174			c_cInterpreter(currentThread);
+(gdb) p currentThread
+$18 = (J9VMThread *) 0x3ff9d321a20
+[3]
+
+> !stack 0x3ffb8134800
+<3ffb8134800> 	!j9method 0x000003FFB86737F0   com/sun/tools/javac/file/BaseFileManager.decode(Ljava/nio/ByteBuffer;Z)Ljava/nio/CharBuffer;
+<3ffb8134800> 	!j9method 0x000003FFB8CCA168   com/sun/tools/javac/file/PathFileObject.getCharContent(Z)Ljava/lang/CharSequence;
+<3ffb8134800> 	!j9method 0x000003FFB891C6F0   com/sun/tools/javac/main/JavaCompiler.readSource(Ljavax/tools/JavaFileObject;)Ljava/lang/CharSequence;
+<3ffb8134800> 	!j9method 0x000003FFB891C790   com/sun/tools/javac/main/JavaCompiler.parse(Ljavax/tools/JavaFileObject;)Lcom/sun/tools/javac/tree/JCTree$JCCompilationUnit;
+<3ffb8134800> 	!j9method 0x000003FFB891C910   com/sun/tools/javac/main/JavaCompiler.parseFiles(Ljava/lang/Iterable;Z)Lcom/sun/tools/javac/util/List;
+<3ffb8134800> 	!j9method 0x000003FFB8D15D98   com/sun/tools/javac/main/JavaCompiler$InitialFileParser.parse(Ljava/lang/Iterable;)Lcom/sun/tools/javac/util/List;
+<3ffb8134800> 	!j9method 0x000003FFB891C8F0   com/sun/tools/javac/main/JavaCompiler.parseFiles(Ljava/lang/Iterable;)Lcom/sun/tools/javac/util/List;
+<3ffb8134800> 	!j9method 0x000003FFB891C8B0   com/sun/tools/javac/main/JavaCompiler.compile(Ljava/util/Collection;Ljava/util/Collection;Ljava/lang/Iterable;Ljava/util/Collection;)V
+<3ffb8134800> 	!j9method 0x000003FFB866F2E8   com/sun/tools/javac/main/Main.compile([Ljava/lang/String;Lcom/sun/tools/javac/util/Context;)Lcom/sun/tools/javac/main/Main$Result;
+<3ffb8134800> 	!j9method 0x000003FFB866F2C8   com/sun/tools/javac/main/Main.compile([Ljava/lang/String;)Lcom/sun/tools/javac/main/Main$Result;
+<3ffb8134800> 	!j9method 0x000003FFB866D748   com/sun/tools/javac/Main.compile([Ljava/lang/String;Ljava/io/PrintWriter;)I
+<3ffb8134800> 	!j9method 0x000003FFB8317EA8   java/lang/invoke/LambdaForm$DMH/0x00000000b830be30.invokeStatic(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)I
+<3ffb8134800> 	!j9method 0x000003FFB85A9938   java/lang/invoke/LambdaForm$MH/0x00000000b8707120.invoke(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+<3ffb8134800> 	!j9method 0x000003FFB86F38B8   java/lang/invoke/LambdaForm$MH/0x00000000b86f2fb0.invokeExact_MT(Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;Ljava/lang/Object;)Ljava/lang/Object;
+<3ffb8134800> 	!j9method 0x000003FFB833DD98   jdk/internal/reflect/DirectMethodHandleAccessor.invokeImpl(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+<3ffb8134800> 	!j9method 0x000003FFB833DD58   jdk/internal/reflect/DirectMethodHandleAccessor.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+<3ffb8134800> 	!j9method 0x000003FFB820B978   java/lang/reflect/Method.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+<3ffb8134800> 	!j9method 0x000003FFB8514220   com/sun/javatest/regtest/agent/RegressionCompileCommand.run([Ljava/lang/String;Ljava/io/PrintWriter;Ljava/io/PrintWriter;)Lcom/sun/javatest/regtest/agent/AStatus;
+<3ffb8134800> 	!j9method 0x000003FFB8513718   com/sun/javatest/regtest/agent/CompileActionHelper.runCompile(Ljava/lang/String;Ljava/util/Map;Ljava/util/List;ILcom/sun/javatest/regtest/agent/ActionHelper$OutputHandler;)Lcom/sun/javatest/regtest/agent/AStatus;
+<3ffb8134800> 	!j9method 0x000003FFB850D1E8   com/sun/javatest/regtest/agent/AgentServer.doCompile()V
+<3ffb8134800> 	!j9method 0x000003FFB850D1C8   com/sun/javatest/regtest/agent/AgentServer.run()V
+<3ffb8134800> 	!j9method 0x000003FFB850D188   com/sun/javatest/regtest/agent/AgentServer.main([Ljava/lang/String;)V
+<3ffb8134800> 	                        JNI call-in frame
+<3ffb8134800> 	                        Native method frame
+> 
+> !stackslots 0x3ffb8134800
+<3ffb8134800> *** BEGIN STACK WALK, flags = 00400001 walkThread = 0x000003FFB8134800 ***
+<3ffb8134800> 	ITERATE_O_SLOTS
+<3ffb8134800> 	RECORD_BYTECODE_PC_OFFSET
+<3ffb8134800> Initial values: walkSP = 0x000003FFB9125A50, PC = 0x000003FFB8507B29, literals = 0x000003FFB86737F0, A0 = 0x000003FFB9125AD8, j2iFrame = 0x000003FFB9126038, ELS = 0x000003FFBF3F08B0, decomp = 0x0000000000000000
+<3ffb8134800> Bytecode frame: bp = 0x000003FFB9125A80, sp = 0x000003FFB9125A50, pc = 0x000003FFB8507B29, cp = 0x000003FFB8672470, arg0EA = 0x000003FFB9125AD8, flags = 0x0000000000000000
+<3ffb8134800> 	Method: com/sun/tools/javac/file/BaseFileManager.decode(Ljava/nio/ByteBuffer;Z)Ljava/nio/CharBuffer; !j9method 0x000003FFB86737F0
+<3ffb8134800> 	Bytecode index = 81
+<3ffb8134800> 	Using local mapper
+<3ffb8134800> 	Locals starting at 0x000003FFB9125AD8 for 0x000000000000000B slots
+<3ffb8134800> 		O-Slot: a0[0x000003FFB9125AD8] = 0x000003FF9D446738
+<3ffb8134800> 		O-Slot: a1[0x000003FFB9125AD0] = 0x000003FF9D3CA440
+<3ffb8134800> 		I-Slot: a2[0x000003FFB9125AC8] = 0x0000000000000000
+<3ffb8134800> 		O-Slot: t3[0x000003FFB9125AC0] = 0x000003FF993B9B30
+<3ffb8134800> 		O-Slot: t4[0x000003FFB9125AB8] = 0x000003FF9D3CA5A8
+<3ffb8134800> 		I-Slot: t5[0x000003FFB9125AB0] = 0x3F8000009D3CA5A8
+<3ffb8134800> 		O-Slot: t6[0x000003FFB9125AA8] = 0x000003FF9D3CA5E8
+<3ffb8134800> 		I-Slot: t7[0x000003FFB9125AA0] = 0x000003FFB8CD347F
+<3ffb8134800> 		I-Slot: t8[0x000003FFB9125A98] = 0x000003FFB8CCA168
+<3ffb8134800> 		I-Slot: t9[0x000003FFB9125A90] = 0x000003FF9D3CA440
+<3ffb8134800> 		I-Slot: t10[0x000003FFB9125A88] = 0x000003FFBD479F80
+<3ffb8134800> 	Pending stack starting at 0x000003FFB9125A68 for UDATA(0x0000000000000004) slots
+<3ffb8134800> 		O-Slot: p0[0x000003FFB9125A68] = 0x000003FF9D3CA5A8
+<3ffb8134800> 		O-Slot: p1[0x000003FFB9125A60] = 0x000003FF9D3CA440
+<3ffb8134800> 		O-Slot: p2[0x000003FFB9125A58] = 0x000003FF9D3CA5E8
+<3ffb8134800> 		I-Slot: p3[0x000003FFB9125A50] = 0x00000001B8507B08
+<3ffb8134800> Bytecode frame: bp = 0x000003FFB9125AF0, sp = 0x000003FFB9125AE0, pc = 0x000003FFB8CD3498, cp = 0x000003FFB8D11C30, arg0EA = 0x000003FFB9125B28, flags = 0x0000000000000000
+<3ffb8134800> 	Method: com/sun/tools/javac/file/PathFileObject.getCharContent(Z)Ljava/lang/CharSequence; !j9method 0x000003FFB8CCA168
+<3ffb8134800> 	Bytecode index = 48
+<3ffb8134800> 	Using local mapper
+<3ffb8134800> 	Locals starting at 0x000003FFB9125B28 for 0x0000000000000007 slots
+<3ffb8134800> 		O-Slot: a0[0x000003FFB9125B28] = 0x000003FF9D3C7370
+<3ffb8134800> 		I-Slot: a1[0x000003FFB9125B20] = 0x0000000000000000
+<3ffb8134800> 		I-Slot: t2[0x000003FFB9125B18] = 0x0000000000000000
+<3ffb8134800> 		O-Slot: t3[0x000003FFB9125B10] = 0x000003FF9D3CA410
+<3ffb8134800> 		O-Slot: t4[0x000003FFB9125B08] = 0x000003FF9D3CA440
+<3ffb8134800> 		O-Slot: t5[0x000003FFB9125B00] = 0x000003FF9D3C7370
+<3ffb8134800> 		I-Slot: t6[0x000003FFB9125AF8] = 0x000003FF9D3C7A40
+<3ffb8134800> Bytecode frame: bp = 0x000003FFB9125B40, sp = 0x000003FFB9125B30, pc = 0x000003FFB8921933, cp = 0x000003FFB893EAD0, arg0EA = 0x000003FFB9125B58, flags = 0x0000000000000000
+<3ffb8134800> 	Method: com/sun/tools/javac/main/JavaCompiler.readSource(Ljavax/tools/JavaFileObject;)Ljava/lang/CharSequence; !j9method 0x000003FFB891C6F0
+<3ffb8134800> 	Bytecode index = 15
+<3ffb8134800> 	Using local mapper
+<3ffb8134800> 	Locals starting at 0x000003FFB9125B58 for 0x0000000000000003 slots
+<3ffb8134800> 		O-Slot: a0[0x000003FFB9125B58] = 0x000003FF9D44F3D0
+<3ffb8134800> 		O-Slot: a1[0x000003FFB9125B50] = 0x000003FF9D3C7370
+<3ffb8134800> 		I-Slot: t2[0x000003FFB9125B48] = 0x0000000000000000
+...
+...
+[4]
+
+> !threads
+	!stack 0x3ffb8134800	!j9vmthread 0x3ffb8134800	!j9thread 0x3ffb801e060	tid 0x2f8c3f (3116095) // (main)
+	!stack 0x3ff78002400	!j9vmthread 0x3ff78002400	!j9thread 0x3ffb801ea50	tid 0x2f8c42 (3116098) // (JIT Compilation Thread-000)
+	!stack 0x3ff70002400	!j9vmthread 0x3ff70002400	!j9thread 0x3ffb814e1a0	tid 0x2f8c43 (3116099) // (JIT Compilation Thread-001 Suspended)
+	!stack 0x3ff74002400	!j9vmthread 0x3ff74002400	!j9thread 0x3ffb814e698	tid 0x2f8c44 (3116100) // (JIT Compilation Thread-002 Suspended)
+	!stack 0x3ff68002400	!j9vmthread 0x3ff68002400	!j9thread 0x3ffb814eb90	tid 0x2f8c45 (3116101) // (JIT Compilation Thread-003 Suspended)
+	!stack 0x3ff6c002400	!j9vmthread 0x3ff6c002400	!j9thread 0x3ffb8152580	tid 0x2f8c46 (3116102) // (JIT Compilation Thread-004 Suspended)
+	!stack 0x3ff60002400	!j9vmthread 0x3ff60002400	!j9thread 0x3ffb8152a78	tid 0x2f8c48 (3116104) // (JIT Compilation Thread-005 Suspended)
+	!stack 0x3ff64002400	!j9vmthread 0x3ff64002400	!j9thread 0x3ffb8152f70	tid 0x2f8c49 (3116105) // (JIT Compilation Thread-006 Suspended)
+	!stack 0x3ff58002400	!j9vmthread 0x3ff58002400	!j9thread 0x3ffb8153d50	tid 0x2f8c4a (3116106) // (JIT Diagnostic Compilation Thread-007 Suspended)
+	!stack 0x3ff40002400	!j9vmthread 0x3ff40002400	!j9thread 0x3ffb8154248	tid 0x2f8c4b (3116107) // (JIT-SamplerThread)
+	!stack 0x3ff38002400	!j9vmthread 0x3ff38002400	!j9thread 0x3ffb8154740	tid 0x2f8c4c (3116108) // (IProfiler)
+	!stack 0x3ffb8330c00	!j9vmthread 0x3ffb8330c00	!j9thread 0x3ffb832e1e0	tid 0x2f8c4e (3116110) // (Common-Cleaner)
+	!stack 0x3ff30002400	!j9vmthread 0x3ff30002400	!j9thread 0x3ffb832ebd0	tid 0x2f8c51 (3116113) // (Dedicated GC Main)
+	!stack 0x3ff34002400	!j9vmthread 0x3ff34002400	!j9thread 0x3ffb849bac0	tid 0x2f8c52 (3116114) // (GC Worker)
+	!stack 0x3ff28002400	!j9vmthread 0x3ff28002400	!j9thread 0x3ffb849bfb8	tid 0x2f8c53 (3116115) // (GC Worker)
+	!stack 0x3ff2c002400	!j9vmthread 0x3ff2c002400	!j9thread 0x3ffb849c4b0	tid 0x2f8c54 (3116116) // (GC Worker)
+	!stack 0x3ff2001a500	!j9vmthread 0x3ff2001a500	!j9thread 0x3ffb84a7fd8	tid 0x2f8c56 (3116118) // (Attach API wait loop)
+	!stack 0x3ffb84aa500	!j9vmthread 0x3ffb84aa500	!j9thread 0x3ffb84a7ae0	tid 0x2f8c57 (3116119) // (pool-1-thread-1)
+	!stack 0x3ff1c002400	!j9vmthread 0x3ff1c002400	!j9thread 0x3ffb84a84d0	tid 0x2f8c5a (3116122) // (Finalizer thread)
+> 
+[5]
+
+(gdb) fr 15
+#15 0x000003ffbe7484fc in gpProtectedRunCallInMethod (entryArg=0x3ffbf3f0d60)
+    at /home/jenkins/workspace/Build_JDK20_s390x_linux_Nightly/openj9/runtime/vm/jnicsup.cpp:305
+305		runCallInMethod(args->env, args->receiver, args->clazz, args->methodID, args->args);
+(gdb) p *args
+$23 = {env = 0x3ffb8134800, receiver = 0x0, clazz = 0x3ffb82ce150, methodID = 0x3ffb8382478, args = 0x3ffbf3f0e28}
+(gdb) p ((J9JNIMethodID *)(args->methodID))->method
+$24 = (J9Method *) 0x3ffb850d188
+
+> !j9method 0x3ffb850d188
+J9Method at 0x3ffb850d188 {
+  Fields for J9Method:
+	0x0: U8* bytecodes = !j9x 0x000003FFB84ECDFC // "�"
+	0x8: struct J9ConstantPool* constantPool = !j9constantpool 0x000003FFB850C630 (flags = 0x0)
+	0x10: void* methodRunAddress = !j9x 0x0000000000000006
+	0x18: volatile void* extra = !j9x 0x000000000000176F
+}
+Signature: com/sun/javatest/regtest/agent/AgentServer.main([Ljava/lang/String;)V !bytecodes 0x000003FFB850D188
+ROM Method: !j9rommethod 0x000003FFB84ECDE8
+Next Method: !j9method 0x000003FFB850D1A8
+
+
+Just as a further check, an internal grinder run with the change from #17072 reverted still exhibits the same problem.
+
+
+Thanks Henry! I ran jdk_lang_j9_0 with JDK20 without #17072 in internal Grinder/32359, also saw the same crash
+
+adoptium/aqa-tests@4fd9cfa...2b974a6
+
+I see what happened, a new test mode was added for balanced (-Xgcpolicy:balanced), we are running these tests in a mode we haven't tested before.
+
+@joransiu can someone pls investigate these failures.
+
+The latest failures
+
+https://openj9-jenkins.osuosl.org/job/Test_openjdk17_j9_sanity.openjdk_s390x_linux_Nightly/461/
+java/lang/String/concat/ImplicitStringConcatShapes.java
+
+https://openj9-jenkins.osuosl.org/job/Test_openjdk20_j9_sanity.openjdk_s390x_linux_Nightly/36/
+java/lang/String/concat/ImplicitStringConcatShapes.java
+jdk/internal/math/ToDecimal/DoubleToDecimalTest.java
+jdk/internal/math/ToDecimal/FloatToDecimalTest.java
+
+@VermaSh Can you take a look at these failures given the Balanced GC policy test mode ? Please keep in mind the higher failure rate as mentioned. I think the result files from this job would be best to look at. Let me know if you need any help in investigating.
+
+
+I was able to recreate the crash in java/lang/String/concat/ImplicitStringConcatShapes.java on the 0.36 release, so this is not a regression in the 0.38 release. To recreate I needed to run all jdk_lang_j9_0 (or jdk_lang_0 with -Xgcpolicy:balanced should also work). It didn't recreate when running just the ImplicitStringConcatShapes test individually. This implies higher JIT opts are required to recreate the crash.
+
+https://openj9-jenkins.osuosl.org/job/Test_openjdk11_j9_sanity.openjdk_s390x_linux_Nightly/521
+jdk_lang_j9_0
+java/lang/StringBuilder/HugeCapacity.java
+03:15:49  ACTION: main -- Failed. Unexpected exit from test [exit code: 137]
+
+https://openj9-jenkins.osuosl.org/job/Test_openjdk17_j9_sanity.openjdk_s390x_linux_Nightly/463
+java/lang/String/concat/ImplicitStringConcatShapes.java
+
+https://openj9-jenkins.osuosl.org/job/Test_openjdk20_j9_sanity.openjdk_s390x_linux_Nightly/38/
+java/lang/String/concat/ImplicitStringConcatShapes.java.ImplicitStringConcatShapes
+jdk/internal/math/ToDecimal/DoubleToDecimalTest.java.DoubleToDecimalTest
+jdk/internal/math/ToDecimal/FloatToDecimalTest.java.FloatToDecimalTest
+
+I'm tentatively setting this as a blocker because it's failing in every build, which is annoying so I want to see it fixed. It's not a regression, I suppose we could consider excluding the tests, although I'm not sure we have the ability to exclude them in just the one mode where they are failing.
+
+The failure in [1] happens in javac during execution of a JIT compiled method sun/nio/cs/UTF_8$Decoder.decodeArrayLoop(Ljava/nio/ByteBuffer;Ljava/nio/CharBuffer;)Ljava/nio/charset/CoderResult;. The failure happens trying to dereference null pointer (r7) in 0x3ff7b7eeafc. r7 is expected to be class of object in r6 which is an input argument. r6 is expected to be a ByteBuffer but it was an invalid pointer. ByteBuffer is created in PathFileObject.getCharContent which is inlined into JavaCompiler.readSource. Going through those method now to investigate this further.
+
+Few side notes: the failure goes away when running with optLevel=cold. It's almost 100% reproducable on svlxtor3.svl.ibm.com (z16) but haven't been able to reproduce it on our z13 dev zLinux machine.
+
+0x3ff7b7eca4e {sun/nio/cs/UTF_8$Decoder.decodeArrayLoop} +864                      e36050d80004 lg        %r6, 0xd8(%r5)  <<< +606 +806
+0x3ff7b7eca54 {sun/nio/cs/UTF_8$Decoder.decodeArrayLoop} +870                      e3706000002a lzrg      %r7, 0(%r6) // get class of object in r6
+0x3ff7b7eca5a {sun/nio/cs/UTF_8$Decoder.decodeArrayLoop} +876                      b9040016     lgr       %r1, %r6 // r1 = r6
+0x3ff7b7eca5e {sun/nio/cs/UTF_8$Decoder.decodeArrayLoop} +880                      c0001c719551 larl      %r0, 0x3ffb461f500 J9Class - {java/nio/HeapCharBuffer}
+0x3ff7b7eca64 {sun/nio/cs/UTF_8$Decoder.decodeArrayLoop} +886                      b9210070     clgr      %r7, %r0
+0x3ff7b7eca68 {sun/nio/cs/UTF_8$Decoder.decodeArrayLoop} +890                      a764104a     jlh       0x3ff7b7eeafc C>> +9230
+0x3ff7b7eca6c {sun/nio/cs/UTF_8$Decoder.decodeArrayLoop} +894                      b9040071     lgr       %r7, %r1
+
+0x3ff7b7eeafc {sun/nio/cs/UTF_8$Decoder.decodeArrayLoop} +9230         69:14        e3e07f48ff04 lg        %r14, -0xb8(%r7) <<< +890 // invokevirtual 11 {java/nio/Buffer.arrayOffset()I}
+> !stack 0x3ffb414ad00
+<3ffb414ad00> 	!j9method 0x000003FFB46A04E0   com/sun/tools/javac/file/BaseFileManager.decode(Ljava/nio/ByteBuffer;Z)Ljava/nio/CharBuffer;
+<3ffb414ad00> 	!j9method 0x000003FFB4CDE9F8   com/sun/tools/javac/file/PathFileObject.getCharContent(Z)Ljava/lang/CharSequence;
+<3ffb414ad00> 	!j9method 0x000003FFB48EFF40   com/sun/tools/javac/main/JavaCompiler.readSource(Ljavax/tools/JavaFileObject;)Ljava/lang/CharSequence;
+<3ffb414ad00> 	!j9method 0x000003FFB48EFFC0   com/sun/tools/javac/main/JavaCompiler.parse(Ljavax/tools/JavaFileObject;)Lcom/sun/tools/javac/tree/JCTree$JCCompilationUnit;
+<3ffb414ad00> 	!j9method 0x000003FFB48F0140   com/sun/tools/javac/main/JavaCompiler.parseFiles(Ljava/lang/Iterable;Z)Lcom/sun/tools/javac/util/List;
+<3ffb414ad00> 	!j9method 0x000003FFB48F0120   com/sun/tools/javac/main/JavaCompiler.parseFiles(Ljava/lang/Iterable;)Lcom/sun/tools/javac/util/List;
+<3ffb414ad00> 	!j9method 0x000003FFB48F00E0   com/sun/tools/javac/main/JavaCompiler.compile(Ljava/util/Collection;Ljava/util/Collection;Ljava/lang/Iterable;Ljava/util/Collection;)V
+<3ffb414ad00> 	!j9method 0x000003FFB469BEE8   com/sun/tools/javac/main/Main.compile([Ljava/lang/String;Lcom/sun/tools/javac/util/Context;)Lcom/sun/tools/javac/main/Main$Result;
+<3ffb414ad00> 	!j9method 0x000003FFB469BEC8   com/sun/tools/javac/main/Main.compile([Ljava/lang/String;)Lcom/sun/tools/javac/main/Main$Result;
+<3ffb414ad00> 	!j9method 0x000003FFB469AA58   com/sun/tools/javac/Main.compile([Ljava/lang/String;Ljava/io/PrintWriter;)I
+<3ffb414ad00> 	!j9method 0x000003FFB4F81418   jdk/internal/reflect/GeneratedMethodAccessor1.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+<3ffb414ad00> 	!j9method 0x000003FFB433BB68   jdk/internal/reflect/DelegatingMethodAccessorImpl.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+<3ffb414ad00> 	!j9method 0x000003FFB4221E68   java/lang/reflect/Method.invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
+<3ffb414ad00> 	!j9method 0x000003FFB453BE20   com/sun/javatest/regtest/agent/RegressionCompileCommand.run([Ljava/lang/String;Ljava/io/PrintWriter;Ljava/io/PrintWriter;)Lcom/sun/javatest/regtest/agent/AStatus;
+<3ffb414ad00> 	!j9method 0x000003FFB453B408   com/sun/javatest/regtest/agent/CompileActionHelper.runCompile(Ljava/lang/String;Ljava/util/Map;Ljava/util/List;ILcom/sun/javatest/regtest/agent/ActionHelper$OutputHandler;)Lcom/sun/javatest/regtest/agent/AStatus;
+<3ffb414ad00> 	!j9method 0x000003FFB45350C8   com/sun/javatest/regtest/agent/AgentServer.doCompile()V
+<3ffb414ad00> 	!j9method 0x000003FFB45350A8   com/sun/javatest/regtest/agent/AgentServer.run()V
+<3ffb414ad00> 	!j9method 0x000003FFB4535068   com/sun/javatest/regtest/agent/AgentServer.main([Ljava/lang/String;)V
+[1] https://hyc-runtimes-jenkins.swg-devops.com/job/Test_openjdk17_j9_sanity.openjdk_s390x_linux_testList_0/316/ "Failing job"
+
+@VermaSh Can you try running test on svlxtor3.svl.ibm.com with disableZ16 to disable JIT exploitation of z16? If that passes, we have handful of locations to check out.
+
+Just got access to the machine again, planning to try disableZ15 and disableZ14.
+
+That is ok, was just wondering as you said it failed on z16 only. It was anyway long shot (Definitely something with Balanced GC policy, as this mode was added recently for the test).
+
+I was able to narrow the failure down to a single method: java/lang/String.decodeASCII([BI[CII)I through the unit test. Failure in jdk_lang_j9_0 also goes away when I run with EXTRA_OPTIONS='-Xnoaot -Xjit:verbose,vlog=javac.vlog,exclude={*String.decodeASCII*}'.
+
+Failing java build:
+
+> ibm-semeru-certified-jdk_s390x_linux_JDK17U_2023-04-16-12-47/bin/java -version
+
+java version "17.0.7" 2023-04-18
+IBM Semeru Runtime Certified Edition 17.0.7+6 (build 17.0.7+6)
+Eclipse OpenJ9 VM 17.0.7+6 (build master-94bbd248a, JRE 17 Linux s390x-64-Bit Compressed References 20230418_381 (JIT enabled, AOT enabled)
+OpenJ9   - 94bbd248a
+OMR      - 8e2bd3aa4
+JCL      - adf601f4ed based on jdk-17.0.7+6)
+
+Unit test:
+import java.io.IOException;
+import java.io.InputStream;
+
+import java.nio.ByteBuffer;
+import java.nio.CharBuffer;
+import java.nio.charset.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+
+public class Tester {
+
+    // Compilation: javac Tester.java
+    /* Failure run:
+        java -Xnoaot -Xnocompressedrefs -Xgcpolicy:balanced \
+        -Xjit:count=1,disableasynccompilation,verbose,vlog=tester.vlog,limit='{java/lang/String.decodeASCII([BI[CII)I}(traceFull,traceCG,log=decode.log)' \
+        Tester.java # failing_unit_test
+     */
+
+    public ByteBuffer get(int capacity) {
+        if (capacity < 20480) capacity = 20480;
+        ByteBuffer result = ByteBuffer.allocate(capacity + capacity>>1);
+        return result;
+    }
+
+    public ByteBuffer makeByteBuffer(InputStream in)
+        throws IOException {
+        int limit = in.available();
+        if (limit < 1024) limit = 1024;
+        ByteBuffer result = get(limit);
+        int position = 0;
+        while (in.available() != 0) {
+            if (position >= limit)
+                // expand buffer
+                result = ByteBuffer.
+                    allocate(limit <<= 1).
+                    put(result.flip());
+            int count = in.read(result.array(),
+                position,
+                limit - position);
+            if (count < 0) break;
+            result.position(position += count);
+        }
+        return result.flip();
+    }
+
+    public CharsetDecoder getDecoder(String encodingName, boolean ignoreEncodingErrors) {
+        Charset cs = Charset.forName(encodingName);
+        CharsetDecoder decoder = cs.newDecoder();
+
+        CodingErrorAction action;
+        if (ignoreEncodingErrors)
+            action = CodingErrorAction.REPLACE;
+        else
+            action = CodingErrorAction.REPORT;
+
+        return decoder
+            .onMalformedInput(action)
+            .onUnmappableCharacter(action);
+    }
+
+    public CharBuffer decode(ByteBuffer inbuf, boolean ignoreEncodingErrors, String encodingName) {
+        String encName = encodingName;
+        CharsetDecoder decoder;
+        try {
+            decoder = getDecoder(encName, ignoreEncodingErrors);
+        } catch (IllegalCharsetNameException | UnsupportedCharsetException e) {
+            return CharBuffer.allocate(1).flip();
+        }
+
+        // slightly overestimate the buffer size to avoid reallocation.
+        float factor =
+            decoder.averageCharsPerByte() * 0.8f +
+            decoder.maxCharsPerByte() * 0.2f;
+        CharBuffer dest = CharBuffer.
+            allocate(10 + (int)(inbuf.remaining()*factor));
+
+        while (true) {
+            CoderResult result = decoder.decode(inbuf, dest, true);
+            dest.flip();
+
+            if (result.isUnderflow()) { // done reading
+                // make sure there is at least one extra character
+                if (dest.limit() == dest.capacity()) {
+                    dest = CharBuffer.allocate(dest.capacity()+1).put(dest);
+                    dest.flip();
+                }
+                return dest;
+            } else if (result.isOverflow()) { // buffer too small; expand
+                int newCapacity =
+                    10 + dest.capacity() +
+                    (int)(inbuf.remaining()*decoder.maxCharsPerByte());
+                dest = CharBuffer.allocate(newCapacity).put(dest);
+            } else if (result.isMalformed() || result.isUnmappable()) {
+                // bad character in input
+                StringBuilder unmappable = new StringBuilder();
+                int len = result.length();
+
+                for (int i = 0; i < len; i++) {
+                    unmappable.append(String.format("%02X", inbuf.get()));
+                }
+
+                // undo the flip() to prepare the output buffer
+                // for more translation
+                dest.position(dest.limit());
+                dest.limit(dest.capacity());
+                dest.put((char)0xfffd); // backward compatible
+            } else {
+                throw new AssertionError(result);
+            }
+        }
+        // unreached
+    }
+
+    public CharBuffer tester(String encodingName) throws IOException {
+        // https://github.com/ibmruntimes/openj9-openjdk-jdk17/blob/openj9/test/jdk/java/lang/String/concat/ImplicitStringConcatShapes.java
+        InputStream in = Files.newInputStream(Path.of("/tmp/sverma/ImplicitStringConcatShapes.java"));
+        ByteBuffer inbuf = makeByteBuffer(in);
+        CharBuffer cb = decode(inbuf, false, encodingName);
+        return cb;
+    }
+
+    public static void main (String[] args) throws IOException {
+        Tester obj = new Tester();
+        CharBuffer ret = obj.tester("UTF-8");
+        System.out.printf("Char buffer capacity is: %d\n", ret.capacity());
+
+        ret = obj.tester("UTF-8");
+        System.out.printf("Char buffer capacity is: %d\n", ret.capacity());
+    }
+}
+
+
+
+That is great @VermaSh , just to confirm, test passes when add that method to dontInline as well right? Does it fail with limiting compilation to that method only?
+
+Ok thanks, I just wanted to verify as you said  also goes away when I run with EXTRA_OPTIONS='-Xnoaot -Xjit:verbose,vlog=javac.vlog,exclude={*String.decodeASCII*}'.. I believe if you use exclude, you should also put that method to dontinline together. But as you have it failing with limiting to compilation to just that method that is concrete that it is the failing method.
+
+The failure was due to StringLatin1.inflate. Running the test with export TR_DisableStringInflate=1 fixes the failure. Failure rate during my local testing was 100% with StringLatin1.inflate accelerated and 0% with the acceleration disabled. The acceleration assumes that arrays are allocated contiguously but that's not the case for Balanced GC. In Balanced GC, arrays can either be contiguous or spread across the heap as arraylets. This explains why we were failing. Coincidentally, @dchopra001 also stumbled across this and has guarded the acceleration. PR: #17328
