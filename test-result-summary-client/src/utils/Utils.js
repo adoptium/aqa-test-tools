@@ -7,7 +7,7 @@ export const order = (a, b) => {
 };
 export const getInfoFromBuildName = (buildName) => {
     const regex =
-        /^Test_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl|_fips|_criu)?)(_.+)?$/i;
+        /^Test_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl|_fips|_fips140_2|_fips140_3_\d*|_criu)?)(_.+)?$/i;
     const tokens = buildName.match(regex);
     if (Array.isArray(tokens) && tokens.length > 5) {
         const [_, jdkVersion, jdkImpl, level, group, platform] = tokens;
