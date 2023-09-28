@@ -1,6 +1,14 @@
 import React, { Component } from 'react';
 import { CheckOutlined, DownOutlined, EditOutlined } from '@ant-design/icons';
-import { Button, Table, Input, Popconfirm, Dropdown, Menu, message, Spin } from 'antd';
+import {
+    Button,
+    Table,
+    Input,
+    Popconfirm,
+    Dropdown,
+    message,
+    Spin,
+} from 'antd';
 import { fetchData } from '../utils/Utils';
 import './settings.css';
 
@@ -191,26 +199,10 @@ export default class Settings extends Component {
         }
     };
 
-    handleTypeClick = (record, e) => {
+    handleTypeClick = (record, e, type) => {
         const { data } = this.state;
         if (data && data.length > record.key) {
-            data[record.key].type = e.key;
-            this.setState(data);
-        }
-    };
-
-    handleStreamingClick = (record, e) => {
-        const { data } = this.state;
-        if (data && data.length > record.key) {
-            data[record.key].streaming = e.key;
-            this.setState(data);
-        }
-    };
-
-    handleMonitoringClick = (record, e) => {
-        const { data } = this.state;
-        if (data && data.length > record.key) {
-            data[record.key].monitoring = e.key;
+            data[record.key][type] = e.key;
             this.setState(data);
         }
     };
@@ -234,33 +226,30 @@ export default class Settings extends Component {
                     title: 'Build Type',
                     dataIndex: 'type',
                     render: (text, record) => {
-                        const menu = (
-                            <Menu
-                                onClick={this.handleTypeClick.bind(
-                                    null,
-                                    record
-                                )}
-                                items={[
-                                    {
-                                        key: 'FVT',
-                                        label: 'FVT',
-                                        value: 'FVT',
-                                    },
-                                    {
-                                        key: 'JCK',
-                                        label: 'JCK',
-                                        value: 'JCK',
-                                    },
-                                    {
-                                        key: 'Perf',
-                                        label: 'Perf',
-                                        value: 'Perf',
-                                    },
-                                ]}
-                            />
-                        );
                         return (
-                            <Dropdown menu={menu}>
+                            <Dropdown
+                                menu={{
+                                    onClick: (e) =>
+                                        this.handleTypeClick(record, e, 'type'),
+                                    items: [
+                                        {
+                                            key: 'FVT',
+                                            label: 'FVT',
+                                            value: 'FVT',
+                                        },
+                                        {
+                                            key: 'JCK',
+                                            label: 'JCK',
+                                            value: 'JCK',
+                                        },
+                                        {
+                                            key: 'Perf',
+                                            label: 'Perf',
+                                            value: 'Perf',
+                                        },
+                                    ],
+                                }}
+                            >
                                 <Button style={{ marginLeft: 8 }}>
                                     {text ? text : 'Type'} <DownOutlined />
                                 </Button>
@@ -272,28 +261,29 @@ export default class Settings extends Component {
                     title: 'Streaming',
                     dataIndex: 'streaming',
                     render: (text, record) => {
-                        const menu = (
-                            <Menu
-                                onClick={this.handleStreamingClick.bind(
-                                    null,
-                                    record
-                                )}
-                                items={[
-                                    {
-                                        key: 'No',
-                                        label: 'No',
-                                        value: 'No',
-                                    },
-                                    {
-                                        key: 'Yes',
-                                        label: 'Yes',
-                                        value: 'Yes',
-                                    },
-                                ]}
-                            />
-                        );
                         return (
-                            <Dropdown menu={menu}>
+                            <Dropdown
+                                menu={{
+                                    onClick: (e) =>
+                                        this.handleTypeClick(
+                                            record,
+                                            e,
+                                            'streaming'
+                                        ),
+                                    items: [
+                                        {
+                                            key: 'No',
+                                            label: 'No',
+                                            value: 'No',
+                                        },
+                                        {
+                                            key: 'Yes',
+                                            label: 'Yes',
+                                            value: 'Yes',
+                                        },
+                                    ],
+                                }}
+                            >
                                 <Button style={{ marginLeft: 8 }}>
                                     {text ? text : 'No'} <DownOutlined />
                                 </Button>
@@ -305,28 +295,29 @@ export default class Settings extends Component {
                     title: 'Monitoring',
                     dataIndex: 'monitoring',
                     render: (text, record) => {
-                        const menu = (
-                            <Menu
-                                onClick={this.handleMonitoringClick.bind(
-                                    null,
-                                    record
-                                )}
-                                items={[
-                                    {
-                                        key: 'No',
-                                        label: 'No',
-                                        value: 'No',
-                                    },
-                                    {
-                                        key: 'Yes',
-                                        label: 'Yes',
-                                        value: 'Yes',
-                                    },
-                                ]}
-                            />
-                        );
                         return (
-                            <Dropdown menu={menu}>
+                            <Dropdown
+                                menu={{
+                                    onClick: (e) =>
+                                        this.handleTypeClick(
+                                            record,
+                                            e,
+                                            'monitoring'
+                                        ),
+                                    items: [
+                                        {
+                                            key: 'No',
+                                            label: 'No',
+                                            value: 'No',
+                                        },
+                                        {
+                                            key: 'Yes',
+                                            label: 'Yes',
+                                            value: 'Yes',
+                                        },
+                                    ],
+                                }}
+                            >
                                 <Button style={{ marginLeft: 8 }}>
                                     {text ? text : 'Yes'} <DownOutlined />
                                 </Button>
