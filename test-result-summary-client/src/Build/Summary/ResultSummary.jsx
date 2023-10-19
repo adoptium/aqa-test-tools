@@ -39,7 +39,7 @@ export default function ResultSummary() {
         buildMap: {},
         summary: {},
         parentBuildInfo: {},
-        childBuildsResult: 'SUCCESS',
+        childBuildsResult: 'UNDEFINED',
         javaVersion: null,
     });
 
@@ -74,7 +74,7 @@ export default function ResultSummary() {
                     parentId,
                 })}`
             );
-            let childBuildsResult = 'SUCCESS';
+            let childBuildsResult = 'UNSTABLE';
             let javaVersion = null;
             const buildMap = {};
             let jdkVersionOpts = [];
