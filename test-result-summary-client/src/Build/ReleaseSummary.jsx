@@ -14,7 +14,7 @@ const ReleaseSummary = () => {
 
     useEffect(() => {
         const updateData = async () => {
-            const { parentId } = getParams(location.search);
+            const { parentId, childBuildsResult } = getParams(location.search);
             const originUrl = window.location.origin;
 
             const build = await fetchData(`/api/getParents?id=${parentId}`);
@@ -23,8 +23,13 @@ const ReleaseSummary = () => {
             const nl = `\n`;
             if (build && build[0]) {
                 const { buildName, buildUrl, timestamp, startBy } = build[0];
+                let buildsResultOutput = '';
+                if (childBuildsResult === 'PROGRESSING') {
+                    buildsResultOutput = `**Warning:** The release summary report is not yet complete. Currently, it only contains partial results. ${nl}${nl}`;
+                }
                 report =
                     `#### Release Summary Report for ${buildName} ${nl}` +
+                    buildsResultOutput +
                     `**Report generated at:** ${new Date().toUTCString()} ${nl} ${nl}` +
                     `TRSS [Build](${originUrl}/buildDetail?parentId=${parentId}&testSummaryResult=failed&buildNameRegex=%5ETest) ` +
                     `and TRSS [Grid View](${originUrl}/resultSummary?parentId=${parentId}) ${nl}` +
