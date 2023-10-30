@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
-import { useParams, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { Tooltip, Card, Alert } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import TestBreadcrumb from './TestBreadcrumb';
@@ -36,12 +36,24 @@ const ReleaseSummary = () => {
 
                 const buildResult = '!SUCCESS';
                 const failedBuilds = await fetchData(
-                    `/api/getAllChildBuilds${params({ buildResult, parentId })}`
+                    `/api/getAllChildBuilds${params({
+                        buildResult,
+                        parentId,
+                        buildNameRegex: '^((?!(_rerun)).)*$',
+                    })}`
+                );
+                const rerunBuilds = await fetchData(
+                    `/api/getAllChildBuilds${params({
+                        parentId,
+                        buildNameRegex: 'Test_openjdk.*_rerun',
+                    })}`
                 );
                 let failedBuildSummary = {};
                 let failedTestSummary = {};
+                // concat failedBuilds and rerunBuilds into allBuilds
+                let allBuilds = [...failedBuilds, ...rerunBuilds];
                 await Promise.all(
-                    failedBuilds.map(
+                    allBuilds.map(
                         async ({
                             _id,
                             buildName,
@@ -53,10 +65,12 @@ const ReleaseSummary = () => {
                             rerunFailedLink,
                         }) => {
                             const buildInfo = `${nl}[**${buildName}**](${buildUrl})`;
-                            const buildResultStr =
-                                buildResult === 'UNSTABLE'
-                                    ? ` ⚠️ ${buildResult} ⚠️${nl}`
-                                    : ` ❌ ${buildResult} ❌${nl}`;
+                            let buildResultStr = ` ❌ ${buildResult} ❌${nl}`;
+                            if (buildResult === 'SUCCESS') {
+                                buildResultStr = ` ✅ ${buildResult} ✅${nl}`;
+                            } else if (buildResult === 'UNSTABLE') {
+                                buildResultStr = ` ⚠️ ${buildResult} ⚠️${nl}`;
+                            }
 
                             if (buildName.startsWith('Test_openjdk')) {
                                 let rerunLinkInfo = '';
@@ -67,7 +81,6 @@ const ReleaseSummary = () => {
                                 }
                                 failedTestSummary[buildName] = buildInfo;
                                 failedTestSummary[buildName] += buildResultStr;
-
                                 if (!buildName.includes('_testList')) {
                                     failedTestSummary[buildName] +=
                                         rerunLinkInfo;
@@ -79,11 +92,6 @@ const ReleaseSummary = () => {
                                     }
                                 }
 
-                                if (buildName.includes('_rerun')) {
-                                    failedTestSummary[
-                                        buildName
-                                    ] += `<details><summary>Failures in the rerun test build</summary>${nl}${nl}`;
-                                }
                                 const buildId = _id;
                                 await Promise.all(
                                     tests.map(
@@ -95,12 +103,10 @@ const ReleaseSummary = () => {
                                             const testId = _id;
                                             if (testResult === 'FAILED') {
                                                 if (
-                                                    buildName.includes('_rerun')
+                                                    !buildName.includes(
+                                                        '_rerun'
+                                                    )
                                                 ) {
-                                                    failedTestSummary[
-                                                        buildName
-                                                    ] += `[${testName}](${originUrl}/output/test?id=${testId}) ${nl}`;
-                                                } else {
                                                     const history =
                                                         await fetchData(
                                                             `/api/getHistoryPerTest?testId=${testId}&limit=100`
@@ -133,12 +139,6 @@ const ReleaseSummary = () => {
                                         }
                                     )
                                 );
-
-                                if (buildName.includes('_rerun')) {
-                                    failedTestSummary[
-                                        buildName
-                                    ] += `${nl}</details>${nl}${nl}`;
-                                }
                             } else {
                                 failedBuildSummary[buildName] = buildInfo;
                                 failedBuildSummary[buildName] += buildResultStr;
