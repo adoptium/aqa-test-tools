@@ -7,6 +7,7 @@ import { params } from '../utils/query';
 import { fetchData, setBuildsStatus } from '../utils/Utils';
 import BuildLink from './BuildLink';
 import BuildStatus from './Summary/BuildStatus';
+import { useVisibility } from 'reactjs-visibility';
 
 // Set the page size for the table.
 const pageSize = 5;
@@ -18,11 +19,12 @@ function TopLevelBuildTable(props) {
     // Declare two state variables, currentPage and buildInfo, using the useState hook.
     const [currentPage, setCurrentPage] = useState(1);
     const [buildInfo, setBuildInfo] = useState([]);
+    const { ref, visible } = useVisibility();
 
     // Use the useEffect hook to fetch data and update the component state when certain props or state variables change.
     useEffect(() => {
-        fetchDataAndUpdate();
-    }, [buildName, url, currentPage]);
+        if (visible && !buildInfo.length) fetchDataAndUpdate();
+    }, [buildName, url, currentPage, visible]);
 
     // Declare a function that updates the totals for each build.
     async function updateTotals(buildInfo) {
@@ -415,27 +417,30 @@ function TopLevelBuildTable(props) {
         ];
 
         return (
-            <Table
-                columns={columns}
-                dataSource={buildInfo}
-                title={() => (
-                    <div>
-                        <Link
-                            to={{
-                                pathname: '/builds',
-                                search: params({
-                                    buildName,
-                                    url,
-                                    type,
-                                }),
-                            }}
-                        >
-                            <b>{buildName}</b> in server {url}
-                        </Link>
-                    </div>
-                )}
-                pagination={{ pageSize, onChange }}
-            />
+            <div ref={ref}>
+                <Table
+                    columns={columns}
+                    dataSource={buildInfo}
+                    title={() => (
+                        <div>
+                            <Link
+                                to={{
+                                    pathname: '/builds',
+                                    search: params({
+                                        buildName,
+                                        url,
+                                        type,
+                                    }),
+                                }}
+                            >
+                                <b>{buildName}</b> in server {url}
+                            </Link>
+                        </div>
+                    )}
+                    pagination={{ pageSize, onChange }}
+                />
+                {!buildInfo.length && <div style={{ height: 1000 }} />}
+            </div>
         );
     }
 }
