@@ -196,6 +196,11 @@ const GitNewissue = () => {
     const { testId, testName, buildId } = getParams(location.search);
 
     const urlParams = params({ title, body });
+    let issueUrl = 'https://github.com/adoptium/aqa-tests/';
+    let allowedHosts = ['trssrtp1.fyre.ibm.com'];
+    if (allowedHosts.includes(window.location.hostname)) {
+        issueUrl = 'https://github.com/eclipse-openj9/openj9/';
+    }
     return (
         <div>
             <TestBreadcrumb
@@ -208,9 +213,9 @@ const GitNewissue = () => {
                 bordered={true}
                 style={{ width: '100%' }}
                 extra={
-                    <Tooltip title="Create new issue at https://github.com/adoptium/aqa-tests">
+                    <Tooltip title={`Create new issue at ${issueUrl}`}>
                         <a
-                            href={`https://github.com/adoptium/aqa-tests/issues/new${urlParams}`}
+                            href={`${issueUrl}issues/new${urlParams}`}
                             target="_blank"
                             rel="noopener noreferrer"
                         >
