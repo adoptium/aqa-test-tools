@@ -40,19 +40,25 @@ const ReleaseSummary = () => {
                 report += `${nl} --- ${nl}`;
 
                 const buildResult = '!SUCCESS';
-                const failedBuilds = await fetchData(
+                const failedBuildsRes = fetchData(
                     `/api/getAllChildBuilds${params({
                         buildResult,
                         parentId,
                         buildNameRegex: '^((?!(_rerun)).)*$',
                     })}`
                 );
-                const rerunBuilds = await fetchData(
+                const rerunBuildsRes = fetchData(
                     `/api/getAllChildBuilds${params({
                         parentId,
                         buildNameRegex: 'Test_openjdk.*_rerun',
                     })}`
                 );
+
+                const [failedBuilds, rerunBuilds] = await Promise.all([
+                    failedBuildsRes,
+                    rerunBuildsRes,
+                ]);
+
                 let failedBuildSummary = {};
                 let failedTestSummary = {};
                 // concat failedBuilds and rerunBuilds into allBuilds

@@ -25,9 +25,16 @@ const GitNewissue = () => {
         async function updateData() {
             const { testId, buildId } = getParams(location.search);
             const originUrl = window.location.origin;
-
+            // fetch build data
+            const buildDataRes = fetchData(`/api/getData?_id=${buildId}`);
             // fetch test data
-            const testData = await fetchData(`/api/getTestById?id=${testId}`);
+            const testDataRes = fetchData(`/api/getTestById?id=${testId}`);
+
+            const [buildData, testData] = await Promise.all([
+                buildDataRes,
+                testDataRes,
+            ]);
+
             const { testName, duration, testResult } = testData;
 
             // fetch error in test output
@@ -36,8 +43,6 @@ const GitNewissue = () => {
             );
             const failureOutput = errorInOutput.output;
 
-            // fetch build data
-            const buildData = await fetchData(`/api/getData?_id=${buildId}`);
             const {
                 artifactory,
                 buildName,

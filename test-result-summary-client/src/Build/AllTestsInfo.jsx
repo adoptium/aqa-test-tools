@@ -90,11 +90,15 @@ const Build = () => {
     };
 
     const getTestResult = async (buildId, limitParam) => {
-        const builds = await fetchData(
+        const buildsRes = fetchData(
             `/api/getAllTestsWithHistory?buildId=${buildId}${limitParam}`
         );
 
-        const buildData = await fetchData(`/api/getData?_id=${buildId} `);
+        const buildDataRes = fetchData(`/api/getData?_id=${buildId} `);
+        const [builds, buildData] = await Promise.all([
+            buildsRes,
+            buildDataRes,
+        ]);
         const error = buildData[0].error
             ? `${buildData[0].buildUrl}: ${buildData[0].error}`
             : '';
