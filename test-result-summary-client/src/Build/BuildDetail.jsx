@@ -16,9 +16,9 @@ export default function BuildDetail() {
 
     useEffect(() => {
         const updateData = async () => {
-            let buildsResults;
+            let buildsResultsRes;
             if (testSummaryResult || buildNameRegex || buildResult) {
-                buildsResults = await fetchData(
+                buildsResultsRes = fetchData(
                     `/api/getAllChildBuilds${params({
                         buildResult,
                         testSummaryResult,
@@ -27,14 +27,16 @@ export default function BuildDetail() {
                     })}`
                 );
             } else {
-                buildsResults = await fetchData(
+                buildsResultsRes = fetchData(
                     `/api/getChildBuilds?parentId=${parentId}`
                 );
             }
 
-            const parentResults = await fetchData(
-                `/api/getData?_id=${parentId}`
-            );
+            const parentResultsRes = fetchData(`/api/getData?_id=${parentId}`);
+            const [buildsResults, parentResults] = await Promise.all([
+                buildsResultsRes,
+                parentResultsRes,
+            ]);
 
             setBuilds(buildsResults);
             setParent(parentResults);

@@ -48,14 +48,13 @@ export default function ResultSummary() {
             const { parentId } = getParams(location.search);
 
             // get test summary (i.e., passed, failed, total numbers)
-            const summary = await fetchData(`/api/getTotals?id=${parentId}`);
+            const summaryRes = fetchData(`/api/getTotals?id=${parentId}`);
 
             // get build information
-            const buildInfo = await fetchData(`/api/getData?_id=${parentId}`);
-            const parentBuildInfo = buildInfo[0] || {};
+            const buildInfoRes = fetchData(`/api/getData?_id=${parentId}`);
 
             // get all SDK builds info
-            const sdkBuilds = await fetchData(
+            const sdkBuildsRes = fetchData(
                 `/api/getAllChildBuilds${params({
                     buildNameRegex: '^(jdk[0-9]{1,2}|Build_)',
                     parentId,
@@ -66,7 +65,7 @@ export default function ResultSummary() {
             const testSummaryResult = undefined;
             const buildResult = undefined;
 
-            const builds = await fetchData(
+            const buildsRes = fetchData(
                 `/api/getAllChildBuilds${params({
                     buildResult,
                     testSummaryResult,
@@ -74,6 +73,13 @@ export default function ResultSummary() {
                     parentId,
                 })}`
             );
+            const [summary, buildInfo, sdkBuilds, builds] = await Promise.all([
+                summaryRes,
+                buildInfoRes,
+                sdkBuildsRes,
+                buildsRes,
+            ]);
+            const parentBuildInfo = buildInfo[0] || {};
             let childBuildsResult = 'UNSTABLE';
             let javaVersion = null;
             const buildMap = {};
