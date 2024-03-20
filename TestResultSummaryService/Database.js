@@ -176,7 +176,7 @@ class Database {
             { $match: { 'childBuilds.buildName': { $regex: buildNameRegex } } },
             {
                 $group: {
-                    _id: {},
+                    _id: id ,
                     total: { $sum: '$childBuilds.testSummary.total' },
                     executed: { $sum: '$childBuilds.testSummary.executed' },
                     passed: { $sum: '$childBuilds.testSummary.passed' },
