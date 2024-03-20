@@ -11,7 +11,10 @@ async function deleteBuilds(req, res) {
     }
 }
 
-async function deleteBuildsAndChildrenByFields(query) {
+async function deleteBuildsAndChildrenByFields(
+    query,
+    deleteChildrenOnly = false
+) {
     if (Object.keys(query).length > 0) {
         if (query.buildNum) query.buildNum = parseInt(query.buildNum, 10);
         if (query._id) query._id = new ObjectID(query._id);
@@ -22,14 +25,14 @@ async function deleteBuildsAndChildrenByFields(query) {
                 'deleteBuildsAndChildrenByFields: ',
                 result[i].buildUrl
             );
-            await deleteBuild(result[i]);
+            await deleteBuild(result[i], deleteChildrenOnly);
         }
         return result;
     }
     return null;
 }
 
-async function deleteBuild(build) {
+async function deleteBuild(build, deleteChildrenOnly = false) {
     const testResultsDB = new TestResultsDB();
     const children = await testResultsDB
         .getData({ parentId: build._id })
@@ -44,10 +47,12 @@ async function deleteBuild(build) {
             await outputDB.deleteOne({ _id: build.tests[j].testOutputId });
         }
     }
-    if (build.buildOutputId) {
-        await outputDB.deleteOne({ _id: build.buildOutputId });
+    if (!deleteChildrenOnly) {
+        if (build.buildOutputId) {
+            await outputDB.deleteOne({ _id: build.buildOutputId });
+        }
+        await testResultsDB.deleteOne({ _id: build._id });
     }
-    await testResultsDB.deleteOne({ _id: build._id });
 }
 
 module.exports = {
