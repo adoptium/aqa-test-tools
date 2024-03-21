@@ -30,6 +30,10 @@ class BuildProcessor {
                  */
                 task.status = 'Done';
                 await new DataManager().updateBuild(task);
+                await new AuditLogsDB().insertAuditLogs({
+                    action: `[exception] buildInfo.code: ${buildInfo.code}`,
+                    ...task,
+                });
                 return;
             }
             task.buildParams = jenkinsInfo.getBuildParams(buildInfo);

@@ -16,7 +16,12 @@ const retry = (fn) => {
             } catch (e) {
                 logger.warn(`Try #${i + 1}: connection issue`, arguments);
                 logger.warn(e);
-                if (e.toString().includes('unexpected status code: 404')) {
+                logger.warn(`Sleep 2 secs...`);
+                await Promise.delay(2 * 1000);
+                if (
+                    i === 2 &&
+                    e.toString().includes('unexpected status code: 404')
+                ) {
                     return { code: 404 };
                 }
             }
