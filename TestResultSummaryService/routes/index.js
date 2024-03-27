@@ -26,6 +26,7 @@ app.get('/getData', wrap(require('./getData')));
 app.get('/getErrorInOutput', wrap(require('./getErrorInOutput')));
 app.get('/getHistoryPerTest', wrap(require('./getHistoryPerTest')));
 app.get('/getJenkins', wrap(require('./getJenkins')));
+app.get('/getJenkinsBuildInfo', wrap(require('./test/getJenkinsBuildInfo')));
 app.get('/getLastBuildInfo', wrap(require('./getLastBuildInfo')));
 app.get('/getLogStream', wrap(require('./getLogStream')));
 app.get('/getOutputById', wrap(require('./getOutputById')));
