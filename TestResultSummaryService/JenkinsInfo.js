@@ -8,21 +8,31 @@ const options = { request: { timeout: 30000 } };
 
 // Server connection may drop. If timeout, retry.
 const retry = (fn) => {
-    const promise = Promise.promisify(fn);
     return async function () {
         for (let i = 0; i < 3; i++) {
             try {
-                return await promise.apply(null, arguments);
+                return await new Promise((resolve, reject) => {
+                    fn(...arguments, (err, data) => {
+                        if (err) {
+                            logger.warn(err);
+                            reject(data);
+                        } else {
+                            resolve(data);
+                        }
+                    });
+                });
             } catch (e) {
                 logger.warn(`Try #${i + 1}: connection issue`, arguments);
-                logger.warn(e);
-                logger.warn(`Sleep 2 secs...`);
-                await Promise.delay(2 * 1000);
-                if (
-                    i === 2 &&
-                    e.toString().includes('unexpected status code: 404')
-                ) {
-                    return { code: 404 };
+                if (e) {
+                    logger.warn(`status code: ${e.statusCode}`);
+                    logger.warn(`headers: ${JSON.stringify(e.headers)}`);
+
+                    // return code 404 only if the Jenkins server returns 404 for the build (i.e., invalid url, expired build, etc)
+                    // x-jenkins header is checked to ensure the error code is from Jenkins (not nginx)
+                    // TRSS will stop processing this build once code 404 is returned. See BuildProcessor for details.
+                    if (e.statusCode === 404 && e.headers['x-jenkins']) {
+                        return { code: e.statusCode };
+                    }
                 }
             }
         }
