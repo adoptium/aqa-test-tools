@@ -79,8 +79,6 @@ function TopLevelBuildTable(props) {
 
     // Declare a function that handles the Keep Forever checkbox.
     async function handleKeepForverClick(record) {
-        // Destructure the 'buildInfo' object from an object with an undefined property named 'buildInfo'.
-        const { buildInfo } = { buildInfo };
         // If the 'record' object has a 'key' property:
         if (record.key) {
             // Loop through each 'build' object in the 'buildInfo' array:
@@ -100,9 +98,7 @@ function TopLevelBuildTable(props) {
                     break;
                 }
             }
-            // Wait for 100ms before setting the 'buildInfo' state variable.
-            await new Promise((r) => setTimeout(r, 100));
-            setBuildInfo(buildInfo);
+            setBuildInfo(structuredClone(buildInfo));
         }
     }
 
