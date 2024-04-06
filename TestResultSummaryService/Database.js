@@ -1,5 +1,6 @@
 const { MongoClient, ObjectID } = require('mongodb');
 const ArgParser = require('./ArgParser');
+const { logger } = require('./Utils');
 
 let db;
 (async function () {
@@ -32,6 +33,22 @@ let db;
         } catch (e) {
             // do nothing. The collection may already exist
         }
+    }
+    const testResultsDB = db.collection('testResults');
+
+    const parentIdIndex = await testResultsDB.createIndex({ parentId: 1 });
+    logger.info('Index created: ', parentIdIndex);
+    const urlBuildNameBuildNumIndex = await testResultsDB.createIndex({
+        url: 1,
+        buildName: 1,
+        buildNum: 1,
+    });
+    logger.info('Index created: ', urlBuildNameBuildNumIndex);
+
+    const result = await testResultsDB.listIndexes().toArray();
+    logger.info('Existing testResults indexes:');
+    for (const doc of result) {
+        logger.info(doc);
     }
 })();
 
@@ -159,7 +176,7 @@ class Database {
             { $match: { 'childBuilds.buildName': { $regex: buildNameRegex } } },
             {
                 $group: {
-                    _id: {},
+                    _id: id ,
                     total: { $sum: '$childBuilds.testSummary.total' },
                     executed: { $sum: '$childBuilds.testSummary.executed' },
                     passed: { $sum: '$childBuilds.testSummary.passed' },

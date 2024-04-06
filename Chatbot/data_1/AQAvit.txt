@@ -1,0 +1,61 @@
+OSS Leader the Eclipse Foundation and the Adoptium Working Group Launch the Adoptium Marketplace
+The Adoptium Working Group gives millions of developers, academics, and researchers a single centralized source of fully verified Java binaries, including Eclipse Temurin
+May 26, 2022 07:00 ET | Source: Eclipse Foundation Canada 
+
+
+
+BRUSSELS, Belgium, May 26, 2022 (GLOBE NEWSWIRE) -- The Eclipse Foundation, one of the world’s largest open source software foundations, in collaboration with its Adoptium Working Group, today announced the Adoptium Marketplace. This new market gives users the opportunity to obtain Java SE TCK certified and AQAvit quality-tested binaries, including Eclipse Temurin, via a centralized site managed by the Eclipse Foundation. By doing so, the Eclipse Foundation and the Adoptium Working Group give millions of developers, researchers, and other organizations an easy means of securing high performance, enterprise-caliber, cross-platform, AQAvit verified, and TCK-certified binaries for general use across the Java ecosystem.
+
+“With the increasing volume and diversity of OpenJDK runtime distributions, it’s become clear that quality and consistency across the ecosystem must be established,” said Mike Milinkovich, executive director of the Eclipse Foundation. “The creation of the Adoptium Marketplace provides a vendor-neutral home for the Java ecosystem that makes it incredibly easy for anyone to find Java SE compatible binaries that have been extensively tested and are ready for cloud native and enterprise deployments.”
+
+The Adoptium Working Group, which was founded by multiple participants, including many Java developers and vendors such as Alibaba Cloud, Azul, Huawei, IBM, iJUG, Karakun AG, Microsoft, New Relic, and Red Hat, provides the Java ecosystem with fully compatible, high-quality distributions of Java runtimes based on OpenJDK source code.
+
+There has been an explosion in the number of OpenJDK-based runtime distributions available over the last few years, and not all of them have the high quality bar set by the Eclipse Foundation. The Adoptium project is hosting a website and application programming interface “marketplace” where working group members can promote Java SE runtimes that meet specific quality assurance criteria.
+
+The Eclipse AQAvit project was created specifically as a means of testing the exacting criteria that will ensure a binary is ready for production deployment. This is a critical service, as thousands of enterprises and millions of developers that run Java need a reliable source of high-quality Java runtimes that come with timely patches and updates for their mission-critical Java applications.
+
+The Adoptium marketplace enables working group members to promote their own Java SE releases that meet Eclipse AQAvit’s quality criteria, and continue to innovate in the cloud-based infrastructure that drives our efficiency as a shared community project. The Adoptium Marketplace complements the Working Group’s efforts by delivering a trusted location where developers and enterprises can obtain compatible binaries of OpenJDK builds. Anyone choosing a binary from this Adoptium Marketplace can be assured of these primary benefits:
+
+The binary has been tested and passed the relevant version of the Java SE TCK to ensure Java compatibility;
+The binary has been fully verified using the AQAvit test criteria, having passed through multiple tests to ensure it meets industry quality standards; and
+The results of the AQAvit quality checks are available for public scrutiny.
+The Eclipse Adoptium project and governing Eclipse Adoptium Working Group are the continuation of the original AdoptOpenJDK mission, which was established in 2017 to address the general lack of an open, community-based, and reproducible build and test system for OpenJDK across multiple platforms. Eclipse Adoptium is now the leading provider of high-quality OpenJDK-based binaries used by Java developers in embedded systems, desktops, traditional servers, modern cloud platforms, and mainframes. The Adoptium Marketplace extends this leadership role and gives even more organizations a means of distributing their binaries.
+
+If your organization is interested in participating in the Adoptium Working Group, you can view the Charter and Participation Agreement, or email us at membership@eclipse.org.
+
+Quotes from Participating Organizations
+
+Temurin
+
+“Eclipse Temurin by the Adoptium project is the leading open source distribution of enterprise-ready Java SE across multiple platforms,” said Tim Ellison, Adoptium PMC Lead. “Temurin is proud to participate in the Adoptium Marketplace alongside working group members who share our vision for highly scalable, secure, and performant runtimes. Through the marketplace, users are assured that the Java they choose for their applications meets the demanding quality verification offered by AQAvit tests.”
+  
+Azul
+
+“Market adoption of OpenJDK runtimes is rising fast as users explore their options for moving off costly legacy Java vendors,” said Simon Ritter, Deputy CTO, Azul. “Azul leads more OpenJDK projects and supports more Java versions than any other vendor, including Oracle. Having Azul’s builds of OpenJDK on the Adoptium Marketplace along with other distributions gives users the widest choice of runtime accessible from one convenient location.”
+
+Huawei
+
+“Huawei BiSheng (JDK 8) is an open source high-performance OpenJDK distribution that can be used in production environments, with optimized performance and enhanced stability on the ARM architecture,” said Shanyao Chen, Huawei BiSheng (JDK 8) Senior Project Manager. “We appreciate the Adoptium working group building a great marketplace for users to obtain high-quality, open source distributions, and Huawei BiSheng (JDK 8) is proud to be part of it!”
+
+IBM
+
+“IBM is proud to make available at the Adoptium Marketplace the IBM Semeru Runtime Certified Edition that includes both the Eclipse OpenJ9 JVM and OpenJDK class libraries,” said Theony Mousa, director of Engineering, IBM Application Platform and Runtimes. “Our commitment to producing only high quality, secure, and performant Java SE runtimes is firmly echoed in the guiding principles of the Adoptium Marketplace. With Adoptium's AQAvit quality verification testing, the Java community can trust that the IBM Semeru Runtime Certified Edition will reliably run all Java workloads.”
+
+Microsoft
+
+“Microsoft has a long history of supporting developer ecosystems, and we are glad to be a part of the Working Group that is launching the Eclipse Foundation's Adoptium marketplace. The Adoptium marketplace will provide a vendor-neutral home where business-ready, Java-compliant OpenJDK binaries are produced and tested by the AQAvit quality suite. It offers Java developers, users, and deployers a trusted source for OpenJDK binaries from multiple vendors with no restrictions,” said Amanda Silver, CVP of Product, Developer Division, Microsoft. “Alongside the other founding members, Microsoft looks forward to contributing to the Adoptium marketplace with the Microsoft Build of OpenJDK, a free OpenJDK distribution that is optimized for and supported on Azure.“
+
+Red Hat
+
+“At Red Hat we have a long tradition of working with communities to ensure open source software is ready for Enterprise IT use,” said Mark Little, VP, Engineering, Red Hat. “The Adoptium marketplace is a welcome innovation that supports our mission, and we are committed to participating in the working group to define the open AQAvit standard. We are delighted to bring Red Hat’s build of OpenJDK to the marketplace, demonstrating that it meets the expectations of modern application developers.”
+
+Alibaba Cloud
+
+“Alibaba Cloud has a strong record of open source and community involvement. As a founding member of the Adoptium Working Group, we are thrilled to support the launch of Adoptium Marketplace,” said Sanhong Li, director of Compiler & Runtime, Alibaba Cloud Intelligence. “The Adoptium Marketplace is a trusted place where developers can obtain high quality, production-ready binaries of OpenJDK builds. We look forward to participating in the Adoptium marketplace with the Alibaba Dragonwell, a downstream version of OpenJDK optimized for online e-commerce, financial, logistics applications, and numerous other distributed services on Alibaba Cloud.”
+
+About the Eclipse Foundation
+The Eclipse Foundation provides our global community of individuals and organizations with a mature, scalable, and business-friendly environment for open source software collaboration and innovation. The Foundation is home to the Eclipse IDE, Jakarta EE, and over 400 open source projects, including runtimes, tools, and frameworks for cloud and edge applications, IoT, AI, automotive, systems engineering, distributed ledger technologies, open processor designs, and many others. The Eclipse Foundation is an international non-profit association supported by over 330 members, including industry leaders who value open source as a key enabler for their business strategies. To learn more, follow us on Twitter @EclipseFdn, LinkedIn or visit eclipse.org.
+
+Third-party trademarks mentioned are the property of their respective owners.
+
+https://www.globenewswire.com/en/news-release/2022/05/26/2451097/0/en/OSS-Leader-the-Eclipse-Foundation-and-the-Adoptium-Working-Group-Launch-the-Adoptium-Marketplace.html

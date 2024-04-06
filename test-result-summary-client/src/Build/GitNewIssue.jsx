@@ -25,9 +25,16 @@ const GitNewissue = () => {
         async function updateData() {
             const { testId, buildId } = getParams(location.search);
             const originUrl = window.location.origin;
-
+            // fetch build data
+            const buildDataRes = fetchData(`/api/getData?_id=${buildId}`);
             // fetch test data
-            const testData = await fetchData(`/api/getTestById?id=${testId}`);
+            const testDataRes = fetchData(`/api/getTestById?id=${testId}`);
+
+            const [buildData, testData] = await Promise.all([
+                buildDataRes,
+                testDataRes,
+            ]);
+
             const { testName, duration, testResult } = testData;
 
             // fetch error in test output
@@ -36,8 +43,6 @@ const GitNewissue = () => {
             );
             const failureOutput = errorInOutput.output;
 
-            // fetch build data
-            const buildData = await fetchData(`/api/getData?_id=${buildId}`);
             const {
                 artifactory,
                 buildName,
@@ -196,6 +201,11 @@ const GitNewissue = () => {
     const { testId, testName, buildId } = getParams(location.search);
 
     const urlParams = params({ title, body });
+    let issueUrl = 'https://github.com/adoptium/aqa-tests/';
+    let allowedHosts = ['trssrtp1.fyre.ibm.com'];
+    if (allowedHosts.includes(window.location.hostname)) {
+        issueUrl = 'https://github.com/eclipse-openj9/openj9/';
+    }
     return (
         <div>
             <TestBreadcrumb
@@ -208,9 +218,9 @@ const GitNewissue = () => {
                 bordered={true}
                 style={{ width: '100%' }}
                 extra={
-                    <Tooltip title="Create new issue at https://github.com/adoptium/aqa-tests">
+                    <Tooltip title={`Create new issue at ${issueUrl}`}>
                         <a
-                            href={`https://github.com/adoptium/aqa-tests/issues/new${urlParams}`}
+                            href={`${issueUrl}issues/new${urlParams}`}
                             target="_blank"
                             rel="noopener noreferrer"
                         >

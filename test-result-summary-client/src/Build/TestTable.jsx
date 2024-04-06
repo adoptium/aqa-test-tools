@@ -158,7 +158,7 @@ export default class TestTable extends Component {
                             search: params({ testId, buildId }),
                         }}
                     >
-                        <Tooltip title="Create new issue at https://github.com/adoptium/aqa-tests">
+                        <Tooltip title="Create new Github issue">
                             {' '}
                             <GithubOutlined />
                         </Tooltip>

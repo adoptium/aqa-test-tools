@@ -6,6 +6,7 @@ import moment from 'moment';
 import BuildLink from '../BuildLink';
 import renderDuration from '../Duration';
 import BuildStatus from './BuildStatus';
+import BuildStatusIcon from './BuildStatusIcon.jsx';
 import './Overview.css';
 
 const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
@@ -65,13 +66,18 @@ export default class Overview extends Component {
                     <Link
                         to={{
                             pathname: '/releaseSummary',
-                            search: params({ parentId: id, buildName }),
+                            search: params({
+                                parentId: id,
+                                buildName,
+                                childBuildsResult,
+                            }),
                         }}
                     >
                         <div className="overview-report-link">
                             <Button type="primary">
                                 Release Summary Report
                             </Button>
+                            <BuildStatusIcon status={childBuildsResult} />
                         </div>
                     </Link>
                     <Divider style={{ fontSize: '20px' }}>
