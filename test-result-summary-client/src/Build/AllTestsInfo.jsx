@@ -116,6 +116,7 @@ const Build = () => {
                     buildId: buildData[0]._id,
                     buildUrl: buildData[0].buildUrl,
                     rerunUrl: buildData[0].rerunLink,
+                    timestamp: buildData[0].timestamp,
                 };
                 ret.action = {
                     testId: test._id,

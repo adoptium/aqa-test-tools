@@ -103,6 +103,7 @@ searchOutputId = async (build) => {
                     testResult: test.testResult,
                     duration: test.duration,
                     machine: build.machine,
+                    timestamp: build.timestamp,
                 };
             });
         }

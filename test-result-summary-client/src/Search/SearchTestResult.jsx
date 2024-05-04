@@ -1,35 +1,17 @@
 import React, { Component } from 'react';
 import TestTable from '../Build/TestTable';
 
-export default class SearchResult extends Component {
-    state = {
-        testData: [],
-    };
-
-    async componentDidUpdate(prevProps) {
-        if (prevProps.tests !== this.props.tests) {
-            await this.updateData();
-        }
-    }
-
-    async updateData() {
-        const { tests } = this.props;
-
-        const testData = tests.map((element) => {
-            const ret = {
-                key: element._id,
-                sortName: element.testName,
-                testName: element.testName,
-                action: { testId: element._id, testName: element.testName },
-                result: { testResult: element.testResult, testId: element._id },
-                build: { buildName: element.buildName },
-                duration: element.duration,
-                machine: element.machine,
-                sortMachine: element.machine,
-                buildUrl: element.buildUrl,
-            };
-            return ret;
-        });
+export default class SearchTestResult extends Component {
+    render() {
+        const { searchText = '', tests } = this.props;
+        const testData = tests.map((element) => ({
+            ...element,
+            key: element._id,
+            sortName: element.testName,
+            action: { testId: element._id, testName: element.testName },
+            result: { testResult: element.testResult, testId: element._id },
+            build: { buildName: element.buildName },
+        }));
 
         testData.sort((a, b) => {
             let rt = a.result.testResult.localeCompare(b.result.testResult);
@@ -39,23 +21,10 @@ export default class SearchResult extends Component {
             return rt;
         });
 
-        this.setState({
-            testData,
-        });
-    }
-
-    render() {
-        const { searchText } = this.props;
-        const { testData } = this.state;
+        const message = searchText ? ' "' + searchText + '"' : '';
         return (
             <TestTable
-                title={
-                    'Found ' +
-                    testData.length +
-                    ' "' +
-                    searchText +
-                    '" in test output'
-                }
+                title={'Found ' + testData.length + message + ' in test output'}
                 testData={testData}
             />
         );

@@ -11,6 +11,8 @@ import { TestCompare } from './TestCompare/';
 import { ThirdPartyAppView } from './ThirdPartyAppView/';
 import { PerfCompare } from './PerfCompare/';
 import { TabularView } from './TabularView/';
+import { AdvancedSearch } from './AdvancedSearch/';
+
 import {
     AllTestsInfo,
     BuildDetail,
@@ -96,7 +98,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '6',
+                                        key: '2',
                                         label: (
                                             <Link to="/tests/AQAvitCert">
                                                 AQAvit Verification
@@ -104,7 +106,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '2',
+                                        key: '3',
                                         label: (
                                             <Link to="/testCompare">
                                                 Test Compare
@@ -112,7 +114,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '3',
+                                        key: '4',
                                         label: 'Perf Related',
                                         children: [
                                             {
@@ -142,7 +144,7 @@ export default class App extends Component {
                                         ],
                                     },
                                     {
-                                        key: '4',
+                                        key: '5',
                                         label: (
                                             <Link to="/dashboard">
                                                 Dashboard
@@ -150,10 +152,18 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '5',
+                                        key: '6',
                                         label: (
                                             <Link to="/ThirdPartyAppView">
                                                 Third Party Applications
+                                            </Link>
+                                        ),
+                                    },
+                                    {
+                                        key: '7',
+                                        label: (
+                                            <Link to="/AdvancedSearch">
+                                                Advanced Search
                                             </Link>
                                         ),
                                     },
@@ -171,26 +181,90 @@ export default class App extends Component {
                                     }}
                                 >
                                     <Routes>
-                                        <Route path="/" element={<TopLevelBuilds />} />
-                                        <Route path="/admin/settings" element={<Settings />} />
-                                        <Route path="/dashboard" element={<Dashboard />} />
-                                        <Route path="/tests/:type" element={<TopLevelBuilds />} />
-                                        <Route path="/output/:outputType" element={<Output />} />
-                                        <Route path="/deepHistory" element={<DeepHistory />} />
-                                        <Route path="/gitNewIssue" element={<GitNewIssue />} />
-                                        <Route path="/testCompare" element={<TestCompare />} />
-                                        <Route path="/perfCompare" element={<PerfCompare />} />
-                                        <Route path="/tabularView" element={<TabularView />} />
-                                        <Route path="/buildDetail" element={<BuildDetail />} />
-                                        <Route path="/buildTreeView" element={<BuildTreeView />} />
-                                        <Route path="/builds" element={<Builds />} />
-                                        <Route path="/allTestsInfo" element={<AllTestsInfo />} />
-                                        <Route path="/testPerPlatform" element={<TestPerPlatform />} />
-                                        <Route path="/possibleIssues" element={<PossibleIssues />} />
-                                        <Route path="/searchResult" element={<SearchResult />} />
-                                        <Route path="/resultSummary" element={<ResultSummary />} />
-                                        <Route path="/ThirdPartyAppView" element={<ThirdPartyAppView />} />
-                                        <Route path="/releaseSummary" element={<ReleaseSummary />} />
+                                        <Route
+                                            path="/"
+                                            element={<TopLevelBuilds />}
+                                        />
+                                        <Route
+                                            path="/admin/settings"
+                                            element={<Settings />}
+                                        />
+                                        <Route
+                                            path="/dashboard"
+                                            element={<Dashboard />}
+                                        />
+                                        <Route
+                                            path="/tests/:type"
+                                            element={<TopLevelBuilds />}
+                                        />
+                                        <Route
+                                            path="/output/:outputType"
+                                            element={<Output />}
+                                        />
+                                        <Route
+                                            path="/deepHistory"
+                                            element={<DeepHistory />}
+                                        />
+                                        <Route
+                                            path="/gitNewIssue"
+                                            element={<GitNewIssue />}
+                                        />
+                                        <Route
+                                            path="/testCompare"
+                                            element={<TestCompare />}
+                                        />
+                                        <Route
+                                            path="/perfCompare"
+                                            element={<PerfCompare />}
+                                        />
+                                        <Route
+                                            path="/tabularView"
+                                            element={<TabularView />}
+                                        />
+                                        <Route
+                                            path="/buildDetail"
+                                            element={<BuildDetail />}
+                                        />
+                                        <Route
+                                            path="/buildTreeView"
+                                            element={<BuildTreeView />}
+                                        />
+                                        <Route
+                                            path="/builds"
+                                            element={<Builds />}
+                                        />
+                                        <Route
+                                            path="/allTestsInfo"
+                                            element={<AllTestsInfo />}
+                                        />
+                                        <Route
+                                            path="/testPerPlatform"
+                                            element={<TestPerPlatform />}
+                                        />
+                                        <Route
+                                            path="/possibleIssues"
+                                            element={<PossibleIssues />}
+                                        />
+                                        <Route
+                                            path="/searchResult"
+                                            element={<SearchResult />}
+                                        />
+                                        <Route
+                                            path="/resultSummary"
+                                            element={<ResultSummary />}
+                                        />
+                                        <Route
+                                            path="/ThirdPartyAppView"
+                                            element={<ThirdPartyAppView />}
+                                        />
+                                        <Route
+                                            path="/releaseSummary"
+                                            element={<ReleaseSummary />}
+                                        />
+                                        <Route
+                                            path="/advancedSearch"
+                                            element={<AdvancedSearch />}
+                                        />
                                     </Routes>
                                 </Content>
                             </ErrorBoundary>
