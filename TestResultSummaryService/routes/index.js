@@ -42,6 +42,8 @@ app.get('/getTestBuildsByMachine', wrap(require('./getTestBuildsByMachine')));
 app.get('/getTestById', wrap(require('./getTestById')));
 app.get('/getTestBySearch', wrap(require('./getTestBySearch')));
 app.get('/getTestByVersionInfo', wrap(require('./getTestByVersionInfo')));
+app.get('/getTestNames', wrap(require('./getTestNames')));
+app.get('/getTestByTestName', wrap(require('./getTestByTestName')));
 app.get('/getTestPerPlatform', wrap(require('./getTestPerPlatform')));
 app.get('/getTopLevelBuildNames', wrap(require('./getTopLevelBuildNames')));
 app.get('/getTotals', wrap(require('./getTotals')));

@@ -24,16 +24,8 @@ const testResultSortingArray = [
 
 export default class TestTable extends Component {
     state = {
-        filteredData: [],
+        filteredData: undefined,
     };
-
-    async componentDidUpdate(prevProps) {
-        if (prevProps.testData !== this.props.testData) {
-            this.setState({
-                filteredData: this.props.testData,
-            });
-        }
-    }
 
     handleFilterChange = (filteredData) => {
         this.setState({ filteredData });
@@ -266,6 +258,17 @@ export default class TestTable extends Component {
                     />
                 ),
             },
+            {
+                title: 'Date',
+                dataIndex: 'timestamp',
+                key: 'timestamp',
+                width: 100,
+                render: (timestamp) =>
+                    timestamp ? new Date(timestamp).toLocaleString() : 'N/A',
+                sorter: (a, b) => {
+                    return a.timestamp - b.timestamp;
+                },
+            },
         ];
         if (parents) {
             columns.push(
@@ -351,7 +354,7 @@ export default class TestTable extends Component {
             <div>
                 <Table
                     columns={columns}
-                    dataSource={filteredData}
+                    dataSource={filteredData ?? this.props.testData}
                     bordered
                     title={() => title}
                     pagination={{
