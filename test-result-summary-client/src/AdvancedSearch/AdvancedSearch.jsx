@@ -88,10 +88,10 @@ export default class AdvancedSearch extends Component {
                     <Button type="primary" onClick={this.handleSubmit}>
                         Search
                     </Button>
-                    {loading && <Spin indicator={antIcon} />} // Conditionally render the spinner based on loading state
+                    {loading && <Spin indicator={antIcon} />} 
                 </Space>
                 <br />
-                {result ? <SearchTestResult tests={result} /> : ''} // Conditionally render search results if available
+                {result ? <SearchTestResult tests={result} /> : ''} 
             </Space>
         );
     }
