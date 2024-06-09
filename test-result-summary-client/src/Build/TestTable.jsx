@@ -271,8 +271,10 @@ export default class TestTable extends Component {
             },
         ];
         if (parents) {
+            //Filtering out siblings builds
+            const filteredParents = parents.filter(parent => parent.buildNum > 77); 
             columns.push(
-                ...parents.map((parent, i) => {
+                ...filteredParents.map((parent, i) => {
                     return {
                         title: (
                             <div>

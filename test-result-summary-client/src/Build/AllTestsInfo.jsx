@@ -84,7 +84,10 @@ const Build = () => {
             return rt;
         });
 
-        setParents(fetchedParents);
+        // Filter out siblings builds (Build #77 - 74)
+        const filteredParents = fetchedParents.filter(parent => parent.buildNum > 77); 
+
+        setParents(filteredParents); // CHANGE: Setting filtered parents
         setTestData(fetchedTestData);
         setError(errorMsg);
     };
