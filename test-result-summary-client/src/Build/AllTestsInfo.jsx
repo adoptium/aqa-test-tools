@@ -164,7 +164,7 @@ const Build = () => {
             <TestBreadcrumb buildId={buildId} />
             <AlertMsg error={error} />
             <SearchOutput buildId={buildId} />
-            <TestTable title={'Tests'} testData={testData} parents={parents} />
+            <TestTable title={'Tests'} testData={testData} />
         </div>
     );
 };
