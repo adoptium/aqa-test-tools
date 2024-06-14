@@ -6,7 +6,7 @@
   "scripts": {
     "docker": "docker compose --profile prod up --build",
     "docker-data": "docker compose --profile prod --profile data up --build",
-    "docker-down": "docker compose down",
+    "docker-down": "docker compose down --remove-orphans",
     "docker-ui": "REACT_APP_CONNECT_ADOPTIUM_API=enable docker compose up --build"
   },
   "author": "",
