@@ -16,52 +16,44 @@ const Build = () => {
 
     useEffect(() => {
         updateData();
-    }, []);
+    }, [location.search]);
 
     const updateData = async () => {
-        const { buildId, limit, hasChildren } = getParams(location.search);
+        const { buildId, limit, hasChildren, excludeRange } = getParams(location.search);
         let hasChildrenBool = hasChildren === 'true';
-        let limitParam = '';
-        if (limit) {
-            limitParam = `&limit=${limit}`;
-        }
+        const limitParam = limit ? `&limit=${limit}` : '';
+        const [excludeMin, excludeMax] = excludeRange ? excludeRange.split('-').map(Number) : [null, null];
 
-        // list of build ids to get test results from
         let buildIds = [];
-
-        // aggregated test results and parent
         let fetchedTestData = [];
         let fetchedParents = [];
         let errorMsg = '';
 
-        // if it is a parallel build.
         if (!hasChildrenBool) {
-            const buildData = await fetchData(`/api/getData?_id=${buildId} `);
+            const buildData = await fetchData(`/api/getData?_id=${buildId}`);
             if (buildData && buildData[0].tests !== undefined) {
                 hasChildrenBool = true;
             }
             buildIds.push(buildId);
         }
+
         if (hasChildrenBool) {
-            const childrenBuilds = await fetchData(
-                `/api/getChildBuilds?parentId=${buildId}`
-            );
+            const childrenBuilds = await fetchData(`/api/getChildBuilds?parentId=${buildId}`);
             buildIds.push(
-                ...childrenBuilds.map((childrenBuilds) => childrenBuilds._id)
+                ...childrenBuilds
+                    .map((child) => child._id)
+                    .filter((id) => !excludeMin || !excludeMax || (id < excludeMin || id > excludeMax))
             );
         }
 
+        // Only include the first build
+        buildIds = [buildIds[0]];
+
         await Promise.all(
-            buildIds.map(async (buildId) => {
-                const { testResult, parent, error } = await getTestResult(
-                    buildId,
-                    limitParam
-                );
-                fetchedTestData = fetchedTestData.concat(testResult);
-                if (
-                    parent.length > fetchedParents.length ||
-                    fetchedParents.length === 0
-                ) {
+            buildIds.map(async (id) => {
+                const { testResult, parent, error } = await getTestResult(id, limitParam);
+                fetchedTestData = [...fetchedTestData, ...testResult];
+                if (parent.length > fetchedParents.length || fetchedParents.length === 0) {
                     fetchedParents = parent;
                 }
                 if (error) {
@@ -77,83 +69,54 @@ const Build = () => {
         );
 
         fetchedTestData.sort((a, b) => {
-            let rt = a[0].testResult.localeCompare(b[0].testResult);
-            if (rt === 0) {
-                return a.key.localeCompare(b.key);
-            }
-            return rt;
+            const resultComparison = a[0].testResult.localeCompare(b[0].testResult);
+            return resultComparison === 0 ? a.key.localeCompare(b.key) : resultComparison;
         });
 
-        // Filter out siblings builds (Build #77 - 74)
-        const filteredParents = fetchedParents.filter(parent => parent.buildNum > 77); 
-
-        setParents(filteredParents); // CHANGE: Setting filtered parents
+        setParents(fetchedParents);
         setTestData(fetchedTestData);
         setError(errorMsg);
     };
 
     const getTestResult = async (buildId, limitParam) => {
-        const buildsRes = fetchData(
-            `/api/getAllTestsWithHistory?buildId=${buildId}${limitParam}`
-        );
-
-        const buildDataRes = fetchData(`/api/getData?_id=${buildId} `);
         const [builds, buildData] = await Promise.all([
-            buildsRes,
-            buildDataRes,
+            fetchData(`/api/getAllTestsWithHistory?buildId=${buildId}${limitParam}`),
+            fetchData(`/api/getData?_id=${buildId}`)
         ]);
-        const error = buildData[0].error
-            ? `${buildData[0].buildUrl}: ${buildData[0].error}`
-            : '';
-        let testResult = [];
-        if (builds[0].tests !== undefined) {
-            testResult = builds[0].tests.map((test) => {
-                const ret = {
-                    key: test._id,
-                    sortName: test.testName,
-                    testName: test.testName,
-                    duration: test.duration,
-                    machine: builds[0].machine,
-                    sortMachine: builds[0].machine,
-                    buildName: buildData[0].buildName,
-                    buildId: buildData[0]._id,
-                    buildUrl: buildData[0].buildUrl,
-                    rerunUrl: buildData[0].rerunLink,
-                    timestamp: buildData[0].timestamp,
-                };
-                ret.action = {
+        const error = buildData[0].error ? `${buildData[0].buildUrl}: ${buildData[0].error}` : '';
+
+        const testResult = builds[0].tests?.map((test) => {
+            const testResultData = {
+                key: test._id,
+                sortName: test.testName,
+                testName: test.testName,
+                duration: test.duration,
+                machine: builds[0].machine,
+                sortMachine: builds[0].machine,
+                buildName: buildData[0].buildName,
+                buildId: buildData[0]._id,
+                buildUrl: buildData[0].buildUrl,
+                rerunUrl: buildData[0].rerunLink,
+                timestamp: buildData[0].timestamp,
+                action: {
                     testId: test._id,
                     testName: test.testName,
-                };
-                builds.forEach(({ tests, parentNum }, i) => {
-                    if (!tests) {
-                        return (ret[i] = {
-                            testResult: 'N/A',
-                        });
-                    }
-                    const found = tests.find((t) => t._id === test._id);
-                    if (found) {
-                        const { testResult, _id } = found;
-                        ret[i] = {
-                            testResult,
-                            testId: _id,
-                        };
-                    } else {
-                        ret[i] = {
-                            testResult: 'N/A',
-                        };
-                    }
-                });
-                return ret;
-            });
-        }
-
-        const parent = builds.map((element) => {
-            return {
-                buildNum: element.parentNum,
-                timestamp: element.parentTimestamp,
+                }
             };
-        });
+
+            builds.forEach(({ tests }, i) => {
+                const foundTest = tests?.find((t) => t._id === test._id);
+                testResultData[i] = foundTest ? { testResult: foundTest.testResult, testId: foundTest._id } : { testResult: 'N/A' };
+            });
+
+            return testResultData;
+        }) || [];
+
+        const parent = builds.map(({ parentNum, parentTimestamp }) => ({
+            buildNum: parentNum,
+            timestamp: parentTimestamp,
+        }));
+
         return { testResult, parent, error };
     };
 
@@ -164,7 +127,7 @@ const Build = () => {
             <TestBreadcrumb buildId={buildId} />
             <AlertMsg error={error} />
             <SearchOutput buildId={buildId} />
-            <TestTable title={'Tests'} testData={testData} />
+            <TestTable title="Tests" testData={testData} parents={parents} />
         </div>
     );
 };
