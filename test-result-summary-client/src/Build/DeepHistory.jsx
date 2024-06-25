@@ -18,7 +18,7 @@ const DeepHistory = () => {
     const [searchText, setSearchText] = useState('');
     const [sortedInfo, setSortedInfo] = useState({
         order: 'descend',
-        columnKey: 'parentBuild',
+        columnKey: 'startTime',
     });
 
     const location = useLocation();
@@ -171,6 +171,7 @@ const DeepHistory = () => {
             sorter: (a, b) => {
                 return a.startTime.localeCompare(b.startTime);
             },
+            sortOrder: sortedInfo.columnKey === 'startTime' && sortedInfo.order,
         },
         {
             title: 'Action',
@@ -212,6 +213,8 @@ const DeepHistory = () => {
                 title={() => testName}
                 pagination={{ pageSize: 50 }}
                 onChange={handleChange}
+                defaultSortOrder="descend"
+                defaultSortField="startTime"
             />
         </div>
     );
