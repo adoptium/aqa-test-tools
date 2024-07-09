@@ -11,15 +11,17 @@ import {
     Tooltip,
 } from 'react-jsx-highstock';
 import DateRangePickers from '../DateRangePickers';
-import { Radio } from 'antd';
+import { Radio, message } from 'antd';
 import BenchmarkMath from '../../../PerfCompare/lib/BenchmarkMath';
-import { sort, std, mean, size, median } from 'mathjs';
+import { sort, std, mean, median, size } from 'mathjs';
 import { parseSha, getEpochTime } from './utils';
 import { fetchData } from '../../../utils/Utils';
 
 const map = {
     'renaissance-jdk11': 'Test_openjdk11_j9_sanity.perf_x86-64_linux',
     'renaissance-jdk8': 'Test_openjdk8_j9_sanity.perf_x86-64_linux',
+    'renaissance-jdk17': 'Test_openjdk17_hs_sanity.perf_arm_linux',
+    'renaissance-jdk21': 'Test_openjdk21_hs_sanity.perf_x86-64_linux',
 };
 
 let servers = ['AdoptOpenJDK', 'CustomizedJenkins'];
@@ -42,26 +44,22 @@ export class RenaissanceSetting extends Component {
                     value={serverSelected}
                     defaultValue={'AdoptOpenJDK'}
                 >
-                    {servers.map((server) => {
-                        return (
-                            <Radio key={server} value={server}>
-                                {server}
-                            </Radio>
-                        );
-                    })}
+                    {servers.map((server) => (
+                        <Radio key={server} value={server}>
+                            {server}
+                        </Radio>
+                    ))}
                 </Radio.Group>
                 <Radio.Group
                     onChange={this.onChange}
-                    values={buildSelected}
+                    value={buildSelected}
                     defaultValue={'renaissance-jdk11'}
                 >
-                    {Object.keys(map).map((key) => {
-                        return (
-                            <Radio key={key} value={key}>
-                                {map[key]}
-                            </Radio>
-                        );
-                    })}
+                    {Object.keys(map).map((key) => (
+                        <Radio key={key} value={key}>
+                            {map[key]}
+                        </Radio>
+                    ))}
                 </Radio.Group>
             </div>
         );
@@ -97,11 +95,34 @@ export default class Renaissance extends Component {
     async updateData() {
         const { buildSelected, serverSelected } = this.props;
         const buildName = encodeURIComponent(map[buildSelected]);
-        let results = await fetchData(
-            `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`
-        );
+        let results;
+        let buildInfoMap;
 
-        const buildInfoMap = await fetchData(`/api/getDashboardBuildInfo`);
+        try {
+            results = await fetchData(
+                `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`
+            );
+            if (!Array.isArray(results)) {
+                throw new Error('Invalid response format');
+            }
+            console.log('Fetched results:', results);
+        } catch (error) {
+            console.error('Error fetching build history:', error);
+            message.error('Failed to fetch build history');
+            return;
+        }
+
+        try {
+            buildInfoMap = await fetchData(`/api/getDashboardBuildInfo`);
+            if (typeof buildInfoMap !== 'object') {
+                throw new Error('Invalid response format');
+            }
+            console.log('Fetched build info map:', buildInfoMap);
+        } catch (error) {
+            console.error('Error fetching dashboard build info:', error);
+            message.error('Failed to fetch dashboard build info');
+            return;
+        }
 
         if (serverSelected) {
             if (serverSelected === 'AdoptOpenJDK') {
@@ -150,11 +171,11 @@ export default class Renaissance extends Component {
         let scalaMedian = [];
 
         // combine results having the same JDK build date
-        results.forEach((t, i) => {
-            const jdkDate = t.jdkDate;
+        results.forEach((t) => {
+            const jdkDate = t.jdkDate.trim(); // Trim the date to remove leading/trailing spaces
             if (t.buildResult !== 'SUCCESS' || !jdkDate) return;
             resultsByJDKBuild[jdkDate] = resultsByJDKBuild[jdkDate] || [];
-            t.tests.forEach((test, i) => {
+            t.tests.forEach((test) => {
                 let akkaUct = null;
                 let fj = null;
                 let futureGenetic = null;
@@ -168,38 +189,28 @@ export default class Renaissance extends Component {
                 )
                     return;
 
-                test.testData.metrics.forEach((metric, i) => {
-                    if (metric.name === 'akka-uct') {
-                        if (size(metric.value) !== 0) {
-                            akkaUct = mean(metric.value);
-                        }
+                test.testData.metrics.forEach((metric) => {
+                    if (metric.name === 'akka-uct' && metric.value.length > 0) {
+                        akkaUct = mean(metric.value);
                     }
-                    if (metric.name === 'fj-kmeans') {
-                        if (size(metric.value) !== 0) {
-                            fj = mean(metric.value);
-                        }
+                    if (metric.name === 'fj-kmeans' && metric.value.length > 0) {
+                        fj = mean(metric.value);
                     }
-                    if (metric.name === 'future-genetic') {
-                        if (size(metric.value) !== 0) {
-                            futureGenetic = mean(metric.value);
-                        }
+                    if (metric.name === 'future-genetic' && metric.value.length > 0) {
+                        futureGenetic = mean(metric.value);
                     }
-                    if (metric.name === 'naive-bayes') {
-                        if (size(metric.value) !== 0) {
-                            bayes = mean(metric.value);
-                        }
+                    if (metric.name === 'naive-bayes' && metric.value.length > 0) {
+                        bayes = mean(metric.value);
                     }
-                    if (metric.name === 'scala-kmeans') {
-                        if (size(metric.value) !== 0) {
-                            scala = mean(metric.value);
-                        }
+                    if (metric.name === 'scala-kmeans' && metric.value.length > 0) {
+                        scala = mean(metric.value);
                     }
                 });
 
                 if (!akkaUct && !fj && !futureGenetic && !bayes && !scala) {
                     return;
                 }
-                // TODO: current code only considers one interation. This needs to be updated
+
                 resultsByJDKBuild[jdkDate].push({
                     akkaUct,
                     fj,
@@ -217,14 +228,15 @@ export default class Renaissance extends Component {
             });
         });
 
-        sort(Object.keys(resultsByJDKBuild)).forEach((k, i) => {
-            const date = getEpochTime(k);
+        const sortedDates = Object.keys(resultsByJDKBuild).sort((a, b) => {
+            return new Date(a) - new Date(b);
+        });
 
+        sortedDates.forEach((k) => {
+            const date = new Date(k).getTime();
             let akkaUctGroup = resultsByJDKBuild[k]
                 .map((x) => x['akkaUct'])
-                .filter(function (el) {
-                    return el != null;
-                });
+                .filter((el) => el != null);
             if (akkaUctGroup.length > 0) {
                 akkaUctGtValues.push(mean(akkaUctGroup));
                 let myCi = 'N/A';
@@ -244,9 +256,7 @@ export default class Renaissance extends Component {
 
             let fjGroup = resultsByJDKBuild[k]
                 .map((x) => x['fj'])
-                .filter(function (el) {
-                    return el != null;
-                });
+                .filter((el) => el != null);
             if (fjGroup.length > 0) {
                 fjGtValues.push(mean(fjGroup));
                 let myCi = 'N/A';
@@ -266,15 +276,12 @@ export default class Renaissance extends Component {
 
             let futureGeneticGroup = resultsByJDKBuild[k]
                 .map((x) => x['futureGenetic'])
-                .filter(function (el) {
-                    return el != null;
-                });
+                .filter((el) => el != null);
             if (futureGeneticGroup.length > 0) {
                 futureGeneticGtValues.push(mean(futureGeneticGroup));
                 let myCi = 'N/A';
                 if (futureGeneticGroup.length > 1) {
-                    myCi =
-                        BenchmarkMath.confidence_interval(futureGeneticGroup);
+                    myCi = BenchmarkMath.confidence_interval(futureGeneticGroup);
                 }
                 futureGeneticData.push([
                     date,
@@ -289,9 +296,7 @@ export default class Renaissance extends Component {
 
             let bayesGroup = resultsByJDKBuild[k]
                 .map((x) => x['bayes'])
-                .filter(function (el) {
-                    return el != null;
-                });
+                .filter((el) => el != null);
             if (bayesGroup.length > 0) {
                 bayesGtValues.push(mean(bayesGroup));
                 let myCi = 'N/A';
@@ -311,15 +316,12 @@ export default class Renaissance extends Component {
 
             let scalaGroup = resultsByJDKBuild[k]
                 .map((x) => x['scala'])
-                .filter(function (el) {
-                    return el != null;
-                });
+                .filter((el) => el != null);
             if (scalaGroup.length > 0) {
                 scalaGtValues.push(mean(scalaGroup));
                 let myCi = 'N/A';
                 if (scalaGroup.length > 1) {
-                    myCi =
-                        BenchmarkMath.confidence_interval(futureGeneticGroup);
+                    myCi = BenchmarkMath.confidence_interval(scalaGroup);
                 }
                 scalaData.push([
                     date,
@@ -355,15 +357,21 @@ export default class Renaissance extends Component {
             scalaMean,
             scalaMedian,
         };
+
         const displaySeries = [];
         for (let key in series) {
+            const sortedData = series[key].sort((a, b) => a[0] - b[0]);
             displaySeries.push({
                 visible: key === 'fjData',
                 name: key,
-                data: series[key],
+                data: sortedData,
                 keys: ['x', 'y', 'additionalData', 'CI'],
+                events: {
+                    click: (event) => handlePointClick(event),
+                },
             });
         }
+
         this.setState({ displaySeries });
     }
 
@@ -375,11 +383,9 @@ export default class Renaissance extends Component {
             let buildLinks = '';
             let i = this.series.data.indexOf(this.point);
             let prevPoint = i === 0 ? null : this.series.data[i - 1];
-            this.point.additionalData.forEach((xy, i) => {
+            this.point.additionalData.forEach((xy) => {
                 const { testId, buildName, buildNum } = xy;
-                buildLinks =
-                    buildLinks +
-                    ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
+                buildLinks += ` <a href="/output/test?id=${testId}">${buildName} #${buildNum}</a>`;
             });
 
             let lengthThis = this.point.additionalData.length;
@@ -410,28 +416,34 @@ export default class Renaissance extends Component {
 
     render() {
         const { displaySeries } = this.state;
+        console.log('Rendering displaySeries:', displaySeries);
+
         return (
             <HighchartsStockChart>
                 <Chart zoomType="x" />
 
-                <Legend />
+                <Legend verticalAlign="bottom" />
                 <Tooltip
                     formatter={this.formatter}
                     useHTML={true}
                     style={{ pointerEvents: 'auto' }}
                 />
 
-                <XAxis>
+                <XAxis type="datetime">
                     <XAxis.Title>Time</XAxis.Title>
                 </XAxis>
 
                 <YAxis id="gt">
                     <YAxis.Title>msec</YAxis.Title>
                     {displaySeries.map((s) => {
+                        const data = s.data.map((point) => {
+                            return [point[0], point[1]];
+                        });
                         return (
                             <SplineSeries
                                 {...s}
                                 id={s.name}
+                                data={data}
                                 key={s.name}
                                 showInNavigator
                             />
@@ -454,13 +466,15 @@ export default class Renaissance extends Component {
                 </RangeSelector>
 
                 <Navigator>
-                    {displaySeries.map((s) => {
-                        return (
-                            <Navigator.Series seriesId={s.name} key={s.name} />
-                        );
-                    })}
+                    {displaySeries.map((s) => (
+                        <Navigator.Series seriesId={s.name} key={s.name} />
+                    ))}
                 </Navigator>
             </HighchartsStockChart>
         );
     }
+}
+
+function handlePointClick(event) {
+    console.log('Point clicked:', event.point);
 }
