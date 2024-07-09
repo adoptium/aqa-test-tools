@@ -20,6 +20,8 @@ import { fetchData } from '../../../utils/Utils';
 const map = {
     'renaissance-jdk11': 'Test_openjdk11_j9_sanity.perf_x86-64_linux',
     'renaissance-jdk8': 'Test_openjdk8_j9_sanity.perf_x86-64_linux',
+    'renaissance-jdk17': 'Test_openjdk17_hs_sanity.perf_arm_linux',
+    'renaissance-jdk21': 'Test_openjdk21_hs_sanity.perf_x86-64_linux'
 };
 
 let servers = ['AdoptOpenJDK', 'CustomizedJenkins'];
@@ -150,11 +152,11 @@ export default class Renaissance extends Component {
         let scalaMedian = [];
 
         // combine results having the same JDK build date
-        results.forEach((t, i) => {
-            const jdkDate = t.jdkDate;
+        results.forEach((t) => {
+            const jdkDate = t.jdkDate.trim();
             if (t.buildResult !== 'SUCCESS' || !jdkDate) return;
             resultsByJDKBuild[jdkDate] = resultsByJDKBuild[jdkDate] || [];
-            t.tests.forEach((test, i) => {
+            t.tests.forEach((test) => {
                 let akkaUct = null;
                 let fj = null;
                 let futureGenetic = null;
@@ -168,29 +170,29 @@ export default class Renaissance extends Component {
                 )
                     return;
 
-                test.testData.metrics.forEach((metric, i) => {
+                test.testData.metrics.forEach((metric) => {
                     if (metric.name === 'akka-uct') {
-                        if (size(metric.value) !== 0) {
+                        if (metric.value.length > 0) {
                             akkaUct = mean(metric.value);
                         }
                     }
                     if (metric.name === 'fj-kmeans') {
-                        if (size(metric.value) !== 0) {
+                        if (metric.value.length > 0) {
                             fj = mean(metric.value);
                         }
                     }
                     if (metric.name === 'future-genetic') {
-                        if (size(metric.value) !== 0) {
+                        if (metric.value.length > 0) {
                             futureGenetic = mean(metric.value);
                         }
                     }
                     if (metric.name === 'naive-bayes') {
-                        if (size(metric.value) !== 0) {
+                        if (metric.value.length > 0) {
                             bayes = mean(metric.value);
                         }
                     }
                     if (metric.name === 'scala-kmeans') {
-                        if (size(metric.value) !== 0) {
+                        if (metric.value.length > 0) {
                             scala = mean(metric.value);
                         }
                     }
@@ -217,9 +219,12 @@ export default class Renaissance extends Component {
             });
         });
 
-        sort(Object.keys(resultsByJDKBuild)).forEach((k, i) => {
-            const date = getEpochTime(k);
+        const sortedDates = Object.keys(resultsByJDKBuild).sort((a, b) => {
+            return new Date(a) - new Date(b);
+        });
 
+        sortedDates.forEach((k) => {
+            const date = new Date(k).getTime();
             let akkaUctGroup = resultsByJDKBuild[k]
                 .map((x) => x['akkaUct'])
                 .filter(function (el) {
@@ -360,7 +365,7 @@ export default class Renaissance extends Component {
             displaySeries.push({
                 visible: key === 'fjData',
                 name: key,
-                data: series[key],
+                data: series[key].sort((a, b) => a[0] - b[0]),
                 keys: ['x', 'y', 'additionalData', 'CI'],
             });
         }
@@ -375,7 +380,7 @@ export default class Renaissance extends Component {
             let buildLinks = '';
             let i = this.series.data.indexOf(this.point);
             let prevPoint = i === 0 ? null : this.series.data[i - 1];
-            this.point.additionalData.forEach((xy, i) => {
+            this.point.additionalData.forEach((xy) => {
                 const { testId, buildName, buildNum } = xy;
                 buildLinks =
                     buildLinks +
@@ -414,24 +419,28 @@ export default class Renaissance extends Component {
             <HighchartsStockChart>
                 <Chart zoomType="x" />
 
-                <Legend />
+                <Legend verticalAlign="bottom" />
                 <Tooltip
                     formatter={this.formatter}
                     useHTML={true}
                     style={{ pointerEvents: 'auto' }}
                 />
 
-                <XAxis>
+                <XAxis type="datetime">
                     <XAxis.Title>Time</XAxis.Title>
                 </XAxis>
 
                 <YAxis id="gt">
                     <YAxis.Title>msec</YAxis.Title>
                     {displaySeries.map((s) => {
+                        const data = s.data.map((point) => {
+                            return [point[0], point[1]];
+                        });
                         return (
                             <SplineSeries
                                 {...s}
                                 id={s.name}
+                                data={data}
                                 key={s.name}
                                 showInNavigator
                             />
