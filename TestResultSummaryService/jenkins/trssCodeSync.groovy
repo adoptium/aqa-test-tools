@@ -13,16 +13,12 @@ node(TRSS_NODE) {
 		sh "pwd"
 		sh '''
 			git pull
-			echo "Update TRSS client..."
-			cd test-result-summary-client
-			echo "npm ci --production --legacy-peer-deps"
-			npm ci --production --legacy-peer-deps
-			echo "npm run build"
-			CI=false npm run build
-			echo "Update TRSS server..."
-			cd ../TestResultSummaryService
-			echo "npm ci --production"
-			npm ci --production
+			echo "Stop TRSS components..."
+			echo "npm run docker-down"
+			npm run docker-down
+			echo "Restart TRSS components..."
+			echo "npm run docker"
+			npm run docker
 	'''
 	}
 }
