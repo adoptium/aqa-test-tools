@@ -112,6 +112,6 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ## Credits
 - **Created by the Tigers-X team**: [Lujain Hasna](https://github.com/coolujain), [Bel Ami Gisage Warakoze](https://github.com/Belami02), [Fatima Al-Kharaz](https://github.com/ftm-2005), [George Chkhaidze](https://github.com/GioChkhaidze), and [Diyorbek Ibragimov](https://github.com/diyorbekibragimov).
-- **Course Instructors**: Stephen Walli (Microsoft) and Prof. Eduardo Feo Flushing (CMUQ)
-- **Course Mentors**: Lan Xia (IBM), Longyu Zhang (IBM), and Shelley Lambert (Red Hat)
+- **Course Instructors**: Stephen Walli (Microsoft) and Prof. Eduardo Feo Flushing (CMUQ).
+- **Course Mentors**: Lan Xia (IBM), Longyu Zhang (IBM), and Shelley Lambert (Red Hat).
 - **TriagerX Model Creators**: Dr. Gias Udin (IBM) and Afif (University of Calgary).
