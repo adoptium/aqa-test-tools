@@ -14,18 +14,20 @@ A Slack chatbot designed to interact with users, recommend developers for issues
 ## Installation
 
 1. Clone the repository:
+   
     ```bash
     git clone https://github.com/adoptium/aqa-test-tools.git
     cd TriagerXChatbot
     ```
 
-2. Create and activate a virtual environment:
+3. Create and activate a virtual environment:
+   
     ```bash
     python3 -m venv venv
     source venv/bin/activate
     ```
 
-3. Install the dependencies:
+4. Install the dependencies:
     - `requests`: Used for making HTTP requests.
     - `os`: Provides a way of using operating system dependent functionality like reading environment variables.
     - `logging`: Used for logging messages to the console or a file.
