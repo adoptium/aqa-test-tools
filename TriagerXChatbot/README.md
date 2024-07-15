@@ -15,8 +15,8 @@ A Slack chatbot designed to interact with users, recommend developers for issues
 
 1. Clone the repository:
     ```bash
-    git clone https://github.com/Tigers-X/slack-chatbot
-    cd slack-chatbot
+    git clone https://github.com/adoptium/aqa-test-tools.git
+    cd TriagerXChatbot
     ```
 
 2. Create and activate a virtual environment:
