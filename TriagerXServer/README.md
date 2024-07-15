@@ -14,7 +14,6 @@ It is both a pleasure and honor to be mentored by three of the active Adoptium t
 
 ## Prerequisites
 Before you begin, ensure you have met the following requirements:
-
 - Python 3.8 or higher
 - FastAPI
 - Uvicorn (for running the API server)
@@ -25,11 +24,11 @@ Before you begin, ensure you have met the following requirements:
 ## Installation & Setup
 1. **Clone the repository**
 ```bash
-git clone https://github.com/your-username/your-project-name.git
+git clone https://github.com/adoptium/aqa-test-tools.git
 ```
 2. **Navigate to the project directory**
 ```bash
-cd your-project-name
+cd TriagerXServer
 ```
 3. **Install dependencies**
 ```bash
