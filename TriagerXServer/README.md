@@ -61,7 +61,7 @@ curl -X 'POST' \
     "userComment": "",
     "issueData": {
         "title": "Issue Title Here",
-        "body": "Issue description here",
+        "body": "Issue Description Here",
         "state": "open",
         "labels": [{"name": "bug"}],
         "assignees": [{"login": "user1"}]
