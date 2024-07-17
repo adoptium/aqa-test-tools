@@ -13,25 +13,45 @@ class Parser {
         const javaVersionRegex =
             /=JAVA VERSION OUTPUT BEGIN=[\r\n]+([\s\S]*?)[\r\n]+.*=JAVA VERSION OUTPUT END=/;
         const javaBuildDateRegex =
-            /Eclipse OpenJ9 VM \(build [^,]+, JRE [^\s]+ [^\s]+ [^\s]+ (\d{8})_/;
+            /(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])/; // Captures dates in the format YYYY-MM-DD
         const sdkResourceRegex = /.*?SDK_RESOURCE\=(.*)[\r\n]+/;
         let curRegexResult = null;
         let javaVersion, jdkDate, sdkResource;
+
         if ((curRegexResult = javaVersionRegex.exec(output)) !== null) {
             javaVersion = removeTimestamp(curRegexResult[1]);
+        } else {
+            javaVersion = output;  // Use the entire output if markers are missing
         }
+
         curRegexResult = null;
         if ((curRegexResult = sdkResourceRegex.exec(output)) != null) {
             sdkResource = curRegexResult[1];
         }
         curRegexResult = null;
-        // parse jdk date from javaVersion
-        if ((curRegexResult = javaBuildDateRegex.exec(output)) !== null) {
-            jdkDate = curRegexResult[1].trim(); // Ensure the date is trimmed
-            // Convert jdkDate from YYYYMMDD to YYYY-MM-DD
-            jdkDate = `${jdkDate.substring(0, 4)}-${jdkDate.substring(4, 6)}-${jdkDate.substring(6, 8)}`;
-            console.log('Parsed jdkDate:', jdkDate);  // Log statement to show jdkDate
+
+        // parse jdk date from javaVersion or output
+        if ((curRegexResult = javaBuildDateRegex.exec(javaVersion)) !== null) {
+            jdkDate = curRegexResult[0];
+        } else if ((curRegexResult = javaBuildDateRegex.exec(output)) !== null) {
+            jdkDate = curRegexResult[0];
         }
+
+        // Refine jdkDate extraction to match specific lines for HotSpot and OpenJ9 implementations
+        if (jdkDate === null) {
+            // Try to extract date from specific lines for HotSpot
+            const hotspotBuildDateRegex =
+                /OpenJDK Runtime Environment [^ ]+ \([^)]+ (\d{4})(\d{2})(\d{2})/; // e.g., 20240626
+            const openj9BuildDateRegex =
+                /Eclipse OpenJ9 VM \([^)]+ (\d{4})(\d{2})(\d{2})/; // e.g., 20240627
+
+            if ((curRegexResult = hotspotBuildDateRegex.exec(output)) !== null) {
+                jdkDate = `${curRegexResult[1]}-${curRegexResult[2]}-${curRegexResult[3]}`;
+            } else if ((curRegexResult = openj9BuildDateRegex.exec(output)) !== null) {
+                jdkDate = `${curRegexResult[1]}-${curRegexResult[2]}-${curRegexResult[3]}`;
+            }
+        }
+
         return { javaVersion, jdkDate, sdkResource };
     }
 
@@ -105,7 +125,7 @@ class Parser {
         let versions = {};
 
         const releaseInfoRegex =
-            /=RELEASE INFO BEGIN=\n[\s\S]*?SOURCE="(.*)"[\r\n]+.*=RELEASE INFO END=/;
+            /=RELEASE INFO BEGIN=\n[\s\S]*?SOURCE="(.*)"\n[\s\S]*?=RELEASE INFO END=/;
         const generalOpenjdkShaRegex = /git:(.*)/;
         const openjdkShaRegex = /OpenJDK:\s?([^\s\:]*)/;
         const j9AndOmrShaRegex = /OpenJ9:\s?([^\s\:]*).*OMR:\s?([^\s\:]*)/;
