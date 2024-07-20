@@ -22,6 +22,20 @@ class Test extends Parser {
     }
 
     async parse(output) {
+        if (!output) {
+            return {
+                tests: [
+                    {
+                        testName: 'Pre Test',
+                        testOutput: '',
+                        testResult: 'FAILED',
+                        testData: null
+                    }
+                ],
+                type: 'Test'
+            };
+        }
+        
         const tests = await this.extract(output);
         const { javaVersion, jdkDate, sdkResource } =
             this.exactJavaVersion(output);
