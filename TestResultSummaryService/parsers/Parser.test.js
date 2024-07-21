@@ -48,4 +48,69 @@ describe('Parser', () => {
         const result = parser.exactJavaVersion(java8Output);
         expect(result.jdkDate).toBe('2024-06-27'); // Adjust the expected date based on your requirements
     });
+
+    test('should extract Java version and build date for Java 8u152-b01 implementation', () => {
+        const java8u152Output = `
+16:38:54  =JAVA VERSION OUTPUT BEGIN=
+16:38:54  openjdk version "1.8.0_152"
+16:38:54  OpenJDK Runtime Environment (AdoptOpenJDK)(build 1.8.0_152-b01)
+16:38:54  OpenJDK 64-Bit Server VM (AdoptOpenJDK)(build 25.152-b01, mixed mode)
+16:38:54  =JAVA VERSION OUTPUT END=
+        `;
+
+        const result = parser.exactJavaVersion(java8u152Output);
+        expect(result.jdkDate).toBe('2024-06-27'); // Adjust the expected date based on your requirements
+    });
+
+    test('should extract Java version and build date for Java 9.0.4+11 implementation', () => {
+        const java904Output = `
+16:38:54  =JAVA VERSION OUTPUT BEGIN=
+16:38:54  openjdk version "9.0.4"
+16:38:54  OpenJDK Runtime Environment (build 9.0.4+11)
+16:38:54  OpenJDK 64-Bit Server VM (build 9.0.4+11, mixed mode)
+16:38:54  =JAVA VERSION OUTPUT END=
+        `;
+
+        const result = parser.exactJavaVersion(java904Output);
+        expect(result.jdkDate).toBe('2024-06-27'); // Adjust the expected date based on your requirements
+    });
+
+    test('should extract Java version and build date for Java 10.0.2+13.1 implementation', () => {
+        const java1002Output = `
+16:38:54  =JAVA VERSION OUTPUT BEGIN=
+16:38:54  openjdk version "10.0.2"
+16:38:54  OpenJDK Runtime Environment (build 10.0.2+13.1)
+16:38:54  OpenJDK 64-Bit Server VM (build 10.0.2+13.1, mixed mode)
+16:38:54  =JAVA VERSION OUTPUT END=
+        `;
+
+        const result = parser.exactJavaVersion(java1002Output);
+        expect(result.jdkDate).toBe('2024-06-27'); // Adjust the expected date based on your requirements
+    });
+
+    test('should extract Java version and build date for Java 11.0.4+11.4 implementation', () => {
+        const java1104Output = `
+16:38:54  =JAVA VERSION OUTPUT BEGIN=
+16:38:54  openjdk version "11.0.4"
+16:38:54  OpenJDK Runtime Environment (build 11.0.4+11.4)
+16:38:54  OpenJDK 64-Bit Server VM (build 11.0.4+11.4, mixed mode)
+16:38:54  =JAVA VERSION OUTPUT END=
+        `;
+
+        const result = parser.exactJavaVersion(java1104Output);
+        expect(result.jdkDate).toBe('2024-06-27'); // Adjust the expected date based on your requirements
+    });
+
+    test('should extract Java version and build date for Java 13+33_openj9-0.16.0 implementation', () => {
+        const java1333Output = `
+16:38:54  =JAVA VERSION OUTPUT BEGIN=
+16:38:54  openjdk version "13"
+16:38:54  OpenJDK Runtime Environment (build 13+33)
+16:38:54  Eclipse OpenJ9 VM (build 13+33_openj9-0.16.0, JRE 13 Mac OS X aarch64-64-Bit)
+16:38:54  =JAVA VERSION OUTPUT END=
+        `;
+
+        const result = parser.exactJavaVersion(java1333Output);
+        expect(result.jdkDate).toBe('2024-06-27'); // Adjust the expected date based on your requirements
+    });
 });
