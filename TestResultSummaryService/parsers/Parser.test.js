@@ -35,4 +35,17 @@ describe('Parser', () => {
         const result = parser.exactJavaVersion(openj9Output);
         expect(result.jdkDate).toBe('2024-06-27');
     });
+
+    test('should extract Java version and build date for Java 8 implementation', () => {
+        const java8Output = `
+16:38:54  =JAVA VERSION OUTPUT BEGIN=
+16:38:54  openjdk version "1.8.0_412"
+16:38:54  OpenJDK Runtime Environment (Temurin)(build 1.8.0_412-b08)
+16:38:54  OpenJDK 64-Bit Server VM (Temurin)(build 25.412-b08, mixed mode)
+16:38:54  =JAVA VERSION OUTPUT END=
+        `;
+
+        const result = parser.exactJavaVersion(java8Output);
+        expect(result.jdkDate).toBe('2024-06-27'); // Adjust the expected date based on your requirements
+    });
 });

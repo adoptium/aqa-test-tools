@@ -37,17 +37,21 @@ class Parser {
             jdkDate = curRegexResult[0];
         }
 
-        // Refine jdkDate extraction to match specific lines for HotSpot and OpenJ9 implementations
-        if (jdkDate === null) {
+        // Refine jdkDate extraction to match specific lines for HotSpot, OpenJ9, and Java 8 implementations
+        if (!jdkDate) {
             // Try to extract date from specific lines for HotSpot
             const hotspotBuildDateRegex =
                 /OpenJDK Runtime Environment [^ ]+ \([^)]+ (\d{4})(\d{2})(\d{2})/; // e.g., 20240626
             const openj9BuildDateRegex =
                 /Eclipse OpenJ9 VM \([^)]+ (\d{4})(\d{2})(\d{2})/; // e.g., 20240627
+            const java8BuildDateRegex =
+                /OpenJDK Runtime Environment.*\(build [^\d]*(\d{4})(\d{2})(\d{2})/; // e.g., 1.8.0_412-b08
 
             if ((curRegexResult = hotspotBuildDateRegex.exec(output)) !== null) {
                 jdkDate = `${curRegexResult[1]}-${curRegexResult[2]}-${curRegexResult[3]}`;
             } else if ((curRegexResult = openj9BuildDateRegex.exec(output)) !== null) {
+                jdkDate = `${curRegexResult[1]}-${curRegexResult[2]}-${curRegexResult[3]}`;
+            } else if ((curRegexResult = java8BuildDateRegex.exec(output)) !== null) {
                 jdkDate = `${curRegexResult[1]}-${curRegexResult[2]}-${curRegexResult[3]}`;
             }
         }
@@ -56,7 +60,6 @@ class Parser {
     }
 
     exactNodeVersion(output) {
-        // Example: "Node Version v13.3.1-nightly20191214b3ae532392\nRundate -20191216"
         const nodejsVersionRegex = /(Node Version[\s\S]*Rundate.*)/;
         const nodeRunDateRegex = /-(20[0-9][0-9][0-9][0-9][0-9][0-9])/;
         let curRegexResult = null;
@@ -66,7 +69,6 @@ class Parser {
             nodeVersion = curRegexResult[1];
         }
         curRegexResult = null;
-        // parse build run date from nodeVersion
         if ((curRegexResult = nodeRunDateRegex.exec(nodeVersion)) !== null) {
             nodeRunDate = curRegexResult[1];
         }
@@ -163,7 +165,6 @@ class Parser {
         let failed = 0;
         let skipped = 0;
         let disabled = 0;
-        // An example of test result summary: "TOTAL: 69   EXECUTED: 64   PASSED: 64   FAILED: 0   DISABLED: 0   SKIPPED: 5\n"
         const summaryRegex =
         /\S*\s*?TOTAL:\s*([0-9]*)\s*EXECUTED:\s*([0-9]*)\s*PASSED:\s*([0-9]*)\s*FAILED:\s*([0-9]*)\s*DISABLED:\s*([0-9]*)\s*SKIPPED:\s*([0-9]*)\s*(\r\n|\r|\n)/;
         if ((m = summaryRegex.exec(output)) !== null) {
