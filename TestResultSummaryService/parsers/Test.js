@@ -5,6 +5,10 @@ const regexFinishTime = /(.*?) Finish Time\: .* Epoch Time \(ms\)\: (\d+).*/;
 const regexStartTime = /(.*?) Start Time\: .* Epoch Time \(ms\)\: (\d+).*/;
 const TestBenchmarkParser = require(`./TestBenchmarkParser`);
 const ExternalTestParser = require(`./ExternalTestParser`);
+const preTest = 'Pre Test';
+const postTest = 'Post Test';
+const testPassed = 'PASSED';
+const testFailed = 'FAILED';
 
 const Utils = require(`./Utils`);
 
@@ -26,9 +30,9 @@ class Test extends Parser {
             return {
                 tests: [
                     {
-                        testName: 'Pre Test',
+                        testName: preTest,
                         testOutput: '',
-                        testResult: 'FAILED',
+                        testResult: testFailed,
                         testData: null
                     }
                 ],
@@ -53,8 +57,6 @@ class Test extends Parser {
     }
 
     async extract(str) {
-        const preTest = 'Pre Test';
-        const postTest = 'Post Test';
         let m,
             testStr,
             testName,
@@ -89,7 +91,7 @@ class Test extends Parser {
                     results.push({
                         testName: preTest,
                         testOutput: nonTestStr,
-                        testResult: 'PASSED',
+                        testResult: testPassed,
                         testData: null,
                     });
                     nonTestStr = '';
@@ -141,7 +143,7 @@ class Test extends Parser {
             results.push({
                 testName,
                 testOutput: testStr,
-                testResult: 'FAILED',
+                testResult: testFailed,
                 testData: null,
                 startTime,
             });
@@ -150,7 +152,7 @@ class Test extends Parser {
             results.push({
                 testName: preTest,
                 testOutput: str,
-                testResult: 'FAILED',
+                testResult: testFailed,
                 testData: null,
             });
         } else if (!postTestDone) {
@@ -160,8 +162,8 @@ class Test extends Parser {
                 testResult: nonTestStr.match(
                     /Finished: (SUCCESS|UNSTABLE|ABORTED)/
                 )
-                    ? 'PASSED'
-                    : 'FAILED',
+                    ? testPassed
+                    : testFailed,
                 testData: null,
             });
         }
