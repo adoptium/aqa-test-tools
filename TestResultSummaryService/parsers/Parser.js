@@ -13,7 +13,7 @@ class Parser {
         const javaVersionRegex =
             /=JAVA VERSION OUTPUT BEGIN=[\r\n]+([\s\S]*?)[\r\n]+.*=JAVA VERSION OUTPUT END=/;
         const javaBuildDateRegex =
-            /(\d{4})-(0[1-9]|1[0-2])-(0[1-9]|[12]\d|3[01])/; // Captures dates in the format YYYY-MM-DD
+            /\s([0-9]{4})-?(0[1-9]|1[012])-?(0[1-9]|[12][0-9]|3[01])/;
         const sdkResourceRegex = /.*?SDK_RESOURCE\=(.*)[\r\n]+/;
         let curRegexResult = null;
         let javaVersion, jdkDate, sdkResource;
@@ -21,7 +21,7 @@ class Parser {
         if ((curRegexResult = javaVersionRegex.exec(output)) !== null) {
             javaVersion = removeTimestamp(curRegexResult[1]);
         } else {
-            javaVersion = output;  // Use the entire output if markers are missing
+            return null;  // Return null if markers are missing
         }
 
         curRegexResult = null;
@@ -56,10 +56,16 @@ class Parser {
             }
         }
 
+        // Return null if no jdkDate is found
+        if (!jdkDate) {
+            return null;
+        }
+
         return { javaVersion, jdkDate, sdkResource };
     }
 
     exactNodeVersion(output) {
+        // Example: "Node Version v13.3.1-nightly20191214b3ae532392\nRundate -20191216"
         const nodejsVersionRegex = /(Node Version[\s\S]*Rundate.*)/;
         const nodeRunDateRegex = /-(20[0-9][0-9][0-9][0-9][0-9][0-9])/;
         let curRegexResult = null;
@@ -69,6 +75,7 @@ class Parser {
             nodeVersion = curRegexResult[1];
         }
         curRegexResult = null;
+        // parse build run date from nodeVersion
         if ((curRegexResult = nodeRunDateRegex.exec(nodeVersion)) !== null) {
             nodeRunDate = curRegexResult[1];
         }
@@ -127,7 +134,7 @@ class Parser {
         let versions = {};
 
         const releaseInfoRegex =
-            /=RELEASE INFO BEGIN=\n[\s\S]*?SOURCE="(.*)"\n[\s\S]*?=RELEASE INFO END=/;
+            /=RELEASE INFO BEGIN=\n[\s\S]*?SOURCE="(.*)"[\s\S]*?=RELEASE INFO END=/;
         const generalOpenjdkShaRegex = /git:(.*)/;
         const openjdkShaRegex = /OpenJDK:\s?([^\s\:]*)/;
         const j9AndOmrShaRegex = /OpenJ9:\s?([^\s\:]*).*OMR:\s?([^\s\:]*)/;
@@ -165,6 +172,7 @@ class Parser {
         let failed = 0;
         let skipped = 0;
         let disabled = 0;
+        // An example of test result summary: "TOTAL: 69   EXECUTED: 64   PASSED: 64   FAILED: 0   DISABLED: 0   SKIPPED: 5\n"
         const summaryRegex =
         /\S*\s*?TOTAL:\s*([0-9]*)\s*EXECUTED:\s*([0-9]*)\s*PASSED:\s*([0-9]*)\s*FAILED:\s*([0-9]*)\s*DISABLED:\s*([0-9]*)\s*SKIPPED:\s*([0-9]*)\s*(\r\n|\r|\n)/;
         if ((m = summaryRegex.exec(output)) !== null) {
