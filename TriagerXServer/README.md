@@ -71,7 +71,7 @@ curl -X 'POST' \
 ```
 
 ## License
-Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
+Distributed under the Apache License Version 2.0. See [LICENSE](../LICENSE) for more information.
 
 ## Credits
 - **Created by the Tigers-X team**: [Lujain Hasna](https://github.com/coolujain), [Bel Ami Gisage Warakoze](https://github.com/Belami02), [Fatima Al-Kharaz](https://github.com/ftm-2005), [George Chkhaidze](https://github.com/GioChkhaidze), and [Diyorbek Ibragimov](https://github.com/diyorbekibragimov).
