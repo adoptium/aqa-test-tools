@@ -10,10 +10,7 @@ class Parser {
     }
 
     exactJavaVersion(output) {
-        const javaVersionRegex =
-            /=JAVA VERSION OUTPUT BEGIN=[\r\n]+([\s\S]*?)[\r\n]+.*=JAVA VERSION OUTPUT END=/;
-        const javaBuildDateRegex =
-            /\s([0-9]{4})-?(0[1-9]|1[012])-?(0[1-9]|[12][0-9]|3[01])/;
+        const javaVersionRegex = /=JAVA VERSION OUTPUT BEGIN=[\r\n]+([\s\S]*?)[\r\n]+.*=JAVA VERSION OUTPUT END=/;
         const sdkResourceRegex = /.*?SDK_RESOURCE\=(.*)[\r\n]+/;
         let curRegexResult = null;
         let javaVersion, jdkDate, sdkResource;
@@ -25,42 +22,32 @@ class Parser {
         }
 
         curRegexResult = null;
+        // parse jdk date from javaVersion
         if ((curRegexResult = sdkResourceRegex.exec(output)) != null) {
             sdkResource = curRegexResult[1];
         }
         curRegexResult = null;
 
-        // parse jdk date from javaVersion or output
-        if ((curRegexResult = javaBuildDateRegex.exec(javaVersion)) !== null) {
-            jdkDate = curRegexResult[0];
-        } else if ((curRegexResult = javaBuildDateRegex.exec(output)) !== null) {
-            jdkDate = curRegexResult[0];
+        // Refine jdkDate extraction to match specific lines for 
+        const openj9BuildDateRegex =
+            /Eclipse OpenJ9 VM \([^)]+ (\d{4})(\d{2})(\d{2})/; // e.g., 20240627
+        const hotspotBuildDateRegex =
+            /OpenJDK Runtime Environment [^\r\n]*-([0-9]{8})/; // e.g., 20240626
+        const java8BuildDateRegex =
+            /OpenJDK Runtime Environment.*\(build [^\d]*(\d{4})(\d{2})(\d{2})/; // e.g., 1.8.0_412-b08
+        const javaBuildDateRegex =
+            /\s([0-9]{4})-?(0[1-9]|1[012])-?(0[1-9]|[12][0-9]|3[01])/;
+
+        // Attempt to extract jdkDate using specific regexes first
+        if ((curRegexResult = hotspotBuildDateRegex.exec(output)) !== null) {
+            jdkDate = `${curRegexResult[1].slice(0, 4)}-${curRegexResult[1].slice(4, 6)}-${curRegexResult[1].slice(6, 8)}`;
+        } else if ((curRegexResult = openj9BuildDateRegex.exec(output)) !== null) {
+            jdkDate = `${curRegexResult[1]}-${curRegexResult[2]}-${curRegexResult[3]}`;
+        } else if ((curRegexResult = java8BuildDateRegex.exec(output)) !== null) {
+            jdkDate = `${curRegexResult[1]}-${curRegexResult[2]}-${curRegexResult[3]}`;
+        } else {
+                return null;  // Return null if no jdkDate is found
         }
-
-        // Refine jdkDate extraction to match specific lines for HotSpot, OpenJ9, and Java 8 implementations
-        if (!jdkDate) {
-            // Try to extract date from specific lines for HotSpot
-            const hotspotBuildDateRegex =
-                /OpenJDK Runtime Environment [^ ]+ \([^)]+ (\d{4})(\d{2})(\d{2})/; // e.g., 20240626
-            const openj9BuildDateRegex =
-                /Eclipse OpenJ9 VM \([^)]+ (\d{4})(\d{2})(\d{2})/; // e.g., 20240627
-            const java8BuildDateRegex =
-                /OpenJDK Runtime Environment.*\(build [^\d]*(\d{4})(\d{2})(\d{2})/; // e.g., 1.8.0_412-b08
-
-            if ((curRegexResult = hotspotBuildDateRegex.exec(output)) !== null) {
-                jdkDate = `${curRegexResult[1]}-${curRegexResult[2]}-${curRegexResult[3]}`;
-            } else if ((curRegexResult = openj9BuildDateRegex.exec(output)) !== null) {
-                jdkDate = `${curRegexResult[1]}-${curRegexResult[2]}-${curRegexResult[3]}`;
-            } else if ((curRegexResult = java8BuildDateRegex.exec(output)) !== null) {
-                jdkDate = `${curRegexResult[1]}-${curRegexResult[2]}-${curRegexResult[3]}`;
-            }
-        }
-
-        // Return null if no jdkDate is found
-        if (!jdkDate) {
-            return null;
-        }
-
         return { javaVersion, jdkDate, sdkResource };
     }
 
