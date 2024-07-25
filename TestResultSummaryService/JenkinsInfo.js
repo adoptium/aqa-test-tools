@@ -68,7 +68,7 @@ class JenkinsInfo {
         logger.debug(
             'JenkinsInfo: getBuildOutput() is waiting for 5 secs after getSize()'
         );
-        await Promise.delay(5 * 1000);
+        await Promise.delay(1 * 1000);
 
         // Due to 1G string limit and possible OOM in CI server and/or TRSS, only query the output < 50M
         // Regular output should be 2~3M. In rare cases, we get very large output
