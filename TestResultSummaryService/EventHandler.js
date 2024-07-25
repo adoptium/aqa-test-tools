@@ -38,9 +38,9 @@ class EventHandler {
                         });
                     }
                     logger.debug(
-                        'EventHandler: processBuild() is waiting for 2 secs before processing the next build'
+                        'EventHandler: processBuild() is waiting for 1 secs before processing the next build'
                     );
-                    await Promise.delay(2 * 1000);
+                    await Promise.delay(1 * 1000);
                 }
             } catch (e) {
                 logger.error('Exception in database query: ', e);
@@ -87,7 +87,7 @@ class EventHandler {
                     ...task,
                 });
             }
-            const elapsedTime = 15 * 60;
+            const elapsedTime = 1 * 60;
             logger.verbose(
                 `EventHandler: monitorBuild() is waiting for ${elapsedTime} secs`
             );
