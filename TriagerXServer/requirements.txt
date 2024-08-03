@@ -1,7 +1,7 @@
 annotated-types==0.7.0
 anyio==4.4.0
 cachetools==5.3.3
-certifi==2024.6.2
+certifi==2024.7.4
 charset-normalizer==3.3.2
 click==8.1.7
 distro==1.9.0
