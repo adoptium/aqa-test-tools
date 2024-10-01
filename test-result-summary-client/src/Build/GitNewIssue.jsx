@@ -35,7 +35,7 @@ const GitNewissue = () => {
                 testDataRes,
             ]);
 
-            const { testName, duration, testResult } = testData;
+            const { testName, testResult } = testData;
 
             // fetch error in test output
             const errorInOutput = await fetchData(
@@ -43,14 +43,7 @@ const GitNewissue = () => {
             );
             const failureOutput = errorInOutput.output;
 
-            const {
-                artifactory,
-                buildName,
-                buildUrl,
-                machine,
-                timestamp,
-                javaVersion,
-            } = buildData[0];
+            const { buildName, buildUrl, machine, javaVersion } = buildData[0];
             let { rerunLink } = buildData[0];
 
             if (rerunLink) {
@@ -60,134 +53,38 @@ const GitNewissue = () => {
                 );
             }
 
-            let firstSeenFailure = null;
-            let failCount = 0;
-            let failMachineUrlBody = '',
-                gitDiffLinksBody = '';
-
-            if (testResult === 'FAILED') {
-                let successBeforeFailure,
-                    gitDiffLinks = null;
-                let machinesMap = {};
-
-                // get all history tests with strictly earlier timestamp
-                const response = await fetchData(
-                    `/api/getHistoryPerTest?testId=${testId}&beforeTimestamp=${timestamp}&limit=100`
-                );
-
-                // add the current test result
-                machinesMap[machine] = 1;
-                failCount++;
-
-                for (let i = 0; i < response.length; i++) {
-                    const previousResult = response[i].tests.testResult;
-                    const previousMachine = response[i].machine;
-                    if (previousResult === 'PASSED') {
-                        successBeforeFailure = response[i];
-                        break;
-                    } else {
-                        firstSeenFailure = response[i];
-                        machinesMap[previousMachine] = machinesMap[
-                            previousMachine
-                        ]
-                            ? machinesMap[previousMachine] + 1
-                            : 1;
-                        failCount++;
-                    }
-                }
-
-                if (successBeforeFailure) {
-                    if (firstSeenFailure) {
-                        gitDiffLinks = getGitDiffLinks(
-                            successBeforeFailure.javaVersion,
-                            firstSeenFailure.javaVersion,
-                            buildName
-                        );
-                    } else {
-                        gitDiffLinks = getGitDiffLinks(
-                            successBeforeFailure.javaVersion,
-                            javaVersion,
-                            buildName
-                        );
-                    }
-                    gitDiffLinks.forEach((link) => {
-                        gitDiffLinksBody += `${link}\n`;
-                    });
-                }
-
-                Object.entries(machinesMap).forEach(([key, value]) => {
-                    failMachineUrlBody += `The test failed on machine ${key} ${value} times \n`;
-                });
-            }
-
-            const buildStartTime = moment(parseInt(timestamp)).format(
-                DAY_FORMAT
-            );
+            const machineName = machine.split('.')[0];
+            const internalRun = buildUrl.includes('hyc-runtimes')
+                ? 'internal'
+                : '';
             const title = `${testName} ${testResult} in ${buildName}`;
             const nl = '\n';
-            const testInfo =
-                testName && duration && machine && testId
-                    ? `**Test Info**${nl}` +
-                      `Test Name: ${testName}${nl}` +
-                      `Test Duration: ${renderDuration(duration)}${nl}` +
-                      `Machine: ${machine}${nl}` +
-                      `TRSS link for the test output: ${originUrl}/output/test${params(
-                          { id: testId }
-                      )}${nl}` +
-                      `${nl}${nl}`
-                    : ``;
-            const buildInfo =
-                buildName && buildStartTime && buildUrl && buildId
-                    ? `**Build Info**${nl}` +
-                      `Build Name: ${buildName}${nl}` +
-                      `Jenkins Build start time: ${buildStartTime}${nl}` +
-                      `Jenkins Build URL: ${buildUrl}${nl}` +
-                      `TRSS link for the build: ${originUrl}/allTestsInfo${params(
-                          {
-                              buildId: buildId,
-                          }
-                      )}${nl}` +
-                      `${nl}${nl}`
-                    : ``;
+            const generalInfo =
+                `**Failure link**${nl}` +
+                `---${nl}` +
+                `From ${internalRun} [${buildName}](${buildUrl}) (${machineName})${nl}${nl}`;
             const javaVersionInfo = javaVersion
-                ? `**Java Version**${nl}${javaVersion}${nl}`
-                : ``;
-            const failureOutputInfo = failureOutput
-                ? `${nl}**Console Output**${nl}` +
-                  `\`\`\`${nl}${failureOutput}${nl}\`\`\``
-                : ``;
-            const firstSeenFailureInfo = firstSeenFailure
-                ? `${nl}${nl}` +
-                  `**This test has been failed ${failCount} times since ${moment(
-                      firstSeenFailure.timestamp
-                  ).format(DAY_FORMAT)}**${nl}` +
-                  (firstSeenFailure.javaVersion
-                      ? `**Java Version when the issue first seen**${nl}` +
-                        `${firstSeenFailure.javaVersion}${nl}`
-                      : ``) +
-                  `Jenkins Build URL: ${firstSeenFailure.buildUrl}${nl}${nl}` +
-                  failMachineUrlBody
-                : ``;
-            const gitDiffLinksBodyInfo = gitDiffLinksBody
-                ? `${nl}**Git Diff of first seen failure and last success**${nl}` +
-                  gitDiffLinksBody
-                : ``;
-            const artifactoryinfo = artifactory
-                ? `${nl}${nl}[Artifacts](${artifactory})`
+                ? `\`\`\`**Java Version**${nl}${javaVersion}${nl}\`\`\`${nl}`
                 : ``;
             const rerunLinkInfo = rerunLink
-                ? `${nl}${nl}[Rerun in Grinder](${rerunLink})`
+                ? `${nl}${nl}[Rerun in Grinder](${rerunLink}) - Change TARGET to run only the failed test targets${nl}${nl}`
                 : ``;
-            const body =
-                testInfo +
-                buildInfo +
-                javaVersionInfo +
-                failureOutputInfo +
-                firstSeenFailureInfo +
-                gitDiffLinksBodyInfo +
-                artifactoryinfo +
-                rerunLinkInfo;
+            const optionalInfo =
+                `**Optional info**${nl}` +
+                `---${nl}` +
+                `Failure output (captured from console output)${nl}` +
+                `---${nl}`;
+            const failureOutputInfo = `\`\`\`${nl}${nl}\`\`\`${nl}${nl}`;
 
+            const GrinderLink = `[50x ${internalRun} Grinder]()${nl}`;
+
+            const body =
+                generalInfo +
+                javaVersionInfo +
+                rerunLinkInfo +
+                optionalInfo +
+                failureOutputInfo +
+                GrinderLink;
             setState({
                 body,
                 title,
