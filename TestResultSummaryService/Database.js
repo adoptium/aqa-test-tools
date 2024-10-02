@@ -45,6 +45,9 @@ let db;
     });
     logger.info('Index created: ', urlBuildNameBuildNumIndex);
 
+    const testIdIndex = await testResultsDB.createIndex({ 'tests._id': 1 });
+    logger.info('Index created: ', testIdIndex);
+
     const result = await testResultsDB.listIndexes().toArray();
     logger.info('Existing testResults indexes:');
     for (const doc of result) {
@@ -176,7 +179,7 @@ class Database {
             { $match: { 'childBuilds.buildName': { $regex: buildNameRegex } } },
             {
                 $group: {
-                    _id: id ,
+                    _id: id,
                     total: { $sum: '$childBuilds.testSummary.total' },
                     executed: { $sum: '$childBuilds.testSummary.executed' },
                     passed: { $sum: '$childBuilds.testSummary.passed' },
