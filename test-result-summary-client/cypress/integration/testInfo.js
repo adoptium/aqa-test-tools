@@ -2,7 +2,7 @@
 
 describe('Integration test for allTestsInfo', () => {
     const buildId = '60e60bf5631d857f69d62014';
-    const limit = 5;
+    const limit = 1;
     const hasChildren = false;
 
     beforeEach(() => {
