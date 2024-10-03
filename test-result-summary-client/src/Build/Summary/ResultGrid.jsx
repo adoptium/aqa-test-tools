@@ -152,7 +152,7 @@ class Cell extends Component {
                                             pathname: '/allTestsInfo',
                                             search: params({
                                                 buildId: groups[group].buildId,
-                                                limit: 5,
+                                                limit: 1,
                                                 hasChildren:
                                                     groups[group].hasChildren,
                                             }),
