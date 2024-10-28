@@ -42,5 +42,5 @@ typing_extensions==4.12.2
 ujson==5.10.0
 urllib3==1.26.19
 uvicorn==0.30.1
-Werkzeug==3.0.3
+Werkzeug==3.0.6
 yarl==1.9.4
