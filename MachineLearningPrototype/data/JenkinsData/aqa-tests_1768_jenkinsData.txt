@@ -1,0 +1,776 @@
+Cloning the remote Git repository
+Cloning repository https://github.com/AdoptOpenJDK/openjdk-tests.git
+ > git init /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests # timeout=10
+[WARNING] Reference path does not exist: /home/jenkins/openjdk_cache
+Fetching upstream changes from https://github.com/AdoptOpenJDK/openjdk-tests.git
+ > git --version # timeout=10
+ > git fetch --tags --progress -- https://github.com/AdoptOpenJDK/openjdk-tests.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/AdoptOpenJDK/openjdk-tests.git # timeout=10
+ > git config --add remote.origin.fetch +refs/heads/*:refs/remotes/origin/* # timeout=10
+ > git config remote.origin.url https://github.com/AdoptOpenJDK/openjdk-tests.git # timeout=10
+Fetching upstream changes from https://github.com/AdoptOpenJDK/openjdk-tests.git
+ > git fetch --tags --progress -- https://github.com/AdoptOpenJDK/openjdk-tests.git +refs/heads/*:refs/remotes/origin/* # timeout=10
+Checking out Revision 61672c8d83e09d9593a88cd4c3497975daddbdcf (origin/master)
+Commit message: "Add TEST_TIME option for parallel testing (#1814)"
+ > git rev-parse origin/master^{commit} # timeout=10
+ > git config core.sparsecheckout # timeout=10
+ > git checkout -f 61672c8d83e09d9593a88cd4c3497975daddbdcf # timeout=10
+ > git rev-list --no-walk 7aada9ab03a74a5e08af5020c266f49e46ad3291 # timeout=10
+[Pipeline] load
+[Pipeline] { (/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/buildenv/jenkins/JenkinsfileBase)
+[Pipeline] }
+[Pipeline] // load
+[Pipeline] timeout
+Timeout set to expire in 10 hr
+[Pipeline] {
+[Pipeline] stage
+[Pipeline] { (Setup)
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] sh
+21:43:59  + printenv
+21:43:59  JENKINS_HOME=/home/jenkins/.jenkins
+21:43:59  OPENJ9_REPO=https://github.com/eclipse/openj9.git
+21:43:59  MAIL=/var/mail/jenkins
+21:43:59  LANGUAGE=en_US:
+21:43:59  SSH_CLIENT=78.47.239.97 42464 22
+21:43:59  USER=jenkins
+21:43:59  BUILD_LIST=external/quarkus
+21:43:59  SDK_RESOURCE=nightly
+21:43:59  OPENJ9_BRANCH=master
+21:43:59  RUN_CHANGES_DISPLAY_URL=https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/21/display/redirect?page=changes
+21:43:59  ADOPTOPENJDK_REPO=https://github.com/AdoptOpenJDK/openjdk-tests.git
+21:43:59  TARGET=extended.external
+21:43:59  SHLVL=1
+21:43:59  NODE_LABELS=ci.role.test hw.arch.ppc64le linux ppc64le sw.os.linux sw.tool.docker test test-osuosl-ubuntu1804-ppc64le-2 ubuntu
+21:43:59  HUDSON_URL=https://ci.adoptopenjdk.net/
+21:43:59  OLDPWD=/home/jenkins
+21:43:59  HOME=/home/jenkins
+21:43:59  ADOPTOPENJDK_BRANCH=master
+21:43:59  BUILD_URL=https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/21/
+21:43:59  JDK_IMPL=openj9
+21:43:59  DOCKER_REQUIRED=true
+21:43:59  HUDSON_COOKIE=5c6ff75d-be30-4388-851e-97af02e14ffa
+21:43:59  JENKINS_SERVER_COOKIE=durable-6e40820c3375a735d6879f2ae2fdc8e1
+21:43:59  DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/1001/bus
+21:43:59  PERF_ROOT=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/../../benchmarks
+21:43:59  WORKSPACE=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus
+21:43:59  KEEP_WORKSPACE=false
+21:43:59  PERSONAL_BUILD=false
+21:43:59  LOGNAME=jenkins
+21:43:59  NODE_NAME=test-osuosl-ubuntu1804-ppc64le-2
+21:43:59  _=/usr/bin/java
+21:43:59  JDK_BOOT_DIR=/usr/lib/jvm/java-8-openjdk-ppc64le/
+21:43:59  STAGE_NAME=Setup
+21:43:59  AUTO_DETECT=true
+21:43:59  EXECUTOR_NUMBER=0
+21:43:59  JDK_VERSION=11
+21:43:59  XDG_SESSION_ID=9633
+21:43:59  IS_PARALLEL=false
+21:43:59  BUILD_DISPLAY_NAME=#21
+21:43:59  TIME_LIMIT=10
+21:43:59  HUDSON_HOME=/home/jenkins/.jenkins
+21:43:59  JOB_BASE_NAME=Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus
+21:43:59  PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games
+21:43:59  PLATFORM=ppc64le_linux
+21:43:59  DIAGNOSTICLEVEL=noDetails
+21:43:59  BUILD_ID=21
+21:43:59  XDG_RUNTIME_DIR=/run/user/1001
+21:43:59  BUILD_TAG=jenkins-Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus-21
+21:43:59  JENKINS_URL=https://ci.adoptopenjdk.net/
+21:43:59  LANG=en_US.UTF-8
+21:43:59  JOB_URL=https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/
+21:43:59  KEEP_REPORTDIR=true
+21:43:59  ORIGIN_JDK_VERSION=11
+21:43:59  BUILD_NUMBER=21
+21:43:59  JENKINS_NODE_COOKIE=7f5b7414-4c06-4594-b2d8-85da7a769f09
+21:43:59  SHELL=/bin/bash
+21:43:59  ITERATIONS=1
+21:43:59  TEST_JDK_HOME=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image
+21:43:59  RUN_DISPLAY_URL=https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/21/display/redirect
+21:43:59  SPEC=linux_ppc-64_cmprssptrs_le
+21:43:59  HUDSON_SERVER_COOKIE=2d832652af5afba8
+21:43:59  TKG_REPO=https://github.com/AdoptOpenJDK/TKG.git
+21:43:59  JOB_DISPLAY_URL=https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/display/redirect
+21:43:59  NUM_PROCESSORS=4
+21:43:59  JOB_NAME=Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus
+21:43:59  TKG_BRANCH=master
+21:43:59  PWD=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus
+21:43:59  SSH_CONNECTION=78.47.239.97 42464 140.211.168.8 22
+[Pipeline] fileExists
+[Pipeline] fileExists
+[Pipeline] dir
+21:44:00  Running in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus
+[Pipeline] {
+[Pipeline] sshagent
+21:44:00  [ssh-agent] Looking for ssh-agent implementation...
+21:44:01  [ssh-agent]   Exec ssh-agent (binary ssh-agent on a remote machine)
+21:44:01  $ ssh-agent
+21:44:02  SSH_AUTH_SOCK=/tmp/ssh-4fDHaw9xsrDy/agent.11499
+21:44:02  SSH_AGENT_PID=11501
+21:44:02  [ssh-agent] Started.
+[Pipeline] {
+[Pipeline] withEnv
+[Pipeline] {
+[Pipeline] sh
+21:44:03  + pwd
+21:44:03  + pwd
+21:44:03  + ./openjdk-tests/get.sh -s /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus -t /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests -p ppc64le_linux -r nightly -j 11 -i openj9 --openj9_repo https://github.com/eclipse/openj9.git --openj9_branch master --tkg_repo https://github.com/AdoptOpenJDK/TKG.git --tkg_branch master
+21:44:03  TESTDIR: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests
+21:44:03  get jdk binary...
+21:44:03  _ENCODE_FILE_NEW=UNTAGGED curl -OLJSks  https://api.adoptopenjdk.net/v3/binary/latest/11/ea/linux/ppc64le/jdk/openj9/normal/adoptopenjdk
+21:44:10  _ENCODE_FILE_NEW=UNTAGGED curl -OLJSks  https://api.adoptopenjdk.net/v3/binary/latest/11/ea/linux/ppc64le/testimage/openj9/normal/adoptopenjdk
+21:44:11  unzip file: OpenJDK11U-jdk_ppc64le_linux_openj9_2020-06-08-05-09.tar.gz ...
+21:44:16  unzip file: OpenJDK11U-testimage_ppc64le_linux_openj9_2020-06-07-23-31.tar.gz ...
+21:44:16  Run /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java -version
+21:44:16  openjdk version "11.0.8" 2020-07-14
+21:44:16  OpenJDK Runtime Environment AdoptOpenJDK (build 11.0.8+6-202006072357)
+21:44:16  Eclipse OpenJ9 VM AdoptOpenJDK (build openj9-0.21.0-m1, JRE 11 Linux ppc64le-64-Bit Compressed References 20200607_600 (JIT enabled, AOT enabled)
+21:44:16  OpenJ9   - 365f3f822
+21:44:16  OMR      - b68a7d300
+21:44:16  JCL      - 72bf42d051 based on jdk-11.0.8+6)
+21:44:16  get testKitGen...
+21:44:16  git clone -b master https://github.com/AdoptOpenJDK/TKG.git
+21:44:17  check AdoptOpenJDK repo and TKG repo SHA
+21:44:17  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/scripts/getSHA.sh --repo_dir /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests --output_file /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/SHA.txt
+21:44:17  Check sha in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests and store the info in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/SHA.txt
+21:44:17  touch /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/SHA.txt
+21:44:17  ================================================
+21:44:17  timestamp: 20200609-014417
+21:44:17  repo dir: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests
+21:44:17  git repo: 
+21:44:17    Fetch URL: https://github.com/AdoptOpenJDK/openjdk-tests.git
+21:44:17  sha:
+21:44:17  61672c8d83e09d9593a88cd4c3497975daddbdcf
+21:44:17  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/scripts/getSHA.sh --repo_dir /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG --output_file /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/SHA.txt
+21:44:17  Check sha in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG and store the info in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/SHA.txt
+21:44:17  ================================================
+21:44:17  timestamp: 20200609-014417
+21:44:17  repo dir: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG
+21:44:17  git repo: 
+21:44:17    Fetch URL: https://github.com/AdoptOpenJDK/TKG.git
+21:44:17  sha:
+21:44:17  15e196652a7b8da438fb6b071f40da131a14a6e4
+21:44:17  get functional test material...
+21:44:17  git clone --depth 1 -b master https://github.com/eclipse/openj9.git
+21:44:27  check OpenJ9 Repo sha
+21:44:27  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/scripts/getSHA.sh --repo_dir /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/openj9 --output_file /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/SHA.txt
+21:44:27  Check sha in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/openj9 and store the info in /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/SHA.txt
+21:44:27  ================================================
+21:44:27  timestamp: 20200609-014427
+21:44:27  repo dir: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/openj9
+21:44:27  git repo: 
+21:44:27    Fetch URL: https://github.com/eclipse/openj9.git
+21:44:27  sha:
+21:44:27  6f41ed89bd961c1b147d421cf9bf68e5b04478b6
+[Pipeline] }
+[Pipeline] // withEnv
+[Pipeline] }
+21:44:28  $ ssh-agent -k
+21:44:28  unset SSH_AUTH_SOCK;
+21:44:28  unset SSH_AGENT_PID;
+21:44:28  echo Agent pid 11501 killed;
+21:44:28  [ssh-agent] Stopped.
+[Pipeline] // sshagent
+[Pipeline] fileExists
+[Pipeline] }
+[Pipeline] // dir
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Build)
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] echo
+21:44:29  Building tests...
+[Pipeline] copyArtifacts
+21:44:37  Copied 12 artifacts from "test.getDependency" build number 725
+[Pipeline] fileExists
+[Pipeline] fileExists
+[Pipeline] sshagent
+21:44:38  [ssh-agent] Looking for ssh-agent implementation...
+21:44:39  [ssh-agent]   Exec ssh-agent (binary ssh-agent on a remote machine)
+21:44:39  $ ssh-agent
+21:44:40  SSH_AUTH_SOCK=/tmp/ssh-o8Lc0j69F4wj/agent.11627
+21:44:40  SSH_AGENT_PID=11629
+21:44:40  [ssh-agent] Started.
+[Pipeline] {
+[Pipeline] sh
+21:44:42  + ./openjdk-tests/maketest.sh ./openjdk-tests
+21:44:42  JAVA_HOME is set to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image
+21:44:42  perl scripts/getDependencies.pl -path '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib' -task default
+21:44:42  --------------------------------------------
+21:44:42  path is set to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib
+21:44:42  task is set to default
+21:44:42  --------------------------------------------
+21:44:42  Starting download third party dependent jars
+21:44:42  --------------------------------------------
+21:44:42  downloading dependent third party jars to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/asm-all.jar exists with correct hash, not downloading
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/asm-7.3.jar exists with correct hash, not downloading
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/commons-cli.jar exists with correct hash, not downloading
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/commons-exec.jar exists with correct hash, not downloading
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/javassist.jar exists with correct hash, not downloading
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/junit4.jar exists with correct hash, not downloading
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/testng.jar exists with correct hash, not downloading
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/jcommander.jar exists with correct hash, not downloading
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/asmtools.jar exists with correct hash, not downloading
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/jaxb-api.jar exists with correct hash, not downloading
+21:44:42  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib/json-simple.jar exists with correct hash, not downloading
+21:44:42  downloaded dependent third party jars successfully
+21:44:42  rm -f -r /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation; \
+21:44:42  mkdir -p /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation; \
+21:44:42  (ant -f ./scripts/build_tools.xml -DTEST_JDK_HOME=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image 2>&1; echo $? ) | tee /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation/compilation.log; \
+21:44:42  if [ -z $(tail -n 1 /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation/compilation.log | grep 0) ]; then perl scripts/moveDmp.pl --compileLogPath=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation/compilation.log --testRoot=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/..; false; else rm -f -r /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation; fi
+21:44:43  Buildfile: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/scripts/build_tools.xml
+21:44:43  
+21:44:43  build:
+21:44:43  
+21:44:43  clean:
+21:44:43  
+21:44:43  init:
+21:44:43      [mkdir] Created dir: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/bin
+21:44:43  
+21:44:43  compile:
+21:44:43       [echo] Ant version is Apache Ant(TM) version 1.10.5 compiled on July 10 2018
+21:44:43       [echo] ============COMPILER SETTINGS============
+21:44:43       [echo] ===fork:                         yes
+21:44:43       [echo] ===debug:                        on
+21:44:43      [javac] Compiling 15 source files to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/bin
+21:44:47  
+21:44:47  dist:
+21:44:47        [jar] Building jar: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/bin/TestKitGen.jar
+21:44:47  
+21:44:47  BUILD SUCCESSFUL
+21:44:47  Total time: 4 seconds
+21:44:47  0
+21:44:47  AUTO_DETECT is set to true
+21:44:47  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java -cp ./bin/TestKitGen.jar org.openj9.envInfo.EnvDetector JavaInfo
+21:44:47  System.getProperty('os.name')=Linux
+21:44:47  
+21:44:47  System.getProperty('os.arch')=ppc64le
+21:44:47  
+21:44:47  System.getProperty('java.fullversion')=11.0.8+6-202006072357
+21:44:47  JRE 11 Linux ppc64le-64-Bit Compressed References 20200607_600 (JIT enabled, AOT enabled)
+21:44:47  OpenJ9   - 365f3f822
+21:44:47  OMR      - b68a7d300
+21:44:47  JCL      - 72bf42d051 based on jdk-11.0.8+6
+21:44:47  
+21:44:47  System.getProperty('sun.arch.data.model')=64
+21:44:47  
+21:44:47  System.getProperty('java.vm.name')=Eclipse OpenJ9 VM
+21:44:47  
+21:44:47  make -f compile.mk compile
+21:44:47  make[1]: Entering directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG'
+21:44:47  rm -f -r /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation; \
+21:44:47  mkdir -p /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation; \
+21:44:47  (ant -f scripts/build_test.xml -DTEST_ROOT=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/.. -DBUILD_ROOT=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../../jvmtest -DJDK_VERSION=11 -DJDK_IMPL=openj9 -DJCL_VERSION=latest -DBUILD_LIST=external/quarkus -DRESOURCES_DIR=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../../jvmtest/TestConfig/resources -DSPEC=linux_ppc-64_cmprssptrs_le -DTEST_JDK_HOME=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image -DJVM_VERSION=openjdk11-openj9 -DLIB_DIR=/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/lib 2>&1; echo $? ) | tee "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation/compilation.log"; \
+21:44:47  if [ -z "$(tail -n 1 /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation/compilation.log | grep 0)" ]; then perl scripts/moveDmp.pl --compileLogPath="/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation/compilation.log" --testRoot="/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/.."; false; else rm -f -r "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_compilation"; fi
+21:44:47  Buildfile: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/scripts/build_test.xml
+21:44:48       [echo]  build.list is TestConfig/build.xml,external/quarkus/build.xml 
+21:44:48  
+21:44:48  -create_test_directory:
+21:44:48      [mkdir] Created dir: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest
+21:44:48  
+21:44:48  stage_test_material:
+21:44:48       [copy] Copying 74 files to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest
+21:44:48  
+21:44:48  build:
+21:44:48  
+21:44:48  init:
+21:44:48      [mkdir] Created dir: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest/TestConfig
+21:44:48  
+21:44:48  build:
+21:44:48       [copy] Copying 11 files to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest/TestConfig
+21:44:48       [copy] Copied 4 empty directories to 2 empty directories under /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest/TestConfig
+21:44:48       [copy] Copying 1 file to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest/TestConfig
+21:44:48  
+21:44:48  build:
+21:44:48  
+21:44:48  move_scripts:
+21:44:48       [copy] Copying 1 file to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest/external/quarkus/dockerfile
+21:44:48       [copy] Copying 5 files to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest/external
+21:44:48  
+21:44:48  clean_image:
+21:44:48       [echo] Executing external.sh --clean --dir quarkus --tag nightly --version 11 --impl openj9 
+21:45:06       [exec] Untagged: adoptopenjdk-quarkus-test:11-jdk-ubuntu-openj9-full
+21:45:06       [exec] Deleted: sha256:b450f98723ef3fd2ad0feaa37663cf611aa59d68177a4a895118cd2bce02f77d
+21:45:06       [exec] Deleted: sha256:1bb5115e259496bddb474e1f813e7f1c21b61cee69e3575cca113c917e21790e
+21:45:06       [exec] Deleted: sha256:bba069b4ae1ce4a9ee4181a69fe4c466ce1d94da4b076916ad46af9e1ecfa347
+21:45:06       [exec] Deleted: sha256:4b773ba3acde57c9cc96a6daa7c2580c92c205dfd7c830df2ad8f41f377698f5
+21:45:06       [exec] Deleted: sha256:ca74ea4525f215d0e41d23c464434f7b7774eeed08eb1eceb2d4cb1e99fc7d9d
+21:45:06       [exec] Deleted: sha256:07d43cc4c4d690189137a397731d8548e4b8c27af3de0abd7cd21f285dae3ce8
+21:45:06       [exec] Deleted: sha256:6787477a113f61f21e7cd4f46df557b47e3615bdb58f541f98ecb1d3be76d0b4
+21:45:06       [exec] Deleted: sha256:e20ef33ecb7fbc791dbb31f4a740e72987a6556ccb927f98df55b1c2de57aff4
+21:45:06       [exec] Deleted: sha256:23511b1585caf60acc6886c66c7203b378661606e0af59ca2606cb08b1726394
+21:45:06       [exec] Deleted: sha256:7ea8cbe6987ef15bbd49090414983e06900a466dde67409a7f4ad56cfd28dcab
+21:45:06       [exec] Deleted: sha256:41a1991fe6cb783c3066d72e5998173aa0e6f06622ec81df12caee3bc3478f21
+21:45:06       [exec] Deleted: sha256:4dd1de61e5f52b505d3b53fbee85a8465d08522ddd97d48d035ad8fe1a275724
+21:45:06       [exec] Deleted: sha256:a83f48dab0e9cb97442ba8c00831b51d4b9f293cdb925f95e8dbc1c4e842f095
+21:45:06       [exec] Deleted: sha256:824cc278c390f11296ba5ec033469812046cda8f23f07034adba781a33e28b84
+21:45:06       [exec] Deleted: sha256:93fe414f9a48827ffc1214f244726a11030afae99c27d40b26a318ad73d7d87f
+21:45:06       [exec] Deleted: sha256:11b2219ebe6caa61d3a0b45d3ffd0f2a571364f630f553a93b1cb535df3e3ed4
+21:45:06       [exec] Deleted: sha256:1b8f0ecb934e3b9ab9892343f717e96816e3de00057ec0f65b036b1f7685a01a
+21:45:06  
+21:45:06  build_image:
+21:45:06       [echo] Executing external.sh --build --dir quarkus --tag nightly --version 11 --impl openj9 
+21:45:06       [exec] 
+21:45:06       [exec] Writing /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest/external/quarkus/dockerfile/11/jdk/ubuntu/Dockerfile.openj9.full ... done
+21:45:06       [exec] 
+21:45:06       [exec] #####################################################
+21:45:06       [exec] INFO: docker build --no-cache -t adoptopenjdk-quarkus-test:11-jdk-ubuntu-openj9-full -f /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest/external/quarkus/dockerfile/11/jdk/ubuntu/Dockerfile.openj9.full /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest/external/
+21:45:06       [exec] #####################################################
+21:45:06       [exec] Sending build context to Docker daemon  56.32kB
+21:45:06       [exec] Step 1/18 : ARG SDK=openjdk11-openj9
+21:45:06       [exec] Step 2/18 : ARG IMAGE_NAME=adoptopenjdk/$SDK
+21:45:06       [exec] Step 3/18 : ARG OS=ubuntu
+21:45:06       [exec] Step 4/18 : ARG IMAGE_VERSION=nightly
+21:45:06       [exec] Step 5/18 : ARG TAG=$OS-$IMAGE_VERSION
+21:45:06       [exec] Step 6/18 : FROM $IMAGE_NAME:$TAG
+21:45:06       [exec]  ---> 3cde86c8c4ed
+21:45:06       [exec] Step 7/18 : ARG QUARKUS_TAG=1.3.2.Final
+21:45:08       [exec]  ---> Running in 741d0462038e
+21:45:09       [exec] Removing intermediate container 741d0462038e
+21:45:09       [exec]  ---> e134d957666d
+21:45:09       [exec] Step 8/18 : RUN apt-get update 	&& apt-get install -y --no-install-recommends git wget 	&& rm -rf /var/lib/apt/lists/*
+21:45:10       [exec]  ---> Running in 973dbb3ca1d0
+21:45:17       [exec] Get:1 http://ports.ubuntu.com/ubuntu-ports bionic InRelease [242 kB]
+21:45:18       [exec] Get:2 http://ports.ubuntu.com/ubuntu-ports bionic-updates InRelease [88.7 kB]
+21:45:18       [exec] Get:3 http://ports.ubuntu.com/ubuntu-ports bionic-backports InRelease [74.6 kB]
+21:45:18       [exec] Get:4 http://ports.ubuntu.com/ubuntu-ports bionic-security InRelease [88.7 kB]
+21:45:19       [exec] Get:5 http://ports.ubuntu.com/ubuntu-ports bionic/multiverse ppc64el Packages [162 kB]
+21:45:20       [exec] Get:6 http://ports.ubuntu.com/ubuntu-ports bionic/main ppc64el Packages [1,284 kB]
+21:45:20       [exec] Get:7 http://ports.ubuntu.com/ubuntu-ports bionic/restricted ppc64el Packages [572 B]
+21:45:20       [exec] Get:8 http://ports.ubuntu.com/ubuntu-ports bionic/universe ppc64el Packages [10.9 MB]
+21:45:21       [exec] Get:9 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main ppc64el Packages [791 kB]
+21:45:21       [exec] Get:10 http://ports.ubuntu.com/ubuntu-ports bionic-updates/universe ppc64el Packages [1,163 kB]
+21:45:21       [exec] Get:11 http://ports.ubuntu.com/ubuntu-ports bionic-updates/multiverse ppc64el Packages [3,511 B]
+21:45:21       [exec] Get:12 http://ports.ubuntu.com/ubuntu-ports bionic-updates/restricted ppc64el Packages [1,192 B]
+21:45:21       [exec] Get:13 http://ports.ubuntu.com/ubuntu-ports bionic-backports/main ppc64el Packages [8,268 B]
+21:45:21       [exec] Get:14 http://ports.ubuntu.com/ubuntu-ports bionic-backports/universe ppc64el Packages [8,143 B]
+21:45:21       [exec] Get:15 http://ports.ubuntu.com/ubuntu-ports bionic-security/main ppc64el Packages [523 kB]
+21:45:21       [exec] Get:16 http://ports.ubuntu.com/ubuntu-ports bionic-security/restricted ppc64el Packages [581 B]
+21:45:21       [exec] Get:17 http://ports.ubuntu.com/ubuntu-ports bionic-security/universe ppc64el Packages [701 kB]
+21:45:22       [exec] Get:18 http://ports.ubuntu.com/ubuntu-ports bionic-security/multiverse ppc64el Packages [1,846 B]
+21:45:22       [exec] Fetched 16.1 MB in 5s (2,947 kB/s)
+21:45:23       [exec] Reading package lists...
+21:45:24       [exec] Reading package lists...
+21:45:24       [exec] Building dependency tree...
+21:45:24       [exec] Reading state information...
+21:45:24       [exec] The following additional packages will be installed:
+21:45:24       [exec]   git-man libcurl3-gnutls liberror-perl libgdbm-compat4 libgdbm5 libperl5.26
+21:45:24       [exec]   perl perl-modules-5.26
+21:45:24       [exec] Suggested packages:
+21:45:24       [exec]   gettext-base git-daemon-run | git-daemon-sysvinit git-doc git-el git-email
+21:45:24       [exec]   git-gui gitk gitweb git-cvs git-mediawiki git-svn gdbm-l10n perl-doc
+21:45:24       [exec]   libterm-readline-gnu-perl | libterm-readline-perl-perl make
+21:45:24       [exec] Recommended packages:
+21:45:24       [exec]   patch less ssh-client netbase
+21:45:24       [exec] The following NEW packages will be installed:
+21:45:24       [exec]   git git-man libcurl3-gnutls liberror-perl libgdbm-compat4 libgdbm5
+21:45:24       [exec]   libperl5.26 perl perl-modules-5.26 wget
+21:45:25       [exec] 0 upgraded, 10 newly installed, 0 to remove and 9 not upgraded.
+21:45:25       [exec] Need to get 13.1 MB of archives.
+21:45:25       [exec] After this operation, 100 MB of additional disk space will be used.
+21:45:25       [exec] Get:1 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main ppc64el perl-modules-5.26 all 5.26.1-6ubuntu0.3 [2,763 kB]
+21:45:26       [exec] Get:2 http://ports.ubuntu.com/ubuntu-ports bionic/main ppc64el libgdbm5 ppc64el 1.14.1-6 [26.8 kB]
+21:45:26       [exec] Get:3 http://ports.ubuntu.com/ubuntu-ports bionic/main ppc64el libgdbm-compat4 ppc64el 1.14.1-6 [6,140 B]
+21:45:26       [exec] Get:4 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main ppc64el libperl5.26 ppc64el 5.26.1-6ubuntu0.3 [3,404 kB]
+21:45:26       [exec] Get:5 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main ppc64el perl ppc64el 5.26.1-6ubuntu0.3 [201 kB]
+21:45:26       [exec] Get:6 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main ppc64el wget ppc64el 1.19.4-1ubuntu2.2 [330 kB]
+21:45:26       [exec] Get:7 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main ppc64el libcurl3-gnutls ppc64el 7.58.0-2ubuntu3.8 [217 kB]
+21:45:26       [exec] Get:8 http://ports.ubuntu.com/ubuntu-ports bionic/main ppc64el liberror-perl all 0.17025-1 [22.8 kB]
+21:45:26       [exec] Get:9 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main ppc64el git-man all 1:2.17.1-1ubuntu0.7 [804 kB]
+21:45:26       [exec] Get:10 http://ports.ubuntu.com/ubuntu-ports bionic-updates/main ppc64el git ppc64el 1:2.17.1-1ubuntu0.7 [5,320 kB]
+21:45:29       [exec] debconf: delaying package configuration, since apt-utils is not installed
+21:45:30       [exec] Fetched 13.1 MB in 2s (6,484 kB/s)
+21:45:31       [exec] Selecting previously unselected package perl-modules-5.26.
+21:45:31       [exec] (Reading database ... 
+21:45:31       [exec] (Reading database ... 5%(Reading database ... 10%(Reading database ... 15%(Reading database ... 20%(Reading database ... 25%(Reading database ... 30%(Reading database ... 35%(Reading database ... 40%(Reading database ... 45%(Reading database ... 50%(Reading database ... 55%(Reading database ... 60%(Reading database ... 65%(Reading database ... 70%(Reading database ... 75%(Reading database ... 80%(Reading database ... 85%(Reading database ... 90%(Reading database ... 95%(Reading database ... 100%(Reading database ... 5344 files and directories currently installed.)Preparing to unpack .../0-perl-modules-5.26_5.26.1-6ubuntu0.3_all.deb ...
+21:45:31       [exec] Unpacking perl-modules-5.26 (5.26.1-6ubuntu0.3) ...
+21:45:32       [exec] Selecting previously unselected package libgdbm5:ppc64el.
+21:45:32       [exec] Preparing to unpack .../1-libgdbm5_1.14.1-6_ppc64el.deb ...
+21:45:32       [exec] Unpacking libgdbm5:ppc64el (1.14.1-6) ...
+21:45:33       [exec] Selecting previously unselected package libgdbm-compat4:ppc64el.
+21:45:33       [exec] Preparing to unpack .../2-libgdbm-compat4_1.14.1-6_ppc64el.deb ...
+21:45:33       [exec] Unpacking libgdbm-compat4:ppc64el (1.14.1-6) ...
+21:45:34       [exec] Selecting previously unselected package libperl5.26:ppc64el.
+21:45:34       [exec] Preparing to unpack .../3-libperl5.26_5.26.1-6ubuntu0.3_ppc64el.deb ...
+21:45:34       [exec] Unpacking libperl5.26:ppc64el (5.26.1-6ubuntu0.3) ...
+21:45:36       [exec] Selecting previously unselected package perl.
+21:45:36       [exec] Preparing to unpack .../4-perl_5.26.1-6ubuntu0.3_ppc64el.deb ...
+21:45:36       [exec] Unpacking perl (5.26.1-6ubuntu0.3) ...
+21:45:36       [exec] Selecting previously unselected package wget.
+21:45:36       [exec] Preparing to unpack .../5-wget_1.19.4-1ubuntu2.2_ppc64el.deb ...
+21:45:36       [exec] Unpacking wget (1.19.4-1ubuntu2.2) ...
+21:45:36       [exec] Selecting previously unselected package libcurl3-gnutls:ppc64el.
+21:45:36       [exec] Preparing to unpack .../6-libcurl3-gnutls_7.58.0-2ubuntu3.8_ppc64el.deb ...
+21:45:36       [exec] Unpacking libcurl3-gnutls:ppc64el (7.58.0-2ubuntu3.8) ...
+21:45:36       [exec] Selecting previously unselected package liberror-perl.
+21:45:36       [exec] Preparing to unpack .../7-liberror-perl_0.17025-1_all.deb ...
+21:45:36       [exec] Unpacking liberror-perl (0.17025-1) ...
+21:45:36       [exec] Selecting previously unselected package git-man.
+21:45:36       [exec] Preparing to unpack .../8-git-man_1%3a2.17.1-1ubuntu0.7_all.deb ...
+21:45:36       [exec] Unpacking git-man (1:2.17.1-1ubuntu0.7) ...
+21:45:37       [exec] Selecting previously unselected package git.
+21:45:37       [exec] Preparing to unpack .../9-git_1%3a2.17.1-1ubuntu0.7_ppc64el.deb ...
+21:45:37       [exec] Unpacking git (1:2.17.1-1ubuntu0.7) ...
+21:45:40       [exec] Setting up git-man (1:2.17.1-1ubuntu0.7) ...
+21:45:40       [exec] Setting up libcurl3-gnutls:ppc64el (7.58.0-2ubuntu3.8) ...
+21:45:41       [exec] Setting up perl-modules-5.26 (5.26.1-6ubuntu0.3) ...
+21:45:41       [exec] Setting up libgdbm5:ppc64el (1.14.1-6) ...
+21:45:41       [exec] Setting up wget (1.19.4-1ubuntu2.2) ...
+21:45:42       [exec] Setting up libgdbm-compat4:ppc64el (1.14.1-6) ...
+21:45:42       [exec] Setting up libperl5.26:ppc64el (5.26.1-6ubuntu0.3) ...
+21:45:42       [exec] Setting up perl (5.26.1-6ubuntu0.3) ...
+21:45:42       [exec] Setting up liberror-perl (0.17025-1) ...
+21:45:42       [exec] Setting up git (1:2.17.1-1ubuntu0.7) ...
+21:45:43       [exec] Processing triggers for libc-bin (2.27-3ubuntu1) ...
+21:45:56       [exec] Removing intermediate container 973dbb3ca1d0
+21:45:56       [exec]  ---> e3d8ee673c3c
+21:45:56       [exec] Step 9/18 : ENV JAVA_TOOL_OPTIONS="-Dfile.encoding=UTF8"
+21:45:57       [exec]  ---> Running in 56e6f9920d32
+21:45:57       [exec] Removing intermediate container 56e6f9920d32
+21:45:57       [exec]  ---> b595e90cc9f6
+21:45:57       [exec] Step 10/18 : ENV MODE="java"
+21:45:59       [exec]  ---> Running in 635bd7ce3baa
+21:46:00       [exec] Removing intermediate container 635bd7ce3baa
+21:46:00       [exec]  ---> 0ab88a14a1d6
+21:46:00       [exec] Step 11/18 : RUN mkdir testResults
+21:46:02       [exec]  ---> Running in c37579607c46
+21:46:06       [exec] Removing intermediate container c37579607c46
+21:46:06       [exec]  ---> d81274a293d8
+21:46:06       [exec] Step 12/18 : COPY quarkus/dockerfile/quarkus-test.sh /quarkus-test.sh
+21:46:07       [exec]  ---> 5373d3d94ab5
+21:46:07       [exec] Step 13/18 : ENV QUARKUS_TAG=$QUARKUS_TAG
+21:46:08       [exec]  ---> Running in c12bfcef55ca
+21:46:12       [exec] Removing intermediate container c12bfcef55ca
+21:46:12       [exec]  ---> a5a8e23d4b91
+21:46:12       [exec] Step 14/18 : RUN git clone https://github.com/quarkusio/quarkus.git
+21:46:12       [exec]  ---> Running in 8282922fe91f
+21:46:14       [exec] Cloning into 'quarkus'...
+21:46:22       [exec] Checking out files:  92% (7091/7646)   
+21:46:36       [exec] Checking out files:  93% (7111/7646)   Checking out files:  94% (7188/7646)   Checking out files:  95% (7264/7646)   Checking out files:  96% (7341/7646)   Checking out files:  97% (7417/7646)   Checking out files:  98% (7494/7646)   Checking out files:  99% (7570/7646)   Checking out files: 100% (7646/7646)   Checking out files: 100% (7646/7646), done.Removing intermediate container 8282922fe91f
+21:46:36       [exec]  ---> 1b0d931dd062
+21:46:36       [exec] Step 15/18 : WORKDIR /quarkus/
+21:46:37       [exec]  ---> Running in 1bcd61dfe28c
+21:46:38       [exec] Removing intermediate container 1bcd61dfe28c
+21:46:38       [exec]  ---> 11c42f6389e0
+21:46:38       [exec] Step 16/18 : RUN git checkout $QUARKUS_TAG
+21:46:40       [exec]  ---> Running in a67c8a7f4c64
+21:46:44       [exec] Note: checking out '1.3.2.Final'.
+21:46:44       [exec] 
+21:46:44       [exec] You are in 'detached HEAD' state. You can look around, make experimental
+21:46:44       [exec] changes and commit them, and you can discard any commits you make in this
+21:46:44       [exec] state without impacting any branches by performing another checkout.
+21:46:44       [exec] 
+21:46:44       [exec] If you want to create a new branch to retain commits you create, you may
+21:46:44       [exec] do so (now or later) by using -b with the checkout command again. Example:
+21:46:44       [exec] 
+21:46:44       [exec]   git checkout -b <new-branch-name>
+21:46:44       [exec] 
+21:46:44       [exec] HEAD is now at e30368de8a [RELEASE] - Bump version to 1.3.2.Final
+21:46:49       [exec] Removing intermediate container a67c8a7f4c64
+21:46:49       [exec]  ---> 327e00e00ca2
+21:46:49       [exec] Step 17/18 : WORKDIR /
+21:46:50       [exec]  ---> Running in 23e21b387eab
+21:46:52       [exec] Removing intermediate container 23e21b387eab
+21:46:52       [exec]  ---> 469aac551e44
+21:46:52       [exec] Step 18/18 : ENTRYPOINT ["/bin/bash", "/quarkus-test.sh"]
+21:46:52       [exec]  ---> Running in c3bfe608aba6
+21:46:53       [exec] Removing intermediate container c3bfe608aba6
+21:46:53       [exec]  ---> 8517ab251a1a
+21:46:53       [exec] Successfully built 8517ab251a1a
+21:46:53       [exec] Successfully tagged adoptopenjdk-quarkus-test:11-jdk-ubuntu-openj9-full
+21:46:53  
+21:46:53  dist:
+21:46:53       [copy] Copying 2 files to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/jvmtest/external/quarkus
+21:46:53  
+21:46:53  BUILD SUCCESSFUL
+21:46:53  Total time: 2 minutes 5 seconds
+21:46:53  0
+21:46:53  make[1]: Leaving directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG'
+[Pipeline] }
+21:46:53  $ ssh-agent -k
+21:46:53  unset SSH_AUTH_SOCK;
+21:46:53  unset SSH_AGENT_PID;
+21:46:53  echo Agent pid 11629 killed;
+21:46:54  [ssh-agent] Stopped.
+[Pipeline] // sshagent
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Test)
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] echo
+21:46:54  Running tests...
+[Pipeline] echo
+21:46:54  ITERATION: 1/1
+[Pipeline] sh
+21:46:56  + uname
+21:46:56  + [ Linux = AIX ]
+21:46:56  + uname
+21:46:56  + [ Linux = SunOS ]
+21:46:56  + MAKE=make
+21:46:56  + make -f ./openjdk-tests/TKG/testEnv.mk testEnvTeardown
+21:46:56  make: Nothing to be done for 'testEnvTeardown'.
+[Pipeline] sh
+21:46:58  + ./openjdk-tests/maketest.sh ./openjdk-tests _extended.external
+21:46:58  JAVA_HOME is set to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image
+21:46:58  make -f makeGen.mk AUTO_DETECT=true MODE=tests TESTTARGET=extended.external TESTLIST=
+21:46:58  make[1]: Entering directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG'
+21:46:58  perl scripts/configure.pl
+21:46:58  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java -cp "./bin/TestKitGen.jar:./lib/json-simple.jar" org.testKitGen.MainRunner --mode=tests --spec=linux_ppc-64_cmprssptrs_le --jdkVersion=11 --impl=openj9 --buildList=external/quarkus --iterations=1 --testFlag= --testTarget=extended.external --testList= --numOfMachines= --testTime= --TRSSURL= 
+21:46:58  
+21:46:58  Starting to generate test make files.
+21:46:58  
+21:46:59  Modes data parsed from resources/modes.xml and resources/ottawa.csv.
+21:46:59  
+21:46:59  
+21:46:59  Generating make file /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../external/quarkus/autoGen.mk
+21:46:59  
+21:46:59  Generating make file /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../external/autoGen.mk
+21:46:59  
+21:46:59  Generating make file /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../autoGen.mk
+21:46:59  
+21:46:59  Generated /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/utils.mk
+21:46:59  
+21:46:59  Make files are generated successfully.
+21:46:59  
+21:46:59  make[1]: Leaving directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG'
+21:46:59  make -f runtest.mk _extended.external
+21:46:59  make[1]: Entering directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG'
+21:46:59  
+21:46:59  Running make 4.1
+21:46:59  set TEST_ROOT to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/..
+21:46:59  set JDK_VERSION to 11
+21:46:59  set JDK_IMPL to openj9
+21:46:59  set JVM_VERSION to openjdk11-openj9
+21:46:59  set JCL_VERSION to latest
+21:46:59  set JAVA_HOME to /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image
+21:46:59  set SPEC to linux_ppc-64_cmprssptrs_le
+21:46:59  Running extended.external ...
+21:46:59  There are 3 test targets in extended.external
+21:46:59  "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java" -version
+21:46:59  openjdk version "11.0.8" 2020-07-14
+21:46:59  OpenJDK Runtime Environment AdoptOpenJDK (build 11.0.8+6-202006072357)
+21:46:59  Eclipse OpenJ9 VM AdoptOpenJDK (build openj9-0.21.0-m1, JRE 11 Linux ppc64le-64-Bit Compressed References 20200607_600 (JIT enabled, AOT enabled)
+21:46:59  OpenJ9   - 365f3f822
+21:46:59  OMR      - b68a7d300
+21:46:59  JCL      - 72bf42d051 based on jdk-11.0.8+6)
+21:46:59  make[2]: Entering directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests'
+21:46:59  make[3]: Entering directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/external'
+21:46:59  make[4]: Entering directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/external/quarkus'
+21:46:59  
+21:46:59  ===============================================
+21:46:59  Running test MachineInfo_0 ...
+21:46:59  ===============================================
+21:46:59  MachineInfo_0 Start Time: Tue Jun  9 01:46:59 2020 Epoch Time (ms): 1591667219334
+21:46:59  "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:destroyAll; "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:groupAccess,destroyAll; echo "cache cleanup done";
+21:46:59  
+21:46:59  Attempting to destroy all caches in cacheDir /home/jenkins/javasharedresources/
+21:46:59  
+21:46:59  JVMSHRC806I Compressed references persistent shared cache "sharedcc_jenkins" has been destroyed. Use option -Xnocompressedrefs if you want to destroy a non-compressed references cache.
+21:46:59  JVMSHRC005I No shared class caches available
+21:46:59  cache cleanup done
+21:46:59  variation: NoOptions
+21:46:59  JVM_OPTIONS:  
+21:46:59  { itercnt=1; \
+21:46:59  mkdir -p "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_15916672197472/MachineInfo_0"; \
+21:46:59  cd "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_15916672197472/MachineInfo_0"; \
+21:46:59  "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java" -cp /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../../jvmtest/TKG/bin/TestKitGen.jar org.openj9.envInfo.EnvDetector MachineInfo; \
+21:46:59  	if [ $? -eq 0 ] ; then echo ""; echo "MachineInfo_0""_PASSED"; echo ""; cd /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/..;  else echo ""; echo "MachineInfo_0""_FAILED"; echo ""; fi; } 2>&1 | tee -a "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_15916672197472/TestTargetResult";
+21:47:00  File path: /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/test_output_15916672197472/MachineInfo_0
+21:47:00  Total space (bytes): 84478353408
+21:47:00  Free space (bytes): 69781176320
+21:47:00  Usable space (bytes): 66286370816
+21:47:00  
+21:47:00  uname: Linux test-osuosl-ubuntu1804-ppc64le-2.adoptopenjdk.net 4.15.0-45-generic #48-Ubuntu SMP Tue Jan 29 16:27:02 UTC 2019 ppc64le ppc64le ppc64le GNU/Linux
+21:47:00  cpuCores: 4
+21:47:00  sysArch: ppc64le
+21:47:00  procArch: ppc64le
+21:47:00  sysOS: Linux
+21:47:00  ulimit: core file size          (blocks, -c) 0
+21:47:00  data seg size           (kbytes, -d) unlimited
+21:47:00  scheduling priority             (-e) 0
+21:47:00  file size               (blocks, -f) unlimited
+21:47:00  pending signals                 (-i) 32144
+21:47:00  max locked memory       (kbytes, -l) 16384
+21:47:00  max memory size         (kbytes, -m) unlimited
+21:47:00  open files                      (-n) 1048576
+21:47:00  pipe size            (512 bytes, -p) 8
+21:47:00  POSIX message queues     (bytes, -q) 819200
+21:47:00  real-time priority              (-r) 0
+21:47:00  stack size              (kbytes, -s) 8192
+21:47:00  cpu time               (seconds, -t) unlimited
+21:47:00  max user processes              (-u) 32144
+21:47:00  virtual memory          (kbytes, -v) unlimited
+21:47:00  file locks                      (-x) unlimited
+21:47:00  
+21:47:00  vmVendor: Eclipse OpenJ9
+21:47:00  vmVersion: openj9-0.21.0-m1
+21:47:00  specVendor: Oracle Corporation
+21:47:00  specVersion: 11
+21:47:00  javaVersion: 11.0.8
+21:47:00  
+21:47:00  Total memory (bytes): 8519680
+21:47:00  Free memory (bytes): 6125736
+21:47:00  
+21:47:00  
+21:47:00  MachineInfo_0_PASSED
+21:47:00  
+21:47:00  "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:destroyAll; "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:groupAccess,destroyAll; echo "cache cleanup done";
+21:47:00  
+21:47:00  Attempting to destroy all caches in cacheDir /home/jenkins/javasharedresources/
+21:47:00  
+21:47:00  JVMSHRC806I Compressed references persistent shared cache "sharedcc_jenkins" has been destroyed. Use option -Xnocompressedrefs if you want to destroy a non-compressed references cache.
+21:47:00  JVMSHRC005I No shared class caches available
+21:47:00  cache cleanup done
+21:47:00  MachineInfo_0 Finish Time: Tue Jun  9 01:46:59 2020 Epoch Time (ms): 1591667219869
+21:47:00  
+21:47:00  ===============================================
+21:47:00  Running test quarkus_java_test_0 ...
+21:47:00  ===============================================
+21:47:00  quarkus_java_test_0 Start Time: Tue Jun  9 01:46:59 2020 Epoch Time (ms): 1591667219887
+21:47:00  "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:destroyAll; "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:groupAccess,destroyAll; echo "cache cleanup done";
+21:47:00  JVMSHRC005I No shared class caches available
+21:47:00  JVMSHRC005I No shared class caches available
+21:47:00  cache cleanup done
+21:47:00  variation: NoOptions
+21:47:00  JVM_OPTIONS:  
+21:47:00  { itercnt=1; \
+21:47:00  mkdir -p "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_15916672197472/quarkus_java_test_0"; \
+21:47:00  cd "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_15916672197472/quarkus_java_test_0"; \
+21:47:00  /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../external/external.sh --run --tag  --version 11 --impl openj9 --dir quarkus --reportdst "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_15916672197472/quarkus_java_test_0" --docker_args ""; \
+21:47:00  	if [ $? -eq 0 ] ; then echo ""; echo "quarkus_java_test_0""_PASSED"; echo ""; cd /home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/..;  else echo ""; echo "quarkus_java_test_0""_FAILED"; echo ""; fi; \
+21:47:00  	/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../external/external.sh --clean --tag  --version 11 --impl openj9 --dir quarkus; } 2>&1 | tee -a "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_15916672197472/TestTargetResult";
+21:47:00  Unable to recognize DOCKER_OS from DOCKERIMAGE_TAG = --version!
+21:47:00  docker run  --rm adoptopenjdk-derby-test:11-jdk-ubuntu-openj9-full 
+21:47:00  Unable to find image 'adoptopenjdk-derby-test:11-jdk-ubuntu-openj9-full' locally
+21:47:01  docker: Error response from daemon: pull access denied for adoptopenjdk-derby-test, repository does not exist or may require 'docker login'.
+21:47:01  See 'docker run --help'.
+21:47:01  
+21:47:01  quarkus_java_test_0_FAILED
+21:47:01  
+21:47:01  Unable to recognize DOCKER_OS from DOCKERIMAGE_TAG = --version!
+21:47:01  Error: No such image: adoptopenjdk-derby-test:11-jdk-ubuntu-openj9-full
+21:47:01  "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:destroyAll; "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdkbinary/j2sdk-image/bin/java" -Xshareclasses:groupAccess,destroyAll; echo "cache cleanup done";
+21:47:01  JVMSHRC005I No shared class caches available
+21:47:01  JVMSHRC005I No shared class caches available
+21:47:01  cache cleanup done
+21:47:01  quarkus_java_test_0 Finish Time: Tue Jun  9 01:47:01 2020 Epoch Time (ms): 1591667221402
+21:47:01  
+21:47:01  ===============================================
+21:47:01  Running test quarkus_native_test_0 ...
+21:47:01  ===============================================
+21:47:01  quarkus_native_test_0 Start Time: Tue Jun  9 01:47:01 2020 Epoch Time (ms): 1591667221420
+21:47:01  quarkus_native_test_0_DISABLED
+21:47:01  Disabled Reason:
+21:47:01  https://github.com/AdoptOpenJDK/openjdk-build/issues/767
+21:47:01  quarkus_native_test_0 Finish Time: Tue Jun  9 01:47:01 2020 Epoch Time (ms): 1591667221436
+21:47:01  make[4]: Leaving directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/external/quarkus'
+21:47:01  make[3]: Leaving directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/external'
+21:47:01  make[2]: Leaving directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests'
+21:47:01  cd "/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/scripts"; \
+21:47:01  perl "resultsSum.pl" --failuremk="/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/failedtargets.mk" --resultFile="/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_15916672197472/TestTargetResult" --tapFile="/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/test_output_15916672197472/TestTargetResult.tap" --platFile="/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG/../TKG/resources/buildPlatformMap.properties" --diagnostic=noDetails --jdkVersion=11 --jdkImpl=openj9 --spec=linux_ppc-64_cmprssptrs_le --buildList=external/quarkus --customTarget=
+21:47:01  
+21:47:01  
+21:47:01  TEST TARGETS SUMMARY
+21:47:01  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+21:47:01  DISABLED test targets:
+21:47:01  	quarkus_native_test_0
+21:47:01  
+21:47:01  PASSED test targets:
+21:47:01  	MachineInfo_0
+21:47:01  
+21:47:01  FAILED test targets:
+21:47:01  	quarkus_java_test_0
+21:47:01  
+21:47:01  TOTAL: 3   EXECUTED: 2   PASSED: 1   FAILED: 1   DISABLED: 1   SKIPPED: 0
+21:47:01  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+21:47:01  To rebuild the failed test in a jenkins job, copy the following link and fill out the <Jenkins URL> and <FAILED test target>:
+21:47:01  <Jenkins URL>/parambuild/?JDK_VERSION=11&JDK_IMPL=openj9&BUILD_LIST=external/quarkus&PLATFORM=ppc64le_linux&TARGET=<FAILED test target>
+21:47:01  
+21:47:01  For example, to rebuild the failed tests in <Jenkins URL>=https://ci.adoptopenjdk.net/job/Grinder, use the following links:
+21:47:01  https://ci.adoptopenjdk.net/job/Grinder/parambuild/?JDK_VERSION=11&JDK_IMPL=openj9&BUILD_LIST=external/quarkus&PLATFORM=ppc64le_linux&TARGET=quarkus_java_test_0
+21:47:01  ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+21:47:01  
+21:47:01  _extended.external done
+21:47:01  make[1]: Leaving directory '/home/jenkins/workspace/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/openjdk-tests/TKG'
+[Pipeline] sh
+21:47:03  + uname
+21:47:03  + [ Linux = AIX ]
+21:47:03  + uname
+21:47:03  + [ Linux = SunOS ]
+21:47:03  + MAKE=make
+21:47:03  + make -f ./openjdk-tests/TKG/testEnv.mk testEnvTeardown
+21:47:03  make: Nothing to be done for 'testEnvTeardown'.
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] stage
+[Pipeline] { (Post)
+[Pipeline] timestamps
+[Pipeline] {
+[Pipeline] step
+21:47:04  TAP Reports Processing: START
+21:47:04  Looking for TAP results report in workspace using pattern: **/*.tap
+21:47:04  Saving reports...
+21:47:04  Processing '/home/jenkins/.jenkins/jobs/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/builds/21/tap-master-files/openjdk-tests/TKG/test_output_15916672197472/TestTargetResult.tap'
+21:47:04  Parsing TAP test result [/home/jenkins/.jenkins/jobs/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/builds/21/tap-master-files/openjdk-tests/TKG/test_output_15916672197472/TestTargetResult.tap].
+21:47:05  There are failed test cases. Marking build as UNSTABLE
+21:47:05  TAP Reports Processing: FINISH
+[Pipeline] junit
+21:47:05  Recording test results
+21:47:06  None of the test reports contained any result
+[Pipeline] echo
+21:47:06  ARTIFACTORY_SERVER is not set. Saving SHA file on jenkins.
+[Pipeline] archiveArtifacts
+21:47:06  Archiving artifacts
+21:47:06  Recording fingerprints
+[Pipeline] sh
+21:47:08  + tar -cf - ./openjdk-tests/TKG/test_output_15916672197472
+21:47:08  + pigz -9
+[Pipeline] echo
+21:47:09  ARTIFACTORY_SERVER is not set. Saving artifacts on jenkins.
+[Pipeline] archiveArtifacts
+21:47:09  Archiving artifacts
+21:47:09  Recording fingerprints
+[Pipeline] }
+[Pipeline] // timestamps
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] cleanWs
+[WS-CLEANUP] Deleting project workspace...
+[WS-CLEANUP] Deferred wipeout is disabled by the job configuration...
+[WS-CLEANUP] done
+[Pipeline] sh
++ find /tmp -name *core* -print -exec rm -f {} ;
+/tmp/freemarker-2.3.8/docs/docs/api/freemarker/core
+/tmp/freemarker-2.3.8/src/freemarker/core
+/tmp/cmake-3.11.4/Bootstrap.cmk/uv-src-unix-core.c.o
+/tmp/cmake-3.11.4/Utilities/cmcurl/lib/curl_ntlm_core.h
+/tmp/cmake-3.11.4/Utilities/cmcurl/lib/CMakeFiles/cmcurl.dir/curl_ntlm_core.c.o
+/tmp/cmake-3.11.4/Utilities/cmcurl/lib/curl_ntlm_core.c
+/tmp/cmake-3.11.4/Utilities/cmlibuv/src/win/core.c
+/tmp/cmake-3.11.4/Utilities/cmlibuv/src/unix/core.c
+/tmp/cmake-3.11.4/Utilities/cmlibuv/src/unix/linux-core.c
+/tmp/cmake-3.11.4/Utilities/cmlibuv/CMakeFiles/cmlibuv.dir/src/unix/linux-core.c.o
+/tmp/cmake-3.11.4/Utilities/cmlibuv/CMakeFiles/cmlibuv.dir/src/unix/core.c.o
+/tmp/cmake-3.11.4/Tests/CompileCommandOutput/file_with_underscores.cxx
+/tmp/cmake-3.11.4/Tests/CompileCommandOutput/file_with_underscores.h
++ true
+[Pipeline] }
+[Pipeline] // timeout
+[Pipeline] }
+[Pipeline] // node
+[Pipeline] }
+[Pipeline] // stage
+[Pipeline] End of Pipeline
+Finished: UNSTABLE

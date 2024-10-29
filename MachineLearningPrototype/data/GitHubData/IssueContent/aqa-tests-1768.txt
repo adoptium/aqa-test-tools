@@ -1,0 +1,22 @@
+**Describe the bug**
+
+JVM mode tests are failing to launch due to issues with docker.  From the output, I'm not clear if the parameters are incorrect (`DOCKERIMAGE_TAG`) or the box needs to login to a specific registry?
+
+Output:
+```
+11:17:02  Unable to recognize DOCKER_OS from DOCKERIMAGE_TAG = --version!
+11:17:02  Unable to find image 'adoptopenjdk-derby-test:11-jdk-ubuntu-openj9-full' locally
+11:17:03  docker: Error response from daemon: pull access denied for adoptopenjdk-derby-test, repository does not exist or may require 'docker login'.
+```
+
+**To Reproduce**
+Look at the output from one of the recent extended external tests
+ie: https://ci.adoptopenjdk.net/job/Test_openjdk11_j9_extended.external_ppc64le_linux_quarkus/
+
+**Expected behavior**
+Tests run =)
+
+**Additional context**
+All extended external quarkus testing: https://ci.adoptopenjdk.net/view/Test_external_weekly/search/?q=quarkus&Jenkins-Crumb=a641a495ab24a32df0acfed743a5be4ea8142dcf58b19aabc754ef73c5df2257
+
+This is an issue for both OpenJ9 and Hotspot based testing across all platforms.
