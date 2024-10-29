@@ -1,0 +1,3 @@
+11:17:02  Unable to recognize DOCKER_OS from DOCKERIMAGE_TAG = --version!
+11:17:02  Unable to find image 'adoptopenjdk-derby-test:11-jdk-ubuntu-openj9-full' locally
+11:17:03  docker: Error response from daemon: pull access denied for adoptopenjdk-derby-test, repository does not exist or may require 'docker login'.
