@@ -15,13 +15,13 @@ export default class PerffarmRunJSON {
 
         // Find the indexes of the variant seperators
         for (let j = 0; j < this.parsedCSV.length; j++) {
-            // Each variant is seperated by a 1 element array
+            // Each variant is separated by a 1 element array
             if (this.parsedCSV[j].length === 1) {
                 variantIndex.push(j);
 
-                // The excel file is seperated into two portions, the upper showing the detailed
+                // The excel file is separated into two portions, the upper showing the detailed
                 // benchmark results (which is needed) and the bottom showing a comparison if any.
-                // The seperation point is either:
+                // The separation point is either:
                 //      two back to back arrays with length 1 OR
                 //      an array of length 1 followed by an array of length 2
                 if (
