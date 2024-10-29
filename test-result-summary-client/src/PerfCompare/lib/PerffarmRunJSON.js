@@ -13,7 +13,7 @@ export default class PerffarmRunJSON {
         let indexOfMean = null;
         let indexOfCI = null;
 
-        // Find the indexes of the variant seperators
+        // Find the indexes of the variant separators
         for (let j = 0; j < this.parsedCSV.length; j++) {
             // Each variant is separated by a 1 element array
             if (this.parsedCSV[j].length === 1) {
@@ -133,11 +133,11 @@ export default class PerffarmRunJSON {
                 curMetricObject = { value: {} };
                 curMetricObject['name'] =
                     this.parsedCSV[variantIndex[k] + 1][m];
-                // Mean is always 6 indices above the next variant seperator
+                // Mean is always 6 indices above the next variant separator
                 curMetricObject['value']['mean'] =
                     this.parsedCSV[indexOfMean][m];
 
-                // Confidence Interval is always 4 indices above the next variant seperator
+                // Confidence Interval is always 4 indices above the next variant separator
                 try {
                     curMetricObject['value']['CI'] =
                         this.parsedCSV[indexOfCI][m];
