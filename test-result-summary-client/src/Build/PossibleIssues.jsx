@@ -110,7 +110,7 @@ const PossibleIssues = () => {
         }
         const response = await fetch(
             `https://api.github.com/search/issues?q=${generalTestName}+repo:adoptium/aqa-tests` +
-                `+repo:AdoptOpenJDK/openjdk-infrastructure+repo:adoptium/aqa-build+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`,
+                `+repo:adoptium/infrastructure+repo:adoptium/aqa-build+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`,
             {
                 method: 'get',
             }
