@@ -142,7 +142,7 @@ class Parser {
         let disabled = 0;
         // An example of test result summary: "TOTAL: 69   EXECUTED: 64   PASSED: 64   FAILED: 0   DISABLED: 0   SKIPPED: 5\n"
         const summaryRegex =
-        /\S*\s*?TOTAL:\s*([0-9]*)\s*EXECUTED:\s*([0-9]*)\s*PASSED:\s*([0-9]*)\s*FAILED:\s*([0-9]*)\s*DISABLED:\s*([0-9]*)\s*SKIPPED:\s*([0-9]*)\s*(\r\n|\r|\n)/;
+            /\S*\s*?TOTAL:\s*([0-9]*)\s*EXECUTED:\s*([0-9]*)\s*PASSED:\s*([0-9]*)\s*FAILED:\s*([0-9]*)\s*DISABLED:\s*([0-9]*)\s*SKIPPED:\s*([0-9]*)\s*(\r\n|\r|\n)/;
         if ((m = summaryRegex.exec(output)) !== null) {
             total = parseInt(m[1], 10);
             executed = parseInt(m[2], 10);
@@ -150,8 +150,10 @@ class Parser {
             failed = parseInt(m[4], 10);
             disabled = parseInt(m[5], 10);
             skipped = parseInt(m[6], 10);
+            const data = 'TKG';
+            return { total, executed, passed, failed, disabled, skipped, data };
         }
-        return { total, executed, passed, failed, disabled, skipped };
+        return null;
     }
 
     extractStartedBy(output) {
