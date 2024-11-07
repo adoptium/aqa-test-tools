@@ -22,10 +22,12 @@ export const getInfoFromBuildName = (buildName) => {
 
 export const setBuildsStatus = (build, currStatus) => {
     const buildResultPriority = {
-        ABORT: 3,
-        FAILIURE: 2,
-        UNSTABLE: 1,
-        SUCCESS: 0,
+        PROGRESSING: 5,
+        ABORTED: 4,
+        FAILURE: 3,
+        UNSTABLE: 2,
+        SUCCESS: 1,
+        UNDEFINED: 0,
     };
 
     if (build.status != 'Done' || currStatus === 'PROGRESSING') {

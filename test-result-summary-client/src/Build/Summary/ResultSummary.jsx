@@ -80,7 +80,7 @@ export default function ResultSummary() {
                 buildsRes,
             ]);
             const parentBuildInfo = buildInfo[0] || {};
-            let childBuildsResult = 'UNSTABLE';
+            let childBuildsResult = 'UNDEFINED';
             let javaVersion = null;
             const buildMap = {};
             let jdkVersionOpts = [];
