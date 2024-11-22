@@ -1,18 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { params } from '../utils/query';
-import { Button, Tooltip, Card } from 'antd';
+import { Button, Tooltip, Card, Space } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
-import { GithubOutlined } from '@ant-design/icons';
+import { GithubOutlined, CopyOutlined } from '@ant-design/icons';
 import { getParams } from '../utils/query';
 import { fetchData } from '../utils/Utils';
-import renderDuration from './Duration';
-import { getGitDiffLinks } from '../utils/Utils';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 import './table.css';
-
-import moment from 'moment';
-const DAY_FORMAT = 'MMM DD YYYY, hh:mm a';
 
 const GitNewissue = () => {
     const [state, setState] = useState({
@@ -24,7 +20,6 @@ const GitNewissue = () => {
     useEffect(() => {
         async function updateData() {
             const { testId, buildId } = getParams(location.search);
-            const originUrl = window.location.origin;
             // fetch build data
             const buildDataRes = fetchData(`/api/getData?_id=${buildId}`);
             // fetch test data
@@ -115,18 +110,28 @@ const GitNewissue = () => {
                 bordered={true}
                 style={{ width: '100%' }}
                 extra={
-                    <Tooltip title={`Create new issue at ${issueUrl}`}>
-                        <a
-                            href={`${issueUrl}issues/new${urlParams}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Button size="large">
-                                <GithubOutlined />
-                                Create New Git Issue
-                            </Button>
-                        </a>
-                    </Tooltip>
+                    <div>
+                        <Space>
+                            <Tooltip title={`Create new issue at ${issueUrl}`}>
+                                <a
+                                    href={`${issueUrl}issues/new${urlParams}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    <Button size="large">
+                                        <GithubOutlined />
+                                        Create New Git Issue
+                                    </Button>
+                                </a>
+                            </Tooltip>
+                            <CopyToClipboard text={body}>
+                                <Button size="large">
+                                    <CopyOutlined />
+                                    Copy
+                                </Button>
+                            </CopyToClipboard>
+                        </Space>
+                    </div>
                 }
             >
                 <pre className="card-body">{body}</pre>
