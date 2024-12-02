@@ -9,12 +9,8 @@ const { TestResultsDB, ObjectID } = require('../Database');
  */
 
 module.exports = async (req, res) => {
-    const url = req.query.url;
-    const buildName = req.query.buildName;
-    let buildNum = req.query.buildNum;
-    let parentId = req.query.parentId;
-    let buildResult = req.query.buildResult;
-    let testSummaryResult = req.query.testSummaryResult;
+    const { url, buildName } = req.query;
+    let { buildNum, parentId, buildResult, testSummaryResult } = req.query;
 
     let info = {};
     if (parentId) {
