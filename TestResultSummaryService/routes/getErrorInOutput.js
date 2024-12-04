@@ -3,10 +3,11 @@ const { removeTimestamp } = require('./utils/removeTimestamp');
 const matchStrings = ['Unhandled exception'];
 
 module.exports = async (req, res) => {
-    if (req.query.id) {
-        req.query.id = new ObjectID(req.query.id);
+    const query = { ...req.query };
+    if (query.id) {
+        query.id = new ObjectID(query.id);
         const outputDB = new OutputDB();
-        const result = await outputDB.getData(req.query.id).toArray();
+        const result = await outputDB.getData(query.id).toArray();
 
         if (result && result.length > 0 && result[0].output) {
             const output = removeTimestamp(result[0].output);

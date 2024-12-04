@@ -1,73 +1,68 @@
 const app = require('express').Router();
-const wrap = (fn) => (req, res) =>
-    fn(req, res).catch(console.error.bind(console));
 
-app.get('/compareTestDuration', wrap(require('./compareTestDuration')));
-app.get('/compareTestsOutput', wrap(require('./compareTestsOutput')));
-app.get('/deleteBuildData', wrap(require('./deleteBuildData')));
-app.get('/deleteBuildListById', wrap(require('./deleteBuildListById')));
+app.get('/compareTestDuration', require('./compareTestDuration'));
+app.get('/compareTestsOutput', require('./compareTestsOutput'));
+app.get('/deleteBuildData', require('./deleteBuildData'));
+app.get('/deleteBuildListById', require('./deleteBuildListById'));
 app.get(
     '/deleteBuildsAndChildrenByFields',
-    wrap(require('./deleteBuildsAndChildrenByFields').default)
+    require('./deleteBuildsAndChildrenByFields').default
 );
-app.get('/deleteCollection', wrap(require('./deleteCollection')));
-app.get('/deleteUnusedOutput', wrap(require('./deleteUnusedOutput')));
-app.get('/getAllChildBuilds', wrap(require('./getAllChildBuilds')));
-app.get('/getAllTestsWithHistory', wrap(require('./getAllTestsWithHistory')));
-app.get('/getApplicationTests', wrap(require('./getApplicationTests')));
-app.get('/getAuditLogs', wrap(require('./getAuditLogs')));
-app.get('/getBenchmarkMetricProps', wrap(require('./getBenchmarkMetricProps')));
-app.get('/getBuildHistory', wrap(require('./getBuildHistory')));
-app.get('/getBuildList', wrap(require('./getBuildList')));
-app.get('/getBuildStages', wrap(require('./getBuildStages')));
-app.get('/getChildBuilds', wrap(require('./getChildBuilds')));
-app.get('/getDashboardBuildInfo', wrap(require('./getDashboardBuildInfo')));
-app.get('/getData', wrap(require('./getData')));
-app.get('/getErrorInOutput', wrap(require('./getErrorInOutput')));
-app.get('/getHistoryPerTest', wrap(require('./getHistoryPerTest')));
-app.get('/getJenkins', wrap(require('./getJenkins')));
-app.get('/getJenkinsBuildInfo', wrap(require('./test/getJenkinsBuildInfo')));
-app.get('/getLastBuildInfo', wrap(require('./getLastBuildInfo')));
-app.get('/getLogStream', wrap(require('./getLogStream')));
-app.get('/getOutputById', wrap(require('./getOutputById')));
-app.get('/getOutputByTestInfo', wrap(require('./getOutputByTestInfo')));
-app.get('/getTestAvgDuration', wrap(require('./getTestAvgDuration')));
-app.get('/getTestInfoByBuildInfo', wrap(require('./getTestInfoByBuildInfo')));
-app.get('/getAzDoRun', wrap(require('./getAzDoRun')));
-app.get('/getParents', wrap(require('./getParents')));
-app.get('/getPerffarmRunCSV', wrap(require('./getPerffarmRunCSV')));
-app.get('/getTabularData', wrap(require('./getTabularData')));
-app.get('/getTabularDropdown', wrap(require('./getTabularDropdown')));
-app.get('/getTestBuildsByMachine', wrap(require('./getTestBuildsByMachine')));
-app.get('/getTestById', wrap(require('./getTestById')));
-app.get('/getTestBySearch', wrap(require('./getTestBySearch')));
-app.get('/getTestByVersionInfo', wrap(require('./getTestByVersionInfo')));
-app.get('/getTestNames', wrap(require('./getTestNames')));
-app.get('/getTestByTestName', wrap(require('./getTestByTestName')));
-app.get('/getTestPerPlatform', wrap(require('./getTestPerPlatform')));
-app.get('/getTopLevelBuildNames', wrap(require('./getTopLevelBuildNames')));
-app.get('/getTotals', wrap(require('./getTotals')));
-app.get('/parseJenkinsUrl', wrap(require('./parseJenkinsUrl')));
-app.get('/populateDB', wrap(require('./populateDB')));
-app.get('/getFeedbackUrl', wrap(require('./getFeedbackUrl')));
-app.get('/rescanBuild', wrap(require('./rescanBuild')));
-app.get('/testParserViaFile', wrap(require('./test/testParserViaFile')));
-app.get(
-    '/testParserViaLogStream',
-    wrap(require('./test/testParserViaLogStream'))
-);
+app.get('/deleteCollection', require('./deleteCollection'));
+app.get('/deleteUnusedOutput', require('./deleteUnusedOutput'));
+app.get('/getAllChildBuilds', require('./getAllChildBuilds'));
+app.get('/getAllTestsWithHistory', require('./getAllTestsWithHistory'));
+app.get('/getApplicationTests', require('./getApplicationTests'));
+app.get('/getAuditLogs', require('./getAuditLogs'));
+app.get('/getBenchmarkMetricProps', require('./getBenchmarkMetricProps'));
+app.get('/getBuildHistory', require('./getBuildHistory'));
+app.get('/getBuildList', require('./getBuildList'));
+app.get('/getBuildStages', require('./getBuildStages'));
+app.get('/getChildBuilds', require('./getChildBuilds'));
+app.get('/getDashboardBuildInfo', require('./getDashboardBuildInfo'));
+app.get('/getData', require('./getData'));
+app.get('/getErrorInOutput', require('./getErrorInOutput'));
+app.get('/getHistoryPerTest', require('./getHistoryPerTest'));
+app.get('/getJenkins', require('./getJenkins'));
+app.get('/getJenkinsBuildInfo', require('./test/getJenkinsBuildInfo'));
+app.get('/getLastBuildInfo', require('./getLastBuildInfo'));
+app.get('/getLogStream', require('./getLogStream'));
+app.get('/getOutputById', require('./getOutputById'));
+app.get('/getOutputByTestInfo', require('./getOutputByTestInfo'));
+app.get('/getTestAvgDuration', require('./getTestAvgDuration'));
+app.get('/getTestInfoByBuildInfo', require('./getTestInfoByBuildInfo'));
+app.get('/getAzDoRun', require('./getAzDoRun'));
+app.get('/getParents', require('./getParents'));
+app.get('/getPerffarmRunCSV', require('./getPerffarmRunCSV'));
+app.get('/getTabularData', require('./getTabularData'));
+app.get('/getTabularDropdown', require('./getTabularDropdown'));
+app.get('/getTestBuildsByMachine', require('./getTestBuildsByMachine'));
+app.get('/getTestById', require('./getTestById'));
+app.get('/getTestBySearch', require('./getTestBySearch'));
+app.get('/getTestByVersionInfo', require('./getTestByVersionInfo'));
+app.get('/getTestNames', require('./getTestNames'));
+app.get('/getTestByTestName', require('./getTestByTestName'));
+app.get('/getTestPerPlatform', require('./getTestPerPlatform'));
+app.get('/getTopLevelBuildNames', require('./getTopLevelBuildNames'));
+app.get('/getTotals', require('./getTotals'));
+app.get('/parseJenkinsUrl', require('./parseJenkinsUrl'));
+app.get('/populateDB', require('./populateDB'));
+app.get('/getFeedbackUrl', require('./getFeedbackUrl'));
+app.get('/rescanBuild', require('./rescanBuild'));
+app.get('/testParserViaFile', require('./test/testParserViaFile'));
+app.get('/testParserViaLogStream', require('./test/testParserViaLogStream'));
 
-app.get('/updateComments', wrap(require('./updateComments')));
-app.get('/updateKeepForever', wrap(require('./updateKeepForever')));
+app.get('/updateComments', require('./updateComments'));
+app.get('/updateKeepForever', require('./updateKeepForever'));
 
 // jwt
-app.post('/auth/register', wrap(require('./jwt/register')));
-app.post('/auth/verify', wrap(require('./jwt/verify')));
+app.post('/auth/register', require('./jwt/register'));
+app.post('/auth/verify', require('./jwt/verify'));
 
-app.post('/getParentSpecificData', wrap(require('./getParentSpecificData')));
-app.post('/getSpecificData', wrap(require('./getSpecificData')));
-app.post('/upsertBuildList', wrap(require('./upsertBuildList')));
-app.post('/postTapFiles', wrap(require('./postTapFiles')));
-app.post('/postIssueFeedback', wrap(require('./postIssueFeedback')));
+app.post('/getParentSpecificData', require('./getParentSpecificData'));
+app.post('/getSpecificData', require('./getSpecificData'));
+app.post('/upsertBuildList', require('./upsertBuildList'));
+app.post('/postTapFiles', require('./postTapFiles'));
+app.post('/postIssueFeedback', require('./postIssueFeedback'));
 
 module.exports = app;

@@ -1,11 +1,12 @@
 const { TestResultsDB, ObjectID } = require('../Database');
 module.exports = async (req, res) => {
-    if (req.query.buildNum)
-        req.query.buildNum = parseInt(req.query.buildNum, 10);
-    if (req.query._id) req.query._id = new ObjectID(req.query._id);
-    if (req.query.parentId)
-        req.query.parentId = new ObjectID(req.query.parentId);
+    const query = { ...req.query };
+    if (query.buildNum) query.buildNum = parseInt(query.buildNum, 10);
+    if (query._id) query._id = new ObjectID(query._id);
+
+    if (query.parentId) query.parentId = new ObjectID(query.parentId);
     const db = new TestResultsDB();
-    const result = await db.getData(req.query).toArray();
+    const result = await db.getData({ _id: new ObjectID(query._id) }).toArray();
+    console.log(result);
     res.send(result);
 };
