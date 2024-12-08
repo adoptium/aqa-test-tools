@@ -30,6 +30,7 @@ export default class Overview extends Component {
                 skipped = 0,
                 executed = 0,
                 total = 0,
+                machineFailures = {},
             } = summary;
             const passPercentage =
                 (parseInt(passed) / parseInt(executed)) * 100;
@@ -110,22 +111,11 @@ export default class Overview extends Component {
                         )}
                     </div>
                     <div style={{ fontSize: '18px' }}>
-                        <Row>
-                            <Col span={6}>
-                                <Divider>Test Summary</Divider>
-                            </Col>
-                            <Col span={6}>
-                                <Divider>Pass Percentage</Divider>
-                            </Col>
-                            <Col span={6}>
-                                <Divider>Build Result</Divider>
-                            </Col>
-                            <Col span={6}>
-                                <Divider>Build Metadata</Divider>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={6}>
+                        <Row gutter={[16, 16]}>
+                            <Col span={4}>
+                                <Divider orientation="left">
+                                    Test Summary
+                                </Divider>
                                 <BuildLink
                                     id={id}
                                     label="Executed: "
@@ -173,9 +163,39 @@ export default class Overview extends Component {
                                     testSummaryResult="total"
                                     buildNameRegex="^Test.*"
                                 />
-                                <br />
                             </Col>
-                            <Col span={6}>
+
+                            <Col span={5}>
+                                <Divider orientation="left">
+                                    Test Failures By Machine
+                                </Divider>
+                                {machineFailures &&
+                                machineFailures.length > 0 ? (
+                                    machineFailures
+                                        .sort(
+                                            (a, b) =>
+                                                b.failedTests - a.failedTests
+                                        ) // Sort by failedTests (descending)
+                                        .map(({ machine, failedTests }) => (
+                                            <div key={machine}>
+                                                <BuildLink
+                                                    id={id}
+                                                    label={`${machine} - Failures: `}
+                                                    link={failedTests}
+                                                    testSummaryResult="machine"
+                                                    buildNameRegex="^Test.*"
+                                                />
+                                            </div>
+                                        ))
+                                ) : (
+                                    <div>No Machine Failures</div>
+                                )}
+                            </Col>
+
+                            <Col span={5}>
+                                <Divider orientation="left">
+                                    Pass Percentage
+                                </Divider>
                                 <div>
                                     <Tooltip title="Pass % = (Passed/Executed) * 100">
                                         <span style={{ fontSize: '38px' }}>
@@ -188,7 +208,10 @@ export default class Overview extends Component {
                                 </div>
                             </Col>
 
-                            <Col span={6}>
+                            <Col span={5}>
+                                <Divider orientation="left">
+                                    Build Result
+                                </Divider>
                                 <div>
                                     <strong>Build Started at:</strong>{' '}
                                     {moment(parentBuildInfo.timestamp).format(
@@ -211,9 +234,12 @@ export default class Overview extends Component {
                                 </div>
                             </Col>
 
-                            <Col span={6}>
+                            <Col span={5}>
+                                <Divider orientation="left">
+                                    Build Metadata
+                                </Divider>
                                 <div>
-                                    <strong>java -version:</strong>{' '}
+                                    <strong>java -version:</strong>
                                     <pre>{javaVersion}</pre>
                                 </div>
                             </Col>
