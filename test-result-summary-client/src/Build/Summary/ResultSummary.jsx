@@ -3,6 +3,7 @@ import { Divider } from 'antd';
 import { useLocation } from 'react-router-dom';
 import { params, getParams } from '../../utils/query';
 import { fetchData } from '../../utils/Utils';
+import { fetchTipVersion } from '../../utils/Utils';
 import Checkboxes from './Checkboxes';
 import ResultGrid from './ResultGrid';
 import Overview from './Overview';
@@ -118,10 +119,14 @@ export default function ResultSummary() {
                     }
                     // use non-capture group to ignore words evaluation and release if present
                     const regex =
-                        /^jdk(\d+).?(?:-evaluation|-release)?-(\w+)-(\w+)-(\w+)/i;
+                        /^jdk(\d*).?(?:-evaluation|-release)?-(\w+)-(\w+)-(\w+)/i;
                     const tokens = buildName.match(regex);
                     if (Array.isArray(tokens) && tokens.length > 4) {
                         jdkVersion = tokens[1];
+                        if (jdkVersion == '') {
+                            const callTipVersion = async () =>
+                                (jdkVersion = await fetchTipVersion());
+                        }
                         if (buildName.includes('alpine-linux')) {
                             platform = `${tokens[4]}_alpine-linux`;
                             if (buildName.includes('x64')) {

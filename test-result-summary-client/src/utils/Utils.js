@@ -89,3 +89,25 @@ export const fetchData = async (url) => {
         console.error(e);
     }
 };
+
+var cachedTipVersion = null;
+export const fetchTipVersion = async () => {
+    console.warn(`Entering fetchTipVersion`);
+    if (cachedTipVersion == null) {
+        const url = 'https://api.adoptium.net/v3/info/available_releases';
+        try {
+            const response = await fetch(url, {
+                method: 'get',
+            });
+            const jsonResponse = await response.json();
+            cachedTipVersion = JSON.parse(jsonResponse).tip_version;
+        } catch (e) {
+            console.error(e);
+            console.error(
+                'Warning: Unable to fetch tip_version, hard-coding cachedTipVersion'
+            );
+            cachedTipVersion = 25;
+        }
+    }
+    return cachedTipVersion;
+};
