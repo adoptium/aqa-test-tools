@@ -117,11 +117,16 @@ export default function ResultSummary() {
                         jdkImpl = 'j9';
                     }
                     // use non-capture group to ignore words evaluation and release if present
-                    const regex =
-                        /^jdk(\d+).?(?:-evaluation|-release)?-(\w+)-(\w+)-(\w+)/i;
+                    const regex = /^jdk(\d*).?(?:-evaluation|-release)?-(\w+)-(\w+)-(\w+)/i;
                     const tokens = buildName.match(regex);
                     if (Array.isArray(tokens) && tokens.length > 4) {
                         jdkVersion = tokens[1];
+                        const parentRegex = /openjdk(\d*)-pipeline/i;
+                        if (jdkVersion == '' && parentBuildInfo.buildName) {
+                            jdkVersion = parentBuildInfo.buildName.match(
+                                parentRegex
+                            ).tokens[1];
+                        }
                         if (buildName.includes('alpine-linux')) {
                             platform = `${tokens[4]}_alpine-linux`;
                             if (buildName.includes('x64')) {
@@ -139,8 +144,7 @@ export default function ResultSummary() {
                         }
                     }
                 } else if (buildName.startsWith('build')) {
-                    const regex =
-                        /Build_JDK(.+?)_(.+?_.+?(_xl|_fips)?)(_.+)?$/i;
+                    const regex = /Build_JDK(.+?)_(.+?_.+?(_xl|_fips)?)(_.+)?$/i;
                     const tokens = buildName.match(regex);
                     if (Array.isArray(tokens) && tokens.length > 3) {
                         jdkVersion = tokens[1];
