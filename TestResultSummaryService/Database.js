@@ -191,7 +191,132 @@ class Database {
         ]);
         return result[0] || {};
     }
+    
+    async getRerunDetails(query) {
+        const url = query.url;
+        const buildName = query.buildName;
+        let id = query.id;
+        let buildNum = query.buildNum;
+        let matchQuery = {};
+        if (id) {
+            const _id = new ObjectID(id);
+            matchQuery = { _id };
+        } else if (url && buildName && buildNum) {
+            if (buildNum && parseInt(buildNum, 10)) {
+                buildNum = parseInt(buildNum, 10);
+            } else {
+                return { error: `invalid buildNum: ${buildNum}` };
+            }
+            matchQuery = { url, buildName, buildNum };
+        } else {
+            return {
+                error: `Cannot find id ${id}, url ${url}, buildName ${buildName} or buildNum ${buildNum}`,
+            };
+        }
+    
+        let buildNameRegex = `^Test.*`;
+        if (query.level) buildNameRegex = `${buildNameRegex}${query.level}..*`;
+        if (query.group) buildNameRegex = `${buildNameRegex}${query.group}-.*`;
+        if (query.platform)
+            buildNameRegex = `${buildNameRegex}${query.platform}`;
+        try {
+            const result = await this.aggregate([
+            { $match: matchQuery },
+            {
+                $graphLookup: {
+                    from: 'testResults',
+                    startWith: '$_id',
+                    connectFromField: '_id',
+                    connectToField: 'parentId',
+                    as: 'childBuilds',
+                },
+            },
+            // {
+            //     $project: {
+            //         childBuilds: '$childBuilds',
+            //     },
+            // },
+            {
+                $project: {
+                  manual_rerun_needed: {
+                    $size: {
+                        $filter: {
+                        input: '$childBuilds',
+                        as: 'build',
+                        cond: {
+                                $and: [
+                                { $in: ['$$build.buildResult', ['UNSTABLE', 'FAILED', 'ABORTED']] },
+                                {
+                                    $or: [
+                                    {
+                                      $regexMatch: { input: '$$build.buildName', regex: /_rerun$/ }
+                                    },
+                                    {
+                                        // If buildName does not end with '_rerun', check if another build with the same name exists that ends with '_rerun'
+                                        $and: [
+                                        { $not: [{ $regexMatch: { input: '$$build.buildName', regex: /_rerun$/ } }] },
+                                        {
+                                            // Veriy that there is no '_rerun' build for this build
+                                            $eq: [
+                                            {
+                                                $size: {
+                                                $filter: {
+                                                    input: '$childBuilds',
+                                                    as: 'internal_build',
+                                                    cond: {
+                                                    $and: [
+                                                        {
+                                                            $regexMatch: {
+                                                                input: '$$internal_build.buildName',
+                                                                regex: { $concat: ['^', '$$build.buildName'] }
+                                                            }
+                                                            },
+                                                        { $regexMatch: { input: '$$internal_build.buildName', regex: /_rerun$/ } }
+                                                    ]
+                                                    }
+                                                }
+                                                }
+                                            },
+                                            0
+                                            ]
+                                        }
+                                        ]
+                                    }
+                                    ]
+                                }
+                                ]
+                            },
+                        }
+                    }
+                    }
+                },
+            },
+            // { $unwind: '$childBuilds' },
+            // { $match: { 'childBuilds.buildName': { $regex: buildNameRegex } } },
+            // {
+            //     $group: {
+            //         _id: id,
+            //         total: { $sum: '$childBuilds.testSummary.total' },
+            //         executed: { $sum: '$childBuilds.testSummary.executed' },
+            //         passed: { $sum: '$childBuilds.testSummary.passed' },
+            //         failed: { $sum: '$childBuilds.testSummary.failed' },
+            //         disabled: { $sum: '$childBuilds.testSummary.disabled' },
+            //         skipped: { $sum: '$childBuilds.testSummary.skipped' },
+            //         manual_rerun_needed: { $first: '$manual_rerun_needed' },
+            //     },
+            // }
+        ]);
+            console.log('Aggregation Result:', JSON.stringify(result, null, 2));
+            return result[0] || {};
 
+        } catch (error) {
+            console.error('Error:', error);
+        }
+        
+    
+        // return result[0] || {};
+    }
+    
     async getRootBuildId(id) {
         const _id = new ObjectID(id);
         const info = { _id };

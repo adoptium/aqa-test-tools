@@ -18,11 +18,16 @@ export default class Overview extends Component {
             parentBuildInfo,
             summary,
             machinesData,
+            rerunSummary,
             childBuildsResult,
             sdkBuilds,
             javaVersion,
         } = this.props;
 
+        console.log('Yossi: summary = ', summary);
+        console.log('Yossi: rerunSummary = ', rerunSummary);
+
+        
         if (id && parentBuildInfo) {
             const {
                 passed = 0,
@@ -33,6 +38,7 @@ export default class Overview extends Component {
                 total = 0,
             } = summary;
             const machineFailures = machinesData;
+            const {manual_rerun_needed = 0} = rerunSummary;
             const passPercentage =
                 (parseInt(passed) / parseInt(executed)) * 100;
 
@@ -113,8 +119,8 @@ export default class Overview extends Component {
                     </div>
                     <div style={{ fontSize: '18px' }}>
                         <Row gutter={[16, 16]}>
-                            <Col span={4}>
-                                <Divider orientation="left">
+                            <Col span={3}>
+                                <Divider orientation="left" style={{ marginLeft: -10 }}>
                                     Test Summary
                                 </Divider>
                                 <BuildLink
@@ -127,7 +133,7 @@ export default class Overview extends Component {
                                 <br />
                                 <BuildLink
                                     id={id}
-                                    label="Failed: "
+                                    label="Failed - TEST: "
                                     link={failed}
                                     testSummaryResult="failed"
                                     buildNameRegex="^Test.*"
@@ -167,7 +173,7 @@ export default class Overview extends Component {
                             </Col>
 
                             <Col span={5}>
-                                <Divider orientation="left">
+                                <Divider orientation="left" style={{ marginLeft: -10 }}>
                                     Test Failures By Machine
                                 </Divider>
                                 {machineFailures &&
@@ -188,13 +194,23 @@ export default class Overview extends Component {
                                 )}
                             </Col>
 
-                            <Col span={5}>
-                                <Divider orientation="left">
+                            <Col span={4}>
+                                <Divider orientation="left" style={{ marginLeft: -10 }}>
+                                    Additional Metrics
+                                </Divider>
+                                <div>
+                                    <strong>Manual Rerun Needed:</strong>{' '}
+                                    {manual_rerun_needed}
+                                </div>
+                            </Col>
+
+                            <Col span={3}>
+                                <Divider orientation="left" style={{ marginLeft: -10 }}>
                                     Pass Percentage
                                 </Divider>
                                 <div>
                                     <Tooltip title="Pass % = (Passed/Executed) * 100">
-                                        <span style={{ fontSize: '38px' }}>
+                                        <span style={{ fontSize: '32px' }}>
                                             {passPercentage
                                                 ? passPercentage.toFixed(2) +
                                                   '%'
@@ -204,8 +220,8 @@ export default class Overview extends Component {
                                 </div>
                             </Col>
 
-                            <Col span={5}>
-                                <Divider orientation="left">
+                            <Col span={4}>
+                                <Divider orientation="left" style={{ marginLeft: -10 }}>
                                     Build Result
                                 </Divider>
                                 <div>
@@ -230,8 +246,8 @@ export default class Overview extends Component {
                                 </div>
                             </Col>
 
-                            <Col span={5}>
-                                <Divider orientation="left">
+                            <Col span={5} style={{ marginLeft: -10 }}>
+                                <Divider orientation="left" style={{ marginLeft: -10 }}>
                                     Build Metadata
                                 </Divider>
                                 <div>
