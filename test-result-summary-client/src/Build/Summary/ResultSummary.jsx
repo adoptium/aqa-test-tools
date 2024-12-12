@@ -38,6 +38,7 @@ export default function ResultSummary() {
         sdkBuilds: [],
         buildMap: {},
         summary: {},
+        machinesData: {},
         parentBuildInfo: {},
         childBuildsResult: 'UNDEFINED',
         javaVersion: null,
@@ -49,6 +50,11 @@ export default function ResultSummary() {
 
             // get test summary (i.e., passed, failed, total numbers)
             const summaryRes = fetchData(`/api/getTotals?id=${parentId}`);
+
+            const machinesDataRes = fetchData(
+                `/api/GetFailedTestByMachine?parentId=${parentId}`
+            );
+            console.log('machinesDataRes = ', machinesDataRes);
 
             // get build information
             const buildInfoRes = fetchData(`/api/getData?_id=${parentId}`);
@@ -73,12 +79,14 @@ export default function ResultSummary() {
                     parentId,
                 })}`
             );
-            const [summary, buildInfo, sdkBuilds, builds] = await Promise.all([
-                summaryRes,
-                buildInfoRes,
-                sdkBuildsRes,
-                buildsRes,
-            ]);
+            const [summary, machinesData, buildInfo, sdkBuilds, builds] =
+                await Promise.all([
+                    summaryRes,
+                    machinesDataRes,
+                    buildInfoRes,
+                    sdkBuildsRes,
+                    buildsRes,
+                ]);
             const parentBuildInfo = buildInfo[0] || {};
             let childBuildsResult = 'UNDEFINED';
             let javaVersion = null;
@@ -325,6 +333,7 @@ export default function ResultSummary() {
                 ...prevState,
                 buildMap,
                 summary,
+                machinesData,
                 parentBuildInfo,
                 selectedPlatforms: platformOpts,
                 allPlatforms: platformOpts,
@@ -350,6 +359,7 @@ export default function ResultSummary() {
         selectedJdkImpls,
         allJdkImpls,
         summary,
+        machinesData,
         parentBuildInfo,
         childBuildsResult,
         sdkBuilds,
@@ -366,6 +376,7 @@ export default function ResultSummary() {
                     id={parentId}
                     parentBuildInfo={parentBuildInfo}
                     summary={summary}
+                    machinesData={machinesData}
                     childBuildsResult={childBuildsResult}
                     sdkBuilds={sdkBuilds}
                     javaVersion={javaVersion}

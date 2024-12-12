@@ -2,40 +2,56 @@ const { TestResultsDB } = require('../Database');
 
 module.exports = async (req, res) => {
     try {
-        const { buildId } = req.query;
+        const { parentId } = req.query;
 
-        if (!buildId) {
-            return res.status(400).send({ error: 'buildId is required' });
+        if (!parentId) {
+            return res.status(400).send({ error: 'parentId is required' });
         }
 
         const db = new TestResultsDB();
 
-        // Fetch the build's tests and machine
+        // Fetch all tests and their machines for the specified parentId
         const buildData = await db.getSpecificData(
-            { _id: buildId },
+            { parentId: parentId },
             { tests: 1, machine: 1 }
         );
 
         if (!buildData || buildData.length === 0) {
-            return res.status(404).send({ error: 'Build not found' });
+            return res
+                .status(404)
+                .send({ error: 'No builds found for the given parentId' });
         }
 
-        // Map to store machine and failed test count
+        // Initialize a map to store machine names and their respective failed test counts
         const failedTestsByMachine = {};
 
-        const { tests, machine } = buildData[0];
-        if (tests && Array.isArray(tests)) {
-            for (const test of tests) {
-                if (test.testResult === 'FAILED') {
-                    failedTestsByMachine[machine] =
-                        (failedTestsByMachine[machine] || 0) + 1;
+        // Iterate through all builds and process tests
+        for (const build of buildData) {
+            const { tests, machine } = build;
+
+            if (tests && Array.isArray(tests)) {
+                for (const test of tests) {
+                    if (test.testResult === 'FAILED') {
+                        // Accumulate failure count for the machine
+                        failedTestsByMachine[machine] =
+                            (failedTestsByMachine[machine] || 0) + 1;
+                    }
                 }
             }
         }
 
-        res.send(failedTestsByMachine);
+        // Format the result as an array of dictionaries with "machine" and "failedTest"
+        const formattedResult = Object.entries(failedTestsByMachine).map(
+            ([machine, failedTests]) => ({
+                machine,
+                failedTests,
+            })
+        );
+
+        // Send the formatted result as the response
+        res.send(formattedResult);
     } catch (error) {
-        console.error('Error:', error);
+        console.error('Error processing request:', error);
         res.status(500).send({ error: 'Internal Server Error' });
     }
 };

@@ -186,25 +186,6 @@ class Database {
                     failed: { $sum: '$childBuilds.testSummary.failed' },
                     disabled: { $sum: '$childBuilds.testSummary.disabled' },
                     skipped: { $sum: '$childBuilds.testSummary.skipped' },
-                    machineFailures: {
-                        $push: {
-                            machine: '$childBuilds.machine',
-                            failedTests: {
-                                $size: {
-                                    $filter: {
-                                        input: '$childBuilds.tests',
-                                        as: 'test',
-                                        cond: {
-                                            $eq: [
-                                                '$$test.testResult',
-                                                'FAILED',
-                                            ],
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                    },
                 },
             },
         ]);

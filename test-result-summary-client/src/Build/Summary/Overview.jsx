@@ -17,6 +17,7 @@ export default class Overview extends Component {
             id,
             parentBuildInfo,
             summary,
+            machinesData,
             childBuildsResult,
             sdkBuilds,
             javaVersion,
@@ -30,8 +31,8 @@ export default class Overview extends Component {
                 skipped = 0,
                 executed = 0,
                 total = 0,
-                machineFailures = {},
             } = summary;
+            const machineFailures = machinesData;
             const passPercentage =
                 (parseInt(passed) / parseInt(executed)) * 100;
 
@@ -178,13 +179,8 @@ export default class Overview extends Component {
                                         ) // Sort by failedTests (descending)
                                         .map(({ machine, failedTests }) => (
                                             <div key={machine}>
-                                                <BuildLink
-                                                    id={id}
-                                                    label={`${machine} - Failures: `}
-                                                    link={failedTests}
-                                                    testSummaryResult="machine"
-                                                    buildNameRegex="^Test.*"
-                                                />
+                                                {machine}: Failures:{' '}
+                                                {failedTests}
                                             </div>
                                         ))
                                 ) : (
