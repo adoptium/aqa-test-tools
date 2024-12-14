@@ -56,7 +56,7 @@ export default function ResultSummary() {
             // get all SDK builds info
             const sdkBuildsRes = fetchData(
                 `/api/getAllChildBuilds${params({
-                    buildNameRegex: '^(jdk[0-9]{1,2}|Build_)',
+                    buildNameRegex: '^(jdk[0-9]{1,2}|jdk-|Build_)',
                     parentId,
                 })}`
             );
@@ -93,8 +93,11 @@ export default function ResultSummary() {
                 if (buildName.includes('_smoketests')) {
                     level = 'extended';
                 }
-
                 let jdkVersion, platform, jdkImpl;
+                const parentRegex = /openjdk(\d+)-pipeline/i;
+                const parenttokens =
+                    parentBuildInfo.buildName.match(parentRegex);
+                jdkVersion = parenttokens[1];
 
                 if (buildName.startsWith('jdk')) {
                     // SDK build and Smoke test platform format does not match with test build. Need to match the platform value.
@@ -121,12 +124,8 @@ export default function ResultSummary() {
                         /^jdk(\d*).?(?:-evaluation|-release)?-(\w+)-(\w+)-(\w+)/i;
                     const tokens = buildName.match(regex);
                     if (Array.isArray(tokens) && tokens.length > 4) {
-                        jdkVersion = tokens[1];
-                        const parentRegex = /openjdk(\d+)-pipeline/i;
-                        if (jdkVersion == '' && parentBuildInfo.buildName) {
-                            jdkVersion =
-                                parentBuildInfo.buildName.match(parentRegex)
-                                    .tokens[1];
+                        if (!jdkVersion && tokens[1]) {
+                            jdkVersion = tokens[1];
                         }
                         if (buildName.includes('alpine-linux')) {
                             platform = `${tokens[4]}_alpine-linux`;
