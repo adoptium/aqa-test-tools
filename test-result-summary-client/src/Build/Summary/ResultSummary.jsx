@@ -56,7 +56,7 @@ export default function ResultSummary() {
             // get all SDK builds info
             const sdkBuildsRes = fetchData(
                 `/api/getAllChildBuilds${params({
-                    buildNameRegex: '^(jdk[0-9]{1,2}|Build_)',
+                    buildNameRegex: '^(jdk[0-9]{1,2}|jdk-|Build_)',
                     parentId,
                 })}`
             );
@@ -85,6 +85,13 @@ export default function ResultSummary() {
             const buildMap = {};
             let jdkVersionOpts = [];
             let jdkImplOpts = [];
+            let jdkVersion;
+            if (parentBuildInfo && parentBuildInfo.buildName) {
+                const parentRegex = /openjdk(\d+)-pipeline/i;
+                const parenttokens =
+                    parentBuildInfo.buildName.match(parentRegex);
+                jdkVersion = parenttokens[1];
+            }
 
             sdkBuilds.forEach((build) => {
                 const buildName = build.buildName.toLowerCase();
@@ -93,8 +100,7 @@ export default function ResultSummary() {
                 if (buildName.includes('_smoketests')) {
                     level = 'extended';
                 }
-
-                let jdkVersion, platform, jdkImpl;
+                let platform, jdkImpl;
 
                 if (buildName.startsWith('jdk')) {
                     // SDK build and Smoke test platform format does not match with test build. Need to match the platform value.
@@ -118,10 +124,15 @@ export default function ResultSummary() {
                     }
                     // use non-capture group to ignore words evaluation and release if present
                     const regex =
-                        /^jdk(\d+).?(?:-evaluation|-release)?-(\w+)-(\w+)-(\w+)/i;
+                        /^jdk(\d*).?(?:-evaluation|-release)?-(\w+)-(\w+)-(\w+)/i;
                     const tokens = buildName.match(regex);
                     if (Array.isArray(tokens) && tokens.length > 4) {
-                        jdkVersion = tokens[1];
+                        if (tokens[1]) {
+                            jdkVersion = tokens[1];
+                        }
+                        if (!jdkVersion) {
+                            console.warn('jdkVersion is undefined');
+                        }
                         if (buildName.includes('alpine-linux')) {
                             platform = `${tokens[4]}_alpine-linux`;
                             if (buildName.includes('x64')) {
