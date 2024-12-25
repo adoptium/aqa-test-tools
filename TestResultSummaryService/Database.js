@@ -231,90 +231,127 @@ class Database {
                     as: 'childBuilds',
                 },
             },
-            // {
-            //     $project: {
-            //         childBuilds: '$childBuilds',
-            //     },
-            // },
             {
                 $project: {
-                  manual_rerun_needed: {
-                    $size: {
-                        $filter: {
-                        input: '$childBuilds',
-                        as: 'build',
-                        cond: {
-                                $and: [
-                                { $in: ['$$build.buildResult', ['UNSTABLE', 'FAILED', 'ABORTED']] },
-                                {
-                                    $or: [
-                                    {
-                                      $regexMatch: { input: '$$build.buildName', regex: /_rerun$/ }
-                                    },
-                                    {
-                                        // If buildName does not end with '_rerun', check if another build with the same name exists that ends with '_rerun'
-                                        $and: [
-                                        { $not: [{ $regexMatch: { input: '$$build.buildName', regex: /_rerun$/ } }] },
-                                        {
-                                            // Veriy that there is no '_rerun' build for this build
-                                            $eq: [
-                                            {
-                                                $size: {
-                                                $filter: {
-                                                    input: '$childBuilds',
-                                                    as: 'internal_build',
-                                                    cond: {
-                                                    $and: [
-                                                        {
-                                                            $regexMatch: {
-                                                                input: '$$internal_build.buildName',
-                                                                regex: { $concat: ['^', '$$build.buildName'] }
-                                                            }
-                                                            },
-                                                        { $regexMatch: { input: '$$internal_build.buildName', regex: /_rerun$/ } }
-                                                    ]
-                                                    }
-                                                }
-                                                }
-                                            },
-                                            0
-                                            ]
-                                        }
-                                        ]
-                                    }
-                                    ]
-                                }
-                                ]
-                            },
-                        }
-                    }
-                    }
+                    childBuilds: '$childBuilds',
                 },
             },
-            // { $unwind: '$childBuilds' },
-            // { $match: { 'childBuilds.buildName': { $regex: buildNameRegex } } },
-            // {
-            //     $group: {
-            //         _id: id,
-            //         total: { $sum: '$childBuilds.testSummary.total' },
-            //         executed: { $sum: '$childBuilds.testSummary.executed' },
-            //         passed: { $sum: '$childBuilds.testSummary.passed' },
-            //         failed: { $sum: '$childBuilds.testSummary.failed' },
-            //         disabled: { $sum: '$childBuilds.testSummary.disabled' },
-            //         skipped: { $sum: '$childBuilds.testSummary.skipped' },
-            //         manual_rerun_needed: { $first: '$manual_rerun_needed' },
-            //     },
-            // }
+            {
+                $addFields: {
+                    manual_rerun_needed_list: {
+                      $filter: {
+                          input: '$childBuilds',
+                          as: 'build',
+                          cond: {
+                                  $and: [
+                                  { $in: ['$$build.buildResult', ['UNSTABLE', 'FAILED', 'ABORTED']] },
+                                  {
+                                      $or: [
+                                      {
+                                        $regexMatch: { input: '$$build.buildName', regex: /_rerun$/ }
+                                      },
+                                      {
+                                          // If buildName does not end with '_rerun', check if another build with the same name exists that ends with '_rerun'
+                                          $and: [
+                                          { $not: [{ $regexMatch: { input: '$$build.buildName', regex: /_rerun$/ } }] },
+                                          {
+                                              // Veriy that there is no '_rerun' build for this build
+                                              $eq: [
+                                              {
+                                                  $size: {
+                                                  $filter: {
+                                                      input: '$childBuilds',
+                                                      as: 'internal_build',
+                                                      cond: {
+                                                      $and: [
+                                                          {
+                                                              $regexMatch: {
+                                                                  input: '$$internal_build.buildName',
+                                                                  regex: { $concat: ['^', '$$build.buildName'] }
+                                                              }
+                                                              },
+                                                          { $regexMatch: { input: '$$internal_build.buildName', regex: /_rerun$/ } }
+                                                      ]
+                                                      }
+                                                  }
+                                                  }
+                                              },
+                                              0
+                                              ]
+                                          }
+                                          ]
+                                      }
+                                      ]
+                                  }
+                                  ]
+                              },
+                          }
+                      }
+                  },
+            },
+            {
+                $addFields: {
+                    manual_rerun_needed: {
+                        $size:
+                            '$manual_rerun_needed_list'
+                    }
+                  },
+            },
+            {
+                $addFields: {
+                    tests_needed_manual_rerun: {
+                        $reduce: {
+                            input: '$manual_rerun_needed_list',
+                            initialValue: 0,
+                            in: {
+                                $add: [
+                                    '$$value',
+                                    { $ifNull: ['$$this.testSummary.failed', 0] }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    manual_rerun_needed_regex: {
+                        $concat: [
+                            '^(',
+                            {
+                                $reduce: {
+                                    input: '$manual_rerun_needed_list',
+                                    initialValue: '',
+                                    in: {
+                                        $cond: [
+                                            { $eq: ['$$value', ''] }, // If the first item
+                                            { $replaceAll: { input: '$$this.buildName', find: '.', replacement: '\\.' } },
+                                            {
+                                                $concat: [
+                                                    '$$value',
+                                                    '|',
+                                                    { $replaceAll: { input: '$$this.buildName', find: '.', replacement: '\\.' } }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            ')$'
+                        ]
+                    }
+                }
+            },
+            {
+                $unset: ['childBuilds', 'manual_rerun_needed_list']
+            }
         ]);
             console.log('Aggregation Result:', JSON.stringify(result, null, 2));
             return result[0] || {};
 
         } catch (error) {
             console.error('Error:', error);
-        }
-        
-    
-        // return result[0] || {};
+        }    
     }
     
     async getRootBuildId(id) {

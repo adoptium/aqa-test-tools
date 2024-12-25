@@ -27,7 +27,6 @@ export default class Overview extends Component {
         console.log('Yossi: summary = ', summary);
         console.log('Yossi: rerunSummary = ', rerunSummary);
 
-        
         if (id && parentBuildInfo) {
             const {
                 passed = 0,
@@ -38,7 +37,11 @@ export default class Overview extends Component {
                 total = 0,
             } = summary;
             const machineFailures = machinesData;
-            const {manual_rerun_needed = 0} = rerunSummary;
+            const {
+                manual_rerun_needed = 0,
+                tests_needed_manual_rerun = 0,
+                manual_rerun_needed_regex = '',
+            } = rerunSummary;
             const passPercentage =
                 (parseInt(passed) / parseInt(executed)) * 100;
 
@@ -120,7 +123,10 @@ export default class Overview extends Component {
                     <div style={{ fontSize: '18px' }}>
                         <Row gutter={[16, 16]}>
                             <Col span={3}>
-                                <Divider orientation="left" style={{ marginLeft: -10 }}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
                                     Test Summary
                                 </Divider>
                                 <BuildLink
@@ -173,7 +179,10 @@ export default class Overview extends Component {
                             </Col>
 
                             <Col span={5}>
-                                <Divider orientation="left" style={{ marginLeft: -10 }}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
                                     Test Failures By Machine
                                 </Divider>
                                 {machineFailures &&
@@ -195,17 +204,30 @@ export default class Overview extends Component {
                             </Col>
 
                             <Col span={4}>
-                                <Divider orientation="left" style={{ marginLeft: -10 }}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
                                     Additional Metrics
                                 </Divider>
+                                <BuildLink
+                                    id={id}
+                                    label="Manual Rerun Needed: "
+                                    link={manual_rerun_needed}
+                                    testSummaryResult="total"
+                                    buildNameRegex={manual_rerun_needed_regex}
+                                />
                                 <div>
-                                    <strong>Manual Rerun Needed:</strong>{' '}
-                                    {manual_rerun_needed}
+                                    <span>Manual Rerun Targets Involved :</span>{' '}
+                                    {tests_needed_manual_rerun}
                                 </div>
                             </Col>
 
                             <Col span={3}>
-                                <Divider orientation="left" style={{ marginLeft: -10 }}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
                                     Pass Percentage
                                 </Divider>
                                 <div>
@@ -221,7 +243,10 @@ export default class Overview extends Component {
                             </Col>
 
                             <Col span={4}>
-                                <Divider orientation="left" style={{ marginLeft: -10 }}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
                                     Build Result
                                 </Divider>
                                 <div>
@@ -247,7 +272,10 @@ export default class Overview extends Component {
                             </Col>
 
                             <Col span={5} style={{ marginLeft: -10 }}>
-                                <Divider orientation="left" style={{ marginLeft: -10 }}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
                                     Build Metadata
                                 </Divider>
                                 <div>
