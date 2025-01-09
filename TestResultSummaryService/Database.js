@@ -213,7 +213,7 @@ class Database {
                 error: `Cannot find id ${id}, url ${url}, buildName ${buildName} or buildNum ${buildNum}`,
             };
         }
-    
+
         let buildNameRegex = `^Test.*`;
         if (query.level) buildNameRegex = `${buildNameRegex}${query.level}..*`;
         if (query.group) buildNameRegex = `${buildNameRegex}${query.group}-.*`;
@@ -354,6 +354,90 @@ class Database {
         }    
     }
     
+    async getJobsDetails(query) {
+        const url = query.url;
+        const buildName = query.buildName;
+        let id = query.id;
+        let buildNum = query.buildNum;
+        let matchQuery = {};
+        if (id) {
+            const _id = new ObjectID(id);
+            matchQuery = { _id };
+        } else if (url && buildName && buildNum) {
+            if (buildNum && parseInt(buildNum, 10)) {
+                buildNum = parseInt(buildNum, 10);
+            } else {
+                return { error: `invalid buildNum: ${buildNum}` };
+            }
+            matchQuery = { url, buildName, buildNum };
+        } else {
+            return {
+                error: `Cannot find id ${id}, url ${url}, buildName ${buildName} or buildNum ${buildNum}`,
+            };
+        }
+
+        let buildNameRegex = `^Test.*`;
+        if (query.level) buildNameRegex = `${buildNameRegex}${query.level}..*`;
+        if (query.group) buildNameRegex = `${buildNameRegex}${query.group}-.*`;
+        if (query.platform)
+            buildNameRegex = `${buildNameRegex}${query.platform}`;
+        try {
+            const result = await this.aggregate([
+            { $match: matchQuery },
+            {
+                $graphLookup: {
+                    from: 'testResults',
+                    startWith: '$_id',
+                    connectFromField: '_id',
+                    connectToField: 'parentId',
+                    as: 'childBuilds',
+                },
+            },
+            {
+                $project: {
+                    childBuilds: '$childBuilds',
+                },
+            },
+            {
+                $addFields: {
+                    job_success_rate: {
+                        $round: [
+                            {
+                                $multiply: [
+                                    {
+                                        $divide: [
+                                            {
+                                                $size: {
+                                                    $filter: {
+                                                        input: "$childBuilds",
+                                                        as: "build",
+                                                        cond: { $eq: ["$$build.buildResult", "SUCCESS"] }
+                                                    }
+                                                }
+                                            },
+                                            { $size: "$childBuilds" }
+                                        ]
+                                    },
+                                    100
+                                ]
+                            },
+                            2
+                        ]
+                    }
+                }
+            },
+            {
+                $unset: ['childBuilds']
+            }
+        ]);
+            console.log('Aggregation Result:', JSON.stringify(result, null, 2));
+            return result[0] || {};
+
+        } catch (error) {
+            console.error('Error:', error);
+        }    
+    }
+
     async getRootBuildId(id) {
         const _id = new ObjectID(id);
         const info = { _id };

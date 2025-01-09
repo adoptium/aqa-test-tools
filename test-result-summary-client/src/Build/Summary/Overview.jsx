@@ -19,6 +19,7 @@ export default class Overview extends Component {
             summary,
             machinesData,
             rerunSummary,
+            jobsDetailsSummary,
             childBuildsResult,
             sdkBuilds,
             javaVersion,
@@ -26,6 +27,7 @@ export default class Overview extends Component {
 
         console.log('Yossi: summary = ', summary);
         console.log('Yossi: rerunSummary = ', rerunSummary);
+        console.log('Yossi: jobsDetailsSummary = ', jobsDetailsSummary);
 
         if (id && parentBuildInfo) {
             const {
@@ -42,6 +44,7 @@ export default class Overview extends Component {
                 tests_needed_manual_rerun = 0,
                 manual_rerun_needed_regex = '',
             } = rerunSummary;
+            const { job_success_rate = 0 } = jobsDetailsSummary;
             const passPercentage =
                 (parseInt(passed) / parseInt(executed)) * 100;
 
@@ -176,6 +179,17 @@ export default class Overview extends Component {
                                     testSummaryResult="total"
                                     buildNameRegex="^Test.*"
                                 />
+                                <div>
+                                    <Tooltip title="Tests Success % = (Tests Passed/Tests Executed) * 100">
+                                        <span>
+                                            <strong>Tests Success Rate: </strong> 
+                                            {passPercentage
+                                                ? passPercentage.toFixed(2) +
+                                                  '%'
+                                                : 'N/A'}
+                                        </span>
+                                    </Tooltip>
+                                </div>
                             </Col>
 
                             <Col span={5}>
@@ -218,23 +232,19 @@ export default class Overview extends Component {
                                     buildNameRegex={manual_rerun_needed_regex}
                                 />
                                 <div>
-                                    <span>Manual Rerun Targets Involved :</span>{' '}
+                                    <span>
+                                        <strong>
+                                            Manual Rerun Targets Involved:
+                                        </strong> 
                                     {tests_needed_manual_rerun}
+                                    </span>
                                 </div>
-                            </Col>
-
-                            <Col span={3}>
-                                <Divider
-                                    orientation="left"
-                                    style={{ marginLeft: -10 }}
-                                >
-                                    Pass Percentage
-                                </Divider>
                                 <div>
-                                    <Tooltip title="Pass % = (Passed/Executed) * 100">
-                                        <span style={{ fontSize: '32px' }}>
-                                            {passPercentage
-                                                ? passPercentage.toFixed(2) +
+                                    <Tooltip title="Job Success % = (Job Passed/Job Executed) * 100">
+                                        <span>
+                                        <strong>Job Success Rate: </strong>
+                                        {job_success_rate
+                                                ? job_success_rate.toFixed(2) +
                                                   '%'
                                                 : 'N/A'}
                                         </span>
@@ -242,7 +252,7 @@ export default class Overview extends Component {
                                 </div>
                             </Col>
 
-                            <Col span={4}>
+                            <Col span={5}>
                                 <Divider
                                     orientation="left"
                                     style={{ marginLeft: -10 }}
