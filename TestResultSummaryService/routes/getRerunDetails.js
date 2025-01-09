@@ -13,6 +13,6 @@ const { TestResultsDB } = require('../Database');
 
 module.exports = async (req, res) => {
     const testResultsDB = new TestResultsDB();
-    const result = await testResultsDB.getRerunDetails(req.query);
+    const result = await testResultsDB.testResultsBaseAggregation(req.query, 'rerunDetails');
     res.send(result);
 };

@@ -131,7 +131,13 @@ class Database {
     }
 
     // ToDo: impl check can be added once we have impl stored
-    async getTotals(query) {
+    /**
+     * Base function for aggregating data from testResults.
+     * @param {Object} query - The query object.
+     * @param {string} type - The type of request (e.g., 'totals', 'rerunDetails', 'jobsDetails').
+     * @returns {Object} - The aggregation result.
+     */
+    async testResultsBaseAggregation(query, type) {
         const url = query.url;
         const buildName = query.buildName;
         let id = query.id;
@@ -159,27 +165,62 @@ class Database {
         if (query.platform)
             buildNameRegex = `${buildNameRegex}${query.platform}`;
 
-        const result = await this.aggregate([
-            { $match: matchQuery },
-            {
-                $graphLookup: {
-                    from: 'testResults',
-                    startWith: '$_id',
-                    connectFromField: '_id',
-                    connectToField: 'parentId',
-                    as: 'childBuilds',
+        // Call the routing function to get the specific aggregation
+        const specificAggregation = this.getSpecificAggregation(type, buildNameRegex, query);
+
+        try {
+            const result = await this.aggregate([
+                { $match: matchQuery },
+                {
+                    $graphLookup: {
+                        from: 'testResults',
+                        startWith: '$_id',
+                        connectFromField: '_id',
+                        connectToField: 'parentId',
+                        as: 'childBuilds',
+                    },
                 },
-            },
-            {
-                $project: {
-                    childBuilds: '$childBuilds',
+                {
+                    $project: {
+                        childBuilds: '$childBuilds',
+                    },
                 },
-            },
+                ...specificAggregation,
+            ]);
+            console.log('Aggregation Result:', JSON.stringify(result, null, 2));
+            return result[0] || {};
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    /**
+     * Routing function to get the specific aggregation based on the type.
+     * @param {string} type - The type of request (e.g., 'totals', 'rerunDetails', 'jobsDetails').
+     * @param {string} buildNameRegex - The build name regex.
+     * @param {Object} query - The query object.
+     * @returns {Array} - The specific aggregation steps.
+     */
+    getSpecificAggregation(type, buildNameRegex, query) {
+        switch (type) {
+            case 'totals':
+                return this.getTotalsAggregation(query, buildNameRegex);
+            case 'rerunDetails':
+                return this.getRerunDetailsAggregation();
+            case 'jobsDetails':
+                return this.getJobsDetailsAggregation();
+            default:
+                throw new Error(`Unknown type: ${type}`);
+        }
+    }
+
+    getTotalsAggregation(query, buildNameRegex) {
+        return [
             { $unwind: '$childBuilds' },
             { $match: { 'childBuilds.buildName': { $regex: buildNameRegex } } },
             {
                 $group: {
-                    _id: id,
+                    _id: query.id,
                     total: { $sum: '$childBuilds.testSummary.total' },
                     executed: { $sum: '$childBuilds.testSummary.executed' },
                     passed: { $sum: '$childBuilds.testSummary.passed' },
@@ -188,54 +229,11 @@ class Database {
                     skipped: { $sum: '$childBuilds.testSummary.skipped' },
                 },
             },
-        ]);
-        return result[0] || {};
+        ];
     }
-    
-    async getRerunDetails(query) {
-        const url = query.url;
-        const buildName = query.buildName;
-        let id = query.id;
-        let buildNum = query.buildNum;
-        let matchQuery = {};
-        if (id) {
-            const _id = new ObjectID(id);
-            matchQuery = { _id };
-        } else if (url && buildName && buildNum) {
-            if (buildNum && parseInt(buildNum, 10)) {
-                buildNum = parseInt(buildNum, 10);
-            } else {
-                return { error: `invalid buildNum: ${buildNum}` };
-            }
-            matchQuery = { url, buildName, buildNum };
-        } else {
-            return {
-                error: `Cannot find id ${id}, url ${url}, buildName ${buildName} or buildNum ${buildNum}`,
-            };
-        }
 
-        let buildNameRegex = `^Test.*`;
-        if (query.level) buildNameRegex = `${buildNameRegex}${query.level}..*`;
-        if (query.group) buildNameRegex = `${buildNameRegex}${query.group}-.*`;
-        if (query.platform)
-            buildNameRegex = `${buildNameRegex}${query.platform}`;
-        try {
-            const result = await this.aggregate([
-            { $match: matchQuery },
-            {
-                $graphLookup: {
-                    from: 'testResults',
-                    startWith: '$_id',
-                    connectFromField: '_id',
-                    connectToField: 'parentId',
-                    as: 'childBuilds',
-                },
-            },
-            {
-                $project: {
-                    childBuilds: '$childBuilds',
-                },
-            },
+    getRerunDetailsAggregation() {
+        return [
             {
                 $addFields: {
                     manual_rerun_needed_list: {
@@ -342,62 +340,12 @@ class Database {
                     }
                 }
             },
-            {
-                $unset: ['childBuilds', 'manual_rerun_needed_list']
-            }
-        ]);
-            console.log('Aggregation Result:', JSON.stringify(result, null, 2));
-            return result[0] || {};
-
-        } catch (error) {
-            console.error('Error:', error);
-        }    
+            { $unset: ['childBuilds', 'manual_rerun_needed_list'] }
+        ];
     }
-    
-    async getJobsDetails(query) {
-        const url = query.url;
-        const buildName = query.buildName;
-        let id = query.id;
-        let buildNum = query.buildNum;
-        let matchQuery = {};
-        if (id) {
-            const _id = new ObjectID(id);
-            matchQuery = { _id };
-        } else if (url && buildName && buildNum) {
-            if (buildNum && parseInt(buildNum, 10)) {
-                buildNum = parseInt(buildNum, 10);
-            } else {
-                return { error: `invalid buildNum: ${buildNum}` };
-            }
-            matchQuery = { url, buildName, buildNum };
-        } else {
-            return {
-                error: `Cannot find id ${id}, url ${url}, buildName ${buildName} or buildNum ${buildNum}`,
-            };
-        }
 
-        let buildNameRegex = `^Test.*`;
-        if (query.level) buildNameRegex = `${buildNameRegex}${query.level}..*`;
-        if (query.group) buildNameRegex = `${buildNameRegex}${query.group}-.*`;
-        if (query.platform)
-            buildNameRegex = `${buildNameRegex}${query.platform}`;
-        try {
-            const result = await this.aggregate([
-            { $match: matchQuery },
-            {
-                $graphLookup: {
-                    from: 'testResults',
-                    startWith: '$_id',
-                    connectFromField: '_id',
-                    connectToField: 'parentId',
-                    as: 'childBuilds',
-                },
-            },
-            {
-                $project: {
-                    childBuilds: '$childBuilds',
-                },
-            },
+    getJobsDetailsAggregation() {
+        return [
             {
                 $addFields: {
                     job_success_rate: {
@@ -426,16 +374,8 @@ class Database {
                     }
                 }
             },
-            {
-                $unset: ['childBuilds']
-            }
-        ]);
-            console.log('Aggregation Result:', JSON.stringify(result, null, 2));
-            return result[0] || {};
-
-        } catch (error) {
-            console.error('Error:', error);
-        }    
+            { $unset: ['childBuilds'] }
+        ];
     }
 
     async getRootBuildId(id) {
