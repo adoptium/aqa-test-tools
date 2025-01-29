@@ -228,7 +228,7 @@ export default class Overview extends Component {
                                     id={id}
                                     label="Manual Rerun Needed: "
                                     link={manual_rerun_needed}
-                                    testSummaryResult="total"
+                                    testSummaryResult=""    // Take all results includes aborted jobs
                                     buildNameRegex={manual_rerun_needed_regex}
                                 />
                                 <div>
