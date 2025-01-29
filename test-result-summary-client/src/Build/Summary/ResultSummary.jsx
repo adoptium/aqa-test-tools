@@ -90,7 +90,7 @@ export default function ResultSummary() {
                 const parentRegex = /openjdk(\d+)-pipeline/i;
                 const parenttokens =
                     parentBuildInfo.buildName.match(parentRegex);
-                jdkVersion = parenttokens[1];
+                jdkVersion = parenttokens?.[1] ?? null;
             }
 
             sdkBuilds.forEach((build) => {
