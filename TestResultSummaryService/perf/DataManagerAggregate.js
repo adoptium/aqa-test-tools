@@ -6,6 +6,7 @@ class DataManagerAggregate {
     static aggDataCollect(childBuild) {
         let aggRawMetricValues = {};
         if (Array.isArray(childBuild.tests) && childBuild.tests.length > 0) {
+            const { buildName } = childBuild;
             for (let {
                 benchmarkName,
                 benchmarkVariant,
@@ -19,8 +20,7 @@ class DataManagerAggregate {
                     testData.metrics.length > 0
                 ) {
                     // Example: Jenkins build (running 2 benchmarks with 2 iterations) in this order: Benchmark_1, Benchmark_2, Benchmark_1, Benchmark_2.
-                    let name_variant_key =
-                        benchmarkName + '&&' + benchmarkVariant; //use benchmarkName and benchmarkVariant to make a unique name_variant key
+                    let name_variant_key = `${benchmarkName}&&${benchmarkVariant}&&${buildName}`; //use benchmarkName and benchmarkVariant to make a unique name_variant key
                     /**
                      * Check aggRawMetricValues JSON object and see if it could include an existing name_variant key,
                      * If yes, we should concatenate our raw value collections to the end of the existing name_variant value
@@ -67,15 +67,20 @@ class DataManagerAggregate {
          */
         let validAggregateInfo = true;
         const aggregateInfo = [];
-        let benchmarkName, benchmarkVariant;
+        let benchmarkName, benchmarkVariant, buildName;
         if (
             ((jdkDate && javaVersion) || (nodeRunDate && nodeVersion)) &&
             aggRawMetricValues &&
             Object.keys(aggRawMetricValues).length > 0
         ) {
             Object.keys(aggRawMetricValues).forEach(function (name_variant) {
-                benchmarkName = name_variant.split('&&')[0];
-                benchmarkVariant = name_variant.split('&&')[1];
+                const tokens = name_variant.split('&&');
+                if (tokens.length === 3) {
+                    benchmarkName = tokens[0];
+                    benchmarkVariant = tokens[1];
+                    buildName = tokens[2];
+                }
+
                 const metrics = [];
                 let benchmarkMetricsCollection =
                     aggRawMetricValues[name_variant];
@@ -130,6 +135,7 @@ class DataManagerAggregate {
                 aggregateInfo.push({
                     benchmarkName,
                     benchmarkVariant,
+                    buildName,
                     metrics,
                 });
             });
@@ -141,6 +147,7 @@ class DataManagerAggregate {
             for (let {
                 benchmarkName,
                 benchmarkVariant,
+                buildName,
                 metrics,
             } of aggregateInfo) {
                 if (

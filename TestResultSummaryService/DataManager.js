@@ -26,7 +26,7 @@ class DataManager {
             Object.keys(Parsers).map(async (type) => {
                 if (Parsers[type].canParse(buildName, output)) {
                     const parser = new Parsers[type](buildName);
-                    return await parser.parse(output);
+                    return await parser.parse(output, buildName);
                 }
             })
         );

@@ -29,6 +29,7 @@ app.get('/getLastBuildInfo', require('./getLastBuildInfo'));
 app.get('/getLogStream', require('./getLogStream'));
 app.get('/getOutputById', require('./getOutputById'));
 app.get('/getOutputByTestInfo', require('./getOutputByTestInfo'));
+app.get('/getTrafficLightData', require('./getTrafficLightData'));
 app.get('/getTestAvgDuration', require('./getTestAvgDuration'));
 app.get('/getTestInfoByBuildInfo', require('./getTestInfoByBuildInfo'));
 app.get('/getAzDoRun', require('./getAzDoRun'));
