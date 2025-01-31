@@ -61,7 +61,7 @@ export default function ResultSummary() {
                 })}`
             );
             // get all child builds info based on buildNameRegex
-            const buildNameRegex = '^Test_openjdk.*';
+            const buildNameRegex = '^(Test|Perf)_openjdk.*';
             const testSummaryResult = undefined;
             const buildResult = undefined;
 
