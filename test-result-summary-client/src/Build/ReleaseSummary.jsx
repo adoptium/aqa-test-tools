@@ -50,7 +50,7 @@ const ReleaseSummary = () => {
                 const rerunBuildsRes = fetchData(
                     `/api/getAllChildBuilds${params({
                         parentId,
-                        buildNameRegex: 'Test_openjdk.*_rerun',
+                        buildNameRegex: '(Test|Perf)_openjdk.*_rerun',
                     })}`
                 );
 
@@ -83,7 +83,10 @@ const ReleaseSummary = () => {
                                 buildResultStr = ` ⚠️ ${buildResult} ⚠️${nl}`;
                             }
 
-                            if (buildName.startsWith('Test_openjdk')) {
+                            if (
+                                buildName.startsWith('Test_openjdk') ||
+                                buildName.startsWith('Perf_openjdk')
+                            ) {
                                 let rerunLinkInfo = '';
                                 if (rerunFailedLink) {
                                     rerunLinkInfo = `Rerun [failed](${rerunFailedLink})${nl}`;

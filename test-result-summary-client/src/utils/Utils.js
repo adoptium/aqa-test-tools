@@ -7,10 +7,10 @@ export const order = (a, b) => {
 };
 export const getInfoFromBuildName = (buildName) => {
     const regex =
-        /^Test_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl|_fips140_2|_fips140_3_openjceplusfips|_fips140_3_openjceplusfips.fips140-3|_criu)?)(_.+)?$/i;
+        /^(Test|Perf)_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl|_fips140_2|_fips140_3_openjceplusfips|_fips140_3_openjceplusfips.fips140-3|_criu)?)(_.+)?$/i;
     const tokens = buildName.match(regex);
     if (Array.isArray(tokens) && tokens.length > 5) {
-        const [_, jdkVersion, jdkImpl, level, group, platform] = tokens;
+        const [_, type, jdkVersion, jdkImpl, level, group, platform] = tokens;
         let rerun = false;
         if (buildName.includes('_rerun')) {
             rerun = true;

@@ -14,13 +14,13 @@ function TopLevelBuilds() {
     const updateData = async (type) => {
         if (!type) type = 'Test';
         let results = '';
-        if (type === 'Test') {
-            results = await fetchData(
-                `/api/getTopLevelBuildNames?type=${type}`
-            );
-        } else if (type === 'AQAvitCert') {
+        if (type === 'AQAvitCert') {
             results = await fetchData(
                 `/api/getTopLevelBuildNames?type=Test&AQAvitCert=true`
+            );
+        } else {
+            results = await fetchData(
+                `/api/getTopLevelBuildNames?type=${type}`
             );
         }
         const builds = {};
