@@ -12,19 +12,26 @@ const BuildTreeView = () => {
     const location = useLocation();
 
     const updateFromParentId = async (parent) => {
-        const newKeys = [...keys, parent.key];
-        fetchData(`/api/getChildBuilds?parentId=${parent.key}`).then((res) => {
-            parent.children = res.map((b) => {
-                let build = {
+        let newKeys = [...keys, parent.key];
+        fetchData(`/api/getAllChildBuilds${params({ parentId: parent.key })}`).then((res) => {
+            // Create a map to store builds by their _id for easy lookup
+            const buildMap = {};
+            res.forEach((b) => {
+                buildMap[b._id] = {
                     title: b.buildName,
                     key: b._id,
                     build: b,
                     children: [],
                 };
-                if (b.hasChildren) {
-                    updateFromParentId(build);
+            });
+            // Nest child builds under their parents and rerun builds under their originals
+            res.forEach((b) => {
+                if (b.parentId && buildMap[b.parentId]) {
+                    buildMap[b.parentId].children.push(buildMap[b._id]);
+                    newKeys = [...keys, b.parentId];
+                } else {
+                    parent.children.push(buildMap[b._id]);
                 }
-                return build;
             });
             setBuildTree((prevTree) => [...prevTree]);
             setKeys(newKeys);
