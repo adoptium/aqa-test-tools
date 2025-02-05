@@ -178,7 +178,9 @@ export default class Overview extends Component {
                                 <div>
                                     <Tooltip title="Tests Success % = (Tests Passed/Tests Executed) * 100">
                                         <span>
-                                            <strong>Tests Success Rate: </strong> 
+                                            <strong>
+                                                Tests Success Rate:{' '}
+                                            </strong>
                                             {passPercentage
                                                 ? passPercentage.toFixed(2) +
                                                   '%'
@@ -197,17 +199,14 @@ export default class Overview extends Component {
                                 </Divider>
                                 {machineFailures &&
                                 machineFailures.length > 0 ? (
-                                    machineFailures
-                                        .sort(
-                                            (a, b) =>
-                                                b.failedTests - a.failedTests
-                                        ) // Sort by failedTests (descending)
-                                        .map(({ machine, failedTests }) => (
+                                    machineFailures.map(
+                                        ({ machine, failedTests }) => (
                                             <div key={machine}>
                                                 {machine}: Failures:{' '}
                                                 {failedTests}
                                             </div>
-                                        ))
+                                        )
+                                    )
                                 ) : (
                                     <div>No Machine Failures</div>
                                 )}
@@ -224,22 +223,22 @@ export default class Overview extends Component {
                                     id={id}
                                     label="Manual Rerun Needed: "
                                     link={manual_rerun_needed}
-                                    testSummaryResult=""    // Take all results includes aborted jobs
+                                    testSummaryResult="" // Take all results includes aborted jobs
                                     buildNameRegex={manual_rerun_needed_regex}
                                 />
                                 <div>
                                     <span>
                                         <strong>
                                             Manual Rerun Targets Involved:
-                                        </strong> 
-                                    {tests_needed_manual_rerun}
+                                        </strong>
+                                        {tests_needed_manual_rerun}
                                     </span>
                                 </div>
                                 <div>
                                     <Tooltip title="Job Success % = (Job Passed/Job Executed) * 100">
                                         <span>
-                                        <strong>Job Success Rate: </strong>
-                                        {job_success_rate
+                                            <strong>Job Success Rate: </strong>
+                                            {job_success_rate
                                                 ? job_success_rate.toFixed(2) +
                                                   '%'
                                                 : 'N/A'}

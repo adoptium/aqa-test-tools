@@ -41,12 +41,13 @@ module.exports = async (req, res) => {
         }
 
         // Format the result as an array of dictionaries with "machine" and "failedTest"
-        const formattedResult = Object.entries(failedTestsByMachine).map(
-            ([machine, failedTests]) => ({
+        const formattedResult = Object.entries(failedTestsByMachine)
+            .map(([machine, failedTests]) => ({
                 machine,
                 failedTests,
-            })
-        );
+            }))
+            .sort((a, b) => b.failedTests - a.failedTests) // Sort in descending order
+            .slice(0, 3); // Keep only the top 3 machines
 
         // Send the formatted result as the response
         res.send(formattedResult);
