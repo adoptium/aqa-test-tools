@@ -93,6 +93,7 @@ const Build = () => {
         const buildsRes = fetchData(
             `/api/getAllTestsWithHistory?buildId=${buildId}${limitParam}`
         );
+
         const buildDataRes = fetchData(`/api/getData?_id=${buildId} `);
         const [builds, buildData] = await Promise.all([
             buildsRes,
