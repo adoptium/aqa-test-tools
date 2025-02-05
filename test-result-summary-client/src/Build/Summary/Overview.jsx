@@ -25,10 +25,6 @@ export default class Overview extends Component {
             javaVersion,
         } = this.props;
 
-        console.log('Yossi: summary = ', summary);
-        console.log('Yossi: rerunSummary = ', rerunSummary);
-        console.log('Yossi: jobsDetailsSummary = ', jobsDetailsSummary);
-
         if (id && parentBuildInfo) {
             const {
                 passed = 0,
@@ -142,7 +138,7 @@ export default class Overview extends Component {
                                 <br />
                                 <BuildLink
                                     id={id}
-                                    label="Failed - TEST: "
+                                    label="Failed: "
                                     link={failed}
                                     testSummaryResult="failed"
                                     buildNameRegex="^Test.*"

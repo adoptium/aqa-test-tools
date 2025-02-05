@@ -187,7 +187,6 @@ class Database {
                 },
                 ...specificAggregation,
             ]);
-            console.log('Aggregation Result:', JSON.stringify(result, null, 2));
             return result[0] || {};
         } catch (error) {
             console.error('Error:', error);

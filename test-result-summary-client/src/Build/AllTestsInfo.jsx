@@ -37,7 +37,6 @@ const Build = () => {
         // if it is a parallel build.
         if (!hasChildrenBool) {
             const buildData = await fetchData(`/api/getData?_id=${buildId} `);
-            console.dir(buildData);
             if (buildData && buildData[0].tests !== undefined) {
                 hasChildrenBool = true;
             }
@@ -47,8 +46,6 @@ const Build = () => {
             const childrenBuilds = await fetchData(
                 `/api/getChildBuilds?parentId=${buildId}`
             );
-            console.dir(childrenBuilds);
-
             buildIds.push(
                 ...childrenBuilds.map((childrenBuilds) => childrenBuilds._id)
             );

@@ -57,7 +57,6 @@ export default function ResultSummary() {
             const machinesDataRes = fetchData(
                 `/api/GetFailedTestByMachine?parentId=${parentId}`
             );
-            console.log('machinesDataRes = ', machinesDataRes);
             // get rerun summary
             const rerunRes = fetchData(`/api/getRerunDetails?id=${parentId}`);
 
