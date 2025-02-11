@@ -238,11 +238,6 @@ export default class Settings extends Component {
                                             value: 'FVT',
                                         },
                                         {
-                                            key: 'JCK',
-                                            label: 'JCK',
-                                            value: 'JCK',
-                                        },
-                                        {
                                             key: 'Perf',
                                             label: 'Perf',
                                             value: 'Perf',
