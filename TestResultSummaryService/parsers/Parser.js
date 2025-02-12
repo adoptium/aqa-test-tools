@@ -27,7 +27,7 @@ class Parser {
         curRegexResult = null;
         // parse jdk date from javaVersion
         if ((curRegexResult = javaBuildDateRegex.exec(javaVersion)) !== null) {
-            jdkDate = curRegexResult[0];
+            jdkDate = curRegexResult[0].trim();
         }
         return { javaVersion, jdkDate, sdkResource };
     }

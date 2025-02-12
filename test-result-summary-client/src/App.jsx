@@ -11,6 +11,7 @@ import { TestCompare } from './TestCompare/';
 import { ThirdPartyAppView } from './ThirdPartyAppView/';
 import { PerfCompare } from './PerfCompare/';
 import { TabularView } from './TabularView/';
+import { TrafficLight } from './TrafficLight/';
 import { AdvancedSearch } from './AdvancedSearch/';
 
 import {
@@ -141,6 +142,14 @@ export default class App extends Component {
                                                     </Link>
                                                 ),
                                             },
+                                            {
+                                                key: 'sub4',
+                                                label: (
+                                                    <Link to="/trafficLight">
+                                                        Traffic Light
+                                                    </Link>
+                                                ),
+                                            },
                                         ],
                                     },
                                     {
@@ -220,6 +229,10 @@ export default class App extends Component {
                                         <Route
                                             path="/tabularView"
                                             element={<TabularView />}
+                                        />
+                                        <Route
+                                            path="/trafficLight"
+                                            element={<TrafficLight />}
                                         />
                                         <Route
                                             path="/buildDetail"

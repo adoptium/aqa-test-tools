@@ -7,7 +7,7 @@ module.exports.onBuildDone = async (task, { testResultsDB, logger }) => {
         task.buildName,
         task.buildNum
     );
-    if (task.type === 'Perf') {
+    if (task.type === 'Perf' || task.buildName.match(/^Perf_openjdk/)) {
         if (!task.aggregateInfo) {
             let jdkDate, javaVersion, nodeRunDate, nodeVersion;
             let aggRawMetricValuesOfChildren = {}; //aggRawMetricValuesOfChildren is a new aggregate collection used to collect all children's aggRawMetricValues
