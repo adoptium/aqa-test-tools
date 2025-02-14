@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Space, Select, Tooltip } from 'antd';
+import { Link } from 'react-router-dom';
 import {
     CheckCircleOutlined,
     CloseCircleOutlined,
@@ -7,6 +8,7 @@ import {
     WarningOutlined,
 } from '@ant-design/icons';
 import { fetchData, getInfoFromBuildName } from '../utils/Utils';
+import { params } from '../utils/query';
 import { Button } from '../Components/Button';
 import _ from 'lodash';
 
@@ -85,43 +87,60 @@ function TrafficLight() {
         }
 
         const modifiedData = [...testData, ...baselineData]
-            .map(({ buildType, buildName: parentBuildName, aggregateInfo }) => {
-                const { benchmarkName, benchmarkVariant, buildName } =
-                    aggregateInfo;
-                const benchmark = benchmarkName.split('-')[0];
+            .map(
+                ({
+                    _id,
+                    buildType,
+                    buildName: parentBuildName,
+                    aggregateInfo,
+                }) => {
+                    const { benchmarkName, benchmarkVariant, buildName } =
+                        aggregateInfo;
+                    const benchmark = benchmarkName.split('-')[0];
 
-                const { jdkVersion, jdkImpl, level, group, platform, rerun } =
-                    getInfoFromBuildName(buildName);
-                const buildNameTitle = parentBuildName.slice(
-                    0,
-                    parentBuildName.lastIndexOf('_')
-                );
-                return aggregateInfo.metrics.map(
-                    ({ name: metricsName, statValues, rawValues }) => {
-                        let higherbetter = true;
-                        const benchmarchMetric = metricsProps[benchmark]
-                            ? metricsProps[benchmark].metrics
-                            : null;
-                        if (benchmarchMetric && benchmarchMetric[metricsName]) {
-                            higherbetter =
-                                benchmarchMetric[metricsName].higherbetter;
+                    const {
+                        jdkVersion,
+                        jdkImpl,
+                        level,
+                        group,
+                        platform,
+                        rerun,
+                    } = getInfoFromBuildName(buildName);
+                    const buildNameTitle = parentBuildName.slice(
+                        0,
+                        parentBuildName.lastIndexOf('_')
+                    );
+                    return aggregateInfo.metrics.map(
+                        ({ name: metricsName, statValues, rawValues }) => {
+                            let higherbetter = true;
+                            const benchmarchMetric = metricsProps[benchmark]
+                                ? metricsProps[benchmark].metrics
+                                : null;
+                            if (
+                                benchmarchMetric &&
+                                benchmarchMetric[metricsName]
+                            ) {
+                                higherbetter =
+                                    benchmarchMetric[metricsName].higherbetter;
+                            }
+                            return {
+                                _id,
+                                parentBuildName,
+                                buildNameTitle,
+                                buildType,
+                                metricsName,
+                                statValues,
+                                rawValues,
+                                benchmarkName,
+                                benchmarkVariant,
+                                buildName,
+                                platform,
+                                higherbetter,
+                            };
                         }
-                        return {
-                            parentBuildName,
-                            buildNameTitle,
-                            buildType,
-                            metricsName,
-                            statValues,
-                            rawValues,
-                            benchmarkName,
-                            benchmarkVariant,
-                            buildName,
-                            platform,
-                            higherbetter,
-                        };
-                    }
-                );
-            })
+                    );
+                }
+            )
             .flat();
         const regroupedData = _.groupBy(
             modifiedData,
@@ -191,15 +210,24 @@ function TrafficLight() {
                         </pre>
                     }
                 >
-                    <div
-                        style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            gap: 5,
+                    <Link
+                        to={{
+                            pathname: '/buildDetail',
+                            search: params({ parentId: obj[0]._id }),
                         }}
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
-                        {icon} {percentage}%
-                    </div>
+                        <div
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 5,
+                            }}
+                        >
+                            {icon} {percentage}%
+                        </div>
+                    </Link>
                 </Tooltip>
             );
         } else {
