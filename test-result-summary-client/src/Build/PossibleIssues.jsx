@@ -82,27 +82,6 @@ const PossibleIssues = () => {
 
         const testOutput = result.output;
 
-        // query ML Server for possible issues
-        let mlIssue = '',
-            mlIssueRepo = '',
-            mlIssueNum = '';
-        // Currently all TRSS servers will use the same ML server deployed on the TRSS adoptopendk machine
-        const mlResponse = await fetch('https://trssml.adoptium.net/predict', {
-            method: 'post',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ console_content: testOutput }),
-        }).catch((error) => {
-            console.log('ML server error ' + error);
-        });
-        if (mlResponse && mlResponse.ok) {
-            const mlResponseJson = await mlResponse.json();
-            mlIssue = mlResponseJson['result'] || '';
-            mlIssueRepo = mlIssue.replace(/-\d+$/, '');
-            mlIssueNum = mlIssue.match(/\d+$/)[0];
-        }
-
         // fetch related issues with Github API
         let additionalRepo = '';
         if (buildName.includes('j9') || buildName.includes('ibm')) {
@@ -197,16 +176,6 @@ const PossibleIssues = () => {
                     </>
                 );
 
-                let relatedDegree = 'Medium';
-                if (repoName.includes(mlIssueRepo)) {
-                    if (
-                        relatedIssues.items[index].number.toString() ===
-                        mlIssueNum
-                    ) {
-                        relatedDegree = 'High';
-                    }
-                }
-
                 dataSource[repoName] = dataSource[repoName] || [];
                 dataSource[repoName].push({
                     key: dataSource[repoName].length,
@@ -215,7 +184,6 @@ const PossibleIssues = () => {
                     createdAt,
                     createdAtStr,
                     issueState,
-                    degree: relatedDegree,
                     userFeedback,
                 });
             }
@@ -261,16 +229,6 @@ const PossibleIssues = () => {
                     else if (a.issueState === 'open') return -1;
                     else return 1;
                 },
-            },
-            {
-                title: 'Related Degree',
-                dataIndex: 'degree',
-                key: 'degree',
-            },
-            {
-                title: 'User Feedback',
-                dataIndex: 'userFeedback',
-                key: 'userFeedback',
             },
         ];
 
