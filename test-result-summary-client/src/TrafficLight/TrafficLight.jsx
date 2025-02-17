@@ -1,0 +1,315 @@
+import React, { useEffect, useState } from 'react';
+import { Table, Space, Select, Tooltip } from 'antd';
+import { Link } from 'react-router-dom';
+import {
+    CheckCircleOutlined,
+    CloseCircleOutlined,
+    MinusCircleOutlined,
+    WarningOutlined,
+} from '@ant-design/icons';
+import { fetchData, getInfoFromBuildName } from '../utils/Utils';
+import { params } from '../utils/query';
+import { Button } from '../Components/Button';
+import _ from 'lodash';
+
+function TrafficLight() {
+    const [testBuild, setTestBuild] = useState();
+    const [baselineBuild, setBaselineBuild] = useState();
+    const [buildOptions, setBuildOptions] = useState([]);
+    const [tableData, settableData] = useState([]);
+    const [metricsProps, setMetricsProps] = useState({});
+
+    const iconRed = (
+        <CloseCircleOutlined
+            style={{ color: 'rgb(255, 85, 0)', fontSize: 20 }}
+        />
+    );
+    const iconGreen = (
+        <CheckCircleOutlined
+            style={{ color: 'rgb(44, 190, 78)', fontSize: 20 }}
+        />
+    );
+    const iconYellow = (
+        <WarningOutlined style={{ color: 'rgb(218, 165, 32)', fontSize: 20 }} />
+    );
+    const iconGrey = (
+        <MinusCircleOutlined
+            style={{ color: 'rgb(158, 158, 158)', fontSize: 20 }}
+        />
+    );
+
+    useEffect(() => {
+        fetchDataAndUpdate();
+    }, []);
+
+    async function fetchDataAndUpdate() {
+        const results = await fetchData(
+            `/api/getBuildHistory?buildName=Perf_Pipeline&limit=120`
+        );
+        setBuildOptions(
+            results.map((result) => {
+                const buildUrl = result.buildUrl;
+                const buildId = result._id;
+                return { value: buildId, label: buildUrl };
+            })
+        );
+    }
+
+    const handleCompare = async () => {
+        let testData = await fetchData(
+            `/api/getTrafficLightData?rootBuildId=${testBuild}&buildType=test`
+        );
+        let baselineData = [];
+        // Use aggregateInfo.BuildName Perf_openjdkxxx_test as test build.
+        // If the testData and baselineData are from the same build,
+        // use aggregateInfo.BuildName Perf_openjdkxxx_baseline as baseline build.
+        // Otherwise, use aggregateInfo.BuildName Perf_openjdkxxx_test as baseline build.
+        if (baselineBuild === testBuild) {
+            baselineData = await fetchData(
+                `/api/getTrafficLightData?rootBuildId=${baselineBuild}&buildType=baseline`
+            );
+        } else {
+            baselineData = await fetchData(
+                `/api/getTrafficLightData?rootBuildId=${baselineBuild}&buildType=test`
+            );
+        }
+
+        testData.forEach((element) => {
+            element.buildType = 'test';
+        });
+        baselineData.forEach((element) => {
+            element.buildType = 'baseline';
+        });
+
+        const metricPropsJSON = await fetchData(`/api/getBenchmarkMetricProps`);
+        if (metricPropsJSON) {
+            setMetricsProps(metricPropsJSON);
+        }
+
+        const modifiedData = [...testData, ...baselineData]
+            .map(
+                ({
+                    _id,
+                    buildType,
+                    buildName: parentBuildName,
+                    aggregateInfo,
+                }) => {
+                    const { benchmarkName, benchmarkVariant, buildName } =
+                        aggregateInfo;
+                    const benchmark = benchmarkName.split('-')[0];
+
+                    const {
+                        jdkVersion,
+                        jdkImpl,
+                        level,
+                        group,
+                        platform,
+                        rerun,
+                    } = getInfoFromBuildName(buildName);
+                    const buildNameTitle = parentBuildName.slice(
+                        0,
+                        parentBuildName.lastIndexOf('_')
+                    );
+                    return aggregateInfo.metrics.map(
+                        ({ name: metricsName, statValues, rawValues }) => {
+                            let higherbetter = true;
+                            const benchmarchMetric = metricsProps[benchmark]
+                                ? metricsProps[benchmark].metrics
+                                : null;
+                            if (
+                                benchmarchMetric &&
+                                benchmarchMetric[metricsName]
+                            ) {
+                                higherbetter =
+                                    benchmarchMetric[metricsName].higherbetter;
+                            }
+                            return {
+                                _id,
+                                parentBuildName,
+                                buildNameTitle,
+                                buildType,
+                                metricsName,
+                                statValues,
+                                rawValues,
+                                benchmarkName,
+                                benchmarkVariant,
+                                buildName,
+                                platform,
+                                higherbetter,
+                            };
+                        }
+                    );
+                }
+            )
+            .flat();
+        const regroupedData = _.groupBy(
+            modifiedData,
+            ({
+                benchmarkName,
+                benchmarkVariant,
+                parentBuildName,
+                buildNameTitle,
+                metricsName,
+                platform,
+                parentBuildShortName,
+            }) => {
+                return JSON.stringify({
+                    benchmarkName,
+                    benchmarkVariant,
+                    parentBuildName,
+                    buildNameTitle,
+                    metricsName,
+                    platform,
+                    parentBuildShortName,
+                });
+            }
+        );
+        settableData(
+            Object.entries(regroupedData).map(([k, v]) => {
+                return { ...JSON.parse(k), ...v };
+            })
+        );
+    };
+
+    const renderCell = (_, obj) => {
+        if (obj[0] && obj[1]) {
+            let percentage = -1;
+            const testValues = obj[0].statValues;
+            const baselineValues = obj[1].statValues;
+            const testScore = testValues.mean;
+            const baselineScore = baselineValues.mean;
+            if (obj[0].higherbetter) {
+                percentage = Number((testScore * 100) / baselineScore).toFixed(
+                    2
+                );
+            } else {
+                percentage = Number((baselineScore * 100) / testScore).toFixed(
+                    2
+                );
+            }
+
+            const totalCI = Number(testValues.CI + baselineValues.CI).toFixed(
+                4
+            );
+
+            let icon = iconRed;
+            if (percentage > 98) {
+                icon = iconGreen;
+            } else if (percentage > 90) {
+                icon = iconYellow;
+            }
+
+            return (
+                <Tooltip
+                    title={
+                        <pre>
+                            Test Score: {testScore} <br />
+                            Baseline Score: {baselineScore}
+                            <br />
+                            TotalCI: {totalCI}
+                        </pre>
+                    }
+                >
+                    <Link
+                        to={{
+                            pathname: '/buildDetail',
+                            search: params({ parentId: obj[0]._id }),
+                        }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        <div
+                            style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: 5,
+                            }}
+                        >
+                            {icon} {percentage}%
+                        </div>
+                    </Link>
+                </Tooltip>
+            );
+        } else {
+            return (
+                <div style={{ display: 'flex', alignItems: 'center', gap: 5 }}>
+                    {iconGrey} N/A
+                </div>
+            );
+        }
+    };
+
+    const platforms = _.keyBy(tableData, 'buildNameTitle');
+
+    const columns = [
+        {
+            title: 'Benchmark Name',
+            key: 'benchmarkName',
+            render: (_, { benchmarkName, metricsName }) => {
+                return (
+                    <div>
+                        {benchmarkName}
+                        <br />
+                        <b>{metricsName}</b>
+                    </div>
+                );
+            },
+        },
+        ...Object.keys(platforms).map((platform, i) => {
+            return {
+                title: platform,
+                key: i,
+                render: renderCell,
+            };
+        }),
+    ];
+    return (
+        <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+            <Select
+                style={{
+                    width: '100%',
+                }}
+                defaultValue={testBuild}
+                onChange={setTestBuild}
+                options={buildOptions}
+                placeholder="please select test build"
+            />
+            <Select
+                style={{
+                    width: '100%',
+                }}
+                defaultValue={baselineBuild}
+                onChange={setBaselineBuild}
+                options={buildOptions}
+                placeholder="please select baseline build"
+            />
+            <Space direction="horizontal">
+                <Button type="primary" onClick={handleCompare}>
+                    Compare
+                </Button>
+            </Space>
+            <br />
+            {tableData ? (
+                <Table dataSource={tableData} columns={columns} />
+            ) : (
+                ''
+            )}
+            <pre>
+                Note: <br />{' '}
+                <p style={{ display: 'flex' }}>
+                    - Score {'>'} 98% - No Regression {iconGreen}
+                </p>
+                <p style={{ display: 'flex' }}>
+                    - Score in 91% - 98% - Possible Regression {iconYellow}{' '}
+                </p>
+                <p style={{ display: 'flex' }}>
+                    - Score {'<'} 90% - Regression {iconRed}
+                </p>
+                <p style={{ display: 'flex' }}>
+                    - N/A - Missing data {iconGrey}
+                </p>
+            </pre>
+        </Space>
+    );
+}
+export default TrafficLight;

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Select } from 'antd';
 
-export default class InoutSelect extends Component {
+export default class InputSelect extends Component {
     render() {
         const options = this.props.options.map((value) => ({ value }));
         return (

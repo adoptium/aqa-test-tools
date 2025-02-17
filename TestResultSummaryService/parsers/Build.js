@@ -2,7 +2,7 @@ const Parser = require('./Parser');
 
 //ToDo: this is a place holder for build
 class Build extends Parser {
-    static canParse(buildName, output) {
+    static canParse(buildName) {
         return (
             buildName.match(/^Build-/) ||
             buildName.match(/IBMJAVA-build/) ||
@@ -12,10 +12,14 @@ class Build extends Parser {
         );
     }
 
-    parse(output) {
+    parse(output, buildName) {
+        let type = 'Build';
+        if (buildName.match(/^Perf_openjdk/)) {
+            type = 'Perf';
+        }
         return {
             build: null,
-            type: 'Build',
+            type,
             machine: this.extractMachineInfo(output),
         };
     }
