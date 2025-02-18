@@ -5,10 +5,10 @@ module.exports = async (req, res) => {
     if (benchmarkName) {
         const key = utils.getBenchmarkParserKey(benchmarkName);
         if (key) {
-            res.json(benchmarkMetric[key]['metrics']);
+            return res.json(benchmarkMetric[key]['metrics']);
         }
     } else {
-        res.json(benchmarkMetric);
+        return res.json(benchmarkMetric);
     }
-    res.json();
+    return res.json();
 };

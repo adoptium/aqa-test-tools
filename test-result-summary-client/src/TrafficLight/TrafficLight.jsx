@@ -10,7 +10,7 @@ import {
 import { fetchData, getInfoFromBuildName } from '../utils/Utils';
 import { params } from '../utils/query';
 import { Button } from '../Components/Button';
-import _ from 'lodash';
+import _, { first, identity, uniq } from 'lodash';
 
 function TrafficLight() {
     const [testBuild, setTestBuild] = useState();
@@ -144,23 +144,11 @@ function TrafficLight() {
             .flat();
         const regroupedData = _.groupBy(
             modifiedData,
-            ({
-                benchmarkName,
-                benchmarkVariant,
-                parentBuildName,
-                buildNameTitle,
-                metricsName,
-                platform,
-                parentBuildShortName,
-            }) => {
+            ({ benchmarkName, benchmarkVariant, metricsName }) => {
                 return JSON.stringify({
                     benchmarkName,
                     benchmarkVariant,
-                    parentBuildName,
-                    buildNameTitle,
                     metricsName,
-                    platform,
-                    parentBuildShortName,
                 });
             }
         );
@@ -171,14 +159,22 @@ function TrafficLight() {
         );
     };
 
-    const renderCell = (_, obj) => {
-        if (obj[0] && obj[1]) {
+    const renderCell = (title, _, obj) => {
+        const testBuild = Object.values(obj).find(
+            ({ buildNameTitle, buildType }) =>
+                buildNameTitle === title && buildType === 'test'
+        );
+        const baselineBuild = Object.values(obj).find(
+            ({ buildNameTitle, buildType }) =>
+                buildNameTitle === title && buildType === 'baseline'
+        );
+        if (testBuild && baselineBuild) {
             let percentage = -1;
-            const testValues = obj[0].statValues;
-            const baselineValues = obj[1].statValues;
+            const testValues = testBuild.statValues;
+            const baselineValues = baselineBuild.statValues;
             const testScore = testValues.mean;
             const baselineScore = baselineValues.mean;
-            if (obj[0].higherbetter) {
+            if (testBuild.higherbetter) {
                 percentage = Number((testScore * 100) / baselineScore).toFixed(
                     2
                 );
@@ -213,7 +209,7 @@ function TrafficLight() {
                     <Link
                         to={{
                             pathname: '/buildDetail',
-                            search: params({ parentId: obj[0]._id }),
+                            search: params({ parentId: testBuild._id }),
                         }}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -239,7 +235,11 @@ function TrafficLight() {
         }
     };
 
-    const platforms = _.keyBy(tableData, 'buildNameTitle');
+    const firstRow = first(tableData) ?? {};
+    const groups = Object.values(firstRow) ?? [];
+    const buildNameTitles = uniq(
+        groups.map(({ buildNameTitle }) => buildNameTitle).filter(identity)
+    );
 
     const columns = [
         {
@@ -255,11 +255,11 @@ function TrafficLight() {
                 );
             },
         },
-        ...Object.keys(platforms).map((platform, i) => {
+        ...buildNameTitles.map((title, i) => {
             return {
-                title: platform,
+                title,
                 key: i,
-                render: renderCell,
+                render: renderCell.bind(null, title),
             };
         }),
     ];
