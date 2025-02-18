@@ -4,15 +4,12 @@ const ObjectID = require('mongodb').ObjectID;
 module.exports = async (req, res) => {
     const db = new TestResultsDB();
     let results = null;
-    let rootBuildId;
-    if (req.query.rootBuildId) {
-        rootBuildId = new ObjectID(req.query.rootBuildId);
+    let parentId;
+    if (req.query.parentId) {
+        parentId = new ObjectID(req.query.parentId);
     }
     let query = {
-        buildName: {
-            $regex: 'Perf_openjdk.*perf_.*(?<!test|baseline)$',
-        },
-        rootBuildId,
+        parentId,
     };
     if (req.query.buildType === 'baseline' || req.query.buildType === 'test') {
         const aggregateInfoBuildNameRegex = `.*_${req.query.buildType}`;
