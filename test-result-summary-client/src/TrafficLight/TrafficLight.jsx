@@ -57,7 +57,7 @@ function TrafficLight() {
 
     const handleCompare = async () => {
         let testData = await fetchData(
-            `/api/getTrafficLightData?rootBuildId=${testBuild}&buildType=test`
+            `/api/getTrafficLightData?parentId=${testBuild}&buildType=test`
         );
         let baselineData = [];
         // Use aggregateInfo.BuildName Perf_openjdkxxx_test as test build.
@@ -66,11 +66,11 @@ function TrafficLight() {
         // Otherwise, use aggregateInfo.BuildName Perf_openjdkxxx_test as baseline build.
         if (baselineBuild === testBuild) {
             baselineData = await fetchData(
-                `/api/getTrafficLightData?rootBuildId=${baselineBuild}&buildType=baseline`
+                `/api/getTrafficLightData?parentId=${baselineBuild}&buildType=baseline`
             );
         } else {
             baselineData = await fetchData(
-                `/api/getTrafficLightData?rootBuildId=${baselineBuild}&buildType=test`
+                `/api/getTrafficLightData?parentId=${baselineBuild}&buildType=test`
             );
         }
 
