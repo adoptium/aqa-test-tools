@@ -21,20 +21,20 @@ function TrafficLight() {
 
     const iconRed = (
         <CloseCircleOutlined
-            style={{ color: 'rgb(255, 85, 0)', fontSize: 20 }}
+            style={{ color: 'rgb(255, 85, 0)', fontSize: 23 }}
         />
     );
     const iconGreen = (
         <CheckCircleOutlined
-            style={{ color: 'rgb(44, 190, 78)', fontSize: 20 }}
+            style={{ color: 'rgb(44, 190, 78)', fontSize: 23 }}
         />
     );
     const iconYellow = (
-        <WarningOutlined style={{ color: 'rgb(218, 165, 32)', fontSize: 20 }} />
+        <WarningOutlined style={{ color: 'rgb(218, 165, 32)', fontSize: 23 }} />
     );
     const iconGrey = (
         <MinusCircleOutlined
-            style={{ color: 'rgb(158, 158, 158)', fontSize: 20 }}
+            style={{ color: 'rgb(158, 158, 158)', fontSize: 23 }}
         />
     );
 
