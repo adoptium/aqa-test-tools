@@ -126,6 +126,8 @@ export default class TestTable extends Component {
                             pathname: '/testPerPlatform',
                             search: params({ testId }),
                         }}
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         <Tooltip title="All Platforms">
                             <ClusterOutlined />
@@ -137,6 +139,8 @@ export default class TestTable extends Component {
                             pathname: '/deepHistory',
                             search: params({ testId }),
                         }}
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         <Tooltip title="Deep History">
                             <HistoryOutlined />
@@ -149,6 +153,8 @@ export default class TestTable extends Component {
                             pathname: '/gitNewIssue',
                             search: params({ testId, buildId }),
                         }}
+                        target="_blank"
+                        rel="noopener noreferrer"
                     >
                         <Tooltip title="Create new Github issue">
                             {' '}
@@ -200,6 +206,8 @@ export default class TestTable extends Component {
                                     testName,
                                 }),
                             }}
+                            target="_blank"
+                            rel="noopener noreferrer"
                         >
                             <Tooltip title="Possible Issues">
                                 <QuestionCircleOutlined />
