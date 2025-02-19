@@ -184,8 +184,10 @@ function TrafficLight() {
                 );
             }
 
+            const testCI = Number(testValues.CI).toFixed(3);
+            const baselineCI = Number(baselineValues.CI).toFixed(3);
             const totalCI = Number(testValues.CI + baselineValues.CI).toFixed(
-                4
+                3
             );
 
             let icon = iconRed;
@@ -202,7 +204,9 @@ function TrafficLight() {
                             Test Score: {testScore} <br />
                             Baseline Score: {baselineScore}
                             <br />
-                            TotalCI: {totalCI}
+                            Test CI: {testCI} <br />
+                            Baseline CI: {baselineCI} <br />
+                            Total CI: {totalCI}
                         </pre>
                     }
                 >
