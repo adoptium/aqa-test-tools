@@ -153,7 +153,7 @@ class Database {
             };
         }
 
-        let buildNameRegex = `^Test.*`;
+        let buildNameRegex = `^(Test|Perf).*`;
         if (query.level) buildNameRegex = `${buildNameRegex}${query.level}..*`;
         if (query.group) buildNameRegex = `${buildNameRegex}${query.group}-.*`;
         if (query.platform)
