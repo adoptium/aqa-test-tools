@@ -40,7 +40,7 @@ export default class App extends Component {
     render() {
         return (
             <ConfigProvider locale={enUS}>
-                <Layout>
+                <Layout style={{ minHeight: '100vh' }}>
                     <Header
                         className="header"
                         style={{ background: '#14003c' }}
