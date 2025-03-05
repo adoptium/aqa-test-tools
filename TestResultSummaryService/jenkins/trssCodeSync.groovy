@@ -17,8 +17,8 @@ node(TRSS_NODE) {
 			echo "npm run docker-down"
 			npm run docker-down
 			echo "Restart TRSS components..."
-			echo "npm run docker"
-			npm run docker
+			echo "npm run docker &"
+			npm run docker &
 	'''
 	}
 }
