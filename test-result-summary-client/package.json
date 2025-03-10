@@ -33,6 +33,7 @@
         "react-scripts": "^5.0.1",
         "react-table": "^6.11.5",
         "reactjs-visibility": "^0.1.4",
+        "utils": "file:../packages/utils",
         "sweetalert2": "^11.7.3"
     },
     "scripts": {

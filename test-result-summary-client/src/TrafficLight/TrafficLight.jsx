@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Space, Select, Tooltip } from 'antd';
+import { Table, Space, Select, Tooltip, Divider } from 'antd';
 import { Link } from 'react-router-dom';
 import {
     CheckCircleOutlined,
     CloseCircleOutlined,
     MinusCircleOutlined,
     WarningOutlined,
+    ProfileTwoTone,
 } from '@ant-design/icons';
 import { fetchData, getInfoFromBuildName } from '../utils/Utils';
 import { params } from '../utils/query';
@@ -44,7 +45,7 @@ function TrafficLight() {
 
     async function fetchDataAndUpdate() {
         const results = await fetchData(
-            `/api/getBuildHistory?buildName=Perf_Pipeline&limit=120`
+            `/api/getBuildHistory?buildName=Perf_Pipeline&status=Done&limit=120`
         );
         setBuildOptions(
             results.map((result) => {
@@ -210,24 +211,46 @@ function TrafficLight() {
                         </pre>
                     }
                 >
-                    <Link
-                        to={{
-                            pathname: '/buildDetail',
-                            search: params({ parentId: testBuild._id }),
+                    <div
+                        style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            gap: 10,
                         }}
-                        target="_blank"
-                        rel="noopener noreferrer"
                     >
-                        <div
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                gap: 5,
+                        <Link
+                            to={{
+                                pathname: '/buildDetail',
+                                search: params({ parentId: testBuild._id }),
                             }}
+                            target="_blank"
+                            rel="noopener noreferrer"
                         >
-                            {icon} {percentage}%
-                        </div>
-                    </Link>
+                            <div
+                                style={{
+                                    display: 'flex',
+                                    gap: 5,
+                                }}
+                            >
+                                {icon} {percentage}%
+                            </div>
+                        </Link>
+                        <Divider type="vertical" />
+                        <Link
+                            to={{
+                                pathname: '/metricsDetails',
+                                search: params({
+                                    testId: testBuild._id,
+                                    baselineId: baselineBuild._id,
+                                    benchmarkName: testBuild.benchmarkName,
+                                }),
+                            }}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <ProfileTwoTone />
+                        </Link>
+                    </div>
                 </Tooltip>
             );
         } else {
