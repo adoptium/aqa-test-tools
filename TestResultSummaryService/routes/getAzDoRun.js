@@ -4,7 +4,7 @@ const DefaultParser = require('../parsers/Default');
 const DataManagerAggregate = require('../perf/DataManagerAggregate');
 const ArgParser = require('../ArgParser');
 const math = require('mathjs');
-const BenchmarkMath = require('../perf/BenchmarkMathCalculation');
+const BenchmarkMath = require('utils/BenchmarkMathCalculation');
 
 module.exports = async (req, res) => {
     const { user, password, server } =
@@ -54,14 +54,16 @@ module.exports = async (req, res) => {
                     }
                     const results = JSON.parse(body.body);
                     // extract worker name from timeline
-                    const agentName = results.records.find(
-                        (job) =>
-                            job.name.startsWith(`Run ${buildInfo.templateParameters.suite}`)
+                    const agentName = results.records.find((job) =>
+                        job.name.startsWith(
+                            `Run ${buildInfo.templateParameters.suite}`
+                        )
                     ).workerName;
                     // find the log with the name of the benchmark
-                    const logURL = results.records.find(
-                        (job) =>
-                            job.name.startsWith(`Run ${buildInfo.templateParameters.suite}`)
+                    const logURL = results.records.find((job) =>
+                        job.name.startsWith(
+                            `Run ${buildInfo.templateParameters.suite}`
+                        )
                     ).log.url;
                     // fetch the log
                     request.get(

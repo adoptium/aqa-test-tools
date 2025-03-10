@@ -11,7 +11,7 @@ import { TestCompare } from './TestCompare/';
 import { ThirdPartyAppView } from './ThirdPartyAppView/';
 import { PerfCompare } from './PerfCompare/';
 import { TabularView } from './TabularView/';
-import { TrafficLight } from './TrafficLight/';
+import { TrafficLight, MetricsDetails } from './TrafficLight/';
 import { AdvancedSearch } from './AdvancedSearch/';
 
 import {
@@ -277,6 +277,10 @@ export default class App extends Component {
                                         <Route
                                             path="/advancedSearch"
                                             element={<AdvancedSearch />}
+                                        />
+                                        <Route
+                                            path="/metricsDetails"
+                                            element={<MetricsDetails />}
                                         />
                                     </Routes>
                                 </Content>

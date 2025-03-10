@@ -7,6 +7,5 @@ module.exports = async (req, res) => {
     if (query.parentId) query.parentId = new ObjectID(query.parentId);
     const db = new TestResultsDB();
     const result = await db.getData({ _id: new ObjectID(query._id) }).toArray();
-    console.log(result);
     res.send(result);
 };

@@ -15,7 +15,13 @@ export const Button = ({ children, ...props }) => {
             <AntdButton {...props} onClick={onClick}>
                 {children}
             </AntdButton>
-            {loading && <Spin />}
+            {loading && (
+                <Spin
+                    style={{
+                        marginLeft: 10,
+                    }}
+                />
+            )}
         </>
     );
 };
