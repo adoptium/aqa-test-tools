@@ -13,4 +13,4 @@ deployenv/
 *.joblib
 *.iml
 .idea
-
+node_modules

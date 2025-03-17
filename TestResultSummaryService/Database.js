@@ -39,8 +39,8 @@ let db;
     const parentIdIndex = await testResultsDB.createIndex({ parentId: 1 });
     logger.info('Index created: ', parentIdIndex);
     const urlBuildNameBuildNumIndex = await testResultsDB.createIndex({
-        url: 1,
         buildName: 1,
+        url: 1,
         buildNum: 1,
     });
     logger.info('Index created: ', urlBuildNameBuildNumIndex);
