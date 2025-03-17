@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import ReactDOM from 'react-dom';
 import { useLocation } from 'react-router-dom';
-import { Tooltip, Card, Alert } from 'antd';
+import { Tooltip, Card, Button } from 'antd';
 import { CopyOutlined } from '@ant-design/icons';
 import TestBreadcrumb from './TestBreadcrumb';
 import { fetchData } from '../utils/Utils';
 import { getParams, params } from '../utils/query';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
 
 const ReleaseSummary = () => {
     const [body, setBody] = useState('Generating Release Summary Report...');
@@ -187,43 +188,6 @@ const ReleaseSummary = () => {
         updateData();
     }, [parentId]);
 
-    const copyCodeToClipboard = () => {
-        const markdownText = document.getElementById('markdown-text');
-        let range, selection;
-
-        if (document.body.createTextRange) {
-            range = document.body.createTextRange();
-            range.moveToElementText(markdownText);
-            range.select();
-        } else if (window.getSelection) {
-            selection = window.getSelection();
-            range = document.createRange();
-            range.selectNodeContents(markdownText);
-            selection.removeAllRanges();
-            selection.addRange(range);
-        }
-
-        let alert;
-        if (document.execCommand('Copy')) {
-            alert = (
-                <Alert
-                    message="Successfully copied to clipboard"
-                    type="success"
-                    showIcon
-                />
-            );
-        } else {
-            alert = (
-                <Alert
-                    message="Failed to copy to clipboard"
-                    type="error"
-                    showIcon
-                />
-            );
-        }
-        ReactDOM.render(alert, document.getElementById('copy-status'));
-    };
-
     const title = 'Release Summary Report for ' + buildName;
     return (
         <div>
@@ -238,11 +202,12 @@ const ReleaseSummary = () => {
                         title="Copy markdown report to clipboard"
                         placement="topRight"
                     >
-                        <CopyOutlined
-                            id="copy-button"
-                            style={{ fontSize: '200%' }}
-                            onClick={() => copyCodeToClipboard()}
-                        />
+                        <CopyToClipboard text={body}>
+                                <Button size="large">
+                                    <CopyOutlined />
+                                    Copy
+                                </Button>
+                        </CopyToClipboard>
                     </Tooltip>
                 }
             >
