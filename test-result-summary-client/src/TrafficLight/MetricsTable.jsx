@@ -113,16 +113,23 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
                     const pivot = zip(...pageData);
 
                     const stats = pivot.map((p) => {
-                        const mean = math.mean(p.map(({ value }) => value));
+                        const mean = Number(
+                            math.mean(p.map(({ value }) => value))
+                        ).toFixed(0);
                         const max = math.max(p.map(({ value }) => value));
                         const min = math.min(p.map(({ value }) => value));
-                        const median = math.median(p.map(({ value }) => value));
-                        const std = math
-                            .std(p.map(({ value }) => value))
-                            .toFixed(2);
-                        const CI = BenchmarkMath.confidence_interval(
-                            p.map(({ value }) => value)
-                        ).toFixed(3);
+                        const median = Number(
+                            math.median(p.map(({ value }) => value))
+                        ).toFixed(0);
+                        const std = Number(
+                            math.std(p.map(({ value }) => value))
+                        ).toFixed(2);
+                        const CI =
+                            Number(
+                                BenchmarkMath.confidence_interval(
+                                    p.map(({ value }) => value)
+                                ) * 100
+                            ).toFixed(2) + '%';
                         return {
                             mean,
                             max,
