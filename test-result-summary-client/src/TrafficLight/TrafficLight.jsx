@@ -173,8 +173,8 @@ function TrafficLight() {
             let percentage = -1;
             const testValues = testBuild.statValues;
             const baselineValues = baselineBuild.statValues;
-            const testScore = testValues.mean;
-            const baselineScore = baselineValues.mean;
+            const testScore = Number(testValues.mean).toFixed(0);
+            const baselineScore = Number(baselineValues.mean).toFixed(0);
             if (testBuild.higherbetter) {
                 percentage = Number((testScore * 100) / baselineScore).toFixed(
                     2
@@ -185,11 +185,11 @@ function TrafficLight() {
                 );
             }
 
-            const testCI = Number(testValues.CI).toFixed(3);
-            const baselineCI = Number(baselineValues.CI).toFixed(3);
-            const totalCI = Number(testValues.CI + baselineValues.CI).toFixed(
-                3
-            );
+            const testCI = Number(testValues.CI * 100).toFixed(2) + '%';
+            const baselineCI = Number(baselineValues.CI * 100).toFixed(2) + '%';
+            const totalCI =
+                Number((testValues.CI + baselineValues.CI) * 100).toFixed(2) +
+                '%';
 
             let icon = iconRed;
             if (percentage > 98) {
