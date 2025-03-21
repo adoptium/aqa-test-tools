@@ -24,6 +24,13 @@ cd C:\Program Files\MongoDB\Server\3.0\bin
 mongod.exe
 ```
 
+-   install common packages
+
+```
+cd packages/utils
+npm install
+```
+
 -   start TestResultSummaryService
 
 ```
