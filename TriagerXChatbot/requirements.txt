@@ -16,7 +16,7 @@ click==8.1.7
 cryptography==44.0.1
 Flask==3.0.3
 frozenlist==1.4.1
-gunicorn==22.0.0
+gunicorn==23.0.0
 h11==0.14.0
 idna==3.7
 isodate==0.6.1
