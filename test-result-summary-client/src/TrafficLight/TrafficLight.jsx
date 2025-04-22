@@ -14,6 +14,8 @@ import { Button } from '../Components/Button';
 import _, { first, identity, uniq } from 'lodash';
 
 function TrafficLight() {
+    const [topBuild, setTopBuild] = useState();
+    const [topBuildOptions, setTopBuildOptions] = useState([]);
     const [testBuild, setTestBuild] = useState();
     const [baselineBuild, setBaselineBuild] = useState();
     const [buildOptions, setBuildOptions] = useState([]);
@@ -44,16 +46,14 @@ function TrafficLight() {
     }, []);
 
     async function fetchDataAndUpdate() {
-        const results = await fetchData(
-            `/api/getBuildHistory?buildName=Perf_Pipeline&status=Done&limit=120`
-        );
-        setBuildOptions(
-            results.map((result) => {
-                const buildUrl = result.buildUrl;
-                const buildId = result._id;
-                return { value: buildId, label: buildUrl };
-            })
-        );
+        const data = await fetchData(`/api/getTopLevelBuildNames?type=Perf`);
+        if (data) {
+            setTopBuildOptions(
+                data.map((value) => {
+                    return { value: value._id.buildName };
+                })
+            );
+        }
     }
 
     const handleCompare = async () => {
@@ -290,8 +290,31 @@ function TrafficLight() {
             };
         }),
     ];
+    const setBuildOptionsOnChange = async (buildName) => {
+        setTopBuild(buildName);
+        const results = await fetchData(
+            `/api/getBuildHistory?buildName=${buildName}&status=Done&limit=120`
+        );
+        setBuildOptions(
+            results.map((result) => {
+                const buildUrl = result.buildUrl;
+                const buildId = result._id;
+                return { value: buildId, label: buildUrl };
+            })
+        );
+    };
+
     return (
         <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
+            <Select
+                style={{
+                    width: '100%',
+                }}
+                defaultValue={topBuild}
+                onChange={setBuildOptionsOnChange}
+                options={topBuildOptions}
+                placeholder="please select the top level performance build"
+            />
             <Select
                 style={{
                     width: '100%',
