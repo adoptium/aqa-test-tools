@@ -1,4 +1,4 @@
-const BenchmarkMath = require('utils/BenchmarkMathCalculation');
+const BenchmarkMath = require('../perf/BenchmarkMathCalculation');
 const math = require('mathjs');
 const ObjectID = require('mongodb').ObjectID;
 

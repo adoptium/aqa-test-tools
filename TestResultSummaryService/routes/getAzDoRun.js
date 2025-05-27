@@ -4,7 +4,7 @@ const DefaultParser = require('../parsers/Default');
 const DataManagerAggregate = require('../perf/DataManagerAggregate');
 const ArgParser = require('../ArgParser');
 const math = require('mathjs');
-const BenchmarkMath = require('utils/BenchmarkMathCalculation');
+const BenchmarkMath = require('../perf/BenchmarkMathCalculation');
 
 module.exports = async (req, res) => {
     const { user, password, server } =

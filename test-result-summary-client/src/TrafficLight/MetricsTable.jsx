@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Table, Typography } from 'antd';
 import { DeleteTwoTone } from '@ant-design/icons';
 import { fetchData } from '../utils/Utils';
-import BenchmarkMath from 'utils/BenchmarkMathCalculation';
+import BenchmarkMath from '../utils/BenchmarkMathCalculation';
 import * as math from 'mathjs';
 import { zip } from 'lodash';
 

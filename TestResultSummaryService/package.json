@@ -38,7 +38,6 @@
         "mathjs": "^7.6.0",
         "mongodb": "^3.6.10",
         "request": "^2.88.2",
-        "utils": "file:../packages/utils",
         "winston": "^2.4.5"
     },
     "devDependencies": {
