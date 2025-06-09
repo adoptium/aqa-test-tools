@@ -97,24 +97,22 @@ export default class App extends Component {
                                                 By Pipeline
                                             </Link>
                                         ),
-                                        children: [
-                                            {
-                                                key: 'sub1',
-                                                label: (
-                                                    <Link to="/tests/Perf">
-                                                        Perf Test
-                                                    </Link>
-                                                ),
-                                            },
-                                            {
-                                                key: 'sub2',
-                                                label: (
-                                                    <Link to="/trafficLight">
-                                                        Traffic Light
-                                                    </Link>
-                                                ),
-                                            },
-                                        ],
+                                    },
+                                    {
+                                        key: 'sub1',
+                                        label: (
+                                            <Link to="/tests/Perf">
+                                                Perf Test
+                                            </Link>
+                                        ),
+                                    },
+                                    {
+                                        key: 'sub4',
+                                        label: (
+                                            <Link to="/trafficLight">
+                                                Traffic Light
+                                            </Link>
+                                        ),
                                     },
                                     {
                                         key: '2',
@@ -137,7 +135,7 @@ export default class App extends Component {
                                         label: 'Perf Related',
                                         children: [
                                             {
-                                                key: 'sub1',
+                                                key: 'sub2',
                                                 label: (
                                                     <Link to="/perfCompare">
                                                         Perf Compare
@@ -145,7 +143,7 @@ export default class App extends Component {
                                                 ),
                                             },
                                             {
-                                                key: 'sub2',
+                                                key: 'sub3',
                                                 label: (
                                                     <Link to="/tabularView">
                                                         Tabular View
