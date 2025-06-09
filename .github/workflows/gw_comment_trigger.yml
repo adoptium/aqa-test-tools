@@ -1,0 +1,260 @@
+name: Bugspots Analysis via Comment
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  parse-comment:
+    if: github.event.issue.pull_request == null && contains(github.event.comment.body, 'gw --repo')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      
+    outputs:
+      repo_url: ${{ steps.parse.outputs.repo_url }}
+      limit: ${{ steps.parse.outputs.limit }}
+      
+    steps:
+      - name: Parse comment
+        id: parse
+        run: |
+          comment_body="${{ github.event.comment.body }}"
+          echo "Comment body: $comment_body"
+          
+          # Extract repository URL
+          repo_url=$(echo "$comment_body" | grep -oP 'gw --repo \K[^\s]+' || echo "")
+          if [ -z "$repo_url" ]; then
+            echo "Error: No repository URL found in comment"
+            exit 1
+          fi
+          
+          # Extract limit with improved regex and validation
+          limit_raw=$(echo "$comment_body" | grep -oP -- '--limit\s+\K\d+' || echo "")
+          
+          # Validate and set limit (default to 10 if not specified or invalid)
+          if [ -n "$limit_raw" ] && [ "$limit_raw" -gt 0 ] && [ "$limit_raw" -le 100 ]; then
+            limit="$limit_raw"
+          else
+            limit="10"
+            if [ -n "$limit_raw" ]; then
+              echo "Warning: Invalid limit value '$limit_raw', using default 10"
+            fi
+          fi
+          
+          echo "repo_url=$repo_url" >> $GITHUB_OUTPUT
+          echo "limit=$limit" >> $GITHUB_OUTPUT
+          echo "Parsed repo: $repo_url, limit: $limit"
+
+  run-bugspots:
+    needs: parse-comment
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      issues: write
+      
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '2.7'
+          
+      - name: Install bugspots gem
+        run: gem install bugspots
+        
+      - name: Run Bugspots Comment Analyzer
+        id: bugspots
+        continue-on-error: true
+        run: |
+          chmod +x BugPredict/gw.sh
+          # Run the script and capture the exit code
+          ./BugPredict/gw.sh "${{ needs.parse-comment.outputs.repo_url }}" "${{ needs.parse-comment.outputs.limit }}"
+          
+      - name: Check for repository errors
+        id: check-errors
+        run: |
+          repo_name=$(basename "${{ needs.parse-comment.outputs.repo_url }}" .git)
+          
+          # Check if the bugspots step failed
+          if [ "${{ steps.bugspots.outcome }}" = "failure" ]; then
+            echo "analysis_failed=true" >> $GITHUB_OUTPUT
+            
+            # Check for specific error types
+            if [ -f "bugspots-results/bugspots-${repo_name}.err" ]; then
+              error_content=$(cat "bugspots-results/bugspots-${repo_name}.err")
+              if [[ "$error_content" == *"Clone failed"* ]]; then
+                echo "error_type=clone_failed" >> $GITHUB_OUTPUT
+              elif [[ "$error_content" == *"Invalid Git repository"* ]]; then
+                echo "error_type=invalid_repo" >> $GITHUB_OUTPUT
+              elif [[ "$error_content" == *"No commits found"* ]]; then
+                echo "error_type=no_commits" >> $GITHUB_OUTPUT
+              else
+                echo "error_type=unknown" >> $GITHUB_OUTPUT
+              fi
+            else
+              echo "error_type=unknown" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "analysis_failed=false" >> $GITHUB_OUTPUT
+          fi
+          
+      - name: Prepare error comment
+        if: steps.check-errors.outputs.analysis_failed == 'true'
+        run: |
+          repo_url="${{ needs.parse-comment.outputs.repo_url }}"
+          error_type="${{ steps.check-errors.outputs.error_type }}"
+          
+          echo "## ❌ Repository Analysis Failed" > comment.md
+          echo "" >> comment.md
+          echo "**Repository:** \`$repo_url\`" >> comment.md
+          echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
+          echo "" >> comment.md
+          
+          case "$error_type" in
+            "clone_failed")
+              echo "### 🚫 Invalid Repository" >> comment.md
+              echo "" >> comment.md
+              echo "**Error:** Unable to clone the repository. This usually means:" >> comment.md
+              echo "- The repository URL is incorrect" >> comment.md
+              echo "- The repository does not exist" >> comment.md
+              echo "- The repository is private and not accessible" >> comment.md
+              echo "- The repository URL format is invalid" >> comment.md
+              ;;
+            "invalid_repo")
+              echo "### 🚫 Invalid Git Repository" >> comment.md
+              echo "" >> comment.md
+              echo "**Error:** The URL does not point to a valid Git repository." >> comment.md
+              echo "" >> comment.md
+              echo "Please ensure you're providing a valid GitHub repository URL." >> comment.md
+              ;;
+            "no_commits")
+              echo "### 📭 Empty Repository" >> comment.md
+              echo "" >> comment.md
+              echo "**Error:** The repository exists but has no commits." >> comment.md
+              echo "" >> comment.md
+              echo "Bugspots analysis requires commit history to analyze bug patterns." >> comment.md
+              ;;
+            *)
+              echo "### ⚠️ Analysis Error" >> comment.md
+              echo "" >> comment.md
+              echo "**Error:** An unexpected error occurred during analysis." >> comment.md
+              echo "" >> comment.md
+              repo_name=$(basename "$repo_url" .git)
+              if [ -f "bugspots-results/bugspots-${repo_name}.err" ]; then
+                echo "**Error details:**" >> comment.md
+                echo '```' >> comment.md
+                cat "bugspots-results/bugspots-${repo_name}.err" >> comment.md
+                echo '```' >> comment.md
+              fi
+              ;;
+          esac
+          
+          echo "" >> comment.md
+          echo "**Usage examples:**" >> comment.md
+          echo '```' >> comment.md
+          echo "gw --repo https://github.com/username/repository" >> comment.md
+          echo "gw --repo https://github.com/username/repository --limit 15" >> comment.md
+          echo '```' >> comment.md
+          
+      - name: Prepare success comment
+        if: steps.check-errors.outputs.analysis_failed == 'false'
+        run: |
+          repo_name=$(basename "${{ needs.parse-comment.outputs.repo_url }}" .git)
+          limit="${{ needs.parse-comment.outputs.limit }}"
+          
+          if [ -f "bugspots-results/bugspots-${repo_name}.log" ] && [ -s "bugspots-results/bugspots-${repo_name}.log" ]; then
+            # Parse the bugspots output to extract hotspots
+            if grep -q "Hotspots:" "bugspots-results/bugspots-${repo_name}.log"; then
+              echo "## 🎯 Bugspots Analysis Results" > comment.md
+              echo "" >> comment.md
+              echo "**Repository:** \`${{ needs.parse-comment.outputs.repo_url }}\`" >> comment.md
+              echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
+              echo "" >> comment.md
+              
+              # Extract number of bugfix commits and hotspots from the summary
+              bugfix_commits=$(grep -oP 'Found \K\d+(?= bugfix commits)' "bugspots-results/bugspots-${repo_name}.log" || echo "unknown")
+              total_hotspots=$(grep -oP 'with \K\d+(?= hotspots)' "bugspots-results/bugspots-${repo_name}.log" || echo "unknown")
+              
+              echo "**Analysis Summary:**" >> comment.md
+              echo "- Found **${bugfix_commits}** bugfix commits" >> comment.md
+              echo "- Identified **${total_hotspots}** total hotspots" >> comment.md
+              echo "- Showing top **${limit}** files most likely to contain bugs" >> comment.md
+              echo "" >> comment.md
+              
+              # Extract hotspots section and get top N entries
+              echo "### 🔥 Top ${limit} Hotspots" >> comment.md
+              echo "" >> comment.md
+              echo '```' >> comment.md
+              echo "Score    File" >> comment.md
+              echo "-------  ----" >> comment.md
+              
+              # Use the pre-processed top N file created by gw.sh
+              if [ -f "bugspots-results/bugspots-${repo_name}-top.log" ]; then
+                cat "bugspots-results/bugspots-${repo_name}-top.log" >> comment.md
+              else
+                # Fallback to manual extraction
+                sed -n '/Hotspots:/,/^$/p' "bugspots-results/bugspots-${repo_name}.log" | \
+                grep -E '^\s*[0-9]+\.[0-9]+.*' | \
+                head -n "$limit" | \
+                sed 's/^\s*//' >> comment.md
+              fi
+              
+              echo '```' >> comment.md
+              echo "" >> comment.md
+              echo "> 💡 **How to read this:** Higher scores indicate files more likely to contain bugs." >> comment.md
+              echo "> Scores are based on frequency and recency of bug-fix commits affecting each file." >> comment.md
+              echo "" >> comment.md
+            else
+              # No hotspots section found
+              echo "## ⚠️ Bugspots Analysis Results" > comment.md
+              echo "" >> comment.md
+              echo "**Repository:** \`${{ needs.parse-comment.outputs.repo_url }}\`" >> comment.md
+              echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
+              echo "" >> comment.md
+              echo "### 📭 No Hotspots Found" >> comment.md
+              echo "" >> comment.md
+              echo "The analysis completed but no hotspots were identified." >> comment.md
+              echo "" >> comment.md
+              echo "**Possible reasons:**" >> comment.md
+              echo "- Repository has very few or no bug-fix commits" >> comment.md
+              echo "- Commit messages don't match standard bug-fix patterns" >> comment.md
+              echo "- Repository is well-maintained with minimal bugs" >> comment.md
+              echo "" >> comment.md
+              echo "**Raw output preview:**" >> comment.md
+              echo '```' >> comment.md
+              head -n 20 "bugspots-results/bugspots-${repo_name}.log" >> comment.md
+              echo '```' >> comment.md
+            fi
+          else
+            echo "## ⚠️ Bugspots Analysis Results" > comment.md
+            echo "" >> comment.md
+            echo "**Repository:** \`${{ needs.parse-comment.outputs.repo_url }}\`" >> comment.md
+            echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
+            echo "" >> comment.md
+            echo "### 📭 No Results Found" >> comment.md
+            echo "" >> comment.md
+            echo "No analysis results were generated." >> comment.md
+            echo "" >> comment.md
+            echo "**This could mean:**" >> comment.md
+            echo "- The repository has no commit history" >> comment.md
+            echo "- The repository could not be accessed" >> comment.md
+            echo "- The bugspots analysis encountered an unexpected issue" >> comment.md
+          fi
+          
+      - name: Comment on issue
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const comment = fs.readFileSync('comment.md', 'utf8');
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: comment
+            });
