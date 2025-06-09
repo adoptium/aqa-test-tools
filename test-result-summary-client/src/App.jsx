@@ -97,6 +97,24 @@ export default class App extends Component {
                                                 By Pipeline
                                             </Link>
                                         ),
+                                        children: [
+                                            {
+                                                key: 'sub1',
+                                                label: (
+                                                    <Link to="/tests/Perf">
+                                                        Perf Test
+                                                    </Link>
+                                                ),
+                                            },
+                                            {
+                                                key: 'sub2',
+                                                label: (
+                                                    <Link to="/trafficLight">
+                                                        Traffic Light
+                                                    </Link>
+                                                ),
+                                            },
+                                        ],
                                     },
                                     {
                                         key: '2',
@@ -121,32 +139,16 @@ export default class App extends Component {
                                             {
                                                 key: 'sub1',
                                                 label: (
-                                                    <Link to="/tests/Perf">
-                                                        Perf Test
-                                                    </Link>
-                                                ),
-                                            },
-                                            {
-                                                key: 'sub2',
-                                                label: (
                                                     <Link to="/perfCompare">
                                                         Perf Compare
                                                     </Link>
                                                 ),
                                             },
                                             {
-                                                key: 'sub3',
+                                                key: 'sub2',
                                                 label: (
                                                     <Link to="/tabularView">
                                                         Tabular View
-                                                    </Link>
-                                                ),
-                                            },
-                                            {
-                                                key: 'sub4',
-                                                label: (
-                                                    <Link to="/trafficLight">
-                                                        Traffic Light
                                                     </Link>
                                                 ),
                                             },
