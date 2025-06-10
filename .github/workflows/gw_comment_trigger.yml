@@ -19,19 +19,26 @@ jobs:
     steps:
       - name: Parse comment
         id: parse
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          comment_body="${{ github.event.comment.body }}"
-          echo "Comment body: $comment_body"
+          echo "Comment body: $COMMENT_BODY"
           
-          # Extract repository URL
-          repo_url=$(echo "$comment_body" | grep -oP 'gw --repo \K[^\s]+' || echo "")
+          # Extract repository URL using environment variable
+          repo_url=$(echo "$COMMENT_BODY" | grep -oP 'gw --repo \K[^\s]+' || echo "")
           if [ -z "$repo_url" ]; then
             echo "Error: No repository URL found in comment"
             exit 1
           fi
           
+          # Validate repository URL format
+          if ! echo "$repo_url" | grep -qE '^https://github\.com/[a-zA-Z0-9._-]+/[a-zA-Z0-9._-]+/?$'; then
+            echo "Error: Invalid repository URL format. Must be a GitHub repository URL."
+            exit 1
+          fi
+          
           # Extract limit with improved regex and validation
-          limit_raw=$(echo "$comment_body" | grep -oP -- '--limit\s+\K\d+' || echo "")
+          limit_raw=$(echo "$COMMENT_BODY" | grep -oP -- '--limit\s+\K\d+' || echo "")
           
           # Validate and set limit (default to 10 if not specified or invalid)
           if [ -n "$limit_raw" ] && [ "$limit_raw" -gt 0 ] && [ "$limit_raw" -le 100 ]; then
@@ -69,15 +76,20 @@ jobs:
       - name: Run Bugspots Comment Analyzer
         id: bugspots
         continue-on-error: true
+        env:
+          REPO_URL: ${{ needs.parse-comment.outputs.repo_url }}
+          LIMIT: ${{ needs.parse-comment.outputs.limit }}
         run: |
-          chmod +x BugPredict/gw.sh
-          # Run the script and capture the exit code
-          ./BugPredict/gw.sh "${{ needs.parse-comment.outputs.repo_url }}" "${{ needs.parse-comment.outputs.limit }}"
+          chmod +x gw.sh
+          # Run the script with environment variables to prevent injection
+          ./gw.sh "$REPO_URL" "$LIMIT"
           
       - name: Check for repository errors
         id: check-errors
+        env:
+          REPO_URL: ${{ needs.parse-comment.outputs.repo_url }}
         run: |
-          repo_name=$(basename "${{ needs.parse-comment.outputs.repo_url }}" .git)
+          repo_name=$(basename "$REPO_URL" .git)
           
           # Check if the bugspots step failed
           if [ "${{ steps.bugspots.outcome }}" = "failure" ]; then
@@ -104,17 +116,17 @@ jobs:
           
       - name: Prepare error comment
         if: steps.check-errors.outputs.analysis_failed == 'true'
+        env:
+          REPO_URL: ${{ needs.parse-comment.outputs.repo_url }}
+          ERROR_TYPE: ${{ steps.check-errors.outputs.error_type }}
         run: |
-          repo_url="${{ needs.parse-comment.outputs.repo_url }}"
-          error_type="${{ steps.check-errors.outputs.error_type }}"
-          
           echo "## ❌ Repository Analysis Failed" > comment.md
           echo "" >> comment.md
-          echo "**Repository:** \`$repo_url\`" >> comment.md
+          echo "**Repository:** \`$REPO_URL\`" >> comment.md
           echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
           echo "" >> comment.md
           
-          case "$error_type" in
+          case "$ERROR_TYPE" in
             "clone_failed")
               echo "### 🚫 Invalid Repository" >> comment.md
               echo "" >> comment.md
@@ -143,7 +155,7 @@ jobs:
               echo "" >> comment.md
               echo "**Error:** An unexpected error occurred during analysis." >> comment.md
               echo "" >> comment.md
-              repo_name=$(basename "$repo_url" .git)
+              repo_name=$(basename "$REPO_URL" .git)
               if [ -f "bugspots-results/bugspots-${repo_name}.err" ]; then
                 echo "**Error details:**" >> comment.md
                 echo '```' >> comment.md
@@ -162,16 +174,18 @@ jobs:
           
       - name: Prepare success comment
         if: steps.check-errors.outputs.analysis_failed == 'false'
+        env:
+          REPO_URL: ${{ needs.parse-comment.outputs.repo_url }}
+          LIMIT: ${{ needs.parse-comment.outputs.limit }}
         run: |
-          repo_name=$(basename "${{ needs.parse-comment.outputs.repo_url }}" .git)
-          limit="${{ needs.parse-comment.outputs.limit }}"
+          repo_name=$(basename "$REPO_URL" .git)
           
           if [ -f "bugspots-results/bugspots-${repo_name}.log" ] && [ -s "bugspots-results/bugspots-${repo_name}.log" ]; then
             # Parse the bugspots output to extract hotspots
             if grep -q "Hotspots:" "bugspots-results/bugspots-${repo_name}.log"; then
               echo "## 🎯 Bugspots Analysis Results" > comment.md
               echo "" >> comment.md
-              echo "**Repository:** \`${{ needs.parse-comment.outputs.repo_url }}\`" >> comment.md
+              echo "**Repository:** \`$REPO_URL\`" >> comment.md
               echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
               echo "" >> comment.md
               
@@ -182,11 +196,11 @@ jobs:
               echo "**Analysis Summary:**" >> comment.md
               echo "- Found **${bugfix_commits}** bugfix commits" >> comment.md
               echo "- Identified **${total_hotspots}** total hotspots" >> comment.md
-              echo "- Showing top **${limit}** files most likely to contain bugs" >> comment.md
+              echo "- Showing top **${LIMIT}** files most likely to contain bugs" >> comment.md
               echo "" >> comment.md
               
               # Extract hotspots section and get top N entries
-              echo "### 🔥 Top ${limit} Hotspots" >> comment.md
+              echo "### 🔥 Top ${LIMIT} Hotspots" >> comment.md
               echo "" >> comment.md
               echo '```' >> comment.md
               echo "Score    File" >> comment.md
@@ -199,7 +213,7 @@ jobs:
                 # Fallback to manual extraction
                 sed -n '/Hotspots:/,/^$/p' "bugspots-results/bugspots-${repo_name}.log" | \
                 grep -E '^\s*[0-9]+\.[0-9]+.*' | \
-                head -n "$limit" | \
+                head -n "$LIMIT" | \
                 sed 's/^\s*//' >> comment.md
               fi
               
@@ -212,7 +226,7 @@ jobs:
               # No hotspots section found
               echo "## ⚠️ Bugspots Analysis Results" > comment.md
               echo "" >> comment.md
-              echo "**Repository:** \`${{ needs.parse-comment.outputs.repo_url }}\`" >> comment.md
+              echo "**Repository:** \`$REPO_URL\`" >> comment.md
               echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
               echo "" >> comment.md
               echo "### 📭 No Hotspots Found" >> comment.md
@@ -232,7 +246,7 @@ jobs:
           else
             echo "## ⚠️ Bugspots Analysis Results" > comment.md
             echo "" >> comment.md
-            echo "**Repository:** \`${{ needs.parse-comment.outputs.repo_url }}\`" >> comment.md
+            echo "**Repository:** \`$REPO_URL\`" >> comment.md
             echo "**Analysis Date:** $(date '+%Y-%m-%d %H:%M:%S UTC')" >> comment.md
             echo "" >> comment.md
             echo "### 📭 No Results Found" >> comment.md
