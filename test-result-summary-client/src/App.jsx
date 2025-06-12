@@ -169,7 +169,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '9',
+                                        key: '',
                                         label: (
                                             <Link to="/AdvancedSearch">
                                                 Advanced Search
