@@ -99,7 +99,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: 'sub1',
+                                        key: '2',
                                         label: (
                                             <Link to="/tests/Perf">
                                                 Perf Test
@@ -107,7 +107,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: 'sub4',
+                                        key: '3',
                                         label: (
                                             <Link to="/trafficLight">
                                                 Traffic Light
@@ -115,7 +115,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '2',
+                                        key: '4',
                                         label: (
                                             <Link to="/tests/AQAvitCert">
                                                 AQAvit Verification
@@ -123,7 +123,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '3',
+                                        key: '5',
                                         label: (
                                             <Link to="/testCompare">
                                                 Test Compare
@@ -131,11 +131,11 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '4',
+                                        key: '6',
                                         label: 'Perf Related',
                                         children: [
                                             {
-                                                key: 'sub2',
+                                                key: 'sub1',
                                                 label: (
                                                     <Link to="/perfCompare">
                                                         Perf Compare
@@ -143,7 +143,7 @@ export default class App extends Component {
                                                 ),
                                             },
                                             {
-                                                key: 'sub3',
+                                                key: 'sub2',
                                                 label: (
                                                     <Link to="/tabularView">
                                                         Tabular View
@@ -153,7 +153,7 @@ export default class App extends Component {
                                         ],
                                     },
                                     {
-                                        key: '5',
+                                        key: '7',
                                         label: (
                                             <Link to="/dashboard">
                                                 Dashboard
@@ -161,7 +161,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '6',
+                                        key: '8',
                                         label: (
                                             <Link to="/ThirdPartyAppView">
                                                 Third Party Applications
@@ -169,7 +169,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '7',
+                                        key: '9',
                                         label: (
                                             <Link to="/AdvancedSearch">
                                                 Advanced Search
