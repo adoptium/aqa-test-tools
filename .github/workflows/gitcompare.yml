@@ -8,7 +8,9 @@ on:
 jobs:
   comment_trigger:
     runs-on: ubuntu-latest
-    if: startsWith(github.event.comment.body, '/gitcompare')
+
+    # Run whenever the comment mentions "/gitcompare" anywhere
+    if: contains(github.event.comment.body, '/gitcompare')
 
     steps:
       - name: Checkout repository
@@ -17,12 +19,32 @@ jobs:
       - name: Extract GOOD_BUILD and BAD_BUILD from comment
         id: parse_comment
         run: |
+          # Grab the full comment
           COMMENT="${{ github.event.comment.body }}"
-          BODY="$(printf '%s\n' "$COMMENT" | tail -n +2)"
-          GOOD="$(printf '%s\n' "$BODY" | sed -n '1,/^---$/p' | sed '1d')"
-          BAD="$(printf '%s\n' "$BODY" | sed -n '1,/^---$/d')"
-          GOOD="$(printf '%s\n' "$GOOD" | sed '/^[[:space:]]*$/d')"
-          BAD="$(printf '%s\n' "$BAD"  | sed '/^[[:space:]]*$/d')"
+
+          # Remove Markdown code fences (``` lines)
+          CLEANED="$(printf '%s\n' "$COMMENT" \
+            | sed '/^```/d')"
+
+          # Remove any leading text up to /gitcompare
+          CLEANED="${CLEANED#*\/gitcompare}"
+
+          # Now split on the literal '---' delimiter
+          GOOD="$(printf '%s\n' "$CLEANED" \
+            | sed -n '1,/^---$/p' \
+            | sed '1d' \
+            | sed '/^[[:space:]]*$/d')"
+          BAD="$(printf '%s\n' "$CLEANED" \
+            | sed -n '1,/^---$/d' \
+            | sed '/^[[:space:]]*$/d')"
+
+          echo "=== DEBUG: GOOD_BUILD ==="
+          echo "$GOOD"
+          echo "=== DEBUG: BAD_BUILD ==="
+          echo "$BAD"
+          echo "=========================="
+
+          # Export to environment for next step
           echo "GOOD_BUILD<<EOF" >> $GITHUB_ENV
           echo "$GOOD"            >> $GITHUB_ENV
           echo "EOF"              >> $GITHUB_ENV
@@ -30,9 +52,8 @@ jobs:
           echo "$BAD"             >> $GITHUB_ENV
           echo "EOF"              >> $GITHUB_ENV
 
-      - name: Make parsing script executable
+      - name: Make commit_hunter.sh executable
         run: chmod +x .github/scripts/commit_hunter.sh
 
       - name: Run commit_hunter.sh and print compare URLs
-        run: |
-          ./.github/scripts/commit_hunter.sh "$GOOD_BUILD" "$BAD_BUILD"
+        run: ./.github/scripts/commit_hunter.sh "$GOOD_BUILD" "$BAD_BUILD"
