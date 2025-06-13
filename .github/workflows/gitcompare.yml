@@ -1,0 +1,22 @@
+# .github/workflows/gitcompare.yml
+name: GitCompare by Comment
+
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  comment_trigger:
+    runs-on: ubuntu-latest
+    if: contains(github.event.comment.body, '/gitcompare')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Run commit_hunter.sh over full comment
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
+        run: |
+          chmod +x .github/scripts/commit_hunter.sh
+          ./.github/scripts/commit_hunter.sh "$COMMENT_BODY"
