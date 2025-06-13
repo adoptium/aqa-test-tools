@@ -1,0 +1,56 @@
+# .github/workflows/gitcompare.yml
+name: GitCompare by Comment
+
+# 1) Trigger on any new issue or PR comment
+on:
+  issue_comment:
+    types: [created]
+
+jobs:
+  comment_trigger:
+    runs-on: ubuntu-latest
+
+    # 2) Only run if the comment starts with "/gitcompare"
+    if: startsWith(github.event.comment.body, '/gitcompare')
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Extract GOOD_BUILD and BAD_BUILD from comment
+        id: parse_comment
+        run: |
+          COMMENT="$(printf '%s' "${{ github.event.comment.body }}")"
+          
+          # Remove the first line ("/gitcompare")
+          # Everything after that is either GOOD or BAD, separated by a line "—"
+          BODY_AFTER_CMD="$(printf '%s\n' "$COMMENT" | tail -n +2)"
+
+          # Split into GOOD_BUILD (lines before the delimiter) and BAD_BUILD (lines after)
+          GOOD_BUILD="$(printf '%s\n' "$BODY_AFTER_CMD" | sed -n '1,/^---$/p' | sed '1d')"
+          BAD_BUILD="$(printf '%s\n' "$BODY_AFTER_CMD" | sed -n '1,/^---$/d')"
+
+          # Trim any leading/trailing blank lines (optional)
+          GOOD_BUILD="$(printf '%s\n' "$GOOD_BUILD" | sed '/^[[:space:]]*$/d')"
+          BAD_BUILD="$(printf '%s\n' "$BAD_BUILD" | sed '/^[[:space:]]*$/d')"
+
+          # Debug: Show what we parsed
+          echo "Parsed GOOD_BUILD:"
+          echo "----------"
+          echo "$GOOD_BUILD"
+          echo "----------"
+          echo "Parsed BAD_BUILD:"
+          echo "----------"
+          echo "$BAD_BUILD"
+          echo "----------"
+
+          # Export for next step
+          echo "::set-output name=good::$GOOD_BUILD"
+          echo "::set-output name=bad::$BAD_BUILD"
+
+      - name: Make parsing script executable
+        run: chmod +x .github/scripts/commit_hunter.sh
+
+      - name: Run commit_hunter.sh and print compare URLs
+        run: |
+          ./.github/scripts/commit_hunter.sh "${{ steps.parse_comment.outputs.good }}" "${{ steps.parse_comment.outputs.bad }}"
