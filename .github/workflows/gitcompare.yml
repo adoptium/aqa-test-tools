@@ -5,59 +5,18 @@ on:
   issue_comment:
     types: [created]
 
-permissions:
-  contents: read   # no need for write here unless you comment back
-
 jobs:
   comment_trigger:
     runs-on: ubuntu-latest
-
-    # Fire whenever someone mentions "/gitcompare" anywhere in the comment
     if: contains(github.event.comment.body, '/gitcompare')
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract GOOD_BUILD and BAD_BUILD
-        id: parse_comment
-        # 1️⃣ Capture the raw comment into an env var
+      - name: Run commit_hunter.sh over full comment
         env:
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          # Remove any Markdown code fences
-          CLEANED=$(printf '%s\n' "$COMMENT_BODY" | sed '/^```/d')
-
-          # Drop everything up to and including the first "/gitcompare"
-          CLEANED="${CLEANED#*\/gitcompare}"
-
-          # Split on literal '---'
-          GOOD=$(printf '%s\n' "$CLEANED" \
-            | sed -n '1,/^---$/p' \
-            | sed '1d' \
-            | sed '/^[[:space:]]*$/d')
-          BAD=$(printf '%s\n' "$CLEANED" \
-            | sed -n '1,/^---$/d' \
-            | sed '/^[[:space:]]*$/d')
-
-          # 🚧 Debug (optional—remove when stable)
-          echo "=== DEBUG GOOD_BUILD ==="
-          echo "$GOOD"
-          echo "=== DEBUG BAD_BUILD ==="
-          echo "$BAD"
-          echo "========================="
-
-          # 2️⃣ Export multi-line blobs safely
-          echo "GOOD_BUILD<<EOF" >> $GITHUB_ENV
-          echo "$GOOD"            >> $GITHUB_ENV
-          echo "EOF"              >> $GITHUB_ENV
-
-          echo "BAD_BUILD<<EOF"   >> $GITHUB_ENV
-          echo "$BAD"             >> $GITHUB_ENV
-          echo "EOF"              >> $GITHUB_ENV
-
-      - name: Make commit_hunter.sh executable
-        run: chmod +x .github/scripts/commit_hunter.sh
-
-      - name: Run commit_hunter.sh and print compare URLs
-        run: ./.github/scripts/commit_hunter.sh "$GOOD_BUILD" "$BAD_BUILD"
+          chmod +x .github/scripts/commit_hunter.sh
+          ./.github/scripts/commit_hunter.sh "$COMMENT_BODY"

@@ -1,53 +1,45 @@
 #!/usr/bin/env bash
 #
-# commit_hunter.sh
+# .github/scripts/commit_hunter.sh
 #
-# Usage:
-#   ./commit_hunter.sh "<GOOD_BUILD_TEXT>" "<BAD_BUILD_TEXT>"
+# Arg1: the full GitHub comment body
 #
-# It will extract OpenJ9/OMR/JCL SHAs from the two build‐output blobs
-# and echo the three “compare” URLs. 
-
 set -euo pipefail
 
-GOOD_BUILD="$1"
-BAD_BUILD="$2"
+COMMENT="$1"
 
-extract_hash() {
-  local prefix="$1"   # e.g. "OpenJ9" or "OMR" or "JCL"
-  local text="$2"
-  printf '%s\n' "$text" \
-    | grep -Po "${prefix}\s*-\s*\K[0-9a-f]+" \
-    | head -n 1
-}
+# 1) Remove leading /gitcompare line
+BODY="${COMMENT#*\/gitcompare}"
 
-# 1) Extract “good” SHAs
-good_openj9=$(extract_hash "OpenJ9" "$GOOD_BUILD")
-good_omr=$(extract_hash "OMR" "$GOOD_BUILD")
-good_jcl=$(extract_hash "JCL" "$GOOD_BUILD")
+# 2) Normalize Windows line endings
+BODY="${BODY//$'\r'/}"
 
-if [[ -z "$good_openj9" || -z "$good_omr" || -z "$good_jcl" ]]; then
-  echo "ERROR: Failed to parse one or more hashes from GOOD_BUILD"
-  exit 1
-fi
+# 3) Split on the first line containing only dashes (allowing spaces)
+#    We use awk for robustness
+GOOD=$(printf '%s\n' "$BODY" \
+  | awk 'BEGIN{sep="---"} 
+         $0 ~ "^[[:space:]]*" sep "[[:space:]]*$" { exit } 
+         {print}')
 
-# 2) Extract “bad” SHAs
-bad_openj9=$(extract_hash "OpenJ9" "$BAD_BUILD")
-bad_omr=$(extract_hash "OMR" "$BAD_BUILD")
-bad_jcl=$(extract_hash "JCL" "$BAD_BUILD")
+BAD=$(printf '%s\n' "$BODY" \
+  | awk 'BEGIN{sep="---"} 
+         $0 ~ "^[[:space:]]*" sep "[[:space:]]*$" {found=1; next} 
+         found {print}')
 
-if [[ -z "$bad_openj9" || -z "$bad_omr" || -z "$bad_jcl" ]]; then
-  echo "ERROR: Failed to parse one or more hashes from BAD_BUILD"
-  exit 1
-fi
+# 4) Trim blank lines
+trim() { printf '%s\n' "$1" | sed '/^[[:space:]]*$/d'; }
+GOOD=$(trim "$GOOD")
+BAD=$(trim "$BAD")
 
-# 3) Build the compare URLs
-url_openj9="https://github.com/eclipse-openj9/openj9/compare/${good_openj9}...${bad_openj9}"
-url_omr="https://github.com/eclipse-omr/omr/compare/${good_omr}...${bad_omr}"
-url_jcl="https://github.com/ibmruntimes/openj9-openjdk-jdk21/compare/${good_jcl}...${bad_jcl}"
+# >>> Now you have two variables, GOOD and BAD, containing exactly what you need.
+# For example:
+echo "Comparing these SHAs from GOOD:"
+echo "$GOOD" | grep -oE '[0-9a-f]{7,}' 
+echo
+echo "…against BAD:"
+echo "$BAD"  | grep -oE '[0-9a-f]{7,}'
+echo
 
-# 4) Print them
-echo "=== FINAL COMPARE URLS ==="
-echo "$url_openj9"
-echo "$url_omr"
-echo "$url_jcl"
+# 5) Call your existing compare routine.
+#    Pass GOOD and BAD as multi-line arguments:
+./commit_hunter_core.sh "$GOOD" "$BAD"
