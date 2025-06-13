@@ -5,49 +5,53 @@ on:
   issue_comment:
     types: [created]
 
+permissions:
+  contents: read   # no need for write here unless you comment back
+
 jobs:
   comment_trigger:
     runs-on: ubuntu-latest
 
-    # Run whenever the comment mentions "/gitcompare" anywhere
+    # Fire whenever someone mentions "/gitcompare" anywhere in the comment
     if: contains(github.event.comment.body, '/gitcompare')
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Extract GOOD_BUILD and BAD_BUILD from comment
+      - name: Extract GOOD_BUILD and BAD_BUILD
         id: parse_comment
+        # 1️⃣ Capture the raw comment into an env var
+        env:
+          COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
-          # Grab the full comment
-          COMMENT="${{ github.event.comment.body }}"
+          # Remove any Markdown code fences
+          CLEANED=$(printf '%s\n' "$COMMENT_BODY" | sed '/^```/d')
 
-          # Remove Markdown code fences (``` lines)
-          CLEANED="$(printf '%s\n' "$COMMENT" \
-            | sed '/^```/d')"
-
-          # Remove any leading text up to /gitcompare
+          # Drop everything up to and including the first "/gitcompare"
           CLEANED="${CLEANED#*\/gitcompare}"
 
-          # Now split on the literal '---' delimiter
-          GOOD="$(printf '%s\n' "$CLEANED" \
+          # Split on literal '---'
+          GOOD=$(printf '%s\n' "$CLEANED" \
             | sed -n '1,/^---$/p' \
             | sed '1d' \
-            | sed '/^[[:space:]]*$/d')"
-          BAD="$(printf '%s\n' "$CLEANED" \
+            | sed '/^[[:space:]]*$/d')
+          BAD=$(printf '%s\n' "$CLEANED" \
             | sed -n '1,/^---$/d' \
-            | sed '/^[[:space:]]*$/d')"
+            | sed '/^[[:space:]]*$/d')
 
-          echo "=== DEBUG: GOOD_BUILD ==="
+          # 🚧 Debug (optional—remove when stable)
+          echo "=== DEBUG GOOD_BUILD ==="
           echo "$GOOD"
-          echo "=== DEBUG: BAD_BUILD ==="
+          echo "=== DEBUG BAD_BUILD ==="
           echo "$BAD"
-          echo "=========================="
+          echo "========================="
 
-          # Export to environment for next step
+          # 2️⃣ Export multi-line blobs safely
           echo "GOOD_BUILD<<EOF" >> $GITHUB_ENV
           echo "$GOOD"            >> $GITHUB_ENV
           echo "EOF"              >> $GITHUB_ENV
+
           echo "BAD_BUILD<<EOF"   >> $GITHUB_ENV
           echo "$BAD"             >> $GITHUB_ENV
           echo "EOF"              >> $GITHUB_ENV
