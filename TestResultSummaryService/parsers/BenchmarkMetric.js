@@ -90,7 +90,7 @@ const BenchmarkMetricRegex = {
             },
         },
     },
-    'liberty-dt7-startup': {
+    liberty_startup: {
         //Example: Warm run 0...
         outerRegex: /Warm run \d*([\s\S\n]*)/,
         metrics: {
@@ -108,7 +108,7 @@ const BenchmarkMetricRegex = {
             },
         },
     },
-    'liberty-dt7-throughput': {
+    liberty_throughput_dt10: {
         //Example: Running 1 measures...
         outerRegex: /Running \d* measures([\s\S\n]*)/,
         metrics: {
