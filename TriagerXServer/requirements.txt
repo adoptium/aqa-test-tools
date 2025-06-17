@@ -36,7 +36,7 @@ openai==1.33.0
 orjson==3.10.3
 packaging==24.0
 proto-plus==1.23.0
-protobuf==4.25.3
+protobuf==4.25.8
 pyasn1==0.6.0
 pyasn1_modules==0.4.0
 pydantic==2.7.3
