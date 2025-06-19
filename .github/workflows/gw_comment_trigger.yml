@@ -15,6 +15,7 @@ jobs:
     outputs:
       repo_url: ${{ steps.parse.outputs.repo_url }}
       limit: ${{ steps.parse.outputs.limit }}
+      branch: ${{ steps.parse.outputs.branch }}
       
     steps:
       - name: Parse comment
@@ -24,6 +25,7 @@ jobs:
         run: |
           echo "Comment body: $COMMENT_BODY"
           
+          # Extract repository URL
           # Extract repository URL using environment variable
           repo_url=$(echo "$COMMENT_BODY" | grep -oP 'gw --repo \K[^\s]+' || echo "")
           if [ -z "$repo_url" ]; then
@@ -37,7 +39,7 @@ jobs:
             exit 1
           fi
           
-          # Extract limit with improved regex and validation
+          # Extract limit
           limit_raw=$(echo "$COMMENT_BODY" | grep -oP -- '--limit\s+\K\d+' || echo "")
           
           # Validate and set limit (default to 10 if not specified or invalid)
@@ -50,9 +52,18 @@ jobs:
             fi
           fi
           
+          # Extract branch
+          branch_raw=$(echo "$COMMENT_BODY" | grep -oP -- '--branch\s+\K[^\s]+' || echo "")
+          if [ -n "$branch_raw" ]; then
+            branch="$branch_raw"
+          else
+            branch=""
+          fi
+          
           echo "repo_url=$repo_url" >> $GITHUB_OUTPUT
           echo "limit=$limit" >> $GITHUB_OUTPUT
-          echo "Parsed repo: $repo_url, limit: $limit"
+          echo "branch=$branch" >> $GITHUB_OUTPUT
+          echo "Parsed repo: $repo_url, limit: $limit, branch: $branch"
 
   run-bugspots:
     needs: parse-comment
@@ -79,15 +90,16 @@ jobs:
         env:
           REPO_URL: ${{ needs.parse-comment.outputs.repo_url }}
           LIMIT: ${{ needs.parse-comment.outputs.limit }}
+          BRANCH: ${{ needs.parse-comment.outputs.branch }}
         run: |
           chmod +x BugPredict/gw.sh
-          # Run the script with environment variables to prevent injection
-          BugPredict/gw.sh "$REPO_URL" "$LIMIT"
+          BugPredict/gw.sh "$REPO_URL" "$LIMIT" "$BRANCH"
           
       - name: Check for repository errors
         id: check-errors
         env:
           REPO_URL: ${{ needs.parse-comment.outputs.repo_url }}
+          BRANCH: ${{ needs.parse-comment.outputs.branch }}
         run: |
           repo_name=$(basename "$REPO_URL" .git)
           
@@ -104,6 +116,8 @@ jobs:
                 echo "error_type=invalid_repo" >> $GITHUB_OUTPUT
               elif [[ "$error_content" == *"No commits found"* ]]; then
                 echo "error_type=no_commits" >> $GITHUB_OUTPUT
+              elif [[ "$error_content" == *"no such branch"* ]]; then
+                echo "error_type=invalid_branch" >> $GITHUB_OUTPUT
               else
                 echo "error_type=unknown" >> $GITHUB_OUTPUT
               fi
@@ -150,6 +164,13 @@ jobs:
               echo "" >> comment.md
               echo "Bugspots analysis requires commit history to analyze bug patterns." >> comment.md
               ;;
+            "invalid_branch")
+              echo "### 🚫 Invalid Branch" >> comment.md
+              echo "" >> comment.md
+              echo "**Error:** The specified branch does not exist in the repository." >> comment.md
+              echo "" >> comment.md
+              echo "Please specify a valid branch or omit the --branch parameter to use the default branch." >> comment.md
+              ;;
             *)
               echo "### ⚠️ Analysis Error" >> comment.md
               echo "" >> comment.md
@@ -170,6 +191,7 @@ jobs:
           echo '```' >> comment.md
           echo "gw --repo https://github.com/username/repository" >> comment.md
           echo "gw --repo https://github.com/username/repository --limit 15" >> comment.md
+          echo "gw --repo https://github.com/username/repository --branch main" >> comment.md
           echo '```' >> comment.md
           
       - name: Prepare success comment
