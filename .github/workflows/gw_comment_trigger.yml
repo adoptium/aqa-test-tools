@@ -80,7 +80,7 @@ jobs:
           REPO_URL: ${{ needs.parse-comment.outputs.repo_url }}
           LIMIT: ${{ needs.parse-comment.outputs.limit }}
         run: |
-          chmod +x BugPredict/gw.sh
+          chmod a+x BugPredict/gw.sh
           # Run the script with environment variables to prevent injection
           BugPredict/gw.sh "$REPO_URL" "$LIMIT"
           
@@ -272,4 +272,3 @@ jobs:
               repo: context.repo.repo,
               body: comment
             });
-
