@@ -1,22 +1,26 @@
-# .github/workflows/gitcompare.yml
-name: GitCompare by Comment
+- name: Parse comment
+  id: parse
+  env:
+    COMMENT_BODY: ${{ github.event.comment.body }}
+  run: |
+    chmod +x ./scripts/parse_comment.sh
+    ./scripts/parse_comment.sh "$COMMENT_BODY"
 
-on:
-  issue_comment:
-    types: [created]
+...
 
-jobs:
-  comment_trigger:
-    runs-on: ubuntu-latest
-    if: contains(github.event.comment.body, '/gitcompare')
+- name: Parse URLs from output
+  id: parse_urls
+  run: |
+    chmod +x ./scripts/parse_urls.sh
+    ./scripts/parse_urls.sh
 
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+...
 
-      - name: Run commit_hunter.sh over full comment
-        env:
-          COMMENT_BODY: ${{ github.event.comment.body }}
-        run: |
-          chmod +x .github/scripts/commit_hunter.sh
-          ./.github/scripts/commit_hunter.sh "$COMMENT_BODY"
+- name: Comment on PR
+  env:
+    GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    GITHUB_REPOSITORY: ${{ github.repository }}
+    ISSUE_NUMBER: ${{ github.event.issue.number }}
+  run: |
+    pip install PyGithub
+    python3 ./scripts/post_comment.py
