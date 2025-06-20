@@ -45,9 +45,11 @@ generate_compare_urls() {
         fi
     done <<< "$bad_info"
 
+    jdk_major_version=$(echo "${good[openjdk_version]}" | cut -d '.' -f1)
+
     echo "OpenJ9: https://github.com/eclipse-openj9/openj9/compare/${good[openj9_commit]}...${bad[openj9_commit]}"
     echo "OMR: https://github.com/eclipse-omr/omr/compare/${good[omr_commit]}...${bad[omr_commit]}"
-    echo "JCL: https://github.com/ibmruntimes/openj9-openjdk-jdk${good[openjdk_version]}/compare/${good[jcl_commit]}...${bad[jcl_commit]}"
+    echo "JCL: https://github.com/ibmruntimes/openj9-openjdk-jdk${jdk_major_version}/compare/${good[jcl_commit]}...${bad[jcl_commit]}"
 }
 
 # Entry Point
