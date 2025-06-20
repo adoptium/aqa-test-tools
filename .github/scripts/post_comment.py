@@ -15,7 +15,7 @@ try:
     issue = repo.get_issue(number=issue_number)
 
     comment = issue.create_comment(comment_body)
-    print(f"✅ Comment created: {comment.html_url}")
+    print(f"✅  Comment created: {comment.html_url}")
 
 except Exception as e:
     print(f"❌ Error creating comment: {e}")
