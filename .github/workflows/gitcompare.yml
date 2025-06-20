@@ -92,7 +92,7 @@ jobs:
 
       - name: Prepare comment
         run: |
-          echo "## 🔍 GitCompare Results" > comment.md
+          echo "## 🔍  GitCompare Results" > comment.md
           echo "" >> comment.md
           echo "### OpenJ9 Changes" >> comment.md
           echo "${{ steps.parse_urls.outputs.url_openj9 }}" >> comment.md
