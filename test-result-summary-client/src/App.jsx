@@ -102,7 +102,7 @@ export default class App extends Component {
                                         key: '2',
                                         label: (
                                             <Link to="/tests/Perf">
-                                                Perf Test
+                                                Perf Pipeline
                                             </Link>
                                         ),
                                     },
