@@ -28,6 +28,7 @@ const hcvalues = {
 
 export default function ResultSummary() {
     const location = useLocation();
+
     const [state, setState] = useState({
         selectedPlatforms: [],
         allPlatforms: [],
@@ -38,6 +39,9 @@ export default function ResultSummary() {
         sdkBuilds: [],
         buildMap: {},
         summary: {},
+        machinesData: {},
+        rerunSummary: {},
+        jobsDetailsSummary: {},
         parentBuildInfo: {},
         childBuildsResult: 'UNDEFINED',
         javaVersion: null,
@@ -49,6 +53,15 @@ export default function ResultSummary() {
 
             // get test summary (i.e., passed, failed, total numbers)
             const summaryRes = fetchData(`/api/getTotals?id=${parentId}`);
+
+            const machinesDataRes = fetchData(
+                `/api/GetFailedTestByMachine?parentId=${parentId}`
+            );
+            // get rerun summary
+            const rerunRes = fetchData(`/api/getRerunDetails?id=${parentId}`);
+
+            // get jobs details
+            const jobsDetailsRes = fetchData(`/api/getJobsDetails?id=${parentId}`);
 
             // get build information
             const buildInfoRes = fetchData(`/api/getData?_id=${parentId}`);
@@ -73,12 +86,16 @@ export default function ResultSummary() {
                     parentId,
                 })}`
             );
-            const [summary, buildInfo, sdkBuilds, builds] = await Promise.all([
-                summaryRes,
-                buildInfoRes,
-                sdkBuildsRes,
-                buildsRes,
-            ]);
+            const [summary, rerunSummary, jobsDetailsSummary, machinesData, buildInfo, sdkBuilds, builds] =
+                await Promise.all([
+                    summaryRes,
+                    rerunRes,
+                    jobsDetailsRes,
+                    machinesDataRes,
+                    buildInfoRes,
+                    sdkBuildsRes,
+                    buildsRes,
+                ]);
             const parentBuildInfo = buildInfo[0] || {};
             let childBuildsResult = 'UNDEFINED';
             let javaVersion = null;
@@ -325,6 +342,9 @@ export default function ResultSummary() {
                 ...prevState,
                 buildMap,
                 summary,
+                machinesData,
+                rerunSummary,
+                jobsDetailsSummary,
                 parentBuildInfo,
                 selectedPlatforms: platformOpts,
                 allPlatforms: platformOpts,
@@ -350,6 +370,9 @@ export default function ResultSummary() {
         selectedJdkImpls,
         allJdkImpls,
         summary,
+        machinesData,
+        rerunSummary,
+        jobsDetailsSummary,
         parentBuildInfo,
         childBuildsResult,
         sdkBuilds,
@@ -366,6 +389,9 @@ export default function ResultSummary() {
                     id={parentId}
                     parentBuildInfo={parentBuildInfo}
                     summary={summary}
+                    machinesData={machinesData}
+                    rerunSummary={rerunSummary}
+                    jobsDetailsSummary={jobsDetailsSummary} 
                     childBuildsResult={childBuildsResult}
                     sdkBuilds={sdkBuilds}
                     javaVersion={javaVersion}

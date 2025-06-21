@@ -17,6 +17,9 @@ export default class Overview extends Component {
             id,
             parentBuildInfo,
             summary,
+            machinesData,
+            rerunSummary,
+            jobsDetailsSummary,
             childBuildsResult,
             sdkBuilds,
             javaVersion,
@@ -31,6 +34,13 @@ export default class Overview extends Component {
                 executed = 0,
                 total = 0,
             } = summary;
+            const machineFailures = machinesData;
+            const {
+                manual_rerun_needed = 0,
+                tests_needed_manual_rerun = 0,
+                manual_rerun_needed_regex = '',
+            } = rerunSummary;
+            const { job_success_rate = 0 } = jobsDetailsSummary;
             const passPercentage =
                 (parseInt(passed) / parseInt(executed)) * 100;
 
@@ -110,22 +120,14 @@ export default class Overview extends Component {
                         )}
                     </div>
                     <div style={{ fontSize: '18px' }}>
-                        <Row>
-                            <Col span={6}>
-                                <Divider>Test Summary</Divider>
-                            </Col>
-                            <Col span={6}>
-                                <Divider>Pass Percentage</Divider>
-                            </Col>
-                            <Col span={6}>
-                                <Divider>Build Result</Divider>
-                            </Col>
-                            <Col span={6}>
-                                <Divider>Build Metadata</Divider>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col span={6}>
+                        <Row gutter={[16, 16]}>
+                            <Col span={3}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
+                                    Test Summary
+                                </Divider>
                                 <BuildLink
                                     id={id}
                                     label="Executed: "
@@ -173,12 +175,12 @@ export default class Overview extends Component {
                                     testSummaryResult="total"
                                     buildNameRegex="^Test.*"
                                 />
-                                <br />
-                            </Col>
-                            <Col span={6}>
                                 <div>
-                                    <Tooltip title="Pass % = (Passed/Executed) * 100">
-                                        <span style={{ fontSize: '38px' }}>
+                                    <Tooltip title="Tests Success % = (Tests Passed/Tests Executed) * 100">
+                                        <span>
+                                            <strong>
+                                                Tests Success Rate:{' '}
+                                            </strong>
                                             {passPercentage
                                                 ? passPercentage.toFixed(2) +
                                                   '%'
@@ -188,7 +190,70 @@ export default class Overview extends Component {
                                 </div>
                             </Col>
 
-                            <Col span={6}>
+                            <Col span={5}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
+                                    Test Failures By Machine
+                                </Divider>
+                                {machineFailures &&
+                                machineFailures.length > 0 ? (
+                                    machineFailures.map(
+                                        ({ machine, failedTests }) => (
+                                            <div key={machine}>
+                                                {machine}: Failures:{' '}
+                                                {failedTests}
+                                            </div>
+                                        )
+                                    )
+                                ) : (
+                                    <div>No Machine Failures</div>
+                                )}
+                            </Col>
+
+                            <Col span={4}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
+                                    Additional Metrics
+                                </Divider>
+                                <BuildLink
+                                    id={id}
+                                    label="Manual Rerun Needed: "
+                                    link={manual_rerun_needed}
+                                    testSummaryResult="" // Take all results includes aborted jobs
+                                    buildNameRegex={manual_rerun_needed_regex}
+                                />
+                                <div>
+                                    <span>
+                                        <strong>
+                                            Manual Rerun Targets Involved:
+                                        </strong>
+                                        {tests_needed_manual_rerun}
+                                    </span>
+                                </div>
+                                <div>
+                                    <Tooltip title="Job Success % = (Job Passed/Job Executed) * 100">
+                                        <span>
+                                            <strong>Job Success Rate: </strong>
+                                            {job_success_rate
+                                                ? job_success_rate.toFixed(2) +
+                                                  '%'
+                                                : 'N/A'}
+                                        </span>
+                                    </Tooltip>
+                                </div>
+                            </Col>
+
+                            <Col span={5}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
+                                    Build Result
+                                </Divider>
                                 <div>
                                     <strong>Build Started at:</strong>{' '}
                                     {moment(parentBuildInfo.timestamp).format(
@@ -211,9 +276,15 @@ export default class Overview extends Component {
                                 </div>
                             </Col>
 
-                            <Col span={6}>
+                            <Col span={5} style={{ marginLeft: -10 }}>
+                                <Divider
+                                    orientation="left"
+                                    style={{ marginLeft: -10 }}
+                                >
+                                    Build Metadata
+                                </Divider>
                                 <div>
-                                    <strong>java -version:</strong>{' '}
+                                    <strong>java -version:</strong>
                                     <pre>{javaVersion}</pre>
                                 </div>
                             </Col>
