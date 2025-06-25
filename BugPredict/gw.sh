@@ -37,47 +37,24 @@ repo_name=$(basename "$REPO_URL" .git)
 # Initialize selected_branch
 selected_branch=""
 
-# If branch is specified, try cloning it first
+# Clone repository with defaut branch or specified branch
+echo "Cloning repository..."
 if [ -n "$BRANCH" ]; then
-  echo "Trying to clone specified branch: $BRANCH"
-  if git clone --branch "$BRANCH" --depth 1000 "$REPO_URL" "$WORKDIR/$repo_name" 2>/dev/null; then
-    selected_branch="$BRANCH"
-    echo "✅ Successfully cloned branch: $BRANCH"
-  else
-    echo "Error: Failed to clone specified branch: $BRANCH" >&2
+  if ! git clone --branch "$BRANCH" --depth 1000 "$REPO_URL" "$WORKDIR/$repo_name" 2>/dev/null; then
+    echo "❌ Error: Failed to clone specified branch: $BRANCH" >&2
     echo "Clone failed for $repo_name branch $BRANCH at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "$OUTPUT_DIR/bugspots-${repo_name}.err"
     exit 1
   fi
+  selected_branch="$BRANCH"
+  echo "✅ Successfully cloned branch: $BRANCH"
 else
-  # Try default branches in order of preference (master first to match bugspots default)
-  branches=("master" "main")
-  clone_success=false
-
-  for branch in "${branches[@]}"; do
-    echo "Trying to clone branch: $branch"
-    if git clone --branch "$branch" --depth 1000 "$REPO_URL" "$WORKDIR/$repo_name" 2>/dev/null; then
-      clone_success=true
-      selected_branch="$branch"
-      echo "✅ Successfully cloned branch: $branch"
-      break
-    fi
-  done
-
-  # If named branches fail, try default clone
-  if [ "$clone_success" = false ]; then
-    echo "Named branches failed, trying default clone..."
-    if git clone --depth 1000 "$REPO_URL" "$WORKDIR/$repo_name"; then
-      clone_success=true
-      selected_branch=$(git -C "$WORKDIR/$repo_name" rev-parse --abbrev-ref HEAD)
-      echo "✅ Successfully cloned with default branch: $selected_branch"
-    fi
-  fi
-
-  if [ "$clone_success" = false ]; then
+  if ! git clone --depth 1000 "$REPO_URL" "$WORKDIR/$repo_name" 2>/dev/null; then
     echo "Error: Failed to clone $REPO_URL" >&2
     echo "Clone failed for $repo_name at $(date '+%Y-%m-%d %H:%M:%S %Z')" > "$OUTPUT_DIR/bugspots-${repo_name}.err"
     exit 1
   fi
+  selected_branch=$(git -C "$WORKDIR/$repo_name" rev-parse --abbrev-ref HEAD)
+  echo "✅ Successfully cloned with default branch: $selected_branch"
 fi
 
 # Verify repository
