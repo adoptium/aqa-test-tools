@@ -6,8 +6,7 @@ on:
 
 jobs:
   parse-comment:
-    if: >
-      startsWith(github.event.comment.body, '.ch_gitcompare')
+    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '.ch_gitcompare')
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -23,37 +22,38 @@ jobs:
           COMMENT_BODY: ${{ github.event.comment.body }}
         run: |
           echo "Comment body: $COMMENT_BODY"
+          COMMENT=${COMMENT_BODY#.ch_gitcompare}
 
-          # Remove command prefix
-          COMMENT=$(echo "$COMMENT_BODY" | sed 's/^\.ch_gitcompare//')
-
-          # Parse good and bad build blocks
-          GOOD_BLOCK=$(echo "$COMMENT" | awk '/--good_build/{flag=1; next} /--bad_build/{flag=0} flag')
-          BAD_BLOCK=$(echo "$COMMENT" | awk '/--bad_build/{flag=1; next} flag')
-
-          # Trim and cleanup
-          GOOD_BLOCK=$(echo "$GOOD_BLOCK" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-          BAD_BLOCK=$(echo "$BAD_BLOCK" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//')
-
-          echo "Good build block:"
-          echo "$GOOD_BLOCK"
-          echo "Bad build block:"
-          echo "$BAD_BLOCK"
-
-          # Fail if empty
-          if [ -z "$GOOD_BLOCK" ] || [ -z "$BAD_BLOCK" ]; then
-            echo "❌ Error: Missing good_build or bad_build"
+          if [[ $COMMENT =~ --good_build[[:space:]]+(.*)[[:space:]]+--bad_build[[:space:]]+(.*) ]]; then
+            GOOD_BUILD="${BASH_REMATCH[1]}"
+            BAD_BUILD="${BASH_REMATCH[2]}"
+          else
+            echo "Error: Invalid format. Please use: .ch_gitcompare --good_build <good_build> --bad_build <bad_build>"
             exit 1
           fi
 
-          # Set outputs
-          echo "good_build<<EOF" >> $GITHUB_OUTPUT
-          echo "$GOOD_BLOCK" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          GOOD_BUILD=$(echo "$GOOD_BUILD" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/^"//;s/"$//')
+          BAD_BUILD=$(echo "$BAD_BUILD" | sed 's/^[[:space:]]*//;s/[[:space:]]*$//' | sed 's/^"//;s/"$//')
 
-          echo "bad_build<<EOF" >> $GITHUB_OUTPUT
-          echo "$BAD_BLOCK" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          echo "Good build: '$GOOD_BUILD'"
+          echo "Bad build: '$BAD_BUILD'"
+
+          if [ -z "$GOOD_BUILD" ] || [ -z "$BAD_BUILD" ]; then
+            echo "Error: Invalid format. Please use: .ch_gitcompare --good_build <good_build> --bad_build <bad_build>"
+            exit 1
+          fi
+
+          {
+            echo "good_build<<EOF"
+            echo "$GOOD_BUILD"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
+
+          {
+            echo "bad_build<<EOF"
+            echo "$BAD_BUILD"
+            echo "EOF"
+          } >> $GITHUB_OUTPUT
 
   compare:
     needs: parse-comment
@@ -66,33 +66,48 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Run CommitHunter
+      - name: Run CommitHunter (Python)
         id: run_commit_hunter
         env:
           GOOD_BUILD: ${{ needs.parse-comment.outputs.good_build }}
           BAD_BUILD: ${{ needs.parse-comment.outputs.bad_build }}
         run: |
           cd CommitHunter
-          echo "Running commit_hunter.sh with:"
           echo "$GOOD_BUILD" > good.txt
           echo "$BAD_BUILD" > bad.txt
-          bash commit_hunter.sh good.txt bad.txt > output.txt
+          echo "Running commit_hunter.py..."
+          python3 commit_hunter.py "$(cat good.txt)" "$(cat bad.txt)" > output.txt
+          echo "CommitHunter output:"
           cat output.txt
 
       - name: Parse URLs from output
         id: parse_urls
         run: |
-          url_openj9=$(grep "OpenJ9:" CommitHunter/output.txt | awk '{print $2}')
-          url_omr=$(grep "OMR:" CommitHunter/output.txt | awk '{print $2}')
-          url_jcl=$(grep "JCL:" CommitHunter/output.txt | awk '{print $2}')
+          if [ -f "./CommitHunter/output.txt" ]; then
+            echo "Found output file, parsing URLs..."
+            cat ./CommitHunter/output.txt
 
-          echo "url_openj9=$url_openj9" >> $GITHUB_OUTPUT
-          echo "url_omr=$url_omr" >> $GITHUB_OUTPUT
-          echo "url_jcl=$url_jcl" >> $GITHUB_OUTPUT
+            url_openj9=$(grep "OpenJ9:" ./CommitHunter/output.txt | awk '{print $2}')
+            url_omr=$(grep "OMR:" ./CommitHunter/output.txt | awk '{print $2}')
+            url_jcl=$(grep "JCL:" ./CommitHunter/output.txt | awk '{print $2}')
+
+            echo "Parsed URLs:"
+            echo "OpenJ9: $url_openj9"
+            echo "OMR: $url_omr"
+            echo "JCL: $url_jcl"
+
+            echo "url_openj9=$url_openj9" >> $GITHUB_OUTPUT
+            echo "url_omr=$url_omr" >> $GITHUB_OUTPUT
+            echo "url_jcl=$url_jcl" >> $GITHUB_OUTPUT
+          else
+            echo "Error: output.txt not found in CommitHunter directory"
+            ls -la ./CommitHunter/
+            exit 1
+          fi
 
       - name: Prepare comment
         run: |
-          echo "## 🔍  GitCompare Results" > comment.md
+          echo "## 🔍 GitCompare Results" > comment.md
           echo "" >> comment.md
           echo "### OpenJ9 Changes" >> comment.md
           echo "${{ steps.parse_urls.outputs.url_openj9 }}" >> comment.md
@@ -106,7 +121,7 @@ jobs:
           echo "> 💡 **Note:** These links show the differences between the specified builds."
           cat comment.md
 
-      - name: Comment on Issue or PR
+      - name: Comment on PR
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_REPOSITORY: ${{ github.repository }}
@@ -115,16 +130,26 @@ jobs:
           pip install PyGithub
           python3 <<EOF
           import os
+          import sys
           from github import Github
 
-          token = os.environ["GITHUB_TOKEN"]
-          repo_name = os.environ["GITHUB_REPOSITORY"]
-          issue_number = int(os.environ["ISSUE_NUMBER"])
-          with open("comment.md", "r", encoding="utf-8") as f:
-              body = f.read()
+          try:
+              with open("comment.md", "r", encoding="utf-8") as f:
+                  comment_body = f.read()
 
-          g = Github(token)
-          repo = g.get_repo(repo_name)
-          issue = repo.get_issue(number=issue_number)
-          issue.create_comment(body)
+              token = os.environ["GITHUB_TOKEN"]
+              repo_name = os.environ["GITHUB_REPOSITORY"]
+              issue_number = int(os.environ["ISSUE_NUMBER"])
+
+              g = Github(token)
+              repo = g.get_repo(repo_name)
+              issue = repo.get_issue(number=issue_number)
+
+              comment = issue.create_comment(comment_body)
+              print(f"✅ Comment created successfully: {comment.html_url}")
+
+          except Exception as e:
+              print(f"❌ Error creating comment: {e}")
+              print(f"Error type: {type(e).__name__}")
+              sys.exit(1)
           EOF
