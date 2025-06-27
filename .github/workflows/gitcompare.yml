@@ -6,7 +6,7 @@ on:
 
 jobs:
   parse-comment:
-    if: github.event.issue.pull_request && startsWith(github.event.comment.body, '.ch_gitcompare')
+    if: startsWith(github.event.comment.body, '.ch_gitcompare')
     runs-on: ubuntu-latest
     permissions:
       contents: read
