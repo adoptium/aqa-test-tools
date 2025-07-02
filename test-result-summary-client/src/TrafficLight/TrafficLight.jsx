@@ -310,7 +310,7 @@ function TrafficLight() {
                 style={{
                     width: '100%',
                 }}
-                defaultValue={topBuild}
+                defaultValue="Perf_Pipeline"
                 onChange={setBuildOptionsOnChange}
                 options={topBuildOptions}
                 placeholder="please select the top level performance build"
