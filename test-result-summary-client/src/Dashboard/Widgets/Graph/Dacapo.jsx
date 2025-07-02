@@ -44,7 +44,6 @@ export default class Dacapo extends Component {
         let results = await fetchData(
             `/api/getBuildHistory?type=Perf&buildName=${buildName}&status=Done&limit=100&asc`
         );
-
         const buildInfoMap = await fetchData(`/api/getDashboardBuildInfo`);
 
         if (serverSelected) {
@@ -66,33 +65,25 @@ export default class Dacapo extends Component {
 
         // combine results having the same JDK build date
         results.forEach((t, i) => {
-            let jdkDate = t.jdkDate;
+            let jdkDate = t.jdkDate || (t.timestamp ? new Date(t.timestamp).toISOString().slice(0,10) : null);
             if (t.buildResult !== 'SUCCESS' || !jdkDate) return;
-            jdkDate = jdkDate.replaceAll('-', '');
+            jdkDate = ' ' + jdkDate.replaceAll('-', '');
             resultsByJDKBuild[jdkDate] = resultsByJDKBuild[jdkDate] || [];
             t.tests.forEach((test, i) => {
                 let eclipse = null;
                 let h2 = null;
                 let lusearch = null;
+                
+                if (test.benchmarkName === 'dacapo-eclipse') {
+                    eclipse = test.duration
+                }
 
-                if (
-                    !test.testName.startsWith('dacapo') ||
-                    !test.testData ||
-                    !test.testData.metrics
-                )
-                    return;
-
-                test.testData.metrics.forEach((metric, i) => {
-                    if (metric.name === 'eclipse') {
-                        eclipse = metric.value[0];
-                    }
-                    if (metric.name === 'h2') {
-                        h2 = metric.value[0];
-                    }
-                    if (metric.name === 'lusearch-fix') {
-                        lusearch = metric.value[0];
-                    }
-                });
+                if (test.benchmarkName === 'dacapo-h2') {
+                    h2 = test.duration
+                }
+                if (test.benchmarkName === 'dacapo-lusearch-fix') {
+                    lusearch = test.duration 
+                }
 
                 if (!eclipse && !h2 && !lusearch) {
                     return;
@@ -107,7 +98,7 @@ export default class Dacapo extends Component {
                         buildName: t.buildName,
                         buildNum: t.buildNum,
                         javaVersion: t.javaVersion,
-                        jdkDate: t.jdkDate,
+                        jdkDate: jdkDate,
                     },
                 });
             });
