@@ -27,10 +27,13 @@ const retry = (fn) => {
                     logger.warn(`status code: ${e.statusCode}`);
                     logger.warn(`headers: ${JSON.stringify(e.headers)}`);
 
-                    // return code 404 only if the Jenkins server returns 404 for the build (i.e., invalid url, expired build, etc)
+                    // return code 404 or 403 from the Jenkins server (i.e., invalid url, expired build, etc)
                     // x-jenkins header is checked to ensure the error code is from Jenkins (not nginx)
-                    // TRSS will stop processing this build once code 404 is returned. See BuildProcessor for details.
-                    if (e.statusCode === 404 && e.headers['x-jenkins']) {
+                    // TRSS will stop processing this build once code 404 or 403 is returned. See BuildProcessor for details.
+                    if (
+                        (e.statusCode === 404 || e.statusCode === 403) &&
+                        e.headers['x-jenkins']
+                    ) {
                         return { code: e.statusCode };
                     }
                 }
