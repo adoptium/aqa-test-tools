@@ -22,12 +22,15 @@ class BuildProcessor {
         );
 
         if (buildInfo) {
-            if (buildInfo.code === 404) {
+            if (buildInfo.code === 404 || buildInfo.code === 403) {
                 /*
-                 * Return code is 404. The url is invalid or the build does not
-                 * exist on Jenkins any more, just set status to Done and store
-                 * the build info
+                 * The url is invalid or the build does not exist on Jenkins any more
+                 * (return code is 404 or 403), just set status to Done and store the
+                 * build info.
                  */
+                logger.warn(
+                    `buildInfo.code: ${buildInfo.code}. Set build ${url} status to Done.`
+                );
                 task.status = 'Done';
                 await new DataManager().updateBuild(task);
                 await new AuditLogsDB().insertAuditLogs({
