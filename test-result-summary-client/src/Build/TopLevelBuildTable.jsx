@@ -167,26 +167,15 @@ function TopLevelBuildTable(props) {
                         );
                     }
                 } else {
-                    // Return a link to the build detail page
+                    // Return a JSX element with a 'BuildStatus' and 'renderPublishName' component, passing in relevant props.
                     return (
                         <div>
-                            <Link
-                                to={{
-                                    pathname: '/buildDetail',
-                                    search: params({ parentId: value._id }),
-                                }}
-                                style={{
-                                    color:
-                                        result === 'SUCCESS'
-                                            ? '#2cbe4e'
-                                            : result === 'FAILURE'
-                                            ? '#f50'
-                                            : '#DAA520',
-                                }}
-                            >
-                                {' '}
-                                Build #{value.buildNum}
-                            </Link>
+                                <BuildStatus 
+                                        status={value.buildResult}
+                                        id={value._id}
+                                        buildNum={value.buildNum}
+                                />
+                                {renderPublishName(value)}
                         </div>
                     );
                 }
