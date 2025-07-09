@@ -315,24 +315,44 @@ function TrafficLight() {
                 options={topBuildOptions}
                 placeholder="please select the top level performance build"
             />
-            <Select
-                style={{
-                    width: '100%',
-                }}
-                defaultValue={testBuild}
-                onChange={setTestBuild}
-                options={buildOptions}
-                placeholder="please select test build"
-            />
-            <Select
-                style={{
-                    width: '100%',
-                }}
-                defaultValue={baselineBuild}
-                onChange={setBaselineBuild}
-                options={buildOptions}
-                placeholder="please select baseline build"
-            />
+
+<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <Select 
+    style={{ width: '100%' }} 
+    defaultValue={testBuild} 
+    onChange={setTestBuild} 
+    options={buildOptions} 
+    placeholder="please select test build" 
+  />
+  {testBuild && (
+    <a 
+      href={buildOptions.find(option => option.value === testBuild)?.label} 
+      target="_blank" 
+      rel="noopener noreferrer"
+    >
+      Jenkins Link
+    </a>
+  )}
+</div>
+
+<div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+  <Select 
+    style={{ width: '100%' }} 
+    defaultValue={baselineBuild} 
+    onChange={setBaselineBuild} 
+    options={buildOptions} 
+    placeholder="please select baseline build" 
+  />
+  {baselineBuild && (
+    <a 
+      href={buildOptions.find(option => option.value === baselineBuild)?.label} 
+      target="_blank" 
+      rel="noopener noreferrer"
+    >
+      Jenkins Link
+    </a>
+  )}
+</div>
             <Space direction="horizontal">
                 <Button type="primary" onClick={handleCompare}>
                     Compare
