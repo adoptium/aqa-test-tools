@@ -109,20 +109,33 @@ const BenchmarkMetricRegex = {
         },
     },
     liberty_throughput_dt10: {
-        //Example: Running 1 measures...
-        outerRegex: /Running \d* measures([\s\S\n]*)/,
+        outerRegex: /<run runNo="5" runType="measure"([\s\S\n]*)/,
         metrics: {
-            Footprint: {
-                //Example: Footprint (kb)=168940
+            Throughput: {
+                //Example: <metric type="throughput">\n<data machine="lance10G" units="req/sec">63.4</data>
+                regex: /<metric type="throughput">[\s\S\n]*?(\d*\.?\d*)<\/data>/,
+                higherbetter: true,
+                units: 'ops/s',
+            },
+            'CPU Util pct': {
+                //Example: <data machine="wehrlein10G" units="%" cv="1.0064976672229644">15.139217146458863</data>
+                regex: /<metric type="CPU Utilization">[\s\S\n]*?<\/data>[\s\S\n]*?<data[\s\S\n]*?>(\d*\.?\d*)*/,
+                higherbetter: false,
+                units: '%',
+            },
+            'JIT CPU total ms': {
+                //Example: #PERF:  Time spent in compilation thread =22323 ms
+                //JITCPUtotal is sum of all JIT CPU usage use values in verbose logs
+                regex: /#PERF[\s\S\n]*?compilation thread =(\d*\.?\d*)[\s\S\n]*?/,
+                higherbetter: false,
+                units: '%',
+                funcName: math.sum,
+            },
+            'Adjusted Single Server Memory (Footprint)': {
+                //Example: Footprint (kb)=589444
                 regex: /Footprint \(kb\)=(\d*\.?\d*)/,
                 higherbetter: false,
                 units: 'kb',
-            },
-            Throughput: {
-                //Example: Page throughput = 2923.0 /s
-                regex: /Page throughput = (\d*\.?\d*)/,
-                higherbetter: true,
-                units: 'req/sec',
             },
         },
     },
