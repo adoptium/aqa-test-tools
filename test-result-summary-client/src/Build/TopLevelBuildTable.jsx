@@ -109,7 +109,7 @@ function TopLevelBuildTable(props) {
 
     if (buildInfo) {
         // Define a function that renders a table cell for a 'FvTestBuild' object.
-        const renderFvTestBuild = (value) => {
+        const renderTestBuild = (value) => {
             // If the provided 'value' argument is truthy and has a 'buildNum' property:
             if (value && value.buildNum) {
                 // Call the 'setBuildsStatus' function to update the 'buildResult' property of the 'value' object.
@@ -127,60 +127,6 @@ function TopLevelBuildTable(props) {
                 );
             }
             // If the provided 'value' argument is falsy or does not have a 'buildNum' property, return 'null'.
-            return null;
-        };
-
-        // Define function to render build link
-        const renderBuild = (value) => {
-            // If value exists and has a buildNum property
-            if (value && value.buildNum) {
-                // Set the result variable to the build result
-                let result = value.buildResult;
-                // If the value has tests and the length of the tests array is greater than 0
-                if (value.tests && value.tests.length > 0) {
-                    // Set the result variable to the test result of the first test in the tests array
-                    result = value.tests[0].testResult;
-                    // If the first test has an _id property
-                    if (value.tests[0]._id) {
-                        // Return a link to the output test page for the first test
-                        return (
-                            <div>
-                                <Link
-                                    to={{
-                                        pathname: '/output/test',
-                                        search: params({
-                                            id: value.tests[0]._id,
-                                        }),
-                                    }}
-                                    style={{
-                                        color:
-                                            result === 'PASSED'
-                                                ? '#2cbe4e'
-                                                : result === 'FAILED'
-                                                ? '#f50'
-                                                : '#DAA520',
-                                    }}
-                                >
-                                    Build #{value.buildNum}
-                                </Link>
-                            </div>
-                        );
-                    }
-                } else {
-                    // Return a JSX element with a 'BuildStatus' and 'renderPublishName' component, passing in relevant props.
-                    return (
-                        <div>
-                                <BuildStatus 
-                                        status={value.buildResult}
-                                        id={value._id}
-                                        buildNum={value.buildNum}
-                                />
-                                {renderPublishName(value)}
-                        </div>
-                    );
-                }
-            }
-            // If value does not exist or does not have a buildNum property, return null
             return null;
         };
 
@@ -330,7 +276,7 @@ function TopLevelBuildTable(props) {
                 title: 'Build',
                 dataIndex: 'build',
                 key: 'build',
-                render: type === 'Perf' ? renderBuild : renderFvTestBuild,
+                render: renderTestBuild,
                 sorter: (a, b) => {
                     return a.key.localeCompare(b.key);
                 },
