@@ -12,7 +12,6 @@ import { fetchData, getInfoFromBuildName } from '../utils/Utils';
 import { params } from '../utils/query';
 import { Button } from '../Components/Button';
 import _, { first, identity, uniq } from 'lodash';
-
 function TrafficLight() {
     const [topBuild, setTopBuild] = useState();
     const [topBuildOptions, setTopBuildOptions] = useState([]);
@@ -21,7 +20,6 @@ function TrafficLight() {
     const [buildOptions, setBuildOptions] = useState([]);
     const [tableData, settableData] = useState([]);
     const [metricsProps, setMetricsProps] = useState({});
-
     const iconRed = (
         <CloseCircleOutlined
             style={{ color: 'rgb(255, 85, 0)', fontSize: 23 }}
@@ -40,11 +38,9 @@ function TrafficLight() {
             style={{ color: 'rgb(158, 158, 158)', fontSize: 23 }}
         />
     );
-
     useEffect(() => {
         fetchDataAndUpdate();
     }, []);
-
     async function fetchDataAndUpdate() {
         const data = await fetchData(`/api/getTopLevelBuildNames?type=Perf`);
         if (data) {
@@ -55,7 +51,6 @@ function TrafficLight() {
             );
         }
     }
-
     const handleCompare = async () => {
         let testData = await fetchData(
             `/api/getTrafficLightData?parentId=${testBuild}&buildType=test`
@@ -74,19 +69,16 @@ function TrafficLight() {
                 `/api/getTrafficLightData?parentId=${baselineBuild}&buildType=test`
             );
         }
-
         testData.forEach((element) => {
             element.buildType = 'test';
         });
         baselineData.forEach((element) => {
             element.buildType = 'baseline';
         });
-
         const metricPropsJSON = await fetchData(`/api/getBenchmarkMetricProps`);
         if (metricPropsJSON) {
             setMetricsProps(metricPropsJSON);
         }
-
         const modifiedData = [...testData, ...baselineData]
             .map(
                 ({
@@ -98,7 +90,6 @@ function TrafficLight() {
                     const { benchmarkName, benchmarkVariant, buildName } =
                         aggregateInfo;
                     const benchmark = benchmarkName.split('-')[0];
-
                     const {
                         jdkVersion,
                         jdkImpl,
@@ -159,7 +150,6 @@ function TrafficLight() {
             })
         );
     };
-
     const renderCell = (title, _, obj) => {
         const testBuild = Object.values(obj).find(
             ({ buildNameTitle, buildType }) =>
@@ -184,20 +174,17 @@ function TrafficLight() {
                     2
                 );
             }
-
             const testCI = Number(testValues.CI * 100).toFixed(2) + '%';
             const baselineCI = Number(baselineValues.CI * 100).toFixed(2) + '%';
             const totalCI =
                 Number((testValues.CI + baselineValues.CI) * 100).toFixed(2) +
                 '%';
-
             let icon = iconRed;
             if (percentage > 98) {
                 icon = iconGreen;
             } else if (percentage > 90) {
                 icon = iconYellow;
             }
-
             return (
                 <Tooltip
                     title={
@@ -261,13 +248,11 @@ function TrafficLight() {
             );
         }
     };
-
     const firstRow = first(tableData) ?? {};
     const groups = Object.values(firstRow) ?? [];
     const buildNameTitles = uniq(
         groups.map(({ buildNameTitle }) => buildNameTitle).filter(identity)
     );
-
     const columns = [
         {
             title: 'Benchmark Name',
@@ -303,7 +288,6 @@ function TrafficLight() {
             })
         );
     };
-
     return (
         <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
             <Select
@@ -315,24 +299,45 @@ function TrafficLight() {
                 options={topBuildOptions}
                 placeholder="please select the top level performance build"
             />
-            <Select
-                style={{
-                    width: '100%',
-                }}
-                defaultValue={testBuild}
-                onChange={setTestBuild}
-                options={buildOptions}
-                placeholder="please select test build"
-            />
-            <Select
-                style={{
-                    width: '100%',
-                }}
-                defaultValue={baselineBuild}
-                onChange={setBaselineBuild}
-                options={buildOptions}
-                placeholder="please select baseline build"
-            />
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Select
+                    style={{ width: '100%' }}
+                    defaultValue={testBuild}
+                    onChange={setTestBuild}
+                    options={buildOptions}
+                    placeholder="please select test build"
+                />
+                {testBuild && (
+                    <a
+                        href={buildOptions.find(option => option.value === testBuild)?.label}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Jenkins Link
+                    </a>
+                )}
+            </div>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                <Select
+                    style={{ width: '100%' }}
+                    defaultValue={baselineBuild}
+                    onChange={setBaselineBuild}
+                    options={buildOptions}
+                    placeholder="please select baseline build"
+                />
+                {baselineBuild && (
+                    <a
+                        href={buildOptions.find(option => option.value === baselineBuild)?.label}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                    >
+                        Jenkins Link
+                    </a>
+                )}
+            </div>
+
             <Space direction="horizontal">
                 <Button type="primary" onClick={handleCompare}>
                     Compare
@@ -362,4 +367,5 @@ function TrafficLight() {
         </Space>
     );
 }
+
 export default TrafficLight;
