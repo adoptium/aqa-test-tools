@@ -277,6 +277,8 @@ function TrafficLight() {
     ];
     const setBuildOptionsOnChange = async (buildName) => {
         setTopBuild(buildName);
+        setTestBuild();
+        setBaselineBuild();
         const results = await fetchData(
             `/api/getBuildHistory?buildName=${buildName}&status=Done&limit=120`
         );
@@ -288,13 +290,18 @@ function TrafficLight() {
             })
         );
     };
+
+    const defaultBuildValue = 'Perf_Pipeline';
+    useEffect(() => {
+        setBuildOptionsOnChange(defaultBuildValue);
+    }, []);
     return (
         <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
             <Select
                 style={{
                     width: '100%',
                 }}
-                defaultValue="Perf_Pipeline"
+                defaultValue={defaultBuildValue}
                 onChange={setBuildOptionsOnChange}
                 options={topBuildOptions}
                 placeholder="please select the top level performance build"
@@ -303,14 +310,18 @@ function TrafficLight() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Select
                     style={{ width: '100%' }}
-                    defaultValue={testBuild}
+                    value={testBuild}
                     onChange={setTestBuild}
                     options={buildOptions}
                     placeholder="please select test build"
                 />
                 {testBuild && (
                     <a
-                        href={buildOptions.find(option => option.value === testBuild)?.label}
+                        href={
+                            buildOptions.find(
+                                (option) => option.value === testBuild
+                            )?.label
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                     >
@@ -322,14 +333,18 @@ function TrafficLight() {
             <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
                 <Select
                     style={{ width: '100%' }}
-                    defaultValue={baselineBuild}
+                    value={baselineBuild}
                     onChange={setBaselineBuild}
                     options={buildOptions}
                     placeholder="please select baseline build"
                 />
                 {baselineBuild && (
                     <a
-                        href={buildOptions.find(option => option.value === baselineBuild)?.label}
+                        href={
+                            buildOptions.find(
+                                (option) => option.value === baselineBuild
+                            )?.label
+                        }
                         target="_blank"
                         rel="noopener noreferrer"
                     >
