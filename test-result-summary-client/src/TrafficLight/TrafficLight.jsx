@@ -248,11 +248,17 @@ function TrafficLight() {
             );
         }
     };
-    const firstRow = first(tableData) ?? {};
-    const groups = Object.values(firstRow) ?? [];
+
     const buildNameTitles = uniq(
-        groups.map(({ buildNameTitle }) => buildNameTitle).filter(identity)
+        tableData
+            .map((row = {}) =>
+                Object.values(row)
+                    .map(({ buildNameTitle }) => buildNameTitle)
+                    .filter(identity)
+            )
+            .flat()
     );
+
     const columns = [
         {
             title: 'Benchmark Name',
