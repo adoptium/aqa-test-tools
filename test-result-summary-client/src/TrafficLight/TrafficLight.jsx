@@ -19,7 +19,6 @@ function TrafficLight() {
     const [baselineBuild, setBaselineBuild] = useState();
     const [buildOptions, setBuildOptions] = useState([]);
     const [tableData, settableData] = useState([]);
-    const [metricsProps, setMetricsProps] = useState({});
     const iconRed = (
         <CloseCircleOutlined
             style={{ color: 'rgb(255, 85, 0)', fontSize: 23 }}
@@ -76,9 +75,6 @@ function TrafficLight() {
             element.buildType = 'baseline';
         });
         const metricPropsJSON = await fetchData(`/api/getBenchmarkMetricProps`);
-        if (metricPropsJSON) {
-            setMetricsProps(metricPropsJSON);
-        }
         const modifiedData = [...testData, ...baselineData]
             .map(
                 ({
@@ -90,14 +86,7 @@ function TrafficLight() {
                     const { benchmarkName, benchmarkVariant, buildName } =
                         aggregateInfo;
                     const benchmark = benchmarkName.split('-')[0];
-                    const {
-                        jdkVersion,
-                        jdkImpl,
-                        level,
-                        group,
-                        platform,
-                        rerun,
-                    } = getInfoFromBuildName(buildName);
+                    const { platform } = getInfoFromBuildName(buildName);
                     const buildNameTitle = parentBuildName.slice(
                         0,
                         parentBuildName.lastIndexOf('_')
@@ -105,8 +94,8 @@ function TrafficLight() {
                     return aggregateInfo.metrics.map(
                         ({ name: metricsName, statValues, rawValues }) => {
                             let higherbetter = true;
-                            const benchmarchMetric = metricsProps[benchmark]
-                                ? metricsProps[benchmark].metrics
+                            const benchmarchMetric = metricPropsJSON[benchmark]
+                                ? metricPropsJSON[benchmark].metrics
                                 : null;
                             if (
                                 benchmarchMetric &&
@@ -366,7 +355,11 @@ function TrafficLight() {
             </Space>
             <br />
             {tableData ? (
-                <Table dataSource={tableData} columns={columns} />
+                <Table
+                    pagination={{ defaultPageSize: 100 }}
+                    dataSource={tableData}
+                    columns={columns}
+                />
             ) : (
                 ''
             )}
