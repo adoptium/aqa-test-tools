@@ -1,4 +1,4 @@
-# GlitchWitcher: REPD-based Defect Prediction
+# REPD: Defect Prediction
 
 A machine learning system that predicts software defect likelihood using reconstruction error analysis with autoencoders and statistical distribution fitting.
 

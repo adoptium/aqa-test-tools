@@ -84,7 +84,7 @@ def load_training_data(data_source):
             raise FileNotFoundError(f"Local file not found: {data_source}")
         return pd.read_csv(data_source)
 
-def train_and_save_model(training_data_path="https://github.com/adoptium/aqa-triage-data/GlitchWitcher/Traditional%20Dataset/OpenJ9_Traditional_Dataset.csv", model_save_dir="trained_model"):
+def train_and_save_model(training_data_path="https://raw.githubusercontent.com/adoptium/aqa-triage-data/refs/heads/main/GlitchWitcher/Traditional%20Dataset/OpenJ9_Traditional_Dataset.csv", model_save_dir="trained_model"):
     """Train the REPD model and save it for later use
     
     Args:
@@ -191,7 +191,7 @@ if __name__ == "__main__":
     if len(sys.argv) > 1:
         data_source = sys.argv[1]
     else:
-        data_source = "https://github.com/adoptium/aqa-triage-data/GlitchWitcher/Traditional%20Dataset/OpenJ9_Traditional_Dataset.csv"
+        data_source = "https://raw.githubusercontent.com/adoptium/aqa-triage-data/refs/heads/main/GlitchWitcher/Traditional%20Dataset/OpenJ9_Traditional_Dataset.csv"
     
     print(f"Using data source: {data_source}")
     train_and_save_model(data_source)
