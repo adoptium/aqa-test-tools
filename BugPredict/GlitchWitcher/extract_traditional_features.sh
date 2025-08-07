@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # C/C++ Code Metrics Calculator
-# Calculates McCabe and Halstead metrics for C/C++ files from GitHub repository
+# Calculates McCabe and Halstead metrics for C/C++ files.
 
 set -e
 
@@ -13,7 +13,6 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Global variables
-REPO_URL=""
 WORK_DIR=""
 OUTPUT_DIR=""
 TEMP_DIR=""
@@ -69,11 +68,6 @@ check_command() {
 install_dependencies() {
     print_info "Checking and installing dependencies..."
     
-    if ! check_command git; then
-        print_error "Git is required but not installed."
-        exit 1
-    fi
-    
     if ! check_command python3; then
         print_error "Python3 is required but not installed."
         exit 1
@@ -114,48 +108,6 @@ setup_work_dir() {
     
     print_info "Working directory: $WORK_DIR"
     print_info "Output directory: $OUTPUT_DIR"
-}
-
-# Function to clone repository
-clone_repository() {
-    local repo_url="$1"
-    local repo_dir="$WORK_DIR/repo"
-    
-    print_info "Cloning repository: $repo_url"
-    
-    if git clone "$repo_url" "$repo_dir" >/dev/null 2>&1; then
-        print_success "Repository cloned successfully"
-        # Remove test folders (case-insensitive)
-        find "$repo_dir" -type d -iname "test" -exec rm -rf {} +
-        print_info "Removed test folders from cloned repository"
-        echo "$repo_dir"
-    else
-        print_error "Failed to clone repository"
-        exit 1
-    fi
-}
-
-# Function to find C/C++ files
-find_cpp_files() {
-    local repo_dir="$1"
-    local cpp_files_list="$TEMP_DIR/cpp_files.txt"
-    
-    print_info "Finding C/C++ files..."
-    
-    find "$repo_dir" -type f \( \
-        -name "*.c" -o \
-        -name "*.cpp" -o \
-        -name "*.cxx" -o \
-        -name "*.cc" -o \
-        -name "*.h" -o \
-        -name "*.hpp" -o \
-        -name "*.hxx" \
-    \) > "$cpp_files_list"
-    
-    local file_count=$(wc -l < "$cpp_files_list" | tr -d '\n\r' | xargs)
-    print_success "Found $file_count C/C++ files"
-    
-    echo "$cpp_files_list"
 }
 
 # Function to calculate McCabe Cyclomatic Complexity using flowgraph formula
@@ -221,18 +173,7 @@ calculate_halstead_metrics() {
     
     if [ ! -s "$file" ]; then
         print_warning "Skipping empty file: $file"
-        echo "n:0
-v:0
-l:0
-d:0
-i:0
-e:0
-b:0
-t:0
-uniq_Op:0
-uniq_Opnd:0
-total_Op:0
-total_Opnd:0"
+        echo "n:0\nv:0\nl:0\nd:0\ni:0\ne:0\nb:0\nt:0\nuniq_Op:0\nuniq_Opnd:0\ntotal_Op:0\ntotal_Opnd:0"
         return 0
     fi
 
@@ -274,7 +215,7 @@ def calculate_halstead_metrics(file_path, include_keywords, d_max, b_max):
         # Arithmetic
         r'\+', r'-', r'\*', r'/', r'%', r'\+\+', r'--',
         # Assignment
-        r'=', r'\+=', r'-=', r'\*=', r'/=', r'%=', r'&=', r'\|=', r'\^=', r'<<=', r'>>=',
+        r'=', r'\+=', r'-=', r'\*=', r'/=', r'%=', r'&=' , r'\|=', r'\^=', r'<<=', r'>>=',
         # Comparison
         r'==', r'!=', r'<', r'>', r'<=', r'>=',
         # Logical
@@ -424,18 +365,7 @@ EOF
     local halstead_output=$(python3 "$TEMP_DIR/halstead_calculator.py" "$file" "$INCLUDE_KEYWORD_OPERATORS" "$HALSTEAD_D_MAX" "$HALSTEAD_B_MAX" 2> "$TEMP_DIR/halstead_errors.log")
     if [ -z "$halstead_output" ]; then
         print_warning "Failed to calculate Halstead metrics for $file. See $TEMP_DIR/halstead_errors.log for details."
-        echo "n:0
-v:0
-l:0
-d:0
-i:0
-e:0
-b:0
-t:0
-uniq_Op:0
-uniq_Opnd:0
-total_Op:0
-total_Opnd:0"
+        echo "n:0\nv:0\nl:0\nd:0\ni:0\ne:0\nb:0\nt:0\nuniq_Op:0\nuniq_Opnd:0\ntotal_Op:0\ntotal_Opnd:0"
     else
         echo "$halstead_output"
     fi
@@ -537,7 +467,7 @@ import re
 
 def get_function_names(code):
     # Find function definitions
-    pattern = re.compile(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*\{')
+    pattern = re.compile(r'\b([a-zA-Z_][a-zA-Z0-9_]*)\s*\([^)]*\)\s*(?:;|\{)')
     return set(match.group(1) for match in pattern.finditer(code))
 
 def count_call_decisions(file_path):
@@ -605,50 +535,13 @@ count_branches() {
     echo "$total_branches"
 }
 
-# Function to detect defects based on git commit history
-detect_defects() {
-    local file="$1"
-    local repo_dir="$WORK_DIR/repo"
-    
-    local relative_file="${file#$repo_dir/}"
-    
-    if [ ! -d "$repo_dir/.git" ]; then
-        print_info "No git repository found for $file, marking defects as false"
-        echo "false"
-        return 0
-    fi
-    
-    # Note: Using commit messages to detect defects may lead to false positives/negatives
-    local bug_keywords="\b(bug|defect|crash|vulnerability|fix|issue|error)\b"
-    
-    cd "$repo_dir" || {
-        print_error "Failed to change to repo directory for $file"
-        echo "false"
-        return 0
-    }
-    
-    local has_bug_commits=$(git log --oneline --follow -- "$relative_file" 2>/dev/null | grep -Ei "$bug_keywords" | wc -l | tr -d '\n\r' | xargs || echo "0")
-    has_bug_commits=$(sanitize_number "$has_bug_commits" "0")
-    
-    cd - >/dev/null 2>&1
-    
-    if [ "$has_bug_commits" -gt 0 ]; then
-        echo "true"
-    else
-        echo "false"
-    fi
-}
-
 # Function to process a single file
 process_file() {
     local file="$1"
     local output_file="$2"
     
-    local filename=$(basename "$file")
-    local relative_path="${file#$WORK_DIR/repo/}"
-    
     if [ "$VERBOSE" = true ]; then
-        print_info "Processing: $relative_path"
+        print_info "Processing: $file"
     fi
     
     # Calculate cyclomatic complexity
@@ -715,14 +608,11 @@ process_file() {
     local branchCount=$(count_branches "$file")
     branchCount=$(sanitize_number "$branchCount" "0")
     
-    # Detect defects
-    local defects=$(detect_defects "$file")
-    
     # Note: lOCode is equivalent to loc as per Halstead metrics definition
     local loc="$lOCode"
     
     # Output results
-    echo "File: $relative_path" >> "$output_file"
+    echo "File: $file" >> "$output_file"
     echo "loc: $loc" >> "$output_file"
     echo "v(g): $cyclomatic_complexity" >> "$output_file"
     echo "ev(g): $essential_complexity" >> "$output_file"
@@ -743,7 +633,6 @@ process_file() {
     echo "total_Op: $total_Op" >> "$output_file"
     echo "total_Opnd: $total_Opnd" >> "$output_file"
     echo "branchCount: $branchCount" >> "$output_file"
-    echo "defects: $defects" >> "$output_file"
     echo "----------------------------------------" >> "$output_file"
 }
 
@@ -754,7 +643,7 @@ generate_summary() {
     
     print_info "Generating summary report..."
     
-    echo "File,loc,v(g),ev(g),iv(g),n,v,l,d,i,e,b,t,lOComment,lOBlank,LOCodeAndCOmment,uniq_Op,Uniq_Opnd,total_Op,total_Opnd,branchCount,defects" > "$summary_output"
+    echo "File,loc,v(g),ev(g),iv(g),n,v,l,d,i,e,b,t,lOComment,lOBlank,LOCodeAndComment,uniq_Op,Uniq_Opnd,total_Op,total_Opnd,branchCount" > "$summary_output"
     
     awk '
     /^File:/ { file = substr($0, 7) }
@@ -778,13 +667,12 @@ generate_summary() {
     /^total_Op:/ { total_Op = $2 }
     /^total_Opnd:/ { total_Opnd = $2 }
     /^branchCount:/ { branchCount = $2 }
-    /^defects:/ { defects = $2 }
     /^----------------------------------------/ {
         if (file) {
-            printf "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
-                file, loc, vg, evg, ivg, n, v, l, d, i, e, b, t, lOComment, lOBlank, lOCodeAndComment, uniq_Op, uniq_Opnd, total_Op, total_Opnd, branchCount, defects
+            printf "%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n",
+                file, loc, vg, evg, ivg, n, v, l, d, i, e, b, t, lOComment, lOBlank, lOCodeAndComment, uniq_Op, uniq_Opnd, total_Op, total_Opnd, branchCount
         }
-        file = loc = vg = evg = ivg = n = v = l = d = i = e = b = t = lOComment = lOBlank = lOCodeAndCOmment = uniq_Op = uniq_Opnd = total_Op = total_Opnd = branchCount = defects = ""
+        file = loc = vg = evg = ivg = n = v = l = d = i = e = b = t = lOComment = lOBlank = lOCodeAndComment = uniq_Op = uniq_Opnd = total_Op = total_Opnd = branchCount = ""
     }
     ' "$detailed_output" >> "$summary_output"
 }
@@ -798,19 +686,19 @@ cleanup() {
 
 # Function to show usage
 show_usage() {
-    echo "Usage: $0 [OPTIONS] <github_repo_url>"
+    echo "Usage: $0 [OPTIONS] <file1> [file2] ..."
     echo ""
     echo "Options:"
     echo "  -v, --verbose     Enable verbose output"
     echo "  -h, --help        Show this help message"
     echo ""
     echo "Example:"
-    echo "  $0 https://github.com/user/repo.git"
-    echo "  $0 -v https://github.com/user/repo.git"
+    echo "  $0 src/main.cpp src/utils.h"
 }
 
 # Main function
 main() {
+    local files=()
     while [[ $# -gt 0 ]]; do
         case $1 in
             -v|--verbose)
@@ -827,20 +715,14 @@ main() {
                 exit 1
                 ;;
             *)
-                if [ -z "$REPO_URL" ]; then
-                    REPO_URL="$1"
-                else
-                    print_error "Multiple repository URLs provided"
-                    show_usage
-                    exit 1
-                fi
+                files+=("$1")
                 shift
                 ;;
         esac
     done
     
-    if [ -z "$REPO_URL" ]; then
-        print_error "GitHub repository URL is required"
+    if [ ${#files[@]} -eq 0 ]; then
+        print_error "At least one file path is required."
         show_usage
         exit 1
     fi
@@ -848,15 +730,15 @@ main() {
     trap cleanup EXIT
     
     print_info "Starting C/C++ Code Metrics Calculator"
-    print_info "Repository: $REPO_URL"
     
     install_dependencies
     setup_work_dir
-    local repo_dir=$(clone_repository "$REPO_URL")
-    local cpp_files_list=$(find_cpp_files "$repo_dir")
     
+    local cpp_files_list="$TEMP_DIR/cpp_files.txt"
+    printf "%s\n" "${files[@]}" > "$cpp_files_list"
+
     if [ ! -s "$cpp_files_list" ]; then
-        print_warning "No C/C++ files found in the repository"
+        print_warning "No C/C++ files found to process."
         exit 0
     fi
     
