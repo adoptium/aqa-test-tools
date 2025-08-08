@@ -1,8 +1,8 @@
 const Parser = require('./Parser');
-const regexRunningTest = /.*?Running test (.*?) \.\.\.\r?/;
-const testSeparator = /.*?===============================================\r?/;
-const regexFinishTime = /(.*?) Finish Time\: .* Epoch Time \(ms\)\: (\d+).*/;
-const regexStartTime = /(.*?) Start Time\: .* Epoch Time \(ms\)\: (\d+).*/;
+const regexRunningTest = /Running test (.*?) \.\.\.\r?/;
+const testSeparator = /===============================================\r?/;
+const regexFinishTime = /^(.*?) Finish Time\: .* Epoch Time \(ms\)\: (\d+).*/;
+const regexStartTime = /^(.*?) Start Time\: .* Epoch Time \(ms\)\: (\d+).*/;
 const TestBenchmarkParser = require(`./TestBenchmarkParser`);
 const ExternalTestParser = require(`./ExternalTestParser`);
 

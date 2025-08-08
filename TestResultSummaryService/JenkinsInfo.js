@@ -69,7 +69,7 @@ class JenkinsInfo {
         });
         const size = await logStream.getSize();
         logger.debug(
-            'JenkinsInfo: getBuildOutput() is waiting for 5 secs after getSize()'
+            'JenkinsInfo: getBuildOutput() is waiting for 1 secs after getSize()'
         );
         await Promise.delay(1 * 1000);
 

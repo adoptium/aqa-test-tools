@@ -219,7 +219,8 @@ class DataManager {
             update.buildOutputId = buildOutputId;
             update.hasChildren = false;
         }
-        const result = await testResults.update(criteria, { $set: update });
+        await testResults.update(criteria, { $set: update });
+        logger.verbose('updateBuildWithOutput done');
     }
 
     // create build only if the build does not exist in database

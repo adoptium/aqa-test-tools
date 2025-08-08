@@ -14,7 +14,7 @@ class Parser {
             /=JAVA VERSION OUTPUT BEGIN=[\r\n]+([\s\S]*?)[\r\n]+.*=JAVA VERSION OUTPUT END=/;
         const javaBuildDateRegex =
             /\s([0-9]{4})-?(0[1-9]|1[012])-?(0[1-9]|[12][0-9]|3[01])/;
-        const sdkResourceRegex = /.*?SDK_RESOURCE\=(.*)[\r\n]+/;
+        const sdkResourceRegex = /SDK_RESOURCE\=(.*)[\r\n]+/;
         let curRegexResult = null;
         let javaVersion, jdkDate, sdkResource;
         if ((curRegexResult = javaVersionRegex.exec(output)) !== null) {
@@ -142,7 +142,7 @@ class Parser {
         let disabled = 0;
         // An example of test result summary: "TOTAL: 69   EXECUTED: 64   PASSED: 64   FAILED: 0   DISABLED: 0   SKIPPED: 5\n"
         const summaryRegex =
-            /\S*\s*?TOTAL:\s*([0-9]*)\s*EXECUTED:\s*([0-9]*)\s*PASSED:\s*([0-9]*)\s*FAILED:\s*([0-9]*)\s*DISABLED:\s*([0-9]*)\s*SKIPPED:\s*([0-9]*)\s*(\r\n|\r|\n)/;
+            /TOTAL:\s*([0-9]*)\s*EXECUTED:\s*([0-9]*)\s*PASSED:\s*([0-9]*)\s*FAILED:\s*([0-9]*)\s*DISABLED:\s*([0-9]*)\s*SKIPPED:\s*([0-9]*)\s*(\r\n|\r|\n)/;
         if ((m = summaryRegex.exec(output)) !== null) {
             total = parseInt(m[1], 10);
             executed = parseInt(m[2], 10);
