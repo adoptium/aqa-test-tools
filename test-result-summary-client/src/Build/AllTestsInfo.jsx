@@ -105,11 +105,19 @@ const Build = () => {
         let testResult = [];
         if (builds[0].tests !== undefined) {
             testResult = builds[0].tests.map((test) => {
+                let duration = test.duration;
+                if (!duration) {
+                    if (!test.startTime) {
+                        duration = null;
+                    } else {
+                        duration = Infinity;
+                    }
+                }
                 const ret = {
                     key: test._id,
                     sortName: test.testName,
                     testName: test.testName,
-                    duration: test.duration,
+                    duration,
                     machine: builds[0].machine,
                     sortMachine: builds[0].machine,
                     buildName: buildData[0].buildName,
