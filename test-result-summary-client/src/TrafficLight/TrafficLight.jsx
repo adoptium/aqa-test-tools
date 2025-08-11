@@ -87,10 +87,10 @@ function TrafficLight() {
                         aggregateInfo;
                     const benchmark = benchmarkName.split('-')[0];
                     const { platform } = getInfoFromBuildName(buildName);
-                    const buildNameTitle = parentBuildName.slice(
-                        0,
-                        parentBuildName.lastIndexOf('_')
-                    );
+                    const buildNameTitle = parentBuildName
+                        .slice(0, parentBuildName.lastIndexOf('_'))
+                        .replace('Perf_open', '');
+
                     return aggregateInfo.metrics.map(
                         ({ name: metricsName, statValues, rawValues }) => {
                             let higherbetter = true;
@@ -252,6 +252,15 @@ function TrafficLight() {
         {
             title: 'Benchmark Name',
             key: 'benchmarkName',
+            sorter: {
+                compare: (a, b) =>
+                    a.benchmarkName.localeCompare(b.benchmarkName, undefined, {
+                        numeric: true,
+                        sensitivity: 'base',
+                    }),
+            },
+            width: '350px',
+            fixed: 'left',
             render: (_, { benchmarkName, metricsName }) => {
                 return (
                     <div>
@@ -262,13 +271,20 @@ function TrafficLight() {
                 );
             },
         },
-        ...buildNameTitles.map((title, i) => {
-            return {
-                title,
-                key: i,
-                render: renderCell.bind(null, title),
-            };
-        }),
+        ...buildNameTitles
+            .sort((a, b) =>
+                a.localeCompare(b, undefined, {
+                    numeric: true,
+                    sensitivity: 'base',
+                })
+            )
+            .map((title, i) => {
+                return {
+                    title,
+                    key: i,
+                    render: renderCell.bind(null, title),
+                };
+            }),
     ];
     const setBuildOptionsOnChange = async (buildName) => {
         setTopBuild(buildName);
@@ -359,6 +375,7 @@ function TrafficLight() {
                     pagination={{ defaultPageSize: 100 }}
                     dataSource={tableData}
                     columns={columns}
+                    scroll={{ x: 'max-content' }}
                 />
             ) : (
                 ''
