@@ -1,6 +1,8 @@
 export default function renderDuration(ms) {
     if (ms === null) {
         return 'N/A';
+    } else if (ms === Infinity) {
+        return 'Hang suspected';
     }
     const milliseconds = parseInt(ms % 1000, 10);
     const seconds = parseInt((ms / 1000) % 60, 10);
