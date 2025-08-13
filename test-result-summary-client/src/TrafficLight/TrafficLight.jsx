@@ -50,6 +50,40 @@ function TrafficLight() {
             );
         }
     }
+
+    const buildJavaVersionMap = async (data) => {
+        let javaVersionMap = new Map();
+        for (const childData of data) {
+            const buildNameWithPlatform = childData.buildName.slice(
+                0,
+                childData.buildName.lastIndexOf('_')
+            );
+            if (
+                !javaVersionMap.has(buildNameWithPlatform) &&
+                childData.aggregateInfo
+            ) {
+                if (childData.aggregateInfo.buildName) {
+                    const grandchildrenData = await fetchData(
+                        `/api/getChildBuilds?parentId=${childData._id}&buildName=${childData.aggregateInfo.buildName}`
+                    );
+                    for (const grandchildData of grandchildrenData) {
+                        if (grandchildData.javaVersion) {
+                            javaVersionMap.set(
+                                buildNameWithPlatform,
+                                grandchildData.javaVersion.replace(
+                                    /\n/g,
+                                    '\n    '
+                                )
+                            );
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+        return javaVersionMap;
+    };
+
     const handleCompare = async () => {
         let testData = await fetchData(
             `/api/getTrafficLightData?parentId=${testBuild}&buildType=test`
@@ -74,6 +108,10 @@ function TrafficLight() {
         baselineData.forEach((element) => {
             element.buildType = 'baseline';
         });
+
+        const testJavaVersionMap = await buildJavaVersionMap(testData);
+        const baselineJavaVersionMap = await buildJavaVersionMap(baselineData);
+
         const metricPropsJSON = await fetchData(`/api/getBenchmarkMetricProps`);
         const modifiedData = [...testData, ...baselineData]
             .map(
@@ -87,10 +125,18 @@ function TrafficLight() {
                         aggregateInfo;
                     const benchmark = benchmarkName.split('-')[0];
                     const { platform } = getInfoFromBuildName(buildName);
-                    const buildNameTitle = parentBuildName
-                        .slice(0, parentBuildName.lastIndexOf('_'))
-                        .replace('Perf_open', '');
-
+                    const originBuildNameTitle = parentBuildName.slice(
+                        0,
+                        parentBuildName.lastIndexOf('_')
+                    );
+                    const buildNameTitle = originBuildNameTitle.replace(
+                        'Perf_open',
+                        ''
+                    );
+                    const javaVersion =
+                        buildType === 'test'
+                            ? testJavaVersionMap.get(originBuildNameTitle)
+                            : baselineJavaVersionMap.get(originBuildNameTitle);
                     return aggregateInfo.metrics.map(
                         ({ name: metricsName, statValues, rawValues }) => {
                             let higherbetter = true;
@@ -117,6 +163,7 @@ function TrafficLight() {
                                 buildName,
                                 platform,
                                 higherbetter,
+                                javaVersion,
                             };
                         }
                     );
@@ -168,6 +215,8 @@ function TrafficLight() {
             const totalCI =
                 Number((testValues.CI + baselineValues.CI) * 100).toFixed(2) +
                 '%';
+            const testJavaVersion = testBuild.javaVersion;
+            const baselineJaveVersion = baselineBuild.javaVersion;
             let icon = iconRed;
             if (percentage > 98) {
                 icon = iconGreen;
@@ -183,7 +232,9 @@ function TrafficLight() {
                             <br />
                             Test CI: {testCI} <br />
                             Baseline CI: {baselineCI} <br />
-                            Total CI: {totalCI}
+                            Total CI: {totalCI} <br />
+                            Test JavaVersion: {testJavaVersion} <br />
+                            Baseline JavaVersion: {baselineJaveVersion}
                         </pre>
                     }
                 >
