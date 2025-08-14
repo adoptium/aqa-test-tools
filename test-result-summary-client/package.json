@@ -44,7 +44,7 @@
     },
     "proxy": "http://localhost:3001",
     "devDependencies": {
-        "cypress": "^8.6.0",
+        "cypress": "^14.5.4",
         "npm-check": "^6.0.1",
         "prettier": "2.5.1"
     },
