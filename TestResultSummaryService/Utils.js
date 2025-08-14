@@ -28,4 +28,10 @@ const addCredential = (credentails, url) => {
     return url;
 };
 
-module.exports = { logger, addCredential };
+// remove ANSI escape code in Jenkins raw output
+// remove everything between \x1B[8m and \x1B[0m
+const removeAnsiCode = (output) => {
+    return output.replace(/\x1B\[8m[\s\S]*?\x1B\[0m/g, '');
+};
+
+module.exports = { logger, addCredential, removeAnsiCode };
