@@ -161,7 +161,11 @@ class Parser {
         let user = null;
         const userRegex = /Started by ?(.*?)[\r\n]+/;
         if ((m = userRegex.exec(output)) !== null) {
-            user = m[1];
+            if (output.includes("8mha")) {
+                user = m[1].replaceAll(/\u001b\[8mha.*?\[0m/g, "");
+            } else {
+                user = m[1];
+            }
         }
         return user;
     }
