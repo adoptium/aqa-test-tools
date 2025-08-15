@@ -1,6 +1,7 @@
 const { TestResultsDB, OutputDB, ObjectID } = require('../Database');
 const { removeTimestamp } = require('./utils/removeTimestamp');
 const { applyDeepSmithMatch } = require('./utils/applyDeepSmithMatch');
+const { removeAnsiCode } = require('../Utils');
 
 module.exports = async (req, res) => {
     const { id, removeTimestampFlag, applyDeepSmithMatchFlag } = req.query;
@@ -14,7 +15,7 @@ module.exports = async (req, res) => {
             result[0].output = applyDeepSmithMatch(result[0].output);
         }
         res.send({
-            output: result[0].output,
+            output: removeAnsiCode(result[0].output),
         });
     } catch (error) {
         res.send({ error });
