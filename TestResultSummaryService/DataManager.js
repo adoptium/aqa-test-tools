@@ -7,7 +7,7 @@ const {
 const ObjectID = require('mongodb').ObjectID;
 const Parsers = require(`./parsers/`);
 const DefaultParser = require(`./parsers/Default`);
-const { logger } = require('./Utils');
+const { logger, removeAnsiCode } = require('./Utils');
 const Utils = require('./parsers/Utils');
 
 class DataManager {
@@ -22,6 +22,7 @@ class DataManager {
     }
 
     async parseOutput(buildName, output) {
+        output = removeAnsiCode(output);
         const parserTypes = await Promise.all(
             Object.keys(Parsers).map(async (type) => {
                 if (Parsers[type].canParse(buildName, output)) {
