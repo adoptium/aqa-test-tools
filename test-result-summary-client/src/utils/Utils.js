@@ -7,7 +7,7 @@ export const order = (a, b) => {
 };
 export const getInfoFromBuildName = (buildName) => {
     const regex =
-        /^(Test|Perf)_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl|_fips140_2|_fips140_3_openjceplusfips|_fips140_3_openjceplusfips.fips140-3|_openjceplus|_criu)?)(_.+)?$/i;
+        /^(Test|Perf)_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl|_fips140_2|_fips140_3_openjceplusfips|_fips140_3_openjceplusfips.fips140-3|_fips140_3_openjceplusfips.fips140-3-strongly-enforced|_openjceplus|_criu)?)(_.+)?$/i;
     const tokens = buildName.match(regex);
     if (Array.isArray(tokens) && tokens.length > 5) {
         const [_, type, jdkVersion, jdkImpl, level, group, platform] = tokens;
