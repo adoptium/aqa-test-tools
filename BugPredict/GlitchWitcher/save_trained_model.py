@@ -8,6 +8,7 @@ import os
 import numpy as np
 import urllib.request
 from urllib.parse import urlparse
+import sys
 
 # Suppress warnings
 tf.disable_v2_behavior()
@@ -134,8 +135,7 @@ def train_and_save_model(training_data_path="https://raw.githubusercontent.com/a
     autoencoder_save_path = os.path.join(model_save_dir, "autoencoder")
     autoencoder.save(autoencoder_save_path)
     
-    # Debug the distributions before extraction
-    print("\nDebugging distributions:")
+    # Verify the distributions before extraction
     print(f"classifier.dnd: {type(classifier.dnd)} = {classifier.dnd}")
     print(f"classifier.dd: {type(classifier.dd)} = {classifier.dd}")
     
@@ -185,13 +185,7 @@ def train_and_save_model(training_data_path="https://raw.githubusercontent.com/a
     autoencoder.close()
 
 if __name__ == "__main__":
-    import sys
-    
-    # Allow command line argument for data source
-    if len(sys.argv) > 1:
-        data_source = sys.argv[1]
-    else:
-        data_source = "https://raw.githubusercontent.com/adoptium/aqa-triage-data/refs/heads/main/GlitchWitcher/Traditional%20Dataset/OpenJ9_Traditional_Dataset.csv"
+    data_source = sys.argv[1]
     
     print(f"Using data source: {data_source}")
     train_and_save_model(data_source)
