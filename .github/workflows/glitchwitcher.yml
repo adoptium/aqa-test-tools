@@ -17,46 +17,49 @@ jobs:
     steps:
       - name: Parse GlitchWitcher Command
         id: parse-command
-        run: |
-          comment_body="${{ github.event.comment.body }}"
-          echo "Full comment: $comment_body"
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const body = context.payload.comment?.body ?? '';
+            core.info(`Full comment: ${body}`);
 
-          # Extract PR link if provided
-          pr_link=""
-          if echo "$comment_body" | grep -oE 'GlitchWitcher\s+https://github\.com/[^/]+/[^/]+/pull/[0-9]+'; then
-            pr_link=$(echo "$comment_body" | grep -oE 'https://github\.com/[^/]+/[^/]+/pull/[0-9]+')
-            echo "PR link provided: $pr_link"
-          elif echo "$comment_body" | grep -oE 'GlitchWitcher\s*$'; then
-            # No PR link provided, use current PR if comment is on a PR
-            if [ "${{ github.event.issue.pull_request.url }}" != "" ]; then
-              pr_link="${{ github.event.issue.pull_request.html_url }}"
-              echo "Using current PR: $pr_link"
-            else
-              echo "ERROR: GlitchWitcher called on issue without PR link"
-              exit 1
-            fi
-          else
-            echo "ERROR: Invalid GlitchWitcher command format"
-            exit 1
-          fi
+            // Look for an explicit PR link in the comment
+            const linkMatch = body.match(/https:\/\/github\.com\/[^/]+\/[^/]+\/pull\/\d+/);
 
-          # Extract repository info from PR link
-          if [[ "$pr_link" =~ https://github\.com/([^/]+)/([^/]+)/pull/([0-9]+) ]]; then
-            repo_owner="${BASH_REMATCH[1]}"
-            repo_name="${BASH_REMATCH[2]}"
-            pr_number="${BASH_REMATCH[3]}"
-            full_repo_name="${repo_owner}-${repo_name}"
-            
-            echo "repo_owner=$repo_owner" >> $GITHUB_OUTPUT
-            echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
-            echo "pr_number=$pr_number" >> $GITHUB_OUTPUT
-            echo "full_repo_name=$full_repo_name" >> $GITHUB_OUTPUT
-            echo "pr_link=$pr_link" >> $GITHUB_OUTPUT
-            echo "repo_url=https://github.com/$repo_owner/$repo_name.git" >> $GITHUB_OUTPUT
-          else
-            echo "ERROR: Could not parse repository info from PR link: $pr_link"
-            exit 1
-          fi
+            let prLink = null;
+            if (linkMatch) {
+              prLink = linkMatch[0];
+              core.info(`PR link provided: ${prLink}`);
+            } else {
+              // Allow "GlitchWitcher" alone when the comment is on a PR
+              const hasCmdOnly = /(^|\s)GlitchWitcher\s*$/.test(body);
+              if (hasCmdOnly && context.payload.issue?.pull_request) {
+                const { owner, repo } = context.repo;
+                const prNumber = context.issue.number;
+                prLink = `https://github.com/${owner}/${repo}/pull/${prNumber}`;
+                core.info(`Using current PR: ${prLink}`);
+              } else {
+                core.setFailed('ERROR: Invalid GlitchWitcher command format or missing PR link');
+                return;
+              }
+            }
+
+            // Extract repo owner/name/number from the PR link
+            const m = prLink.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)$/);
+            if (!m) {
+              core.setFailed(`ERROR: Could not parse repository info from PR link: ${prLink}`);
+              return;
+            }
+            const [, repoOwner, repoName, prNumber] = m;
+            const fullRepoName = `${repoOwner}-${repoName}`;
+            const repoUrl = `https://github.com/${repoOwner}/${repoName}.git`;
+
+            core.setOutput('repo_owner', repoOwner);
+            core.setOutput('repo_name', repoName);
+            core.setOutput('pr_number', prNumber);
+            core.setOutput('full_repo_name', fullRepoName);
+            core.setOutput('pr_link', prLink);
+            core.setOutput('repo_url', repoUrl)
 
       - name: Set up Python
         uses: actions/setup-python@v4
