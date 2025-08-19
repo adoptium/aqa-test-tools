@@ -1,0 +1,445 @@
+name: GlitchWitcher - Bug Prediction Analysis
+
+on:
+  issue_comment:
+    types: [created]
+
+permissions:
+  pull-requests: write
+  issues: write
+  contents: read
+
+jobs:
+  glitch-witcher:
+    runs-on: ubuntu-latest
+    if: contains(github.event.comment.body, 'GlitchWitcher')
+
+    steps:
+      - name: Parse GlitchWitcher Command
+        id: parse-command
+        run: |
+          comment_body="${{ github.event.comment.body }}"
+          echo "Full comment: $comment_body"
+
+          # Extract PR link if provided
+          pr_link=""
+          if echo "$comment_body" | grep -oE 'GlitchWitcher\s+https://github\.com/[^/]+/[^/]+/pull/[0-9]+'; then
+            pr_link=$(echo "$comment_body" | grep -oE 'https://github\.com/[^/]+/[^/]+/pull/[0-9]+')
+            echo "PR link provided: $pr_link"
+          elif echo "$comment_body" | grep -oE 'GlitchWitcher\s*$'; then
+            # No PR link provided, use current PR if comment is on a PR
+            if [ "${{ github.event.issue.pull_request.url }}" != "" ]; then
+              pr_link="${{ github.event.issue.pull_request.html_url }}"
+              echo "Using current PR: $pr_link"
+            else
+              echo "ERROR: GlitchWitcher called on issue without PR link"
+              exit 1
+            fi
+          else
+            echo "ERROR: Invalid GlitchWitcher command format"
+            exit 1
+          fi
+
+          # Extract repository info from PR link
+          if [[ "$pr_link" =~ https://github\.com/([^/]+)/([^/]+)/pull/([0-9]+) ]]; then
+            repo_owner="${BASH_REMATCH[1]}"
+            repo_name="${BASH_REMATCH[2]}"
+            pr_number="${BASH_REMATCH[3]}"
+            full_repo_name="${repo_owner}-${repo_name}"
+            
+            echo "repo_owner=$repo_owner" >> $GITHUB_OUTPUT
+            echo "repo_name=$repo_name" >> $GITHUB_OUTPUT
+            echo "pr_number=$pr_number" >> $GITHUB_OUTPUT
+            echo "full_repo_name=$full_repo_name" >> $GITHUB_OUTPUT
+            echo "pr_link=$pr_link" >> $GITHUB_OUTPUT
+            echo "repo_url=https://github.com/$repo_owner/$repo_name.git" >> $GITHUB_OUTPUT
+          else
+            echo "ERROR: Could not parse repository info from PR link: $pr_link"
+            exit 1
+          fi
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies
+        run: |
+          pip install tensorflow==2.12.0 pandas joblib scipy numpy urllib3 scikit-learn
+          sudo apt-get update
+          sudo apt-get install -y cloc git
+
+      - name: Download scripts
+        run: |
+          echo "Downloading scripts from aqa-test-tools repository..."
+          curl -L -o ExtractTraditionalFeatures.sh "https://raw.githubusercontent.com/adoptium/aqa-triage-data/refs/heads/main/GlitchWitcher/Traditional%20Dataset/ExtractTraditionalFeatures.sh"
+          curl -L -o extract_traditional_features.sh "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/extract_traditional_features.sh"
+          curl -L -o predict.py "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/predict.py"
+          curl -L -o save_trained_model.py "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/save_trained_model.py"
+          curl -L -o REPD_Impl.py "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/REPD_Impl.py"
+          curl -L -o autoencoder.py "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/autoencoder.py"
+          curl -L -o stat_util.py "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/stat_util.py"
+          chmod +x ExtractTraditionalFeatures.sh
+          chmod +x extract_traditional_features.sh
+
+      - name: Check Dataset Availability
+        id: check-dataset
+        run: |
+          dataset_url="https://raw.githubusercontent.com/adoptium/aqa-triage-data/refs/heads/main/GlitchWitcher/Traditional%20Dataset/${{ steps.parse-command.outputs.full_repo_name }}/${{ steps.parse-command.outputs.full_repo_name }}.csv"
+          base_model_url="https://raw.githubusercontent.com/adoptium/aqa-triage-data/refs/heads/main/GlitchWitcher/Traditional%20Dataset/${{ steps.parse-command.outputs.full_repo_name }}/trained_model"
+          echo "Checking dataset availability..."
+          echo "Dataset URL: $dataset_url"
+          echo "Model base URL: $base_model_url"
+
+          dataset_exists="false"
+          model_exists="false"
+
+          # Check if dataset CSV exists
+          if curl -sI --fail "$dataset_url" > /dev/null 2>&1; then
+            echo "Dataset CSV found for ${{ steps.parse-command.outputs.full_repo_name }}"
+            dataset_exists="true"
+          else
+            echo "Dataset CSV not found for ${{ steps.parse-command.outputs.full_repo_name }}"
+          fi
+
+          # Check if TF model artifacts exist
+          if \
+            curl -sI --fail "$base_model_url/metadata.json" > /dev/null 2>&1 && \
+            curl -sI --fail "$base_model_url/classifier_params.json" > /dev/null 2>&1 && \
+            curl -sI --fail "$base_model_url/autoencoder.index" > /dev/null 2>&1 && \
+            curl -sI --fail "$base_model_url/autoencoder.meta" > /dev/null 2>&1 && \
+            curl -sI --fail "$base_model_url/autoencoder.data-00000-of-00001" > /dev/null 2>&1 && \
+            curl -sI --fail "$base_model_url/checkpoint" > /dev/null 2>&1
+          then
+            echo "TensorFlow model artifacts found"
+            model_exists="true"
+          else
+            echo "TensorFlow model artifacts not found or incomplete"
+          fi
+
+          echo "dataset_exists=$dataset_exists" >> $GITHUB_OUTPUT
+          echo "model_exists=$model_exists" >> $GITHUB_OUTPUT
+          echo "dataset_url=$dataset_url" >> $GITHUB_OUTPUT
+          echo "base_model_url=$base_model_url" >> $GITHUB_OUTPUT
+
+      - name: Generate Dataset if Missing
+        if: steps.check-dataset.outputs.dataset_exists == 'false'
+        run: |
+          echo "Generating dataset for ${{ steps.parse-command.outputs.full_repo_name }}..."
+          ./ExtractTraditionalFeatures.sh "${{ steps.parse-command.outputs.repo_url }}"
+
+          # Find the generated CSV file
+          csv_file=$(find . -name "*.csv" -path "./metrics_output_*" | head -1)
+          if [ ! -f "$csv_file" ]; then
+            echo "ERROR: Failed to generate CSV file"
+            exit 1
+          fi
+
+          echo "Generated CSV file: $csv_file"
+          echo "csv_file_path=$csv_file" >> $GITHUB_ENV
+
+      - name: Train Model if Missing
+        if: steps.check-dataset.outputs.dataset_exists == 'false' || steps.check-dataset.outputs.model_exists == 'false'
+        run: |
+          echo "Training model for ${{ steps.parse-command.outputs.full_repo_name }}..."
+
+          # Determine dataset path
+          if [ "${{ steps.check-dataset.outputs.dataset_exists }}" == "true" ]; then
+            dataset_path="${{ steps.check-dataset.outputs.dataset_url }}"
+          else
+            dataset_path="$csv_file_path"
+          fi
+
+          echo "Using dataset: $dataset_path"
+          python3 save_trained_model.py "$dataset_path"
+
+          if [ ! -d "trained_model" ]; then
+            echo "ERROR: Failed to generate trained model"
+            exit 1
+          fi
+
+          echo "Model training completed successfully"
+
+      - name: Create PR to aqa-triage-data
+        if: steps.check-dataset.outputs.dataset_exists == 'false' || steps.check-dataset.outputs.model_exists == 'false'
+        run: |
+          echo "Creating PR to adoptium/aqa-triage-data..."
+
+          # Configure git user
+          git config --global user.name "GlitchWitcher Bot"
+          git config --global user.email "glitchwicher-bot@adoptium.net"
+
+          # Clone the aqa-triage-data repository using PAT in URL
+          git clone https://${{ secrets.TRIAGE_PAT }}@github.com/adoptium/aqa-triage-data.git
+          cd aqa-triage-data
+
+          # Create target directory
+          target_dir="GlitchWitcher/Traditional Dataset/${{ steps.parse-command.outputs.full_repo_name }}"
+          mkdir -p "$target_dir"
+
+          # Copy files to target directory
+          if [ "${{ steps.check-dataset.outputs.dataset_exists }}" == "false" ]; then
+            echo "Copying CSV file..."
+            cp "../$csv_file_path" "$target_dir/${{ steps.parse-command.outputs.full_repo_name }}.csv"
+          fi
+
+          if [ "${{ steps.check-dataset.outputs.model_exists }}" == "false" ]; then
+            echo "Copying trained model..."
+            cp -r "../trained_model" "$target_dir/"
+          fi
+
+          # Create branch and commit
+          branch_name="add-dataset-${{ steps.parse-command.outputs.full_repo_name }}-$(date +%Y%m%d-%H%M%S)"
+          git checkout -b "$branch_name"
+          git add .
+          git commit -m "Add dataset and trained model for ${{ steps.parse-command.outputs.full_repo_name }}"
+
+          # Push branch using PAT in URL
+          git push https://${{ secrets.TRIAGE_PAT }}@github.com/adoptium/aqa-triage-data.git "$branch_name"
+
+          # Create PR using GitHub API
+          cat > pr_body.md << 'EOF'
+          # GlitchWitcher Dataset Addition
+
+          This PR adds the dataset and trained model for repository: **${{ steps.parse-command.outputs.repo_owner }}/${{ steps.parse-command.outputs.repo_name }}**
+
+          ## Contents:
+          - Dataset CSV file: `${{ steps.parse-command.outputs.full_repo_name }}.csv`
+          - Trained model directory: `trained_model/`
+
+          ## Triggered by:
+          - Comment in: ${{ github.event.issue.html_url }}
+          - Target PR: ${{ steps.parse-command.outputs.pr_link }}
+
+          This PR was automatically generated by the GlitchWitcher workflow.
+          EOF
+
+          # JSON-escape body with Python (preserves newlines)
+                    PR_BODY=$(python3 - <<'PY'
+          import json, sys
+          print(json.dumps(open('pr_body.md', encoding='utf-8').read()))
+          PY
+          )
+
+          echo "Creating PR..."
+          POST_DATA=$(cat <<JSON
+          {
+            "title": "Add GlitchWitcher dataset for ${{ steps.parse-command.outputs.full_repo_name }}",
+            "head": "$branch_name",
+            "base": "main",
+            "body": $PR_BODY,
+            "draft": false
+          }
+          JSON
+          )
+
+          PR_RESPONSE=$(curl -sS -X POST \
+            -H "Authorization: token ${{ secrets.TRIAGE_PAT }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            https://api.github.com/repos/adoptium/aqa-triage-data/pulls \
+            -d "$POST_DATA")
+
+          echo "API Response received, parsing..."
+
+          if command -v python3 &> /dev/null; then
+            PR_NUMBER=$(echo "$PR_RESPONSE" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('number', ''))")
+            PR_URL=$(echo "$PR_RESPONSE" | python3 -c "import sys, json; data=json.load(sys.stdin); print(data.get('html_url', ''))")
+          else
+            PR_NUMBER=$(echo "$PR_RESPONSE" | grep -o '"number"[ ]*:[ ]*[0-9][0-9]*' | head -1 | sed 's/.*:[ ]*//')
+            PR_URL=$(echo "$PR_RESPONSE" | grep -o '"html_url"[ ]*:[ ]*"[^"]*"' | head -1 | sed 's/.*:[ ]*"\([^"]*\)".*/\1/')
+          fi
+
+          echo "Extracted PR_NUMBER: '$PR_NUMBER'"
+          echo "Extracted PR_URL: '$PR_URL'"
+
+          if [ ! -z "$PR_NUMBER" ] && [ "$PR_NUMBER" != "null" ] && [ ! -z "$PR_URL" ] && [ "$PR_URL" != "null" ]; then
+            echo "✅ Successfully created PR #$PR_NUMBER"
+            echo "PR URL: $PR_URL"
+            
+            echo "Enabling auto-merge for PR #$PR_NUMBER..."
+            MERGE_RESPONSE=$(curl -X PUT \
+              -H "Authorization: token ${{ secrets.TRIAGE_PAT }}" \
+              -H "Accept: application/vnd.github.v3+json" \
+              https://api.github.com/repos/adoptium/aqa-triage-data/pulls/$PR_NUMBER/merge \
+              -d '{
+                "commit_title": "Auto-merge: Add GlitchWitcher dataset for ${{ steps.parse-command.outputs.full_repo_name }}",
+                "commit_message": "Automatically merged by GlitchWitcher workflow",
+                "merge_method": "squash"
+              }')
+            
+            echo "Auto-merge response: $MERGE_RESPONSE"
+          else
+            echo "❌ Failed to parse PR information from response"
+            echo "Full Response: $PR_RESPONSE"
+          fi
+
+      - name: Run Analysis on Target PR
+        id: analysis
+        run: |
+          set -e
+          echo "Running GlitchWitcher analysis on ${{ steps.parse-command.outputs.pr_link }}..."
+
+          # Get PR details using GitHub API
+          pr_api_url="https://api.github.com/repos/${{ steps.parse-command.outputs.repo_owner }}/${{ steps.parse-command.outputs.repo_name }}/pulls/${{ steps.parse-command.outputs.pr_number }}"
+          pr_info=$(curl -s -H "Accept: application/vnd.github.v3+json" "$pr_api_url")
+
+          # Parse base/head SHAs using Python (more robust than grep)
+          base_sha=$(printf "%s" "$pr_info" | python3 -c "import sys, json; d=json.load(sys.stdin); print(d['base']['sha'])")
+          head_sha=$(printf "%s" "$pr_info" | python3 -c "import sys, json; d=json.load(sys.stdin); print(d['head']['sha'])")
+
+          echo "Base SHA: $base_sha"
+          echo "Head SHA: $head_sha"
+
+          # Clone the target repository
+          git clone "${{ steps.parse-command.outputs.repo_url }}" target_repo
+
+          # Ensure we have the PR head commit (works for forks)
+          git -C target_repo fetch origin "pull/${{ steps.parse-command.outputs.pr_number }}/head:prhead" || true
+          git -C target_repo fetch --all --tags --prune
+
+          # Get changed files between base..head (C/C++ only)
+          merge_base=$(git -C target_repo merge-base "$base_sha" "$head_sha")
+          echo "Merge base: $merge_base"
+          changed_files=$(git -C target_repo diff --name-only "$merge_base" "$head_sha" | grep -E "\.(c|cpp|cxx|cc|h|hpp|hxx)$" || true)
+
+          if [ -z "$changed_files" ]; then
+            echo "No C/C++ files changed in this PR"
+            echo "comment=No C/C++ files found in the PR changes." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "Changed files:"
+          printf "%s\n" "$changed_files"
+
+          # Extract features for base commit
+          git -C target_repo checkout "$base_sha"
+          mkdir -p metrics_output_base
+          echo "File,loc,v(g),ev(g),iv(g),n,v,l,d,i,e,b,t,lOComment,lOBlank,LOCodeAndComment,uniq_Op,Uniq_Opnd,total_Op,total_Opnd,branchCount" > metrics_output_base/summary_metrics.csv
+
+          for file in $changed_files; do
+            fpath="target_repo/$file"
+            if [ -f "$fpath" ]; then
+              echo "Processing $file (base)..."
+              ./extract_traditional_features.sh "$fpath"
+              generated_dir=$(ls -td metrics_output_* 2>/dev/null | head -n 1 || true)
+              if [ -n "$generated_dir" ] && [ -d "$generated_dir" ] && [ -f "$generated_dir/summary_metrics.csv" ]; then
+                tail -n +2 "$generated_dir/summary_metrics.csv" >> metrics_output_base/summary_metrics.csv
+                rm -rf "$generated_dir"
+              else
+                echo "Warning: No metrics generated for $file (base)."
+              fi
+            else
+              echo "Warning: File not found at $fpath (base)."
+            fi
+          done
+
+          # Extract features for head commit
+          git -C target_repo checkout "$head_sha"
+          mkdir -p metrics_output_head
+          echo "File,loc,v(g),ev(g),iv(g),n,v,l,d,i,e,b,t,lOComment,lOBlank,LOCodeAndComment,uniq_Op,Uniq_Opnd,total_Op,total_Opnd,branchCount" > metrics_output_head/summary_metrics.csv
+
+          for file in $changed_files; do
+            fpath="target_repo/$file"
+            if [ -f "$fpath" ]; then
+              echo "Processing $file (head)..."
+              ./extract_traditional_features.sh "$fpath"
+              generated_dir=$(ls -td metrics_output_* 2>/dev/null | head -n 1 || true)
+              if [ -n "$generated_dir" ] && [ -d "$generated_dir" ] && [ -f "$generated_dir/summary_metrics.csv" ]; then
+                tail -n +2 "$generated_dir/summary_metrics.csv" >> metrics_output_head/summary_metrics.csv
+                rm -rf "$generated_dir"
+              else
+                echo "Warning: No metrics generated for $file (head)."
+              fi
+            else
+              echo "Warning: File not found at $fpath (head)."
+            fi
+          done
+
+          echo "=== Row counts ==="
+          echo "Base rows: $(wc -l < metrics_output_base/summary_metrics.csv || echo 0)"
+          echo "Head rows: $(wc -l < metrics_output_head/summary_metrics.csv || echo 0)"
+
+          # Prepare trained model: Prefer remote artifacts; otherwise use locally trained model
+          have_model="false"
+          if [ "${{ steps.check-dataset.outputs.model_exists }}" == "true" ]; then
+            echo "Preparing TensorFlow model artifacts from remote..."
+            mkdir -p trained_model
+            base_url="${{ steps.check-dataset.outputs.base_model_url }}"
+            curl -fSL -o trained_model/metadata.json                   "$base_url/metadata.json"
+            curl -fSL -o trained_model/classifier_params.json          "$base_url/classifier_params.json"
+            curl -fSL -o trained_model/autoencoder.index               "$base_url/autoencoder.index"
+            curl -fSL -o trained_model/autoencoder.meta                "$base_url/autoencoder.meta"
+            curl -fSL -o trained_model/autoencoder.data-00000-of-00001 "$base_url/autoencoder.data-00000-of-00001"
+            curl -fSL -o trained_model/checkpoint                      "$base_url/checkpoint"
+            have_model="true"
+          elif [ -d "trained_model" ]; then
+            echo "Using locally trained model artifacts..."
+            have_model="true"
+          fi
+
+          if [ "$have_model" != "true" ]; then
+            echo "comment=No model found for predictions." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Create the comparison script
+          cat > compare_predictions.py << 'EOF'
+          import sys, os
+          from predict import predict, format_results_for_comparison
+
+          base_results = predict('metrics_output_base/summary_metrics.csv')
+          head_results = predict('metrics_output_head/summary_metrics.csv')
+
+          file_names = [os.path.basename(str(r['file']).replace('\\','/')) for r in base_results if 'file' in r]
+          base_data = [{'p_defective': r['p_defective'], 'p_non_defective': r['p_non_defective']} for r in base_results if 'p_defective' in r]
+          head_data = [{'p_defective': r['p_defective'], 'p_non_defective': r['p_non_defective']} for r in head_results if 'p_defective' in r]
+
+          comparison_output = format_results_for_comparison(file_names, base_data, head_data)
+          print(comparison_output)
+          EOF
+
+          echo "Running comparison predictions..."
+          if [ -f "metrics_output_base/summary_metrics.csv" ] && [ -f "metrics_output_head/summary_metrics.csv" ]; then
+            comparison_result=$(python3 compare_predictions.py)
+            if [ -n "$comparison_result" ]; then
+              {
+                echo "comment<<EOF"
+                echo "$comparison_result"
+                echo ""
+                echo "### 📋 Interpretation Note:"
+                echo "> The values shown are Probability Densities (PDFs), not probabilities. They represent the model's assessment of how likely a file's characteristics are to be 'defective' vs. 'non-defective'. A higher value indicates a better fit for that category. Very small values are expected and normal."
+                echo ""
+                echo "EOF"
+              } >> $GITHUB_OUTPUT
+            else
+              echo "comment=Comparison prediction produced no output." >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "comment=Missing base or head metrics files for comparison." >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR
+        if: steps.analysis.outputs.comment != ''
+        uses: actions/github-script@v6
+        env:
+          COMMENT_BODY: "${{ steps.analysis.outputs.comment }}"
+          PR_LINK: "${{ steps.parse-command.outputs.pr_link }}"
+          REPO_NAME: "${{ steps.parse-command.outputs.full_repo_name }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const commentBody = `## 🔮 GlitchWitcher Analysis Results
+
+            **Target PR:** ${process.env.PR_LINK}
+            **Repository:** ${process.env.REPO_NAME}
+
+            ${process.env.COMMENT_BODY}
+
+            *Analysis performed by GlitchWitcher Bot*`;
+
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
