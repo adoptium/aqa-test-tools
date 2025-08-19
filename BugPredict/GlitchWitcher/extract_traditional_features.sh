@@ -173,8 +173,7 @@ calculate_halstead_metrics() {
     
     if [ ! -s "$file" ]; then
         print_warning "Skipping empty file: $file"
-        echo "n:0\nv:0\nl:0\nd:0\ni:0\ne:0\nb:0\nt:0\nuniq_Op:0\nuniq_Opnd:0\ntotal_Op:0\ntotal_Opnd:0"
-        return 0
+        return 1
     fi
 
     # Create a temporary Python script to calculate Halstead metrics
@@ -187,13 +186,9 @@ def calculate_halstead_metrics(file_path, include_keywords, d_max, b_max):
     try:
         with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
             content = f.read()
-    except Exception as e:
-        print(f"Error reading file {file_path}: {e}", file=sys.stderr)
-        return {
-            'n': 0, 'v': "0.00", 'l': "0.00", 'd': "0.00",
-            'i': "0.00", 'e': "0.00", 'b': "0.00", 't': "0.00",
-            'uniq_Op': 0, 'uniq_Opnd': 0, 'total_Op': 0, 'total_Opnd': 0
-        }
+    except Exception:
+        print("__ERROR__")
+        sys.exit(1)
     
     # Remove comments and strings
     content = re.sub(r'//.*?\n', '', content)
@@ -201,60 +196,37 @@ def calculate_halstead_metrics(file_path, include_keywords, d_max, b_max):
     content = re.sub(r'"[^"]*"', '', content)
     content = re.sub(r"'[^']*'", '', content)
     
-    # Skip if content is empty or only whitespace after preprocessing
+    # Fail if content has no code after preprocessing
     if not content.strip():
-        print(f"File {file_path} contains no code after preprocessing", file=sys.stderr)
-        return {
-            'n': 0, 'v': "0.00", 'l': "0.00", 'd': "0.00",
-            'i': "0.00", 'e': "0.00", 'b': "0.00", 't': "0.00",
-            'uniq_Op': 0, 'uniq_Opnd': 0, 'total_Op': 0, 'total_Opnd': 0
-        }
+        print("__ERROR__")
+        sys.exit(1)
     
-    # C/C++ operators (control keywords included based on config)
     operators = [
-        # Arithmetic
         r'\+', r'-', r'\*', r'/', r'%', r'\+\+', r'--',
-        # Assignment
         r'=', r'\+=', r'-=', r'\*=', r'/=', r'%=', r'&=' , r'\|=', r'\^=', r'<<=', r'>>=',
-        # Comparison
         r'==', r'!=', r'<', r'>', r'<=', r'>=',
-        # Logical
         r'&&', r'\|\|', r'!',
-        # Bitwise
         r'&', r'\|', r'\^', r'~', r'<<', r'>>',
-        # Other
         r'\?', r':', r'->', r'\.', r',', r';',
-        # Brackets
         r'\(', r'\)', r'\[', r'\]', r'\{', r'\}'
     ]
-    
-    # Note: Including control keywords as operators (configurable)
     if include_keywords.lower() == 'true':
         operators.extend([
             r'\bif\b', r'\belse\b', r'\bwhile\b', r'\bfor\b', r'\bdo\b',
             r'\bswitch\b', r'\bcase\b', r'\bdefault\b', r'\breturn\b',
             r'\bbreak\b', r'\bcontinue\b', r'\bgoto\b'
         ])
-    
     operator_counts = {}
     total_operators = 0
-    
-    # Sort operators by length to match longer ones first
     operators.sort(key=len, reverse=True)
-    
     for op in operators:
-        pattern = op
-        matches = len(re.findall(pattern, content))
+        matches = len(re.findall(op, content))
         if matches > 0:
             operator_counts[op] = matches
             total_operators += matches
-            content = re.sub(pattern, ' ', content)
-    
-    # Count operands (identifiers and literals)
+            content = re.sub(op, ' ', content)
     operand_pattern = r'\b[a-zA-Z_][a-zA-Z0-9_]*\b|\b\d+(?:\.\d+)?(?:[eE][+-]?\d+)?\b'
     operands = re.findall(operand_pattern, content)
-    
-    # Filter out keywords
     keywords = {
         'int', 'char', 'float', 'double', 'void', 'bool', 'long', 'short',
         'signed', 'unsigned', 'const', 'static', 'extern', 'register',
@@ -263,112 +235,81 @@ def calculate_halstead_metrics(file_path, include_keywords, d_max, b_max):
         'list', 'queue', 'stack', 'pair', 'include', 'define',
         'ifdef', 'ifndef', 'endif', 'pragma', 'main'
     }
-    
     operand_counts = {}
     total_operands = 0
-    
     for operand in operands:
         if operand not in keywords and operand not in [op.strip(r'\b') for op in operators]:
             operand_counts[operand] = operand_counts.get(operand, 0) + 1
             total_operands += 1
-    
-    # Calculate Halstead metrics
-    mu1 = len(operator_counts)  # Unique operators
-    mu2 = len(operand_counts)   # Unique operands
-    N1 = total_operators       # Total operators
-    N2 = total_operands        # Total operands
 
-    # --- Heuristic to calculate mu2' (potential operand count) ---
-    # This logic should be placed before comment stripping to analyze the original code.
-    # It finds the average number of arguments per function in the file.
+    mu1 = len(operator_counts)
+    mu2 = len(operand_counts)
+    N1 = total_operators
+    N2 = total_operands
+    mu = mu1 + mu2
+    N = N1 + N2
 
-    function_pattern = re.compile(r'\b\w+[\s\*&]+\w+\s*\(([^)]*)\)\s*(?:;|\{)')
-    total_args = 0
-    function_count = 0
-    # 'content' is the raw text of the file before comments are stripped
-    for match in function_pattern.finditer(content):
-        function_count += 1
-        arg_string = match.group(1).strip()
-        if not arg_string or arg_string == 'void':
-            arg_count = 0
-        else:
-            # Count commas and add 1 for the number of arguments
-            arg_count = arg_string.count(',') + 1
-        total_args += arg_count
-    mu2_prime = total_args / function_count if function_count > 0 else 0
-    # --- End of mu2' calculation ---
-
-    mu = mu1 + mu2  # vocabulary
-    N = N1 + N2    # length
-
-    # Default values
-    V, V_star, L, D, I, E, T = 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0
-
-    if mu > 1 and N > 0: # log2(mu) is valid for mu > 0, but let's use mu > 1 to avoid log2(1)=0
-        # P = volume = V = N * log2(mu)
+    V = V_star = L = D = I = E = T = 0.0
+    B = 0.0
+    if mu > 1 and N > 0:
         V = N * math.log2(mu)
-
-        # V* = volume on minimal implementation = (2 + mu2')*log2(2 + mu2')
-        mu1_prime = 2
-        potential_vocab = mu1_prime + mu2_prime
+        function_pattern = re.compile(r'\b\w+[\s\*&]+\w+\s*\(([^)]*)\)\s*(?:;|\{)')
+        total_args = 0
+        function_count = 0
+        for match in function_pattern.finditer(content):
+            function_count += 1
+            args = match.group(1).strip()
+            total_args += 0 if (not args or args == 'void') else (args.count(',') + 1)
+        mu2_prime = total_args / function_count if function_count > 0 else 0
+        potential_vocab = 2 + mu2_prime
         if potential_vocab > 1:
             V_star = potential_vocab * math.log2(potential_vocab)
-
-        # L  = program length = V*/N
-        # Implementing literally as per the documentation.
         if N > 0:
             L = V_star / N
-        
-        # D  = difficulty = 1/L
         if L > 0:
             D = 1 / L
-        
-        # I  = intelligence = L'*V' => L*V
-        # As per the documentation, L' = 1/D, which simplifies to L' = L.
-        # The standard interpretation of I = L'*V' is I = L*V.
         I = (1 / D if D > 0 else 0) * V
-        
-        # E  = effort to write program = V/L 
         if L > 0:
             E = V / L
-        
-        # T  = time to write program = E/18 seconds
         T = E / 18
+        try:
+            b_max = float(sys.argv[4])
+        except:
+            b_max = 3.0
+        B = min((E ** (2/3)) / 3000, b_max) if E > 0 else 0.0
 
-        B = min((E ** (2/3)) / 3000, float(b_max)) if E > 0 else 0
-
-    return {
-        'n': N,
-        'v': f"{V:.2f}",
-        'l': f"{L:.2f}",
-        'd': f"{D:.2f}",
-        'i': f"{I:.2f}",
-        'e': f"{E:.2f}",
-        'b': f"{B:.2f}",
-        't': f"{T:.2f}",
-        'uniq_Op': mu1,
-        'uniq_Opnd': mu2,
-        'total_Op': N1,
-        'total_Opnd': N2
-    }
+    print(f"n:{N}")
+    print(f"v:{V:.2f}")
+    print(f"l:{L:.2f}")
+    print(f"d:{D:.2f}")
+    print(f"i:{I:.2f}")
+    print(f"e:{E:.2f}")
+    print(f"b:{B:.2f}")
+    print(f"t:{T:.2f}")
+    print(f"uniq_Op:{mu1}")
+    print(f"uniq_Opnd:{mu2}")
+    print(f"total_Op:{N1}")
+    print(f"total_Opnd:{N2}")
 
 if __name__ == "__main__":
     if len(sys.argv) != 5:
-        print("Usage: python3 halstead_calculator.py <file_path> <include_keywords> <d_max> <b_max>", file=sys.stderr)
+        print("__ERROR__")
         sys.exit(1)
-    
-    metrics = calculate_halstead_metrics(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
-    for key, value in metrics.items():
-        print(f"{key}:{value}")
+    calculate_halstead_metrics(sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4])
 EOF
-    
-    local halstead_output=$(python3 "$TEMP_DIR/halstead_calculator.py" "$file" "$INCLUDE_KEYWORD_OPERATORS" "$HALSTEAD_D_MAX" "$HALSTEAD_B_MAX" 2> "$TEMP_DIR/halstead_errors.log")
-    if [ -z "$halstead_output" ]; then
+
+    local halstead_output
+    if ! halstead_output=$(python3 "$TEMP_DIR/halstead_calculator.py" "$file" "$INCLUDE_KEYWORD_OPERATORS" "$HALSTEAD_D_MAX" "$HALSTEAD_B_MAX" 2> "$TEMP_DIR/halstead_errors.log"); then
         print_warning "Failed to calculate Halstead metrics for $file. See $TEMP_DIR/halstead_errors.log for details."
-        echo "n:0\nv:0\nl:0\nd:0\ni:0\ne:0\nb:0\nt:0\nuniq_Op:0\nuniq_Opnd:0\ntotal_Op:0\ntotal_Opnd:0"
-    else
-        echo "$halstead_output"
+        return 1
     fi
+
+    if echo "$halstead_output" | grep -q "__ERROR__"; then
+        print_info "Skipping $file due to Halstead metrics failure."
+        return 1
+    fi
+
+    echo "$halstead_output"
 }
 
 # Function to calculate line counts using cloc or pygount
@@ -377,39 +318,46 @@ calculate_line_counts() {
     
     if [ ! -s "$file" ]; then
         print_warning "Skipping empty file: $file"
-        echo "0,0,0"
-        return 0
+        return 1
     fi
     
     if command -v cloc &> /dev/null; then
-        local cloc_output=$(cloc --csv "$file" 2>/dev/null | tail -n +2 | head -1)
+        local cloc_output
+        cloc_output=$(cloc --csv "$file" 2>/dev/null | tail -n +2 | head -1)
         if [ -n "$cloc_output" ]; then
-            echo "$cloc_output" | cut -d',' -f3,4,5 | tr -d '\n\r'
-        else
-            print_warning "cloc returned empty output for $file"
-            echo "0,0,0"
+            local triple
+            triple=$(echo "$cloc_output" | cut -d',' -f3,4,5 | tr -d '\n\r')
+            if [ -n "$triple" ]; then
+                echo "$triple"
+                return 0
+            fi
         fi
+        print_warning "cloc returned empty/invalid output for $file"
+        return 1
     else
         if ! check_command pygount; then
             print_error "pygount is required for line counting but not installed."
-            echo "0,0,0"
-            return 0
+            return 1
         fi
-        local pygount_output=$(pygount --format=summary "$file" 2>/dev/null)
+        local pygount_output
+        pygount_output=$(pygount --format=summary "$file" 2>/dev/null)
         if [ -z "$pygount_output" ]; then
             print_warning "pygount returned empty output for $file"
-            echo "0,0,0"
-            return 0
+            return 1
         fi
-        local blank_lines=$(echo "$pygount_output" | grep -oP 'Blank lines: \K\d+' || echo "0")
-        local comment_lines=$(echo "$pygount_output" | grep -oP 'Comment lines: \K\d+' || echo "0")
-        local code_lines=$(echo "$pygount_output" | grep -oP 'Code lines: \K\d+' || echo "0")
-        
+        local blank_lines comment_lines code_lines
+        blank_lines=$(echo "$pygount_output" | grep -oP 'Blank lines: \K\d+' || true)
+        comment_lines=$(echo "$pygount_output" | grep -oP 'Comment lines: \K\d+' || true)
+        code_lines=$(echo "$pygount_output" | grep -oP 'Code lines: \K\d+' || true)
+        if [[ -z "$blank_lines" || -z "$comment_lines" || -z "$code_lines" ]]; then
+            print_warning "Failed to parse pygount output for $file"
+            return 1
+        fi
         blank_lines=$(sanitize_number "$blank_lines" "0")
         comment_lines=$(sanitize_number "$comment_lines" "0")
         code_lines=$(sanitize_number "$code_lines" "0")
-        
         echo "$blank_lines,$comment_lines,$code_lines"
+        return 0
     fi
 }
 
@@ -535,105 +483,99 @@ count_branches() {
     echo "$total_branches"
 }
 
+# Function to write CSV header once
+write_csv_header() {
+    local csv_output="$1"
+    echo "File,loc,v(g),ev(g),iv(g),n,v,l,d,i,e,b,t,lOComment,lOBlank,LOCodeAndComment,uniq_Op,Uniq_Opnd,total_Op,total_Opnd,branchCount" > "$csv_output"
+}
+
 # Function to process a single file
 process_file() {
     local file="$1"
-    local output_file="$2"
-    
+    local csv_output="$2"
+
     if [ "$VERBOSE" = true ]; then
         print_info "Processing: $file"
     fi
-    
-    # Calculate cyclomatic complexity
-    local cyclomatic_complexity=$(calculate_mccabe_complexity "$file" "$output_file")
-    cyclomatic_complexity=$(sanitize_number "$cyclomatic_complexity" "1")
-    
-    # Calculate Halstead metrics
-    local halstead_output=$(calculate_halstead_metrics "$file")
-    
-    local n=$(echo "$halstead_output" | grep "^n:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local v=$(echo "$halstead_output" | grep "^v:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local l=$(echo "$halstead_output" | grep "^l:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local d=$(echo "$halstead_output" | grep "^d:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local i=$(echo "$halstead_output" | grep "^i:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local e=$(echo "$halstead_output" | grep "^e:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local b=$(echo "$halstead_output" | grep "^b:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local t=$(echo "$halstead_output" | grep "^t:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local uniq_Op=$(echo "$halstead_output" | grep "^uniq_Op:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local uniq_Opnd=$(echo "$halstead_output" | grep "^uniq_Opnd:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local total_Op=$(echo "$halstead_output" | grep "^total_Op:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local total_Opnd=$(echo "$halstead_output" | grep "^total_Opnd:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "0")
-    
-    n=$(sanitize_number "$n" "0")
-    v=$(sanitize_number "$v" "0")
-    l=$(sanitize_number "$l" "0")
-    d=$(sanitize_number "$d" "0")
-    i=$(sanitize_number "$i" "0")
-    e=$(sanitize_number "$e" "0")
-    b=$(sanitize_number "$b" "0")
-    t=$(sanitize_number "$t" "0")
-    uniq_Op=$(sanitize_number "$uniq_Op" "0")
-    uniq_Opnd=$(sanitize_number "$uniq_Opnd" "0")
-    total_Op=$(sanitize_number "$total_Op" "0")
-    total_Opnd=$(sanitize_number "$total_Opnd" "0")
-    
-    # Calculate line counts
-    local line_counts=$(calculate_line_counts "$file")
-    local lOBlank=$(echo "$line_counts" | cut -d',' -f1 | tr -d '\n\r' | xargs || echo "0")
-    local lOComment=$(echo "$line_counts" | cut -d',' -f2 | tr -d '\n\r' | xargs || echo "0")
-    local lOCode=$(echo "$line_counts" | cut -d',' -f3 | tr -d '\n\r' | xargs || echo "0")
-    
+
+    # Line counts (skip on failure)
+    local line_counts
+    if ! line_counts=$(calculate_line_counts "$file"); then
+        print_info "Skipping $file due to line count failure."
+        return 0
+    fi
+    local lOBlank lOComment lOCode
+    lOBlank=$(echo "$line_counts"   | cut -d',' -f1 | tr -d '\n\r' | xargs || echo "0")
+    lOComment=$(echo "$line_counts" | cut -d',' -f2 | tr -d '\n\r' | xargs || echo "0")
+    lOCode=$(echo "$line_counts"    | cut -d',' -f3 | tr -d '\n\r' | xargs || echo "0")
+
     lOBlank=$(sanitize_number "$lOBlank" "0")
     lOComment=$(sanitize_number "$lOComment" "0")
     lOCode=$(sanitize_number "$lOCode" "0")
-    
-    # Ensure valid inputs for arithmetic
+
     if [[ ! "$lOCode" =~ ^[0-9]+$ ]] || [[ ! "$lOComment" =~ ^[0-9]+$ ]]; then
-        print_warning "Invalid line counts for $file: lOCode=$lOCode, lOComment=$lOComment"
-        lOCode=0
-        lOComment=0
+        print_info "Skipping $file due to invalid line counts."
+        return 0
     fi
     local lOCodeAndComment=$((lOCode + lOComment))
     lOCodeAndComment=$(sanitize_number "$lOCodeAndComment" "0")
-    
-    # Calculate extended McCabe metrics
-    local extended_mccabe=$(calculate_extended_mccabe "$file" "$cyclomatic_complexity")
+
+    # Cyclomatic complexity
+    local cyclomatic_complexity
+    cyclomatic_complexity=$(calculate_mccabe_complexity "$file")
+    cyclomatic_complexity=$(sanitize_number "$cyclomatic_complexity" "1")
+
+    # Halstead metrics (skip on failure)
+    local halstead_output
+    if ! halstead_output=$(calculate_halstead_metrics "$file"); then
+        print_info "Skipping $file due to Halstead metrics failure."
+        return 0
+    fi
+
+    local n v l d i e b t uniq_Op uniq_Opnd total_Op total_Opnd
+    n=$(echo "$halstead_output" | grep "^n:"         | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    v=$(echo "$halstead_output" | grep "^v:"         | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    l=$(echo "$halstead_output" | grep "^l:"         | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    d=$(echo "$halstead_output" | grep "^d:"         | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    i=$(echo "$halstead_output" | grep "^i:"         | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    e=$(echo "$halstead_output" | grep "^e:"         | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    b=$(echo "$halstead_output" | grep "^b:"         | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    t=$(echo "$halstead_output" | grep "^t:"         | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    uniq_Op=$(echo "$halstead_output" | grep "^uniq_Op:"   | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    uniq_Opnd=$(echo "$halstead_output" | grep "^uniq_Opnd:" | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    total_Op=$(echo "$halstead_output" | grep "^total_Op:"  | cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+    total_Opnd=$(echo "$halstead_output" | grep "^total_Opnd:"| cut -d':' -f2 | tr -d '\n\r' | xargs || echo "")
+
+    # Skip if any Halstead field missing
+    if [ -z "$n" ] || [ -z "$v" ] || [ -z "$l" ] || [ -z "$d" ] || [ -z "$i" ] || [ -z "$e" ] || [ -z "$b" ] || [ -z "$t" ] || [ -z "$uniq_Op" ] || [ -z "$uniq_Opnd" ] || [ -z "$total_Op" ] || [ -z "$total_Opnd" ]; then
+        print_info "Skipping $file due to incomplete Halstead metrics."
+        return 0
+    fi
+
+    # Extended McCabe
+    local extended_mccabe
+    extended_mccabe=$(calculate_extended_mccabe "$file" "$cyclomatic_complexity")
     local essential_complexity=$(echo "$extended_mccabe" | cut -d',' -f1)
     local design_complexity=$(echo "$extended_mccabe" | cut -d',' -f2)
-    
     essential_complexity=$(sanitize_number "$essential_complexity" "1")
     design_complexity=$(sanitize_number "$design_complexity" "1")
-    
-    # Count branches
-    local branchCount=$(count_branches "$file")
+
+    # Branch count
+    local branchCount
+    branchCount=$(count_branches "$file")
     branchCount=$(sanitize_number "$branchCount" "0")
-    
-    # Note: lOCode is equivalent to loc as per Halstead metrics definition
+
+    # Note: lOCode equals loc
     local loc="$lOCode"
-    
-    # Output results
-    echo "File: $file" >> "$output_file"
-    echo "loc: $loc" >> "$output_file"
-    echo "v(g): $cyclomatic_complexity" >> "$output_file"
-    echo "ev(g): $essential_complexity" >> "$output_file"
-    echo "iv(g): $design_complexity" >> "$output_file"
-    echo "n: $n" >> "$output_file"
-    echo "v: $v" >> "$output_file"
-    echo "l: $l" >> "$output_file"
-    echo "d: $d" >> "$output_file"
-    echo "i: $i" >> "$output_file"
-    echo "e: $e" >> "$output_file"
-    echo "b: $b" >> "$output_file"
-    echo "t: $t" >> "$output_file"
-    echo "lOComment: $lOComment" >> "$output_file"
-    echo "lOBlank: $lOBlank" >> "$output_file"
-    echo "lOCodeAndComment: $lOCodeAndComment" >> "$output_file"
-    echo "uniq_Op: $uniq_Op" >> "$output_file"
-    echo "uniq_Opnd: $uniq_Opnd" >> "$output_file"
-    echo "total_Op: $total_Op" >> "$output_file"
-    echo "total_Opnd: $total_Opnd" >> "$output_file"
-    echo "branchCount: $branchCount" >> "$output_file"
-    echo "----------------------------------------" >> "$output_file"
+
+    # CSV row (quote file to be safe)
+    printf '"%s",%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s\n' \
+        "$file" \
+        "$loc" "$cyclomatic_complexity" "$essential_complexity" "$design_complexity" \
+        "$n" "$v" "$l" "$d" "$i" "$e" "$b" "$t" \
+        "$lOComment" "$lOBlank" "$lOCodeAndComment" \
+        "$uniq_Op" "$uniq_Opnd" "$total_Op" "$total_Opnd" "$branchCount" \
+        >> "$csv_output"
 }
 
 # Function to generate summary report
@@ -701,23 +643,10 @@ main() {
     local files=()
     while [[ $# -gt 0 ]]; do
         case $1 in
-            -v|--verbose)
-                VERBOSE=true
-                shift
-                ;;
-            -h|--help)
-                show_usage
-                exit 0
-                ;;
-            -*)
-                print_error "Unknown option: $1"
-                show_usage
-                exit 1
-                ;;
-            *)
-                files+=("$1")
-                shift
-                ;;
+            -v|--verbose) VERBOSE=true; shift ;;
+            -h|--help) show_usage; exit 0 ;;
+            -*) print_error "Unknown option: $1"; show_usage; exit 1 ;;
+            *) files+=("$1"); shift ;;
         esac
     done
     
@@ -741,32 +670,28 @@ main() {
         print_warning "No C/C++ files found to process."
         exit 0
     fi
-    
-    local detailed_output="$OUTPUT_DIR/detailed_metrics.txt"
-    local summary_output="$OUTPUT_DIR/summary_metrics.csv"
-    
+
+    local csv_output="$OUTPUT_DIR/summary_metrics.csv"
+    write_csv_header "$csv_output"
+
     print_info "Processing files and calculating metrics..."
-    
     local total_files=$(wc -l < "$cpp_files_list" | tr -d '\n\r' | xargs)
-    
     local current_file=0
+
     while IFS= read -r file; do
         current_file=$((current_file + 1))
         if [ "$VERBOSE" = false ]; then
             echo -ne "\rProgress: $current_file/$total_files files processed"
         fi
-        process_file "$file" "$detailed_output"
+        process_file "$file" "$csv_output"
     done < "$cpp_files_list"
-    
+
     if [ "$VERBOSE" = false ]; then
         echo ""
     fi
-    
-    generate_summary "$detailed_output" "$summary_output"
-    
+
     print_success "Metrics calculation completed!"
-    print_info "Detailed results: $detailed_output"
-    print_info "Summary CSV: $summary_output"
+    print_info "CSV output: $csv_output"
 }
 
 main "$@"
