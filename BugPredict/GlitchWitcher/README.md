@@ -1,4 +1,4 @@
-# REPD: Defect Prediction
+# GlitchWitcher: REPD-based Defect Prediction
 
 A machine learning system that predicts software defect likelihood using reconstruction error analysis with autoencoders and statistical distribution fitting.
 
@@ -9,7 +9,7 @@ This project implements a novel approach to software defect prediction that comb
 - **Autoencoder neural networks** for dimensionality reduction and feature extraction
 - **Reconstruction error analysis** to identify anomalous code patterns
 - **Statistical distribution fitting** to model defect vs. non-defect characteristics
-- **Automated CI/CD integration** via GitHub Actions for real-time code quality assessment in [OpenJ9](https://github.com/eclipse-openj9/openj9)
+- **Automated CI/CD integration** via GitHub Actions for real-time code quality assessment
 
 ## 🚀 Features
 
@@ -40,6 +40,77 @@ This project implements a novel approach to software defect prediction that comb
 ### Supported File Types
 
 - C/C++ source files (`.c`, `.cpp`, `.cxx`, `.cc`, `.h`, `.hpp`, `.hxx`)
+
+## ⚙️ GitHub Actions Workflow: GlitchWitcher
+
+This repository provides a GitHub Actions workflow that runs GlitchWitcher analysis on demand via issue/PR comments and manages datasets/models.
+
+### How to trigger
+
+- Run analysis on a specific PR (from any issue/PR):
+  - Comment: `GlitchWitcher https://github.com/<owner>/<repo>/pull/<number>`
+- Run analysis on the same PR you’re commenting on (C/C++ only):
+  - Comment: `GlitchWitcher`
+
+Notes:
+
+- The trigger is case-sensitive and activates on new comments that contain the literal string `GlitchWitcher`.
+- Only C/C++ files are analyzed: .c, .cpp, .cxx, .cc, .h, .hpp, .hxx.
+
+### What the workflow does
+
+- Parses your comment to identify the target PR.
+- Checks for an existing dataset and model in adoptium/aqa-triage-data at:
+  - `GlitchWitcher/Traditional Dataset/<owner-repo>/<owner-repo>.csv`
+  - `GlitchWitcher/Traditional Dataset/<owner-repo>/trained_model/`
+- If missing:
+  - Generates the dataset CSV and trains a model.
+  - Opens a PR to `adoptium/aqa-triage-data` with the CSV and `trained_model/`.
+  - Attempts to auto-merge that PR so analysis can continue.
+- Runs analysis on changed C/C++ files between base and head of the target PR and posts a comment with results.
+
+The posted comment includes:
+
+- A comparison of base vs head predictions for changed files.
+- An interpretation note clarifying that reported values are PDFs (not probabilities).
+
+### Requirements
+
+- Workflow file: `.github/workflows/glitchwitcher.yml`
+- Runner: `ubuntu-latest`
+- Tooling:
+  - Python 3.10
+  - pip dependencies: `tensorflow==2.12.0 pandas joblib scipy numpy urllib3 scikit-learn`
+  - apt packages: `cloc git`
+- Permissions (as set in the workflow):
+  - `pull-requests: write`
+  - `issues: write`
+  - `contents: read`
+
+### Secrets
+
+- `TRIAGE_PAT` in `aqa-test-tools` repository secrets.
+  - Classic PAT: `repo` scope.
+  - Fine-grained PAT: repository `adoptium/aqa-triage-data` with:
+    - Contents: Read & write
+    - Pull requests: Read & write
+- The PAT user must be able to push branches and merge PRs in `adoptium/aqa-triage-data`.
+
+### Caveats
+
+- Branch protection or required reviews in `adoptium/aqa-triage-data` can block the auto-merge step; the workflow attempts to merge via the API but will respect repo policies.
+- Large ML dependencies can increase run time and disk usage on the runner.
+- If no supported files changed, the workflow exits with a note.
+
+### Troubleshooting
+
+- “Invalid GlitchWitcher command format or missing PR link”:
+  - Include a PR link or comment directly on a PR with `GlitchWitcher`.
+- “No C/C++ files found in the PR changes”:
+  - The PR didn’t modify supported files.
+- “No model found for predictions”:
+  - Model artifacts could not be found or created; verify `TRIAGE_PAT` and the PR created in `aqa-triage-data`.
+- Permission/PAT errors:
 
 ## 📊 Example Output
 
