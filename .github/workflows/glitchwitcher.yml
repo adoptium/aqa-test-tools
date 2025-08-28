@@ -173,7 +173,7 @@ jobs:
           git config --global user.email "glitchwicher-bot@adoptium.net"
 
           # Clone the aqa-triage-data repository using PAT in URL
-          git clone https://${{ secrets.TRIAGE_PAT }}@github.com/adoptium/aqa-triage-data.git
+          git clone https://${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}@github.com/adoptium/aqa-triage-data.git
           cd aqa-triage-data
 
           # Create target directory
@@ -198,7 +198,7 @@ jobs:
           git commit -m "Add dataset and trained model for ${{ steps.parse-command.outputs.full_repo_name }}"
 
           # Push branch using PAT in URL
-          git push https://${{ secrets.TRIAGE_PAT }}@github.com/adoptium/aqa-triage-data.git "$branch_name"
+          git push https://${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}@github.com/adoptium/aqa-triage-data.git "$branch_name"
 
           # Create PR using GitHub API
           cat > pr_body.md << 'EOF'
@@ -237,7 +237,7 @@ jobs:
           )
 
           PR_RESPONSE=$(curl -sS -X POST \
-            -H "Authorization: token ${{ secrets.TRIAGE_PAT }}" \
+            -H "Authorization: token ${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}" \
             -H "Accept: application/vnd.github.v3+json" \
             https://api.github.com/repos/adoptium/aqa-triage-data/pulls \
             -d "$POST_DATA")
@@ -261,7 +261,7 @@ jobs:
             
             echo "Enabling auto-merge for PR #$PR_NUMBER..."
             MERGE_RESPONSE=$(curl -X PUT \
-              -H "Authorization: token ${{ secrets.TRIAGE_PAT }}" \
+              -H "Authorization: token ${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}" \
               -H "Accept: application/vnd.github.v3+json" \
               https://api.github.com/repos/adoptium/aqa-triage-data/pulls/$PR_NUMBER/merge \
               -d '{

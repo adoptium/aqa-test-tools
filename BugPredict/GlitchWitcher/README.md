@@ -89,7 +89,7 @@ The posted comment includes:
 
 ### Secrets
 
-- `TRIAGE_PAT` in `aqa-test-tools` repository secrets.
+- `ADOPTIUM_AQAVIT_BOT_TOKEN` in `aqa-test-tools` repository secrets.
   - Classic PAT: `repo` scope.
   - Fine-grained PAT: repository `adoptium/aqa-triage-data` with:
     - Contents: Read & write
@@ -109,7 +109,7 @@ The posted comment includes:
 - “No C/C++ files found in the PR changes”:
   - The PR didn’t modify supported files.
 - “No model found for predictions”:
-  - Model artifacts could not be found or created; verify `TRIAGE_PAT` and the PR created in `aqa-triage-data`.
+  - Model artifacts could not be found or created; verify `ADOPTIUM_AQAVIT_BOT_TOKEN` and the PR created in `aqa-triage-data`.
 - Permission/PAT errors:
 
 ## 📊 Example Output
