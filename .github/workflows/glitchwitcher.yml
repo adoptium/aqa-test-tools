@@ -165,7 +165,7 @@ jobs:
 
       - name: Checkout adoptium/aqa-triage-data
         if: steps.check-dataset.outputs.dataset_exists == 'false' || steps.check-dataset.outputs.model_exists == 'false'
-        uses: actions/checkout@v4
+        uses: actions/checkout@08c6903 # v5
         with:
           repository: adoptium/aqa-triage-data
           token: ${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}
@@ -220,7 +220,7 @@ jobs:
       - name: Create Pull Request to aqa-triage-data
         id: cpr
         if: steps.check-dataset.outputs.dataset_exists == 'false' || steps.check-dataset.outputs.model_exists == 'false'
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
         with:
           token: ${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}
           path: aqa-triage-data
