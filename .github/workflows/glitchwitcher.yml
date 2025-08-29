@@ -172,9 +172,12 @@ jobs:
           git config --global user.name "GlitchWitcher Bot"
           git config --global user.email "glitchwicher-bot@adoptium.net"
 
-          # Clone the aqa-triage-data repository using PAT in URL
-          git clone https://${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}@github.com/adoptium/aqa-triage-data.git
+          # Clone the aqa-triage-data repository
+          git clone https://github.com/adoptium/aqa-triage-data.git
           cd aqa-triage-data
+
+          # Configure authenticated remote using the PAT (use x-access-token as username)
+          git remote set-url origin "https://x-access-token:${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}@github.com/adoptium/aqa-triage-data.git"
 
           # Create target directory
           target_dir="GlitchWitcher/Traditional Dataset/${{ steps.parse-command.outputs.full_repo_name }}"
@@ -197,8 +200,8 @@ jobs:
           git add .
           git commit -m "Add dataset and trained model for ${{ steps.parse-command.outputs.full_repo_name }}"
 
-          # Push branch using PAT in URL
-          git push https://${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}@github.com/adoptium/aqa-triage-data.git "$branch_name"
+          # Push branch using authenticated origin
+          git push origin "$branch_name"
 
           # Create PR using GitHub API
           cat > pr_body.md << 'EOF'
