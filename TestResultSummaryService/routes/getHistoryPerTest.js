@@ -41,8 +41,11 @@ module.exports = async (req, res) => {
             { _id: element.parentId },
             { buildNum: 1 }
         );
-        element.parentNum = parentObj[0].buildNum;
-        result.push(element);
+        // Check we found a parentObj in case history has been purged
+        if (parentObj && parentObj.length > 0) {
+            element.parentNum = parentObj[0].buildNum;
+            result.push(element);
+        }
     }
 
     res.send(result);
