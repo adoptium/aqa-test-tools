@@ -176,7 +176,9 @@ class BuildProcessor {
                 });
             } catch (e) {
                 logger.warn(
-                    `BuildProcessor: processBuild(): Exception: ${e.toString()}`
+                    `BuildProcessor: processBuild(): Exception: ${e.toString()} ${
+                        e.stack
+                    }`
                 );
                 task.error = e.toString();
                 await new DataManager().updateBuild(task);
