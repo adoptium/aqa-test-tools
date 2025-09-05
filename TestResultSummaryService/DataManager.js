@@ -36,7 +36,7 @@ class DataManager {
         });
         if (results.length === 0) {
             const parser = new DefaultParser();
-            results = await parser.parse(output);
+            results = [await parser.parse(output)];
         }
         return Object.assign.apply({}, results);
     }
