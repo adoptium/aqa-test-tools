@@ -237,6 +237,7 @@ function TrafficLight() {
                             Baseline JavaVersion: {baselineJaveVersion}
                         </pre>
                     }
+                    overlayStyle={{ maxWidth: 850 }}
                 >
                     <div
                         style={{
