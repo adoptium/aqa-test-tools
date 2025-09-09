@@ -32,6 +32,7 @@ import { Settings } from './Settings/';
 
 import './App.css';
 import { ReactComponent as AdoptiumLogo } from './AdoptiumLogo.svg';
+import { getParams } from './utils/query';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -256,7 +257,14 @@ export default class App extends Component {
                                         />
                                         <Route
                                             path="/possibleIssues"
-                                            element={<PossibleIssues />}
+                                            element={
+                                                <PossibleIssues
+                                                    {...getParams(
+                                                        location.search
+                                                    )}
+                                                    showCrumbs
+                                                />
+                                            }
                                         />
                                         <Route
                                             path="/searchResult"
