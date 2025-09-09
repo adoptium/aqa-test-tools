@@ -12,6 +12,7 @@ import TestBreadcrumb from '../TestBreadcrumb';
 import classnames from 'classnames';
 import AlertMsg from '../AlertMsg';
 import './output.css';
+import PossibleIssues from '../PossibleIssues';
 
 const Output = () => {
     const location = useLocation();
@@ -43,6 +44,7 @@ const Output = () => {
                     artifactory: info.artifactory,
                     output: result.output,
                     result: info.testResult,
+                    buildName: dataInfo.buildName,
                     buildUrl: dataInfo.buildUrl,
                     rerunLink: dataInfo.rerunLink,
                 };
@@ -88,6 +90,14 @@ const Output = () => {
         if (!outputType) return null;
         return (
             <div>
+                {data.testId && data.result != 'PASSED' && (
+                    <PossibleIssues
+                        buildId={data.buildId}
+                        buildName={data.buildName}
+                        testId={data.testId}
+                        testName={data.name}
+                    />
+                )}
                 <Row>
                     <Col span={16}>
                         <h2

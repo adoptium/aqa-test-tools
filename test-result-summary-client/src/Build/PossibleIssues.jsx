@@ -9,11 +9,16 @@ import { notification } from 'antd';
 
 import './table.css';
 
-const PossibleIssues = () => {
+const PossibleIssues = ({
+    buildId,
+    testId,
+    testName,
+    buildName,
+    showCrumbs,
+}) => {
     const [dataSource, setDataSource] = useState({});
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
-    const location = useLocation();
 
     useEffect(() => {
         fetchIssues();
@@ -65,7 +70,6 @@ const PossibleIssues = () => {
     };
 
     const fetchIssues = async () => {
-        const { testId, buildName, testName } = getParams(location.search);
         const generalTestName = testName.replace(/_\d+$/, '');
 
         // fetch test output content
@@ -86,9 +90,9 @@ const PossibleIssues = () => {
         let additionalRepo = '';
         if (buildName.includes('j9') || buildName.includes('ibm')) {
             additionalRepo = '+repo:eclipse-openj9/openj9';
-        }
-        else if (buildName.includes('hs')) {
-            additionalRepo = '+repo:adoptium/infrastructure+repo:adoptium/aqa-build';
+        } else if (buildName.includes('hs')) {
+            additionalRepo =
+                '+repo:adoptium/infrastructure+repo:adoptium/aqa-build';
         }
         const response = await fetch(
             `https://api.github.com/search/issues?q=${generalTestName}+repo:adoptium/aqa-tests` +
@@ -197,8 +201,6 @@ const PossibleIssues = () => {
         }
     };
 
-    const { buildId, testId, testName } = getParams(location.search);
-
     if (error) {
         return <div>Error: {error}</div>;
     } else {
@@ -237,11 +239,13 @@ const PossibleIssues = () => {
 
         return (
             <div>
-                <TestBreadcrumb
-                    buildId={buildId}
-                    testId={testId}
-                    testName={testName}
-                />
+                {showCrumbs && (
+                    <TestBreadcrumb
+                        buildId={buildId}
+                        testId={testId}
+                        testName={testName}
+                    />
+                )}
                 {!loading &&
                     (Object.keys(dataSource).length > 0 ? (
                         Object.keys(dataSource).map((repoName, index) => (
