@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Table, Button } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
-import { getParams } from '../utils/query';
 import { fetchData } from '../utils/Utils';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
-import { useLocation } from 'react-router-dom';
 import { notification } from 'antd';
 
 import './table.css';
@@ -88,8 +86,13 @@ const PossibleIssues = ({
 
         // fetch related issues with Github API
         let additionalRepo = '';
+        let additionalResponse = [];
         if (buildName.includes('j9') || buildName.includes('ibm')) {
             additionalRepo = '+repo:eclipse-openj9/openj9';
+
+            additionalResponse = await fetchData(
+                `/api/getInternalGitIssues?url=&text=${generalTestName}`
+            );
         } else if (buildName.includes('hs')) {
             additionalRepo =
                 '+repo:adoptium/infrastructure+repo:adoptium/aqa-build';
@@ -101,46 +104,64 @@ const PossibleIssues = ({
                 method: 'get',
             }
         );
-        var oldDate = new Date();
-        oldDate.setMonth(oldDate.getMonth() - 6);
+
+        let relatedIssues = [];
         if (response.ok) {
-            const relatedIssues = await response.json();
+            relatedIssues = await response.json();
+            relatedIssues = relatedIssues.items;
+        }
+        if (additionalResponse) {
+            relatedIssues = [...relatedIssues, ...additionalResponse];
+        }
+        if (relatedIssues && relatedIssues.length > 0) {
             let dataSource = {};
-            const repoUrlAPIPrefix = 'https://api.github.com/repos/';
-            for (let index = 0; index < relatedIssues.items.length; index++) {
-                const createdAt = new Date(
-                    relatedIssues.items[index].created_at
-                );
-                const is_opne = relatedIssues.items[index].state;
-                if (createdAt < oldDate && is_opne === 'closed') {
-                    continue;
+            const today = new Date();
+            const closedIssueMinDate = new Date().setMonth(
+                today.getMonth() - 6
+            );
+
+            const openIssueMinDate = new Date().setMonth(today.getMonth() - 24);
+            relatedIssues.forEach((issue) => {
+                const createdAt = new Date(issue.created_at);
+                const closedAt = issue.closed_at
+                    ? new Date(issue.closed_at)
+                    : '';
+                // For matched closed issues, only display if the issue was closed in the last 6 months
+                // For matched open issues, only display if the issue has been opened within 24 months
+                if (issue.state === 'closed') {
+                    if (closedAt && createdAt < closedIssueMinDate) {
+                        return;
+                    }
+                } else {
+                    if (createdAt < openIssueMinDate) {
+                        return;
+                    }
                 }
                 const createdAtStr = createdAt.toLocaleString();
-                const repoName = relatedIssues.items[
-                    index
-                ].repository_url.replace(repoUrlAPIPrefix, '');
-                const issue = (
+                const closedAtStr = closedAt.toLocaleString();
+                const repoName = issue.repository_url;
+                const issueTitle = (
                     <a
-                        href={relatedIssues.items[index].html_url}
+                        href={issue.html_url}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        {relatedIssues.items[index].title}
+                        {issue.number}: {issue.title}
                     </a>
                 );
                 const issueCreator = (
                     <a
-                        href={relatedIssues.items[index].user.html_url}
+                        href={issue.user.html_url}
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        {relatedIssues.items[index].user.login}
+                        {issue.user.login}
                     </a>
                 );
-                const issueState = relatedIssues.items[index].state;
-                const issueFullName = relatedIssues.items[index].title;
-                const issueNumber = relatedIssues.items[index].number;
-                const creatorName = relatedIssues.items[index].user.login;
+                const issueState = issue.state;
+                const issueFullName = issue.title;
+                const issueNumber = issue.number;
+                const creatorName = issue.user.login;
                 const userFeedback = (
                     <>
                         <Button
@@ -186,14 +207,17 @@ const PossibleIssues = ({
                 dataSource[repoName] = dataSource[repoName] || [];
                 dataSource[repoName].push({
                     key: dataSource[repoName].length,
-                    issue,
+                    issueTitle,
                     issueCreator,
                     createdAt,
                     createdAtStr,
+                    closedAt,
+                    closedAtStr,
                     issueState,
                     userFeedback,
                 });
-            }
+            });
+
             setLoading(false);
             setDataSource(dataSource);
         } else {
@@ -207,8 +231,8 @@ const PossibleIssues = ({
         const columns = [
             {
                 title: 'Possible Issues',
-                dataIndex: 'issue',
-                key: 'issue',
+                dataIndex: 'issueTitle',
+                key: 'issueTitle',
             },
             {
                 title: 'Issue Creator',
@@ -222,6 +246,11 @@ const PossibleIssues = ({
                 sorter: (a, b) => {
                     return a.createdAt - b.createdAt;
                 },
+            },
+            {
+                title: 'Closed At',
+                dataIndex: 'closedAtStr',
+                key: 'closedAtStr',
             },
             {
                 title: 'State',
