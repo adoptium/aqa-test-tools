@@ -23,6 +23,7 @@ const SummaryRow = ({ type, stats }) => {
 
 const MetricsTable = ({ type, id, benchmarkName }) => {
     const [data, setData] = useState([]);
+    const [javaVersion, setJavaVersion] = useState([]);
     useEffect(() => {
         const updateData = async () => {
             let results;
@@ -30,9 +31,8 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
                 results = await fetchData(`/api/getData?_id=${id}`);
             }
             if (results && results[0]) {
-                results = results[0].aggregateInfo;
-
-                const fliteredData = Object.values(results).find(
+                const aggregateInfo = results[0].aggregateInfo;
+                const fliteredData = Object.values(aggregateInfo).find(
                     (item) =>
                         benchmarkName === item.benchmarkName &&
                         item.buildName.includes(type)
@@ -48,7 +48,17 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
                         };
                     });
                 });
-
+                const grandchildrenData = await fetchData(
+                    `/api/getChildBuilds?parentId=${results[0]._id}&buildName=${fliteredData.buildName}`
+                );
+                let javaVersion = '';
+                for (const grandchildData of grandchildrenData) {
+                    if (grandchildData.javaVersion) {
+                        javaVersion = grandchildData.javaVersion;
+                        break;
+                    }
+                }
+                setJavaVersion(javaVersion);
                 setData(rawValues);
             }
         };
@@ -102,6 +112,7 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
             >
                 {type.toUpperCase()} - {benchmarkName}
             </p>
+            <pre>JDK Version: {javaVersion}</pre>
             <Table
                 bordered
                 dataSource={data}

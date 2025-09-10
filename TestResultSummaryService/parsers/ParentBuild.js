@@ -31,12 +31,16 @@ class ParentBuild extends Parser {
         }
         regexBuilds.lastIndex = 0;
         let allBuilds = [];
+        // For example:
+        // Starting building: Test_openjdk11_j9_sanity.functional_x86-64_linux_testList_3 #54
+        // Starting building: EBC » EBC_Complete #1127
+        // Starting building: build-scripts » jobs » jdk11u » jdk11u-aix-ppc64-openj9 #1212
         while ((m = regexBuilds.exec(output)) !== null) {
             allBuilds = m[3].split(' » ');
             const buildName = allBuilds[allBuilds.length - 1];
             allBuilds.pop();
             let url = allBuilds.join('/job/');
-            if (allBuilds.length > 1 && url.length > 0) {
+            if (allBuilds.length > 0 && url.length > 0) {
                 url = '/job/' + url;
             }
             const buildNameStr = m[1] ? m[1] : buildName;
