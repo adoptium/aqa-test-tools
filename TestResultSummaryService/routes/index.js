@@ -22,6 +22,7 @@ app.get('/getChildBuilds', require('./getChildBuilds'));
 app.get('/getDashboardBuildInfo', require('./getDashboardBuildInfo'));
 app.get('/getData', require('./getData'));
 app.get('/getErrorInOutput', require('./getErrorInOutput'));
+app.get('/getInternalGitIssues', require('./getInternalGitIssues'));
 app.get('/getHistoryPerTest', require('./getHistoryPerTest'));
 app.get('/getJenkins', require('./getJenkins'));
 app.get('/getJenkinsBuildInfo', require('./test/getJenkinsBuildInfo'));
