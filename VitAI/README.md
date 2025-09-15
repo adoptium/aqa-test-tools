@@ -66,9 +66,11 @@ VitAI is a Retrieval-Augmented Generation (RAG) system that allows users to ask 
 - **Similarity Search** - Cosine similarity
 - **Top K** - 2 nearest neighbors
 - **Data** 
-  - `.txt`, `.md`, `.markdown` files and [Wiki's](https://github.com/adoptium/aqa-tests/wiki) from [adoptium/aqa-tests](https://github.com/adoptium/aqa-tests)
-  - Excluded [MBCS_Tests](https://github.com/adoptium/aqa-tests/tree/master/functional/MBCS_Tests) directory due to noise
-  - Specific files from OpenJ9 repo [`test/README.md`](https://github.com/eclipse-openj9/openj9/blob/master/test/README.md) and [`test/docs/OpenJ9TestUserGuide.md`](https://github.com/eclipse-openj9/openj9/blob/master/test/docs/OpenJ9TestUserGuide.md)
+   - `.txt`, `.md`, `.markdown` files and [Wiki's](https://github.com/adoptium/aqa-tests/
+  wiki) from [adoptium/aqa-tests](https://github.com/adoptium/aqa-tests)
+   - Excluded [MBCS_Tests](https://github.com/adoptium/aqa-tests/tree/master/functional/MBCS_Tests) directory due to noise
+   - Specific files from OpenJ9 repo [`test/README.md`](https://github.com/eclipse-openj9/openj9/blob/master/test/README.md) and [`test/docs/OpenJ9TestUserGuide.md`](https://github.com/eclipse-openj9/openj9/blob/master/test/docs/OpenJ9TestUserGuide.md)
+   - Blogs on AQAvit - [Blog 1](https://github.com/adoptium/adoptium.net/blob/main/content/asciidoc-pages/docs/aqavit-verification/index.adoc) and [Blog 2](https://github.com/adoptium/adoptium.net/blob/main/content/asciidoc-pages/docs/qvs-policy/index.adoc)
 - **Ideal Answers** - `data/ideal_answers.json` (manually curated for testing from [OpenJ9TestUserGuide.md](https://github.com/eclipse-openj9/openj9/blob/master/test/docs/OpenJ9TestUserGuide.md))
 
 ## How it works (high level)
