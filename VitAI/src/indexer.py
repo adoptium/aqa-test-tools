@@ -1,10 +1,17 @@
 import os
+import sys
 import tiktoken
-from .store import FaissStore
 from dotenv import load_dotenv
-from .embedding import Embedder
 from langchain.schema import Document
 from langchain_community.document_loaders import GithubFileLoader
+
+if __name__ == "__main__":
+    sys.path.append(os.path.dirname(os.path.abspath(__file__)))
+    from store import FaissStore
+    from embedding import Embedder
+else:
+    from .store import FaissStore
+    from .embedding import Embedder
 
 load_dotenv()
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
@@ -53,6 +60,24 @@ documents = documents + openj9_documents
 #                 documents.append(Document(page_content=content, metadata={"source": f"wiki:{rel}"}))
 #             except Exception:
 #                 continue
+
+# Load the blogs and add to vector store
+# documents = []
+
+# aqavit_blogs = {
+#     "content/asciidoc-pages/docs/aqavit-verification/index.adoc",
+#     "content/asciidoc-pages/docs/qvs-policy/index.adoc",
+# }
+
+# blogs = GithubFileLoader(
+#     repo="adoptium/adoptium.net",
+#     branch="main",
+#     access_token=GITHUB_TOKEN,
+#     github_api_url="https://api.github.com",
+#     file_filter=lambda file_path: file_path.replace("\\", "/") in aqavit_blogs,
+# )
+
+# documents = blogs.load()
 
 # Token-based chunking 
 encoder = tiktoken.get_encoding("cl100k_base")
