@@ -1,4 +1,5 @@
 import os
+import re
 import sys
 import tiktoken
 import subprocess
@@ -42,11 +43,136 @@ openj9_documents = openj9_loader.load()
 
 documents = documents + openj9_documents
 
-# Prerequisite: clone https://github.com/adoptium/aqa-tests.wiki.git to VitAI/data directory
 # Load wiki files from aqa-tests
 
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 wiki_dir = os.path.join(base_dir, "data", "aqa-tests.wiki")
+
+# Ensure the wiki repo is present in VitAI/data; clone if missing, pull if present
+GIT_WIKI_URL = "https://github.com/adoptium/aqa-tests.wiki.git"
+data_dir = os.path.join(base_dir, "data")
+os.makedirs(data_dir, exist_ok=True)
+
+_INVALID_WIN_CHARS = re.compile(r'[<>:"/\\|?*]')
+_RESERVED_WIN_NAMES = {
+    "CON", "PRN", "AUX", "NUL",
+    *(f"COM{i}" for i in range(1, 10)),
+    *(f"LPT{i}" for i in range(1, 10)),
+}
+
+
+def _invalid_windows_component(name: str) -> bool:
+    if _INVALID_WIN_CHARS.search(name):
+        return True
+    if name.endswith(" ") or name.endswith("."):
+        return True
+    base = name.split(".")[0].upper()
+    if base in _RESERVED_WIN_NAMES:
+        return True
+    return False
+
+
+def _is_invalid_windows_path(path: str) -> bool:
+    # check each path component
+    for comp in path.replace("\\", "/").split("/"):
+        if _invalid_windows_component(comp):
+            return True
+    return False
+
+
+def _sparse_checkout_excluding_invalid(repo_dir: str):
+    # ensure git config to relax NTFS checks and longpaths (best-effort)
+    subprocess.run(["git", "-C", repo_dir, "config", "core.protectNTFS", "false"], check=False)
+    subprocess.run(["git", "-C", repo_dir, "config", "core.longpaths", "true"], check=False)
+
+    # list all files in HEAD (no working-tree required)
+    res = subprocess.run(["git", "-C", repo_dir, "ls-tree", "-r", "--name-only", "HEAD"], capture_output=True, text=True)
+    if res.returncode != 0:
+        print("Unable to list files in repo for sparse checkout:", res.stderr)
+        return
+
+    all_files = [f.strip() for f in res.stdout.splitlines() if f.strip()]
+    allowed = [f for f in all_files if not _is_invalid_windows_path(f)]
+    if not allowed:
+        print("No safe files available to checkout on this Windows host.")
+        return
+
+    # enable sparse-checkout and write allowed file list
+    subprocess.run(["git", "-C", repo_dir, "config", "core.sparseCheckout", "true"], check=True)
+    sparse_path = os.path.join(repo_dir, ".git", "info", "sparse-checkout")
+    os.makedirs(os.path.dirname(sparse_path), exist_ok=True)
+    with open(sparse_path, "w", encoding="utf-8") as fh:
+        for p in allowed:
+            fh.write(p + "\n")
+
+    # checkout only allowed files
+    co = subprocess.run(["git", "-C", repo_dir, "checkout", "HEAD"], capture_output=True, text=True)
+    if co.returncode != 0:
+        print("Sparse checkout failed:", co.stderr)
+    else:
+        print("Sparse checkout completed, excluded invalid Windows filenames.")
+
+
+if not os.path.isdir(wiki_dir):
+    print(f"Cloning wiki repository to: {wiki_dir}")
+    try:
+        # try a normal clone but relax NTFS/longpaths for this command
+        subprocess.run(
+            [
+                "git",
+                "-c",
+                "core.protectNTFS=false",
+                "-c",
+                "core.longpaths=true",
+                "clone",
+                GIT_WIKI_URL,
+                wiki_dir,
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        stderr = (e.stderr or "") if isinstance(e, subprocess.CalledProcessError) else str(e)
+        print("Error cloning wiki repo:", stderr.strip())
+        # If git reports "Clone succeeded, but checkout failed." or unable to create files,
+        # repo dir may exist; attempt a sparse checkout that excludes windows-invalid names.
+        if os.path.isdir(wiki_dir):
+            print("Repo created but checkout failed; falling back to sparse checkout that excludes invalid Windows filenames.")
+            try:
+                _sparse_checkout_excluding_invalid(wiki_dir)
+            except Exception as ex:
+                print("Fallback sparse-checkout failed:", ex)
+else:
+    # Update existing repo
+    try:
+        print(f"Updating wiki repository at: {wiki_dir}")
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                wiki_dir,
+                "-c",
+                "core.protectNTFS=false",
+                "-c",
+                "core.longpaths=true",
+                "pull",
+            ],
+            check=True,
+            capture_output=True,
+            text=True,
+        )
+    except subprocess.CalledProcessError as e:
+        stderr = (e.stderr or "") if isinstance(e, subprocess.CalledProcessError) else str(e)
+        print("Error updating wiki repo:", stderr.strip())
+        # if pull failed due to checkout problems, try sparse-checkout fallback
+        if "unable to create file" in stderr or "checkout failed" in stderr:
+            print("Pull created checkout problems; attempting sparse checkout excluding invalid Windows filenames.")
+            try:
+                _sparse_checkout_excluding_invalid(wiki_dir)
+            except Exception as ex:
+                # handle the fallback error so the except block is not empty
+                print("Fallback sparse-checkout failed during pull handling:", ex)
 
 for root, _, files in os.walk(wiki_dir):
     for fname in files:
@@ -145,7 +271,7 @@ if not all_embeddings:
 
 # persist to FAISS
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-vector_store_dir = os.path.join(base_dir, "VectorStore1")
+vector_store_dir = os.path.join(base_dir, "VectorStore")
 store = FaissStore(store_dir=vector_store_dir)
 store.build_from_embeddings(
     embeddings=all_embeddings,
