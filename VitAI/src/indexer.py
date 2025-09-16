@@ -1,6 +1,7 @@
 import os
 import sys
 import tiktoken
+import subprocess
 from dotenv import load_dotenv
 from langchain.schema import Document
 from langchain_community.document_loaders import GithubFileLoader
@@ -41,43 +42,42 @@ openj9_documents = openj9_loader.load()
 
 documents = documents + openj9_documents
 
-# cloned aqa-tests wiki's to VitAI/data directory
-# the below code loads those wiki files and later adds them to the FAISS store
+# Prerequisite: clone https://github.com/adoptium/aqa-tests.wiki.git to VitAI/data directory
+# Load wiki files from aqa-tests
 
-# base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-# wiki_dir = os.path.join(base_dir, "data", "aqa-tests.wiki")
+base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
+wiki_dir = os.path.join(base_dir, "data", "aqa-tests.wiki")
 
-# documents = []  # will be filled with Document objects
+for root, _, files in os.walk(wiki_dir):
+    for fname in files:
+        if fname.lower().endswith((".md", ".markdown")):
+            fp = os.path.join(root, fname)
+            try:
+                with open(fp, "r", encoding="utf-8", errors="replace") as fh:
+                    content = fh.read()
+                rel = os.path.relpath(fp, base_dir).replace("\\", "/")
+                documents.append(Document(page_content=content, metadata={"source": f"wiki:{rel}"}))
+            except Exception:
+                continue
 
-# for root, _, files in os.walk(wiki_dir):
-#     for fname in files:
-#         if fname.lower().endswith((".md", ".markdown")):
-#             fp = os.path.join(root, fname)
-#             try:
-#                 with open(fp, "r", encoding="utf-8", errors="replace") as fh:
-#                     content = fh.read()
-#                 rel = os.path.relpath(fp, base_dir).replace("\\", "/")
-#                 documents.append(Document(page_content=content, metadata={"source": f"wiki:{rel}"}))
-#             except Exception:
-#                 continue
+# Load AQAvit blogs from adoprium.net 
 
-# Load the blogs and add to vector store
-# documents = []
+aqavit_blogs = {
+    "content/asciidoc-pages/docs/aqavit-verification/index.adoc",
+    "content/asciidoc-pages/docs/qvs-policy/index.adoc",
+}
 
-# aqavit_blogs = {
-#     "content/asciidoc-pages/docs/aqavit-verification/index.adoc",
-#     "content/asciidoc-pages/docs/qvs-policy/index.adoc",
-# }
+blogs = GithubFileLoader(
+    repo="adoptium/adoptium.net",
+    branch="main",
+    access_token=GITHUB_TOKEN,
+    github_api_url="https://api.github.com",
+    file_filter=lambda file_path: file_path.replace("\\", "/") in aqavit_blogs,
+)
 
-# blogs = GithubFileLoader(
-#     repo="adoptium/adoptium.net",
-#     branch="main",
-#     access_token=GITHUB_TOKEN,
-#     github_api_url="https://api.github.com",
-#     file_filter=lambda file_path: file_path.replace("\\", "/") in aqavit_blogs,
-# )
+blog_documents = blogs.load()
 
-# documents = blogs.load()
+documents = documents + blog_documents
 
 # Token-based chunking 
 encoder = tiktoken.get_encoding("cl100k_base")
@@ -145,7 +145,7 @@ if not all_embeddings:
 
 # persist to FAISS
 base_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
-vector_store_dir = os.path.join(base_dir, "VectorStore")
+vector_store_dir = os.path.join(base_dir, "VectorStore1")
 store = FaissStore(store_dir=vector_store_dir)
 store.build_from_embeddings(
     embeddings=all_embeddings,
