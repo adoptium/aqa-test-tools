@@ -214,7 +214,7 @@ jobs:
           # Outputs for subsequent steps
           echo "branch_name=$branch_name" >> "$GITHUB_OUTPUT"
           echo "target_dir=$target_dir" >> "$GITHUB_OUTPUT"
-          echo "pr_body_path=pr_body.md" >> "$GITHUB_OUTPUT"
+          echo "pr_body_path=aqa-triage-data/pr_body.md" >> "$GITHUB_OUTPUT"
 
       - name: Create Pull Request to aqa-triage-data
         id: cpr
