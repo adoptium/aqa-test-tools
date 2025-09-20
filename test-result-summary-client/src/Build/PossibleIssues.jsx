@@ -283,11 +283,12 @@ const PossibleIssues = ({
                                 columns={columns}
                                 dataSource={dataSource[repoName]}
                                 bordered
-                                title={() => repoName}
+                                title={() => `Search Test Name in ${repoName}`}
+                                pagination={{ pageSize: 5 }}
                             />
                         ))
                     ) : (
-                        <span>No Possible Issues Found</span>
+                        <span>No Possible Issues Found via Git Search</span>
                     ))}
             </div>
         );

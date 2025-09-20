@@ -13,6 +13,7 @@ import classnames from 'classnames';
 import AlertMsg from '../AlertMsg';
 import './output.css';
 import PossibleIssues from '../PossibleIssues';
+import PossibleIssuesByAI from '../PossibleIssuesByAI';
 
 const Output = () => {
     const location = useLocation();
@@ -47,6 +48,7 @@ const Output = () => {
                     buildName: dataInfo.buildName,
                     buildUrl: dataInfo.buildUrl,
                     rerunLink: dataInfo.rerunLink,
+                    testOutputId: info.testOutputId,
                 };
             } else {
                 const results = await fetchData(`/api/getData?_id=${id}`);
@@ -90,99 +92,114 @@ const Output = () => {
         if (!outputType) return null;
         return (
             <div>
-                {data.testId && data.result != 'PASSED' && (
-                    <PossibleIssues
-                        buildId={data.buildId}
-                        buildName={data.buildName}
-                        testId={data.testId}
-                        testName={data.name}
-                    />
-                )}
-                <Row>
-                    <Col span={16}>
-                        <h2
-                            style={{
-                                color:
-                                    data.result === 'PASSED'
-                                        ? '#2cbe4e'
-                                        : '#f50',
-                            }}
-                        >
-                            {data.name}
-                        </h2>
-                    </Col>
-                    <Col span={8}>
-                        <div className="switch-wrapper">
-                            <Switch
-                                defaultChecked={false}
-                                onChange={(val) =>
-                                    setTerminalTheme({
-                                        terminalTheme: val ? 'black' : 'white',
-                                    })
-                                }
-                                checkedChildren="black"
-                                unCheckedChildren="white"
-                            />
-                        </div>
-                    </Col>
-                </Row>
-                <Row justify="end">
-                    <Col>
-                        {data.artifactory && (
-                            <a
-                                target="_blank"
-                                href={data.artifactory}
-                                rel="noopener noreferrer"
+                <div>
+                    {data.testOutputId && data.result != 'PASSED' && (
+                        <PossibleIssuesByAI
+                            buildName={data.buildName}
+                            buildUrl={data.buildUrl}
+                            testName={data.name}
+                            testOutputId={data.testOutputId}
+                        />
+                    )}
+                </div>
+                <br />
+                <div>
+                    {data.testId && data.result != 'PASSED' && (
+                        <PossibleIssues
+                            buildId={data.buildId}
+                            buildName={data.buildName}
+                            testId={data.testId}
+                            testName={data.name}
+                        />
+                    )}
+                    <Row>
+                        <Col span={16}>
+                            <h2
+                                style={{
+                                    color:
+                                        data.result === 'PASSED'
+                                            ? '#2cbe4e'
+                                            : '#f50',
+                                }}
                             >
-                                <Tooltip title="Artifactory Link">
-                                    {' '}
-                                    <DownloadOutlined />{' '}
-                                </Tooltip>{' '}
-                            </a>
-                        )}
-                        {data.buildUrl && (
-                            <>
-                                <Divider type="vertical" />
+                                {data.name}
+                            </h2>
+                        </Col>
+                        <Col span={8}>
+                            <div className="switch-wrapper">
+                                <Switch
+                                    defaultChecked={false}
+                                    onChange={(val) =>
+                                        setTerminalTheme({
+                                            terminalTheme: val
+                                                ? 'black'
+                                                : 'white',
+                                        })
+                                    }
+                                    checkedChildren="black"
+                                    unCheckedChildren="white"
+                                />
+                            </div>
+                        </Col>
+                    </Row>
+                    <Row justify="end">
+                        <Col>
+                            {data.artifactory && (
                                 <a
                                     target="_blank"
-                                    href={data.buildUrl}
+                                    href={data.artifactory}
                                     rel="noopener noreferrer"
                                 >
-                                    <Tooltip title="Jenkins Link">
+                                    <Tooltip title="Artifactory Link">
                                         {' '}
-                                        <LinkOutlined />{' '}
-                                    </Tooltip>
-                                </a>
-                            </>
-                        )}
-                        {data.rerunLink && (
-                            <>
-                                <Divider type="vertical" />
-
-                                <a
-                                    target="_blank"
-                                    href={data.rerunLink}
-                                    rel="noopener noreferrer"
-                                >
-                                    <Tooltip title="Rerun Grinder">
-                                        {' '}
-                                        <SyncOutlined />{' '}
+                                        <DownloadOutlined />{' '}
                                     </Tooltip>{' '}
                                 </a>
-                            </>
-                        )}
-                    </Col>
-                </Row>
-                <Row>
-                    <div
-                        className={classnames(
-                            'test-output-wrapper',
-                            terminalTheme
-                        )}
-                    >
-                        <div className="test-output">{data.output}</div>
-                    </div>
-                </Row>
+                            )}
+                            {data.buildUrl && (
+                                <>
+                                    <Divider type="vertical" />
+                                    <a
+                                        target="_blank"
+                                        href={data.buildUrl}
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Tooltip title="Jenkins Link">
+                                            {' '}
+                                            <LinkOutlined />{' '}
+                                        </Tooltip>
+                                    </a>
+                                </>
+                            )}
+                            {data.rerunLink && (
+                                <>
+                                    <Divider type="vertical" />
+
+                                    <a
+                                        target="_blank"
+                                        href={data.rerunLink}
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Tooltip title="Rerun Grinder">
+                                            {' '}
+                                            <SyncOutlined />{' '}
+                                        </Tooltip>{' '}
+                                    </a>
+                                </>
+                            )}
+                        </Col>
+                    </Row>
+                    <Row>
+                        <div
+                            className={classnames(
+                                'test-output-wrapper',
+                                terminalTheme
+                            )}
+                        >
+                            <div className="test-output">{data.output}</div>
+                        </div>
+                    </Row>
+                </div>
             </div>
         );
     };
