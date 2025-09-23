@@ -4,7 +4,6 @@ import TestBreadcrumb from './TestBreadcrumb';
 import { fetchData } from '../utils/Utils';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
 import { notification } from 'antd';
-
 import './table.css';
 
 const PossibleIssues = ({
@@ -68,8 +67,6 @@ const PossibleIssues = ({
     };
 
     const fetchIssues = async () => {
-        const generalTestName = testName.replace(/_\d+$/, '');
-
         // fetch test output content
         const info = await fetchData(`/api/getTestById?id=${testId} `, {
             method: 'get',
@@ -91,14 +88,14 @@ const PossibleIssues = ({
             additionalRepo = '+repo:eclipse-openj9/openj9';
 
             additionalResponse = await fetchData(
-                `/api/getInternalGitIssues?url=&text=${generalTestName}`
+                `/api/getInternalGitIssues?text=${testName}`
             );
         } else if (buildName.includes('hs')) {
             additionalRepo =
                 '+repo:adoptium/infrastructure+repo:adoptium/aqa-build';
         }
         const response = await fetch(
-            `https://api.github.com/search/issues?q=${generalTestName}+repo:adoptium/aqa-tests` +
+            `https://api.github.com/search/issues?q=${testName}+repo:adoptium/aqa-tests` +
                 `+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`,
             {
                 method: 'get',
@@ -283,7 +280,9 @@ const PossibleIssues = ({
                                 columns={columns}
                                 dataSource={dataSource[repoName]}
                                 bordered
-                                title={() => `Search Test Name in ${repoName}`}
+                                title={() =>
+                                    `Search ${testName} in ${repoName}`
+                                }
                                 pagination={{ pageSize: 5 }}
                             />
                         ))
