@@ -58,7 +58,9 @@ const PossibleIssuesByAI = ({
             dataIndex: 'rationale',
             key: 'rationale',
             render: (value) => {
-                return <pre>{value}</pre>;
+                return value.map((item) => {
+                    return <pre>{item}</pre>;
+                });
             },
         },
     ];

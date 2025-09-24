@@ -26,7 +26,16 @@ module.exports = async (req, res) => {
                 // TODO: output should be refined to error and exeception only
             }
             if (output) {
-                output += testName + ' ';
+                // DedupT API has character limit of 20000.
+                // If the testName + output is > 20000 characters, get only last 20000 characters in the output.
+                const testNameStr = String(testName);
+                output = output.substring(
+                    Math.max(
+                        0,
+                        output.length + (testNameStr.length + 1) - 20000
+                    )
+                );
+                output = testNameStr + output;
                 const response = await got.post(
                     'http://9.46.100.175:8080/search',
                     {
@@ -50,7 +59,7 @@ module.exports = async (req, res) => {
                 });
             }
         } else {
-            res.send('expect testName query parameter');
+            res.send('expect testName and testOutputId query parameter');
         }
     } catch (error) {
         const rawError = error.response?.data || error.message;
