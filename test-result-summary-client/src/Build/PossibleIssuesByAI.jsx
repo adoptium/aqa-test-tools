@@ -57,6 +57,9 @@ const PossibleIssuesByAI = ({
             title: 'Rationale',
             dataIndex: 'rationale',
             key: 'rationale',
+            render: (value) => {
+                return <pre>{value}</pre>;
+            },
         },
     ];
 
@@ -66,7 +69,7 @@ const PossibleIssuesByAI = ({
             dataSource={builds}
             bordered
             title={() => 'AI Recommended Possible Issues (Openj9 issues only)'}
-            pagination={{ pageSize: 5 }}
+            pagination={{ pageSize: 3 }}
         />
     ) : (
         <span>
