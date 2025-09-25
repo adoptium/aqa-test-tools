@@ -18,7 +18,7 @@ else:
 load_dotenv()
 GITHUB_TOKEN = os.getenv("GITHUB_TOKEN")
 
-loader = GithubFileLoader(
+aqa_tests_loader = GithubFileLoader(
     repo="adoptium/aqa-tests",  # repo name
     branch="master",  # branch name
     access_token=GITHUB_TOKEN,
@@ -28,7 +28,7 @@ loader = GithubFileLoader(
         and not file_path.startswith("functional/MBCS_Tests/")
     ),  # file types to load, excluding functional/MBCS_Tests
 )
-documents = loader.load()
+documents = aqa_tests_loader.load()
 
 openj9_loader = GithubFileLoader(
     repo="eclipse-openj9/openj9",
@@ -36,12 +36,103 @@ openj9_loader = GithubFileLoader(
     access_token=GITHUB_TOKEN,
     github_api_url="https://api.github.com",
     file_filter=lambda file_path: file_path.endswith(
-        ("test/README.md", "test/docs/OpenJ9TestUserGuide.md")
+        (".md", ".markdown")
     ),
 )
 openj9_documents = openj9_loader.load()
 
 documents = documents + openj9_documents
+
+TKG_loader = GithubFileLoader(
+    repo="adoptium/TKG",
+    branch="master",
+    access_token=GITHUB_TOKEN,
+    github_api_url="https://api.github.com",
+    file_filter=lambda file_path: file_path.endswith(
+        (".md", ".markdown")
+    ),
+)
+TKG_documents = TKG_loader.load()
+
+documents = documents + TKG_documents
+
+aqa_systemtest_loader = GithubFileLoader(
+    repo="adoptium/aqa-systemtest",
+    branch="master",
+    access_token=GITHUB_TOKEN,
+    github_api_url="https://api.github.com",
+    file_filter=lambda file_path: file_path.endswith(
+        (".md", ".markdown")
+    ),
+)
+aqa_systemtest_documents = aqa_systemtest_loader.load()
+
+documents = documents + aqa_systemtest_documents
+
+aqa_test_tools_loader = GithubFileLoader(
+    repo="adoptium/aqa-test-tools",
+    branch="master",
+    access_token=GITHUB_TOKEN,
+    github_api_url="https://api.github.com",
+    file_filter=lambda file_path: file_path.endswith(
+        (".md", ".markdown")
+    ),
+)
+aqa_test_tools_documents = aqa_test_tools_loader.load()
+
+documents = documents + aqa_test_tools_documents
+
+STF_loader = GithubFileLoader(
+    repo="adoptium/STF",
+    branch="master",
+    access_token=GITHUB_TOKEN,
+    github_api_url="https://api.github.com",
+    file_filter=lambda file_path: file_path.endswith(
+        (".md", ".markdown")
+    ),
+)
+STF_documents = STF_loader.load()
+
+documents = documents + STF_documents
+
+bumblebench_loader = GithubFileLoader(
+    repo="adoptium/bumblebench",
+    branch="master",
+    access_token=GITHUB_TOKEN,
+    github_api_url="https://api.github.com",
+    file_filter=lambda file_path: file_path.endswith(
+        (".md", ".markdown")
+    ),
+)
+bumblebench_documents = bumblebench_loader.load()
+
+documents = documents + bumblebench_documents
+
+run_aqa_loader = GithubFileLoader(
+    repo="adoptium/run-aqa",
+    branch="master",
+    access_token=GITHUB_TOKEN,
+    github_api_url="https://api.github.com",
+    file_filter=lambda file_path: file_path.endswith(
+        (".md", ".markdown")
+    ),
+)
+run_aqa_documents = run_aqa_loader.load()
+
+documents = documents + run_aqa_documents
+
+openj9_systemtest_loader = GithubFileLoader(
+    repo="adoptium/openj9-systemtest",
+    branch="master",
+    access_token=GITHUB_TOKEN,
+    github_api_url="https://api.github.com",
+    file_filter=lambda file_path: file_path.endswith(
+        (".md", ".markdown")
+    ),
+)
+openj9_systemtest_documents = openj9_systemtest_loader.load()
+
+documents = documents + openj9_systemtest_documents
 
 # Load wiki files from aqa-tests
 
