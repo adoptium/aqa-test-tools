@@ -1,0 +1,9 @@
+langchain
+langchain_community
+faiss-cpu
+tiktoken
+langchain_core
+openai
+python-dotenv
+numpy
+azure-ai-inference
