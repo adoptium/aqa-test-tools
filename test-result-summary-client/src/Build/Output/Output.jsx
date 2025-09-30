@@ -156,6 +156,23 @@ const Output = () => {
                                     </Tooltip>{' '}
                                 </a>
                             )}
+                            {data.testId && data.buildId && (
+                                <>
+                                    <Divider type="vertical" />
+                                    <Link
+                                        to={{
+                                            pathname: '/gitNewIssue',
+                                            search: params({ testId, buildId }),
+                                        }}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                    >
+                                        <Tooltip title="Create new Github issue">
+                                            <GithubOutlined />
+                                        </Tooltip>
+                                    </Link>
+                                </>
+                            )}
                             {data.buildUrl && (
                                 <>
                                     <Divider type="vertical" />
