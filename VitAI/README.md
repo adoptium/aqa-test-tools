@@ -1,92 +1,112 @@
-# VitAI - RAG-based assistant for AQAvit
+# VitAI - GitHub Repository Analysis Agent
 
-VitAI is a Retrieval-Augmented Generation (RAG) system that allows users to ask natural language questions about the repo and receive accurate, context-aware, and up-to-date answers based on the codebase.
+An intelligent ReAct agent that explores GitHub repositories and provides grounded answers based on actual code and repository content.
 
-## Phase 1 Features:
+> **Note**: Configure both `GEMINI_API_KEY` and `GITHUB_TOKEN` in your environment before running the agent.
 
-1. Lightweight RAG pipeline using local vector store (`VectorStore/index.faiss`).
-2. Modular components:
-   - Embedding generation (`src/embedding.py`)
-   - Index creation (`src/indexer.py`)
-   - Persistent store management (`src/store.py`)
-   - Orchestration / entry point (`src/main.py`)
-3. Test using an adversarial LLM under `test/` to validate similarity and retrieval.
+## Features
 
-## Prerequisites
+### Core Capabilities
 
-1. Python 3.10+
+- **Intelligent Code Search**: Search across GitHub repositories with precise queries
+- **File Content Fetching**: Retrieve and analyze actual file contents via GitHub API
+- **Issue/PR Search**: Find relevant discussions, bugs, and feature requests
+- **Repository Structure Analysis**: Understand repository layout and organization
 
-## Setup
+### ReAct Pattern
 
-1. Open Terminal at the `aqa-test-tools` repository root and run:
+VitAI uses the **ReAct (Reasoning + Acting)** pattern:
 
-   ```bash
-   cd VitAI
-   ```
+```
+Thought → Action → Observation → Thought → ... → Final Answer
+```
 
-2. Install Python dependencies:
+The agent autonomously:
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+1. Reasons about what information it needs
+2. Takes actions using available tools
+3. Observes the results
+4. Continues until it can provide a complete answer
 
-3. Environment variables:
-   1. Visit [GitHub Access Tokens](https://github.com/settings/personal-access-tokens/new?description=Used+to+call+GitHub+Models+APIs+to+easily+run+LLMs%3A+https%3A%2F%2Fdocs.github.com%2Fgithub-models%2Fquickstart%23step-2-make-an-api-call&name=GitHub+Models+token&user_models=read)
-   2. Create the Personal Access Token with "read-only" access to "Models"
-   3. Set the environment variable in `.env` file as `GITHUB_TOKEN`
+### Available Tools
 
-## Command Line Interface (CLI)
+1. **search_code**: Find code files using GitHub's code search
+2. **get_repo_structure**: Get detailed directory/file tree
+3. **get_file_contents**: Fetch actual file contents
 
-1. Open Terminal at the `aqa-test-tools` repository root and run:
-   ```bash
-   cd VitAI
-   ```
-2. Run the command:
-   ```bash
-   python src/main.py
-   ```
-3. Enter your query and wait for the response from the LLM
-4. To quit the program, enter `exit`, `quit`, or press Enter.
+## Installation
 
-## Testing
+### Prerequisites
 
-1. Open Terminal at the `aqa-test-tools` repository root and run:
-   ```bash
-   cd VitAI
-   ```
-2. Run the command:
-   ```bash
-   python test/test-similarity.py
-   ```
-3. Observe the test results along with the justification for those results given by the adversarial LLM.
+- Python 3.10+
+- GitHub Token
+- Gemini API Key
 
-## Technical Details
+### Install `uv`
 
-- **Large Language Model** - microsoft/Phi-4 using Azure AI Interface SDK
-- **Embeddings** - openai/text-embedding-3-large
-- **Vector Store** - FAISS (Facebook AI Similarity Search)
-- **Chunk Size** - 1000 tokens + 200 tokens overlap
-- **Similarity Search** - Cosine similarity
-- **Top K** - 2 nearest neighbors
-- **Data**
-  - `.txt`, `.md`, `.markdown` files and [Wiki's](https://github.com/adoptium/aqa-tests/
-    wiki) from [adoptium/aqa-tests](https://github.com/adoptium/aqa-tests)
-  - Excluded [MBCS_Tests](https://github.com/adoptium/aqa-tests/tree/master/functional/MBCS_Tests) directory due to noise
-  - Blogs on AQAvit - [Blog 1](https://github.com/adoptium/adoptium.net/blob/main/content/asciidoc-pages/docs/aqavit-verification/index.adoc) and [Blog 2](https://github.com/adoptium/adoptium.net/blob/main/content/asciidoc-pages/docs/qvs-policy/index.adoc)
-  - `.md` and `.markdown` file from:
-    - [adoptium/TKG](https://github.com/adoptium/TKG)
-    - [adoptium/aqa-systemtest](https://github.com/adoptium/aqa-systemtest)
-    - [adoptium/aqa-test-tools](https://github.com/adoptium/aqa-test-tools)
-    - [adoptium/STF](https://github.com/adoptium/STF)
-    - [adoptium/bumblebench](https://github.com/adoptium/bumblebench)
-    - [adoptium/run-aqa](https://github.com/adoptium/run-aqa)
-    - [adoptium/openj9-systemtest](https://github.com/adoptium/openj9-systemtest)
-    - [eclipse-openj9/openj9](https://github.com/eclipse-openj9/openj9)
-- **Ideal Answers** - `data/ideal_answers.json` (manually curated for testing from [OpenJ9TestUserGuide.md](https://github.com/eclipse-openj9/openj9/blob/master/test/docs/OpenJ9TestUserGuide.md))
+Windows:
 
-## How it works (high level)
+```powershell
+powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"
+```
 
-1. `src/embedding.py` produces vector embeddings for text.
-2. `src/indexer.py` consumes data from the data sources mentioned earlier and builds a FAISS index saved under `VectorStore/index.faiss` along with `VectorStore/metadata.json`.
-3. `src/store.py` provides persistence helpers for loading/saving the vector store and associated metadata and acts as a retriever for nearest neighbor search.
-4. `src/main.py` orchestrates a retrieval request: it embeds incoming text, queries the FAISS index for nearest neighbors, and passes context to the LLM to get the result.
+Mac/Linux:
+
+```
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+### Setup
+
+```powershell
+cd VitAI
+
+# Install dependencies (using uv)
+uv sync
+
+# Start MCP Server (with dev inspector)
+uv run fastmcp dev main.py
+
+# Start MCP Server (without dev inspector)
+uv run fastmcp run main.py
+```
+
+### Environment Variables
+
+Create a `.env` file with the following:
+
+```bash
+GEMINI_API_KEY=your_gemini_api_key
+GITHUB_TOKEN=your_github_token
+```
+
+## Architecture
+
+![MCP Architecture](MCP_architecture.png)
+
+### Agent Flow
+
+```
+┌──────────────────────────────────────────────┐
+│ Initialize Agent                             │
+│  ├─ Load repository structures (cached)      │
+│  ├─ Initialize LLM client                    │
+│  └─ Initialize GitHub search client          │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│ User Query                                   │
+│  ├─ Inject repository context               │
+│  ├─ Send to LLM with structure info          │
+│  └─ Start ReAct loop                         │
+└──────────────────────────────────────────────┘
+                    ↓
+┌──────────────────────────────────────────────┐
+│ ReAct Loop                                   │
+│  ├─ Thought: Reason about next step          │
+│  ├─ Action: Use tool with precise query      │
+│  │   (Informed by repository structure)      │
+│  ├─ Observation: Process results             │
+│  └─ Repeat or provide Final Answer           │
+└──────────────────────────────────────────────┘
+```
