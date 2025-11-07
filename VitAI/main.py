@@ -1,9 +1,27 @@
 from fastmcp import FastMCP
 from agent import create_agent
+import os
+import sys
+
+# Add RAG directory to path for imports
+rag_dir = os.path.join(os.path.dirname(__file__), "RAG")
+if rag_dir not in sys.path:
+    sys.path.insert(0, rag_dir)
+
+# Import RAG components
+try:
+    from store import FaissStore
+    from embedding import Embedder
+    RAG_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: RAG components not available: {e}")
+    RAG_AVAILABLE = False
 
 mcp = FastMCP("VitAI MCP Server")
 
 _agent = None
+_vector_store = None
+_embedder = None
 
 def get_agent():
     """Get or create agent instance with specified repositories."""
@@ -11,6 +29,22 @@ def get_agent():
     if _agent is None:
         _agent = create_agent(max_iterations=25)
     return _agent
+
+def get_vector_store():
+    """Get or create vector store instance."""
+    global _vector_store
+    if _vector_store is None and RAG_AVAILABLE:
+        # Initialize FaissStore with correct base directory (RAG/VectorStore)
+        base_dir = os.path.join(os.path.dirname(__file__), "RAG", "VectorStore")
+        _vector_store = FaissStore(base_dir=base_dir)
+    return _vector_store
+
+def get_embedder():
+    """Get or create embedder instance."""
+    global _embedder
+    if _embedder is None and RAG_AVAILABLE:
+        _embedder = Embedder()
+    return _embedder
 
 @mcp.tool
 def query(input: str) -> str:
@@ -43,6 +77,122 @@ def query(input: str) -> str:
         return answer
     except Exception as e:
         return f"Error processing query: {str(e)}"
+
+@mcp.tool
+def query_vector_store(
+    query: str,
+    repository: str,
+    top_k: int = 5,
+    language: str = None,
+    file_path_pattern: str = None
+) -> str:
+    """
+    Query the pre-indexed vector stores for semantic code search across Adoptium repositories.
+    This provides fast, semantically-aware search through embedded code chunks.
+    
+    Available repositories:
+    - adoptium/aqa-tests
+    - adoptium/TKG
+    - adoptium/aqa-systemtest
+    - adoptium/aqa-test-tools
+    - adoptium/STF
+    - adoptium/bumblebench
+    - adoptium/run-aqa
+    - adoptium/openj9-systemtest
+    - eclipse-openj9/openj9
+    
+    Args:
+        query: Natural language or code query (e.g., "how to run system tests" or "test configuration")
+        repository: Repository to search (format: "owner/repo" or "owner_repo")
+        top_k: Number of results to return (default: 5, max: 20)
+        language: Optional filter by programming language (e.g., "python", "java", "javascript")
+        file_path_pattern: Optional glob pattern to filter files (e.g., "src/*.py", "test/**/*.java")
+    
+    Returns:
+        JSON string with search results containing matched code chunks, file paths, and metadata
+    
+    Example:
+        query_vector_store(
+            query="how to configure test parameters",
+            repository="adoptium/aqa-tests",
+            top_k=3,
+            language="python"
+        )
+    """
+    
+    if not RAG_AVAILABLE:
+        return "Error: RAG components not available. Please install dependencies from RAG/requirements.txt"
+    
+    store = get_vector_store()
+    embedder = get_embedder()
+    
+    if store is None or embedder is None:
+        return "Error: Failed to initialize vector store or embedder"
+    
+    try:
+        # Normalize repository name (convert / to _ if needed)
+        repo_name = repository.replace("_", "/") if "_" in repository else repository
+        
+        # Check if repository exists
+        available_repos = store.list_repositories()
+        if repo_name not in available_repos:
+            return f"Error: Repository '{repo_name}' not found in vector store.\nAvailable repositories: {', '.join(available_repos)}"
+        
+        # Limit top_k to reasonable range
+        top_k = min(max(1, top_k), 20)
+        
+        # Generate query embedding
+        query_embedding = embedder.embed(query)[0]
+        
+        # Build filters
+        filters = {}
+        if language:
+            filters['language'] = language.lower()
+        if file_path_pattern:
+            filters['file_path'] = file_path_pattern
+        
+        # Search the vector store
+        results = store.search_repo(
+            repo_name=repo_name,
+            query_embedding=query_embedding,
+            top_k=top_k,
+            filters=filters if filters else None,
+            include_deleted=False
+        )
+        
+        if not results:
+            return f"No results found for query '{query}' in repository {repo_name}"
+        
+        # Format results for display
+        import json
+        formatted_results = []
+        for i, result in enumerate(results, 1):
+            metadata = result.get('metadata', {})
+            formatted_results.append({
+                'rank': i,
+                'score': round(result.get('score', 0), 4),
+                'file_path': metadata.get('file_path', 'unknown'),
+                'language': metadata.get('language', 'unknown'),
+                'chunk_type': metadata.get('chunk_type', 'unknown'),
+                'start_line': metadata.get('start_line'),
+                'end_line': metadata.get('end_line'),
+                'text': result.get('text', '')[:500] + ('...' if len(result.get('text', '')) > 500 else ''),
+                'repo_name': metadata.get('repo_name', repo_name)
+            })
+        
+        response = {
+            'query': query,
+            'repository': repo_name,
+            'total_results': len(results),
+            'results': formatted_results
+        }
+        
+        return json.dumps(response, indent=2)
+        
+    except Exception as e:
+        import traceback
+        error_details = traceback.format_exc()
+        return f"Error querying vector store: {str(e)}\n\nDetails:\n{error_details}"
     
 @mcp.prompt
 def VitAI():
