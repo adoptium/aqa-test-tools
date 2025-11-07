@@ -1,0 +1,177 @@
+name: Update Vector Stores
+
+on:
+    schedule:
+        # Run every Sunday at midnight UTC (0 0 * * 0)
+        - cron: "0 0 * * 0"
+
+jobs:
+    update-vector-stores:
+        runs-on: ubuntu-latest
+
+        # Lists of directories to exclude for each repository
+        # Add comma-separated directory names to exclude them from indexing
+        # Example: EXCLUDE_AQA_TESTS: 'node_modules,dist,build'
+        env:
+            EXCLUDE_AQA_TESTS: ""
+            EXCLUDE_TKG: ""
+            EXCLUDE_AQA_SYSTEMTEST: ""
+            EXCLUDE_AQA_TEST_TOOLS: "VitAI/RAG/VectorStore"
+            EXCLUDE_STF: ""
+            EXCLUDE_BUMBLEBENCH: ""
+            EXCLUDE_RUN_AQA: ""
+            EXCLUDE_OPENJ9_SYSTEMTEST: ""
+            EXCLUDE_OPENJ9: ""
+            EXCLUDE_OMR: ""
+            EXCLUDE_OPENJ9_OPENJDK_JDK: "src/hostpot"
+
+        steps:
+            - name: Checkout repository
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.x"
+                  cache: "pip"
+                  cache-dependency-path: "VitAI/RAG/requirements.txt"
+
+            - name: Install dependencies
+              run: |
+                  cd VitAI/RAG
+                  pip install -r requirements.txt
+
+            - name: Create .env file
+              run: |
+                  cd VitAI/RAG
+                  echo "GITHUB_TOKEN=${{ secrets.MODELS_TOKEN }}" > .env
+
+            - name: Update adoptium/aqa-tests
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_AQA_TESTS }}" ]; then
+                    python main.py --repo adoptium/aqa-tests --exclude "${{ env.EXCLUDE_AQA_TESTS }}"
+                  else
+                    python main.py --repo adoptium/aqa-tests
+                  fi
+
+            - name: Update adoptium/TKG
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_TKG }}" ]; then
+                    python main.py --repo adoptium/TKG --exclude "${{ env.EXCLUDE_TKG }}"
+                  else
+                    python main.py --repo adoptium/TKG
+                  fi
+
+            - name: Update adoptium/aqa-systemtest
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_AQA_SYSTEMTEST }}" ]; then
+                    python main.py --repo adoptium/aqa-systemtest --exclude "${{ env.EXCLUDE_AQA_SYSTEMTEST }}"
+                  else
+                    python main.py --repo adoptium/aqa-systemtest
+                  fi
+
+            - name: Update adoptium/aqa-test-tools
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_AQA_TEST_TOOLS }}" ]; then
+                    python main.py --repo adoptium/aqa-test-tools --exclude "${{ env.EXCLUDE_AQA_TEST_TOOLS }}"
+                  else
+                    python main.py --repo adoptium/aqa-test-tools
+                  fi
+
+            - name: Update adoptium/STF
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_STF }}" ]; then
+                    python main.py --repo adoptium/STF --exclude "${{ env.EXCLUDE_STF }}"
+                  else
+                    python main.py --repo adoptium/STF
+                  fi
+
+            - name: Update adoptium/bumblebench
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_BUMBLEBENCH }}" ]; then
+                    python main.py --repo adoptium/bumblebench --exclude "${{ env.EXCLUDE_BUMBLEBENCH }}"
+                  else
+                    python main.py --repo adoptium/bumblebench
+                  fi
+
+            - name: Update adoptium/run-aqa
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_RUN_AQA }}" ]; then
+                    python main.py --repo adoptium/run-aqa --exclude "${{ env.EXCLUDE_RUN_AQA }}"
+                  else
+                    python main.py --repo adoptium/run-aqa
+                  fi
+
+            - name: Update adoptium/openj9-systemtest
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_OPENJ9_SYSTEMTEST }}" ]; then
+                    python main.py --repo adoptium/openj9-systemtest --exclude "${{ env.EXCLUDE_OPENJ9_SYSTEMTEST }}"
+                  else
+                    python main.py --repo adoptium/openj9-systemtest
+                  fi
+
+            - name: Update eclipse-openj9/openj9
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_OPENJ9 }}" ]; then
+                    python main.py --repo eclipse-openj9/openj9 --exclude "${{ env.EXCLUDE_OPENJ9 }}"
+                  else
+                    python main.py --repo eclipse-openj9/openj9
+                  fi
+
+            - name: Update eclipse-omr/omr
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_OMR }}" ]; then
+                    python main.py --repo eclipse-omr/omr --exclude "${{ env.EXCLUDE_OMR }}"
+                  else
+                    python main.py --repo eclipse-omr/omr
+                  fi
+
+            - name: Update ibmruntimes/openj9-openjdk-jdk
+              run: |
+                  cd VitAI/RAG
+                  if [ -n "${{ env.EXCLUDE_OPENJ9_OPENJDK_JDK }}" ]; then
+                    python main.py --repo ibmruntimes/openj9-openjdk-jdk --exclude "${{ env.EXCLUDE_OPENJ9_OPENJDK_JDK }}"
+                  else
+                    python main.py --repo ibmruntimes/openj9-openjdk-jdk
+                  fi
+
+            - name: Check for changes
+              id: check_changes
+              run: |
+                  git config --global user.name 'github-actions[bot]'
+                  git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+
+                  # Check if there are any changes to commit
+                  if git diff --quiet && git diff --staged --quiet; then
+                    echo "has_changes=false" >> $GITHUB_OUTPUT
+                    echo "No changes detected in vector stores"
+                  else
+                    echo "has_changes=true" >> $GITHUB_OUTPUT
+                    echo "Changes detected in vector stores"
+                  fi
+
+            - name: Commit and push changes
+              if: steps.check_changes.outputs.has_changes == 'true'
+              run: |
+                  git add VitAI/RAG/VectorStore/
+                  git add VitAI/RAG/.checkpoints/
+                  git commit -m "chore: update vector stores (automated weekly update)"
+                  git push
+
+            - name: Summary
+              run: |
+                  if [ "${{ steps.check_changes.outputs.has_changes }}" == "true" ]; then
+                    echo "✅ Vector stores updated and committed successfully"
+                  else
+                    echo "ℹ️ No updates needed - vector stores are up to date"
+                  fi
