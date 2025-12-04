@@ -1,92 +1,165 @@
-# VitAI - RAG-based assistant for AQAvit
+# VitAI RAG (Retrieval-Augmented Generation) System
 
-VitAI is a Retrieval-Augmented Generation (RAG) system that allows users to ask natural language questions about the repo and receive accurate, context-aware, and up-to-date answers based on the codebase.
+A scalable and efficient codebase indexing and retrieval system for GitHub repositories, built using advanced AST-based chunking, vector embeddings, and semantic search capabilities.
 
-## Phase 1 Features:
+## Overview
 
-1. Lightweight RAG pipeline using local vector store (`VectorStore/index.faiss`).
-2. Modular components:
-   - Embedding generation (`src/embedding.py`)
-   - Index creation (`src/indexer.py`)
-   - Persistent store management (`src/store.py`)
-   - Orchestration / entry point (`src/main.py`)
-3. Test using an adversarial LLM under `test/` to validate similarity and retrieval.
+This RAG system enables intelligent code search and retrieval across multiple GitHub repositories by creating vector embeddings of code chunks and storing them in FAISS vector databases. The system uses tree-sitter for AST-based code parsing and supports incremental updates through Merkle tree-based change detection.
 
-## Prerequisites
+## Architecture
 
-1. Python 3.10+
+The system is built on several key components:
 
-## Setup
+- **Indexer**: Advanced code chunking using tree-sitter AST parsing with fallback strategies
+- **Embeddings**: Vector representations of code chunks using sentence transformers
+- **Vector Store**: FAISS-based efficient similarity search
+- **Merkle Tree**: Incremental update detection for repositories
+- **CLI**: Command-line interface for repository management
 
-1. Open Terminal at the `aqa-test-tools` repository root and run:
+### Codebase Indexing Strategy
 
-   ```bash
-   cd VitAI
-   ```
+The indexing logic is inspired by the approach detailed in [How Cursor Indexes Codebases Fast](https://read.engineerscodex.com/p/how-cursor-indexes-codebases-fast), which provides insights into efficient codebase indexing techniques.
 
-2. Install Python dependencies:
+## Features
 
-   ```bash
-   pip install -r requirements.txt
-   ```
+- **Multi-language Support**: Supports 25+ programming languages including Python, Java, JavaScript, TypeScript, C/C++, Go, Rust, and more
+- **AST-based Chunking**: Intelligent code chunking that respects language syntax and structure
+- **Incremental Updates**: Only re-indexes changed files using Merkle tree-based change detection
+- **Semantic Search**: Find relevant code snippets using natural language queries
+- **Efficient Storage**: FAISS vector databases for fast similarity search
+- **Progress Tracking**: Rich terminal UI with progress bars and detailed logging
 
-3. Environment variables:
-   1. Visit [GitHub Access Tokens](https://github.com/settings/personal-access-tokens/new?description=Used+to+call+GitHub+Models+APIs+to+easily+run+LLMs%3A+https%3A%2F%2Fdocs.github.com%2Fgithub-models%2Fquickstart%23step-2-make-an-api-call&name=GitHub+Models+token&user_models=read)
-   2. Create the Personal Access Token with "read-only" access to "Models"
-   3. Set the environment variable in `.env` file as `GITHUB_TOKEN`
+## Indexed Repositories
 
-## Command Line Interface (CLI)
+The following repositories have been indexed and are available for search:
 
-1. Open Terminal at the `aqa-test-tools` repository root and run:
-   ```bash
-   cd VitAI
-   ```
-2. Run the command:
-   ```bash
-   python src/main.py
-   ```
-3. Enter your query and wait for the response from the LLM
-4. To quit the program, enter `exit`, `quit`, or press Enter.
+- **adoptium/aqa-tests**: Central project for AQAvit (Application Quality Assurance Verification Initiative)
+- **adoptium/aqa-systemtest**: System verification tests for the Adoptium project
+- **adoptium/aqa-test-tools**: Test workflow tools and utilities
+- **adoptium/TKG**: Lightweight test harness (TestKitGen)
+- **adoptium/STF**: System Test Framework for Java testing
+- **adoptium/bumblebench**: Microbenchmarking framework for performance testing
+- **adoptium/openj9-systemtest**: OpenJ9-specific system tests
+- **adoptium/run-aqa**: GitHub action for running AQA tests
+- **documentation**: Additional documentation resources
 
-## Testing
+## Installation
 
-1. Open Terminal at the `aqa-test-tools` repository root and run:
-   ```bash
-   cd VitAI
-   ```
-2. Run the command:
-   ```bash
-   python test/test-similarity.py
-   ```
-3. Observe the test results along with the justification for those results given by the adversarial LLM.
+Install the required dependencies:
 
-## Technical Details
+```bash
+pip install -r requirements.txt
+```
 
-- **Large Language Model** - microsoft/Phi-4 using Azure AI Interface SDK
-- **Embeddings** - openai/text-embedding-3-large
-- **Vector Store** - FAISS (Facebook AI Similarity Search)
-- **Chunk Size** - 1000 tokens + 200 tokens overlap
-- **Similarity Search** - Cosine similarity
-- **Top K** - 2 nearest neighbors
-- **Data**
-  - `.txt`, `.md`, `.markdown` files and [Wiki's](https://github.com/adoptium/aqa-tests/
-    wiki) from [adoptium/aqa-tests](https://github.com/adoptium/aqa-tests)
-  - Excluded [MBCS_Tests](https://github.com/adoptium/aqa-tests/tree/master/functional/MBCS_Tests) directory due to noise
-  - Blogs on AQAvit - [Blog 1](https://github.com/adoptium/adoptium.net/blob/main/content/asciidoc-pages/docs/aqavit-verification/index.adoc) and [Blog 2](https://github.com/adoptium/adoptium.net/blob/main/content/asciidoc-pages/docs/qvs-policy/index.adoc)
-  - `.md` and `.markdown` file from:
-    - [adoptium/TKG](https://github.com/adoptium/TKG)
-    - [adoptium/aqa-systemtest](https://github.com/adoptium/aqa-systemtest)
-    - [adoptium/aqa-test-tools](https://github.com/adoptium/aqa-test-tools)
-    - [adoptium/STF](https://github.com/adoptium/STF)
-    - [adoptium/bumblebench](https://github.com/adoptium/bumblebench)
-    - [adoptium/run-aqa](https://github.com/adoptium/run-aqa)
-    - [adoptium/openj9-systemtest](https://github.com/adoptium/openj9-systemtest)
-    - [eclipse-openj9/openj9](https://github.com/eclipse-openj9/openj9)
-- **Ideal Answers** - `data/ideal_answers.json` (manually curated for testing from [OpenJ9TestUserGuide.md](https://github.com/eclipse-openj9/openj9/blob/master/test/docs/OpenJ9TestUserGuide.md))
+Set up your environment variables in a `.env` file:
 
-## How it works (high level)
+```bash
+GITHUB_TOKEN=your_github_personal_access_token
+```
 
-1. `src/embedding.py` produces vector embeddings for text.
-2. `src/indexer.py` consumes data from the data sources mentioned earlier and builds a FAISS index saved under `VectorStore/index.faiss` along with `VectorStore/metadata.json`.
-3. `src/store.py` provides persistence helpers for loading/saving the vector store and associated metadata and acts as a retriever for nearest neighbor search.
-4. `src/main.py` orchestrates a retrieval request: it embeds incoming text, queries the FAISS index for nearest neighbors, and passes context to the LLM to get the result.
+## Usage
+
+### Indexing a Repository
+
+Index a new repository or update an existing one:
+
+```bash
+python main.py --repo owner/repo
+```
+
+Exclude specific directories:
+
+```bash
+python main.py --repo owner/repo --exclude node_modules,dist,build
+```
+
+### Searching a Repository
+
+Search for code snippets using natural language:
+
+```bash
+python main.py --repo owner/repo --search "function to parse JSON files"
+```
+
+### Deleting an Index
+
+Remove a repository index:
+
+```bash
+python main.py --repo owner/repo --delete
+```
+
+### Verbose Logging
+
+Enable detailed logging for debugging:
+
+```bash
+python main.py --repo owner/repo --verbose
+```
+
+## Code Chunking Strategy
+
+The system uses a multi-tiered chunking approach:
+
+1. **AST-based Chunking**: Primary strategy using tree-sitter for syntax-aware chunking (functions, classes, methods)
+2. **Recursive Splitting**: Language-aware recursive text splitting for unsupported languages or failed AST parsing
+3. **Simple Chunking**: Paragraph/sentence-based splitting for markdown and text files
+
+### Supported Languages
+
+Python, JavaScript, TypeScript, Java, C, C++, Go, Rust, Ruby, Bash, Groovy, Make, HTML, XML, YAML, JSON, SQL, Perl, PHP, TOML, INI, and more.
+
+## Configuration
+
+Default configuration:
+
+- **Max Tokens per Chunk**: 1000 tokens
+- **Overlap Tokens**: 200 tokens
+- **Max File Size**: 1MB
+- **Embedding Model**: OpenAI/text-embedding-3-large
+- **Vector Store**: FAISS with cosine similarity
+
+## Components
+
+### indexer.py
+
+Advanced code chunker with tree-sitter AST parsing and multiple fallback strategies. Handles token limits, overlapping chunks, and language-specific syntax.
+
+### embedding.py
+
+Generates vector embeddings for code chunks using sentence-transformers, enabling semantic similarity search.
+
+### store.py
+
+FAISS-based vector store implementation with support for adding, updating, deleting, and searching code chunks across repositories.
+
+### merkle_tree.py
+
+Merkle tree implementation for efficient change detection, enabling incremental repository updates without re-indexing unchanged files.
+
+### main.py
+
+CLI tool providing a user-friendly interface for repository indexing, searching, and management operations.
+
+## Directory Structure
+
+```
+VitAI/RAG/
+├── .env                    # Environment variables
+├── embedding.py            # Vector embedding generation
+├── indexer.py              # Code chunking and parsing
+├── main.py                 # CLI interface
+├── merkle_tree.py          # Change detection
+├── store.py                # Vector store management
+├── requirements.txt        # Python dependencies
+├── README.md               # This file
+└── VectorStore/            # FAISS vector databases
+    ├── adoptium_aqa-tests/
+    ├── adoptium_TKG/
+    ├── adoptium_STF/
+    └── ...
+```
+
+## Acknowledgments
+
+The codebase indexing approach is inspired by the techniques described in [How Cursor Indexes Codebases Fast](https://read.engineerscodex.com/p/how-cursor-indexes-codebases-fast).

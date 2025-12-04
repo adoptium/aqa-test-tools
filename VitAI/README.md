@@ -12,6 +12,7 @@ An intelligent ReAct agent that explores GitHub repositories and provides ground
 - **File Content Fetching**: Retrieve and analyze actual file contents via GitHub API
 - **Issue/PR Search**: Find relevant discussions, bugs, and feature requests
 - **Repository Structure Analysis**: Understand repository layout and organization
+- **Vector Store Queries**: Fast semantic search through pre-indexed code embeddings
 
 ### ReAct Pattern
 
@@ -30,9 +31,18 @@ The agent autonomously:
 
 ### Available Tools
 
-1. **search_code**: Find code files using GitHub's code search
-2. **get_repo_structure**: Get detailed directory/file tree
-3. **get_file_contents**: Fetch actual file contents
+#### GitHub Agent Tools (Live Search)
+
+1. **query**: ReAct agent that explores GitHub repositories dynamically
+2. **search_code**: Find code files using GitHub's code search
+3. **get_repo_structure**: Get detailed directory/file tree
+4. **get_file_contents**: Fetch actual file contents
+
+#### Vector Store Tools (Semantic Search)
+
+5. **query_vector_store**: Fast semantic search through pre-indexed code chunks
+   - Supports filtering by language and file paths
+   - Returns relevant code with metadata
 
 ## Installation
 
