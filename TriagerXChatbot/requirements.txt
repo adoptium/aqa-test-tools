@@ -40,7 +40,7 @@ slack_sdk==3.29.0
 slackstyler==0.0.2
 typing_extensions==4.12.2
 ujson==5.10.0
-urllib3==2.5.0
+urllib3==2.6.0
 uvicorn==0.30.1
 Werkzeug==3.1.4
 yarl==1.9.4
