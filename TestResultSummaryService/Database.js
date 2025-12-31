@@ -3,7 +3,6 @@ const ArgParser = require('./ArgParser');
 const { logger } = require('./Utils');
 
 let db;
-let dbConnectionError = null;
 
 (async function () {
     try {
@@ -60,10 +59,10 @@ let dbConnectionError = null;
             logger.info(doc);
         }
     } catch (error) {
-        dbConnectionError = error;
         logger.error('Failed to connect to MongoDB:', error.message);
         logger.error('Stack trace:', error.stack);
         logger.error('Server will not function without database connection');
+        process.exit(1);
     }
 })();
 

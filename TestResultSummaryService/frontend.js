@@ -51,36 +51,6 @@ expressSwagger(options);
 // all environments
 app.set('port', process.env.PORT || 3001);
 
-// Wait for MongoDB connection before starting server
-const { isDbReady, getDbConnectionError } = require('./Database');
-
-const startServer = () => {
-    app.listen(app.get('port'), function () {
-        logger.info('Express server listening on port ' + app.get('port'));
-    });
-};
-
-// Check if DB is ready, wait up to 30 seconds
-let dbCheckAttempts = 0;
-const maxDbCheckAttempts = 30; // 30 seconds
-const dbCheckInterval = setInterval(() => {
-    dbCheckAttempts++;
-    if (isDbReady()) {
-        clearInterval(dbCheckInterval);
-        logger.info('MongoDB connection verified. Starting Express server...');
-        startServer();
-    } else if (dbCheckAttempts >= maxDbCheckAttempts) {
-        clearInterval(dbCheckInterval);
-        const dbError = getDbConnectionError();
-        if (dbError) {
-            logger.error('MongoDB connection timeout. Server not starting.');
-            logger.error('MongoDB connection error:', dbError.message);
-            logger.error('Stack trace:', dbError.stack);
-        } else {
-            logger.error('MongoDB connection timeout. Database not ready after 30 seconds.');
-        }
-        logger.error('Express server will not start without database connection.');
-        // Exit with error code
-        process.exit(1);
-    }
-}, 1000);
+app.listen(app.get('port'), function () {
+    logger.info('Express server listening on port ' + app.get('port'));
+});
