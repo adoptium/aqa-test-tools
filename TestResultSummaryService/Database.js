@@ -40,32 +40,30 @@ let dbConnectionError = null;
                 // do nothing. The collection may already exist
             }
         }
+        const testResultsDB = db.collection('testResults');
+    
+        const parentIdIndex = await testResultsDB.createIndex({ parentId: 1 });
+        logger.info('Index created: ', parentIdIndex);
+        const urlBuildNameBuildNumIndex = await testResultsDB.createIndex({
+            buildName: 1,
+            url: 1,
+            buildNum: 1,
+        });
+        logger.info('Index created: ', urlBuildNameBuildNumIndex);
+    
+        const testIdIndex = await testResultsDB.createIndex({ 'tests._id': 1 });
+        logger.info('Index created: ', testIdIndex);
+    
+        const result = await testResultsDB.listIndexes().toArray();
+        logger.info('Existing testResults indexes:');
+        for (const doc of result) {
+            logger.info(doc);
+        }
     } catch (error) {
         dbConnectionError = error;
         logger.error('Failed to connect to MongoDB:', error.message);
         logger.error('Stack trace:', error.stack);
         logger.error('Server will not function without database connection');
-        // Don't exit immediately - let the process handle it gracefully
-        // but log the error so it's visible
-    }
-    const testResultsDB = db.collection('testResults');
-
-    const parentIdIndex = await testResultsDB.createIndex({ parentId: 1 });
-    logger.info('Index created: ', parentIdIndex);
-    const urlBuildNameBuildNumIndex = await testResultsDB.createIndex({
-        buildName: 1,
-        url: 1,
-        buildNum: 1,
-    });
-    logger.info('Index created: ', urlBuildNameBuildNumIndex);
-
-    const testIdIndex = await testResultsDB.createIndex({ 'tests._id': 1 });
-    logger.info('Index created: ', testIdIndex);
-
-    const result = await testResultsDB.listIndexes().toArray();
-    logger.info('Existing testResults indexes:');
-    for (const doc of result) {
-        logger.info(doc);
     }
 })();
 
