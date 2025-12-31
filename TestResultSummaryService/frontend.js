@@ -51,6 +51,11 @@ expressSwagger(options);
 // all environments
 app.set('port', process.env.PORT || 3001);
 
-app.listen(app.get('port'), function () {
+const server = app.listen(app.get('port'), function () {
     logger.info('Express server listening on port ' + app.get('port'));
 });
+
+server.on('error', (err) => {
+  logger.error('Express server error: ' +  err.message);
+});
+
