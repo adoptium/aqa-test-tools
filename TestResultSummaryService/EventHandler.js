@@ -49,7 +49,7 @@ class EventHandler {
                     await Promise.delay(1 * 1000);
                 }
             } catch (e) {
-                logger.error('Exception in database query: ', e);
+                logger.error('Exception when processing build: ', e);
                 logger.error('Stack trace:', e.stack);
                 try {
                     await new AuditLogsDB().insertAuditLogs({
@@ -99,7 +99,7 @@ class EventHandler {
                     }
                 }
             } catch (e) {
-                logger.error('Exception in database query: ', e);
+                logger.error('Exception when monitoring build: ', e);
                 logger.error('Stack trace:', e.stack);
                 try {
                     await new AuditLogsDB().insertAuditLogs({
