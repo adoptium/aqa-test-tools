@@ -3,57 +3,78 @@ const ArgParser = require('./ArgParser');
 const { logger } = require('./Utils');
 
 let db;
+
 (async function () {
-    let url;
-    let config = ArgParser.getConfigDB();
-    if (config && config.connectionString) {
-        url = config.connectionString;
-    } else {
-        const credential =
-            config === null
-                ? ''
-                : `${encodeURIComponent(config.user)}:${encodeURIComponent(
-                      config.password
-                  )}@`;
-        const { MONGO_CONTAINER_NAME = 'localhost' } = process.env;
-        url =
-            'mongodb://' +
-            credential +
-            MONGO_CONTAINER_NAME +
-            ':27017/exampleDb';
-    }
-
-    const dbConnect = await MongoClient.connect(url, {
-        useUnifiedTopology: true,
-    });
-    db = dbConnect.db('exampleDb');
-    for (let collection of ['testResults', 'output', 'auditLogs', 'user']) {
-        try {
-            await db.createCollection(collection);
-        } catch (e) {
-            // do nothing. The collection may already exist
+    try {
+        let url;
+        let config = ArgParser.getConfigDB();
+        if (config && config.connectionString) {
+            url = config.connectionString;
+        } else {
+            const credential =
+                config === null
+                    ? ''
+                    : `${encodeURIComponent(config.user)}:${encodeURIComponent(
+                          config.password
+                      )}@`;
+            const { MONGO_CONTAINER_NAME = 'localhost' } = process.env;
+            url =
+                'mongodb://' +
+                credential +
+                MONGO_CONTAINER_NAME +
+                ':27017/exampleDb';
         }
-    }
-    const testResultsDB = db.collection('testResults');
 
-    const parentIdIndex = await testResultsDB.createIndex({ parentId: 1 });
-    logger.info('Index created: ', parentIdIndex);
-    const urlBuildNameBuildNumIndex = await testResultsDB.createIndex({
-        buildName: 1,
-        url: 1,
-        buildNum: 1,
-    });
-    logger.info('Index created: ', urlBuildNameBuildNumIndex);
-
-    const testIdIndex = await testResultsDB.createIndex({ 'tests._id': 1 });
-    logger.info('Index created: ', testIdIndex);
-
-    const result = await testResultsDB.listIndexes().toArray();
-    logger.info('Existing testResults indexes:');
-    for (const doc of result) {
-        logger.info(doc);
+        logger.info('Connecting to MongoDB at: ' + url.replace(/\/\/.*@/, '//***@'));
+        const dbConnect = await MongoClient.connect(url, {
+            useUnifiedTopology: true,
+        });
+        db = dbConnect.db('exampleDb');
+        logger.info('MongoDB connected successfully');
+        
+        for (let collection of ['testResults', 'output', 'auditLogs', 'user']) {
+            try {
+                await db.createCollection(collection);
+            } catch (e) {
+                // do nothing. The collection may already exist
+            }
+        }
+        const testResultsDB = db.collection('testResults');
+    
+        const parentIdIndex = await testResultsDB.createIndex({ parentId: 1 });
+        logger.info('Index created: ', parentIdIndex);
+        const urlBuildNameBuildNumIndex = await testResultsDB.createIndex({
+            buildName: 1,
+            url: 1,
+            buildNum: 1,
+        });
+        logger.info('Index created: ', urlBuildNameBuildNumIndex);
+    
+        const testIdIndex = await testResultsDB.createIndex({ 'tests._id': 1 });
+        logger.info('Index created: ', testIdIndex);
+    
+        const result = await testResultsDB.listIndexes().toArray();
+        logger.info('Existing testResults indexes:');
+        for (const doc of result) {
+            logger.info(doc);
+        }
+    } catch (error) {
+        logger.error('Failed to connect to MongoDB:', error.message);
+        logger.error('Stack trace:', error.stack);
+        logger.error('Server will not function without database connection');
+        process.exit(1);
     }
 })();
+
+// Export a function to check if DB is ready
+function isDbReady() {
+    return db !== undefined && dbConnectionError === null;
+}
+
+// Export function to get connection error
+function getDbConnectionError() {
+    return dbConnectionError;
+}
 
 class Database {
     populateDB(data) {
@@ -317,6 +338,14 @@ class Database {
 class TestResultsDB extends Database {
     constructor() {
         super();
+        if (!db) {
+            const error = new Error('Database not initialized. MongoDB connection not ready.');
+            logger.error('TestResultsDB constructor error:', error.message);
+            if (dbConnectionError) {
+                logger.error('Original MongoDB connection error:', dbConnectionError.message);
+            }
+            throw error;
+        }
         this.col = db.collection('testResults');
     }
 }
@@ -324,6 +353,14 @@ class TestResultsDB extends Database {
 class OutputDB extends Database {
     constructor() {
         super();
+        if (!db) {
+            const error = new Error('Database not initialized. MongoDB connection not ready.');
+            logger.error('OutputDB constructor error:', error.message);
+            if (dbConnectionError) {
+                logger.error('Original MongoDB connection error:', dbConnectionError.message);
+            }
+            throw error;
+        }
         this.col = db.collection('output');
     }
 }
@@ -331,6 +368,14 @@ class OutputDB extends Database {
 class ApplicationTestsDB extends Database {
     constructor() {
         super();
+        if (!db) {
+            const error = new Error('Database not initialized. MongoDB connection not ready.');
+            logger.error('ApplicationTestsDB constructor error:', error.message);
+            if (dbConnectionError) {
+                logger.error('Original MongoDB connection error:', dbConnectionError.message);
+            }
+            throw error;
+        }
         this.col = db.collection('ApplicationTests');
     }
 }
@@ -338,6 +383,14 @@ class ApplicationTestsDB extends Database {
 class BuildListDB extends Database {
     constructor() {
         super();
+        if (!db) {
+            const error = new Error('Database not initialized. MongoDB connection not ready.');
+            logger.error('BuildListDB constructor error:', error.message);
+            if (dbConnectionError) {
+                logger.error('Original MongoDB connection error:', dbConnectionError.message);
+            }
+            throw error;
+        }
         this.col = db.collection('buildList');
     }
 }
@@ -345,6 +398,14 @@ class BuildListDB extends Database {
 class AuditLogsDB extends Database {
     constructor() {
         super();
+        if (!db) {
+            const error = new Error('Database not initialized. MongoDB connection not ready.');
+            logger.error('AuditLogsDB constructor error:', error.message);
+            if (dbConnectionError) {
+                logger.error('Original MongoDB connection error:', dbConnectionError.message);
+            }
+            throw error;
+        }
         this.col = db.collection('auditLogs');
     }
 }
@@ -352,6 +413,14 @@ class AuditLogsDB extends Database {
 class UserDB extends Database {
     constructor() {
         super();
+        if (!db) {
+            const error = new Error('Database not initialized. MongoDB connection not ready.');
+            logger.error('UserDB constructor error:', error.message);
+            if (dbConnectionError) {
+                logger.error('Original MongoDB connection error:', dbConnectionError.message);
+            }
+            throw error;
+        }
         this.col = db.collection('user');
     }
 }
@@ -359,6 +428,14 @@ class UserDB extends Database {
 class FeedbackDB extends Database {
     constructor() {
         super();
+        if (!db) {
+            const error = new Error('Database not initialized. MongoDB connection not ready.');
+            logger.error('FeedbackDB constructor error:', error.message);
+            if (dbConnectionError) {
+                logger.error('Original MongoDB connection error:', dbConnectionError.message);
+            }
+            throw error;
+        }
         this.col = db.collection('feedback');
     }
 }
@@ -372,4 +449,6 @@ module.exports = {
     UserDB,
     ObjectID,
     FeedbackDB,
+    isDbReady,
+    getDbConnectionError,
 };

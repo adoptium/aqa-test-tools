@@ -32,10 +32,16 @@ class EventHandler {
                         await buildProcessor.execute(task);
                     } catch (e) {
                         logger.error('Exception in BuildProcessor: ', e);
-                        await new AuditLogsDB().insertAuditLogs({
-                            action: '[exception] ' + e,
-                            ...task,
-                        });
+                        logger.error('Stack trace:', e.stack);
+                        try {
+                            await new AuditLogsDB().insertAuditLogs({
+                                action: '[exception] ' + e,
+                                ...(task || {}), // Use empty object if task is undefined
+                            });
+                        } catch (auditError) {
+                            logger.error('Failed to log audit entry:', auditError);
+                            logger.error('Audit error stack trace:', auditError.stack);
+                        }
                     }
                     logger.debug(
                         'EventHandler: processBuild() is waiting for 1 secs before processing the next build'
@@ -43,11 +49,17 @@ class EventHandler {
                     await Promise.delay(1 * 1000);
                 }
             } catch (e) {
-                logger.error('Exception in database query: ', e);
-                await new AuditLogsDB().insertAuditLogs({
-                    action: '[exception] ' + e,
-                    ...task,
-                });
+                logger.error('Exception when processing build: ', e);
+                logger.error('Stack trace:', e.stack);
+                try {
+                    await new AuditLogsDB().insertAuditLogs({
+                        action: '[exception] ' + e,
+                        ...(task || {}), // Use empty object if task is undefined
+                    });
+                } catch (auditError) {
+                    logger.error('Failed to log audit entry:', auditError);
+                    logger.error('Audit error stack trace:', auditError.stack);
+                }
             }
             const elapsedTime = elapsed[Math.min(count, elapsed.length - 1)];
             logger.verbose(
@@ -73,19 +85,31 @@ class EventHandler {
                             await buildMonitor.execute(task);
                         } catch (e) {
                             logger.error('Exception in BuildMonitor: ', e);
-                            await new AuditLogsDB().insertAuditLogs({
-                                action: '[exception] ' + e,
-                                ...task,
-                            });
+                            logger.error('Stack trace:', e.stack);
+                            try {
+                                await new AuditLogsDB().insertAuditLogs({
+                                    action: '[exception] ' + e,
+                                    ...(task || {}), // Use empty object if task is undefined
+                                });
+                            } catch (auditError) {
+                                logger.error('Failed to log audit entry:', auditError);
+                                logger.error('Audit error stack trace:', auditError.stack);
+                            }
                         }
                     }
                 }
             } catch (e) {
-                logger.error('Exception in database query: ', e);
-                await new AuditLogsDB().insertAuditLogs({
-                    action: '[exception] ' + e,
-                    ...task,
-                });
+                logger.error('Exception when monitoring build: ', e);
+                logger.error('Stack trace:', e.stack);
+                try {
+                    await new AuditLogsDB().insertAuditLogs({
+                        action: '[exception] ' + e,
+                        ...(task || {}), // Use empty object if task is undefined
+                    });
+                } catch (auditError) {
+                    logger.error('Failed to log audit entry:', auditError);
+                    logger.error('Audit error stack trace:', auditError.stack);
+                }
             }
             const elapsedTime = 1 * 60;
             logger.verbose(
