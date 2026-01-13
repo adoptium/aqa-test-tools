@@ -66,16 +66,6 @@ let db;
     }
 })();
 
-// Export a function to check if DB is ready
-function isDbReady() {
-    return db !== undefined && dbConnectionError === null;
-}
-
-// Export function to get connection error
-function getDbConnectionError() {
-    return dbConnectionError;
-}
-
 class Database {
     populateDB(data) {
         return this.col.insertOne(data);
@@ -341,9 +331,6 @@ class TestResultsDB extends Database {
         if (!db) {
             const error = new Error('Database not initialized. MongoDB connection not ready.');
             logger.error('TestResultsDB constructor error:', error.message);
-            if (dbConnectionError) {
-                logger.error('Original MongoDB connection error:', dbConnectionError.message);
-            }
             throw error;
         }
         this.col = db.collection('testResults');
@@ -356,9 +343,6 @@ class OutputDB extends Database {
         if (!db) {
             const error = new Error('Database not initialized. MongoDB connection not ready.');
             logger.error('OutputDB constructor error:', error.message);
-            if (dbConnectionError) {
-                logger.error('Original MongoDB connection error:', dbConnectionError.message);
-            }
             throw error;
         }
         this.col = db.collection('output');
@@ -371,9 +355,6 @@ class ApplicationTestsDB extends Database {
         if (!db) {
             const error = new Error('Database not initialized. MongoDB connection not ready.');
             logger.error('ApplicationTestsDB constructor error:', error.message);
-            if (dbConnectionError) {
-                logger.error('Original MongoDB connection error:', dbConnectionError.message);
-            }
             throw error;
         }
         this.col = db.collection('ApplicationTests');
@@ -386,9 +367,6 @@ class BuildListDB extends Database {
         if (!db) {
             const error = new Error('Database not initialized. MongoDB connection not ready.');
             logger.error('BuildListDB constructor error:', error.message);
-            if (dbConnectionError) {
-                logger.error('Original MongoDB connection error:', dbConnectionError.message);
-            }
             throw error;
         }
         this.col = db.collection('buildList');
@@ -401,9 +379,6 @@ class AuditLogsDB extends Database {
         if (!db) {
             const error = new Error('Database not initialized. MongoDB connection not ready.');
             logger.error('AuditLogsDB constructor error:', error.message);
-            if (dbConnectionError) {
-                logger.error('Original MongoDB connection error:', dbConnectionError.message);
-            }
             throw error;
         }
         this.col = db.collection('auditLogs');
@@ -416,9 +391,6 @@ class UserDB extends Database {
         if (!db) {
             const error = new Error('Database not initialized. MongoDB connection not ready.');
             logger.error('UserDB constructor error:', error.message);
-            if (dbConnectionError) {
-                logger.error('Original MongoDB connection error:', dbConnectionError.message);
-            }
             throw error;
         }
         this.col = db.collection('user');
@@ -431,9 +403,6 @@ class FeedbackDB extends Database {
         if (!db) {
             const error = new Error('Database not initialized. MongoDB connection not ready.');
             logger.error('FeedbackDB constructor error:', error.message);
-            if (dbConnectionError) {
-                logger.error('Original MongoDB connection error:', dbConnectionError.message);
-            }
             throw error;
         }
         this.col = db.collection('feedback');
@@ -449,6 +418,4 @@ module.exports = {
     UserDB,
     ObjectID,
     FeedbackDB,
-    isDbReady,
-    getDbConnectionError,
 };
