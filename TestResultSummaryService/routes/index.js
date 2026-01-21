@@ -54,6 +54,9 @@ app.get('/getFeedbackUrl', require('./getFeedbackUrl'));
 app.get('/rescanBuild', require('./rescanBuild'));
 app.get('/testParserViaFile', require('./test/testParserViaFile'));
 app.get('/testParserViaLogStream', require('./test/testParserViaLogStream'));
+app.get('/getRerunDetails', require('./getRerunDetails'));
+app.get('/getJobsDetails', require('./getJobsDetails'));
+app.get('/GetFailedTestByMachine', require('./GetFailedTestByMachine'));
 
 app.get('/updateComments', require('./updateComments'));
 app.get('/updateKeepForever', require('./updateKeepForever'));
