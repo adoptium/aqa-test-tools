@@ -106,7 +106,7 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
         };
     }) ?? []),
     {
-        title: 'Annotate Bad Runs',
+        title: 'Annotate data outliers',
         dataIndex: 'enabled',
         key: 'enabled',
         width: 150,
@@ -116,8 +116,8 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
                 <Switch
                     checked={enabled}
                     onChange={() => handleToggle(record)}
-                    checkedChildren="Good run"
-                    unCheckedChildren="Bad run"
+                    checkedChildren={<span>&nbsp;</span>} 
+                    unCheckedChildren="Exclude data"
                 />
             );
         },
