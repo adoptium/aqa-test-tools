@@ -13,7 +13,7 @@ certifi==2024.7.4
 cffi==1.16.0
 charset-normalizer==3.3.2
 click==8.1.7
-cryptography==44.0.1
+cryptography==46.0.5
 Flask==3.0.3
 frozenlist==1.4.1
 gunicorn==23.0.0
