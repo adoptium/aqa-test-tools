@@ -194,7 +194,7 @@ const BuildTable = ({ title, buildData }) => {
                 );
             }
         }
-        let limit = 1;
+        let limit = 5;
         if (value.type === 'Perf') {
             limit = 1;
         }
