@@ -67,6 +67,5 @@ app.post('/getSpecificData', require('./getSpecificData'));
 app.post('/upsertBuildList', require('./upsertBuildList'));
 app.post('/postTapFiles', require('./postTapFiles'));
 app.post('/postIssueFeedback', require('./postIssueFeedback'));
-app.put('/updateStats', require('./updateStats'));
 
 module.exports = app;
