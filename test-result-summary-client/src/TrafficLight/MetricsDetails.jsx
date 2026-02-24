@@ -84,12 +84,14 @@ function MetricsDetails() {
                 justifyContent: 'space-between',
                 alignItems: 'center'
             }}>
-                <div>
-                    <h3 style={{ margin: 0 }}>Metrics Details - {benchmarkName}</h3>
-                    <p style={{ margin: '4px 0 0 0', fontSize: 12, color: '#666' }}>
-                        Annotate bad runs for both test and baseline, then save
-                    </p>
+            <div>
+                <div style={{ margin: 0, fontSize: 20, fontWeight: 'bold' }}>
+                    Metrics Details - {benchmarkName}
                 </div>
+                <div style={{ margin: 0, fontSize: 12, color: 'rgba(0, 0, 0, 1)' }}>
+                    Annotate bad runs for both test and baseline, then SAVE
+                </div>
+            </div>
                 <Button 
                     type="primary" 
                     size="large"
