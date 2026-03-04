@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Typography, Switch } from 'antd';
-import { DeleteTwoTone } from '@ant-design/icons';
 import { fetchData } from '../utils/Utils';
 import BenchmarkMath from '../utils/BenchmarkMathCalculation';
 import * as math from 'mathjs';

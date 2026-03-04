@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
 import { Table, Tooltip, Progress, Typography } from 'antd';
-import { fetchData } from '../../../utils/Utils';
-
-const { Title: AntTitle } = Typography;
+import { fetchData } from '../../utils/Utils';
 
 export default class ReleaseHealthWidget extends Component {
     static Title = (props) => 'Release Health Overview';
