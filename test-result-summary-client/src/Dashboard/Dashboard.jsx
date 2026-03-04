@@ -18,6 +18,11 @@ export default class Dashboard extends Component {
                         key: '2',
                         children: <TabInfo tab="Custom" />,
                     },
+                    {
+                        label: 'Release',
+                        key: '3',
+                        children: <TabInfo tab="Release" />,
+                    },
                 ]}
             />
         );
