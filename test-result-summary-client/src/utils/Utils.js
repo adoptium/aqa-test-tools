@@ -89,3 +89,22 @@ export const fetchData = async (url) => {
         console.error(e);
     }
 };
+
+export const postData = async (url, data) => {
+    if (connectAdoptiumAPI) {
+        url = 'https://trss.adoptium.net' + url;
+    }
+    try {
+        const response = await fetch(url, {
+            method: 'post',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+        });
+        const jsonResponse = await response.json();
+        return jsonResponse;
+    } catch (e) {
+        console.error(e);
+    }
+};

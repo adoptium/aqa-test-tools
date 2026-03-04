@@ -58,6 +58,7 @@ app.get('/getReleaseSummary', require('./getReleaseSummary'));
 
 app.get('/updateComments', require('./updateComments'));
 app.get('/updateKeepForever', require('./updateKeepForever'));
+app.post('/updateStats', require('./updateStats'));
 
 // jwt
 app.post('/auth/register', require('./jwt/register'));
