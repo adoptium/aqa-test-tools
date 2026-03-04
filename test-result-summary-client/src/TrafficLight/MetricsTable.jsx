@@ -21,7 +21,7 @@ const SummaryRow = ({ type, stats }) => {
     );
 };
 
-const MetricsTable = ({ type, id, benchmarkName }) => {
+const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) => {
     const [data, setData] = useState([]);
     const [javaVersion, setJavaVersion] = useState([]);
     useEffect(() => {
@@ -39,11 +39,12 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
                 );
 
                 const [firstMetric] = fliteredData.metrics;
+                const disabledIterations = fliteredData.metrics[0]?.disabledIterations || [];
                 const rawValues = firstMetric.rawValues.map((_, i) => {
                     return {
                         key: i,
                         iteration: i,
-                        enabled: true,
+                        enabled: !disabledIterations.includes(i),
                         metrics: fliteredData.metrics.map((metric) => {
                             return {
                                 metricName: metric.name,
@@ -64,10 +65,35 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
                 }
                 setJavaVersion(javaVersion);
                 setData(rawValues);
+                if (onDataChange) {
+                    onDataChange(rawValues);
+                    }
             }
         };
         updateData();
     }, []);
+       useEffect(() => {
+        if (data.length > 0 && onStatsChange) {
+            const enabledData = data.filter(item => item.enabled);
+            
+            if (enabledData.length > 0) {
+                const pivot = zip(...enabledData.map(d => d.metrics));
+                const stats = pivot.map((p) => {
+                    const values = p.map(({ value }) => value);
+                    const mean = Number(math.mean(values)).toFixed(0);
+                    const max = math.max(values);
+                    const min = math.min(values);
+                    const median = Number(math.median(values)).toFixed(0);
+                    const std = Number(math.std(values)).toFixed(2);
+                    const CI = Number(BenchmarkMath.confidence_interval(values) * 100).toFixed(2);
+                    return { mean, max, min, median, std, CI };
+                });
+                
+                onStatsChange(stats[0]); // Send first metric stats to parent
+            }
+        }
+    }, [data, onStatsChange]);
+
 
     const handleToggle = (record) => {
         const newData = data.map((item) => {
@@ -77,6 +103,10 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
             return item;
         });
     setData(newData);
+    if (onDataChange) {
+        onDataChange(newData);
+    }
+    
     };
 
     // const uniqueTitle = [...new Set(data.map((item) => item.metricName))];
