@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { Table, Typography, Switch } from 'antd';
-import { DeleteTwoTone } from '@ant-design/icons';
 import { fetchData } from '../utils/Utils';
 import BenchmarkMath from '../utils/BenchmarkMathCalculation';
 import * as math from 'mathjs';
@@ -21,7 +20,7 @@ const SummaryRow = ({ type, stats }) => {
     );
 };
 
-const MetricsTable = ({ type, id, benchmarkName }) => {
+const MetricsTable = ({ type, id, benchmarkName, onExcludedRunsChange }) => {
     const [data, setData] = useState([]);
     const [javaVersion, setJavaVersion] = useState([]);
     useEffect(() => {
@@ -32,42 +31,46 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
             }
             if (results && results[0]) {
                 const aggregateInfo = results[0].aggregateInfo;
-                const fliteredData = Object.values(aggregateInfo).find(
+                const filteredItem = Object.values(aggregateInfo).find(
                     (item) =>
                         benchmarkName === item.benchmarkName &&
                         item.buildName.includes(type)
                 );
 
-                const [firstMetric] = fliteredData.metrics;
-                const rawValues = firstMetric.rawValues.map((_, i) => {
-                    return {
-                        key: i,
-                        iteration: i,
-                        enabled: true,
-                        metrics: fliteredData.metrics.map((metric) => {
-                            return {
-                                metricName: metric.name,
-                                value: metric.rawValues[i],
-                            };
-                        })
-                    };
-                });
-                const grandchildrenData = await fetchData(
-                    `/api/getChildBuilds?parentId=${results[0]._id}&buildName=${fliteredData.buildName}`
-                );
-                let javaVersion = '';
-                for (const grandchildData of grandchildrenData) {
-                    if (grandchildData.javaVersion) {
-                        javaVersion = grandchildData.javaVersion;
-                        break;
+                if (filteredItem) {
+                    const [firstMetric] = filteredItem.metrics;
+                    const excludedIndices = filteredItem.excludedRuns || [];
+                    const rawValues = firstMetric.rawValues.map((_, i) => {
+                        return {
+                            key: i,
+                            iteration: i,
+                            enabled: !excludedIndices.includes(i),
+                            metrics: filteredItem.metrics.map((metric) => {
+                                return {
+                                    metricName: metric.name,
+                                    value: metric.rawValues[i],
+                                };
+                            }),
+                            buildName: filteredItem.buildName,
+                        };
+                    });
+                    const grandchildrenData = await fetchData(
+                        `/api/getChildBuilds?parentId=${results[0]._id}&buildName=${filteredItem.buildName}`
+                    );
+                    let javaVersion = '';
+                    for (const grandchildData of grandchildrenData) {
+                        if (grandchildData.javaVersion) {
+                            javaVersion = grandchildData.javaVersion;
+                            break;
+                        }
                     }
+                    setJavaVersion(javaVersion);
+                    setData(rawValues);
                 }
-                setJavaVersion(javaVersion);
-                setData(rawValues);
             }
         };
         updateData();
-    }, []);
+    }, [id, benchmarkName]);
 
     const handleToggle = (record) => {
         const newData = data.map((item) => {
@@ -76,53 +79,64 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
             }
             return item;
         });
-    setData(newData);
+        setData(newData);
+
+        if (onExcludedRunsChange) {
+            const excludedIndices = newData
+                .filter((item) => !item.enabled)
+                .map((item) => item.iteration);
+            onExcludedRunsChange(record.buildName, excludedIndices);
+        }
     };
 
     // const uniqueTitle = [...new Set(data.map((item) => item.metricName))];
     const columns = [
-    {
-        title: 'Iteration',
-        dataIndex: 'iteration',
-        key: 'iteration',
-        width: 100,
-        render: (iteration) => `Run ${iteration + 1}`,
-    },
-    ...(data[0]?.metrics.map(({ metricName }, i) => {
-        return {
-            title: metricName,
-            key: metricName,
-            render: (_, record) => {
+        {
+            title: 'Iteration',
+            dataIndex: 'iteration',
+            key: 'iteration',
+            width: 100,
+            render: (iteration) => `Run ${iteration + 1}`,
+        },
+        ...(data[0]?.metrics.map(({ metricName }, i) => {
+            return {
+                title: metricName,
+                key: metricName,
+                render: (_, record) => {
+                    return (
+                        <div
+                            style={{
+                                opacity: record.enabled ? 1 : 0.4,
+                                textDecoration: record.enabled
+                                    ? 'none'
+                                    : 'line-through',
+                                color: record.enabled ? 'inherit' : '#999',
+                            }}
+                        >
+                            {record.metrics[i].value}
+                        </div>
+                    );
+                },
+            };
+        }) ?? []),
+        {
+            title: 'Annotate data outliers',
+            dataIndex: 'enabled',
+            key: 'enabled',
+            width: 150,
+            fixed: 'right',
+            render: (enabled, record) => {
                 return (
-                    <div style={{ 
-                        opacity: record.enabled ? 1 : 0.4,
-                        textDecoration: record.enabled ? 'none' : 'line-through',
-                        color: record.enabled ? 'inherit' : '#999'
-                    }}>
-                        {record.metrics[i].value}
-                    </div>
+                    <Switch
+                        checked={enabled}
+                        onChange={() => handleToggle(record)}
+                        checkedChildren={<span>&nbsp;</span>}
+                        unCheckedChildren="Exclude data"
+                    />
                 );
             },
-        };
-    }) ?? []),
-    {
-        title: 'Annotate data outliers',
-        dataIndex: 'enabled',
-        key: 'enabled',
-        width: 150,
-        fixed: 'right',
-        render: (enabled, record) => {
-            return (
-                <Switch
-                    checked={enabled}
-                    onChange={() => handleToggle(record)}
-                    checkedChildren={<span>&nbsp;</span>} 
-                    unCheckedChildren="Exclude data"
-                />
-            );
         },
-    },
-];
+    ];
 
     return (
         <div>
@@ -135,9 +149,11 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
             </p>
             <pre>JDK Version: {javaVersion}</pre>
             <div style={{ marginBottom: 12, color: '#665' }}>
-            <Text>
-                Enabled: <strong>{data.filter(d => d.enabled).length}</strong> / {data.length} iterations
-            </Text>
+                <Text>
+                    Enabled:{' '}
+                    <strong>{data.filter((d) => d.enabled).length}</strong> /{' '}
+                    {data.length} iterations
+                </Text>
             </div>
             <Table
                 bordered
@@ -145,28 +161,20 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
                 columns={columns}
                 pagination={{ defaultPageSize: 50 }}
                 summary={(pageData) => {
-                    const enabledData = pageData.filter(item => item.enabled);
+                    const enabledData = pageData.filter((item) => item.enabled);
                     if (!enabledData.length) return null;
-                    const pivot = zip(...enabledData.map(d => d.metrics));
-                    
+                    const pivot = zip(...enabledData.map((d) => d.metrics));
+
                     const stats = pivot.map((p) => {
-                        const values = p.map(({ value }) => value)
-                        const mean = Number(
-                            math.mean(values)
-                        ).toFixed(0);
+                        const values = p.map(({ value }) => value);
+                        const mean = Number(math.mean(values)).toFixed(0);
                         const max = math.max(values);
                         const min = math.min(values);
-                        const median = Number(
-                            math.median(values)
-                        ).toFixed(0);
-                        const std = Number(
-                            math.std(values)
-                        ).toFixed(2);
+                        const median = Number(math.median(values)).toFixed(0);
+                        const std = Number(math.std(values)).toFixed(2);
                         const CI =
                             Number(
-                                BenchmarkMath.confidence_interval(
-                                    values
-                                ) * 100
+                                BenchmarkMath.confidence_interval(values) * 100
                             ).toFixed(2) + '%';
                         return {
                             mean,

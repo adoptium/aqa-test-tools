@@ -25,4 +25,14 @@ export default {
             },
         ],
     },
+    Release: {
+        widgets: [
+            {
+                type: 'ReleaseHealthWidget',
+                x: 0,
+                y: 0,
+                settings: {},
+            },
+        ],
+    },
 };
