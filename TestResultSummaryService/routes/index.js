@@ -37,8 +37,6 @@ app.get('/getAzDoRun', require('./getAzDoRun'));
 app.get('/getParents', require('./getParents'));
 app.get('/getPerffarmRunCSV', require('./getPerffarmRunCSV'));
 app.get('/getPossibleIssuesByAI', require('./getPossibleIssuesByAI'));
-app.get('/getTabularData', require('./getTabularData'));
-app.get('/getTabularDropdown', require('./getTabularDropdown'));
 app.get('/getTestBuildsByMachine', require('./getTestBuildsByMachine'));
 app.get('/getTestById', require('./getTestById'));
 app.get('/getTestBySearch', require('./getTestBySearch'));
