@@ -3,7 +3,6 @@ import { Route, Routes } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ConfigProvider, Layout, Menu } from 'antd';
 import enUS from 'antd/es/calendar/locale/en_US';
-
 import { Dashboard } from './Dashboard/';
 import ErrorBoundary from './ErrorBoundary';
 import { Output } from './Build/Output/';
@@ -107,14 +106,6 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '3',
-                                        label: (
-                                            <Link to="/trafficLight">
-                                                Traffic Light
-                                            </Link>
-                                        ),
-                                    },
-                                    {
                                         key: '4',
                                         label: (
                                             <Link to="/tests/AQAvitCert">
@@ -135,10 +126,18 @@ export default class App extends Component {
                                         label: 'Perf Related',
                                         children: [
                                             {
-                                                key: 'sub1',
+                                                key: 'perfCompare',
                                                 label: (
                                                     <Link to="/perfCompare">
                                                         Perf Compare
+                                                    </Link>
+                                                ),
+                                            },
+                                            {
+                                                key: 'trafficLight',
+                                                label: (
+                                                    <Link to="/trafficLight">
+                                                        Traffic Light
                                                     </Link>
                                                 ),
                                             },
@@ -161,7 +160,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '',
+                                        key: '9',
                                         label: (
                                             <Link to="/AdvancedSearch">
                                                 Advanced Search
