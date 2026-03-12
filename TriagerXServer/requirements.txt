@@ -33,7 +33,7 @@ markdown-it-py==3.0.0
 MarkupSafe==2.1.5
 mdurl==0.1.2
 openai==1.33.0
-orjson==3.10.3
+orjson==3.11.6
 packaging==24.0
 proto-plus==1.23.0
 protobuf==5.29.6
