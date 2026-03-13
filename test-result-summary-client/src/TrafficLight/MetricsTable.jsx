@@ -67,12 +67,12 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
                 setData(rawValues);
                 if (onDataChange) {
                     onDataChange(rawValues);
-                    }
+                }
             }
         };
         updateData();
-    }, []);
-       useEffect(() => {
+    }, [id, benchmarkName, type, onDataChange]);
+    useEffect(() => {
         if (data.length > 0 && onStatsChange) {
             const enabledData = data.filter(item => item.enabled);
             
