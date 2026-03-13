@@ -138,7 +138,7 @@ function TrafficLight() {
                             ? testJavaVersionMap.get(originBuildNameTitle)
                             : baselineJavaVersionMap.get(originBuildNameTitle);
                     return aggregateInfo.metrics.map(
-                        ({ name: metricsName, statValues, rawValues }) => {
+                        ({ name: metricsName, statValues, rawValues, filteredStatValues, disabledIterations }) => {
                             let higherbetter = true;
                             const benchmarchMetric = metricPropsJSON[benchmark]
                                 ? metricPropsJSON[benchmark].metrics
@@ -160,6 +160,8 @@ function TrafficLight() {
                                 rawValues,
                                 benchmarkName,
                                 benchmarkVariant,
+                                filteredStatValues,
+                                disabledIterations,
                                 buildName,
                                 platform,
                                 higherbetter,
@@ -197,8 +199,8 @@ function TrafficLight() {
         );
         if (testBuild && baselineBuild) {
             let percentage = -1;
-            const testValues = testBuild.statValues;
-            const baselineValues = baselineBuild.statValues;
+            const testValues = testBuild.filteredStatValues || testBuild.statValues;
+            const baselineValues = baselineBuild.filteredStatValues || baselineBuild.statValues;
             const testScore = Number(testValues.mean).toFixed(0);
             const baselineScore = Number(baselineValues.mean).toFixed(0);
             if (testBuild.higherbetter) {
