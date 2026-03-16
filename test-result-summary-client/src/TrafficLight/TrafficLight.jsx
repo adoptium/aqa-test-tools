@@ -212,11 +212,9 @@ function TrafficLight() {
                     2
                 );
             }
-            const testCI = Number(testValues.CI * 100).toFixed(2) + '%';
-            const baselineCI = Number(baselineValues.CI * 100).toFixed(2) + '%';
-            const totalCI =
-                Number((testValues.CI + baselineValues.CI) * 100).toFixed(2) +
-                '%';
+            const testCI = Number(testValues.CI).toFixed(2) + '%';
+            const baselineCI = Number(baselineValues.CI).toFixed(2) + '%';
+            const totalCI = Number(Number(testValues.CI) + Number(baselineValues.CI)).toFixed(2) + '%';
             const testJavaVersion = testBuild.javaVersion;
             const baselineJaveVersion = baselineBuild.javaVersion;
             let icon = iconRed;
