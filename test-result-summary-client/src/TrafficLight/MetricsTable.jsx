@@ -85,11 +85,14 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
                     const min = math.min(values);
                     const median = Number(math.median(values)).toFixed(0);
                     const std = Number(math.std(values)).toFixed(2);
+                    // State value: plain numeric string (e.g. "38.47") for use in comparisons and further calculations by parent components
                     const CI = Number(BenchmarkMath.confidence_interval(values) * 100).toFixed(2);
                     return { mean, max, min, median, std, CI };
                 });
-                
                 onStatsChange(stats[0]); // Send first metric stats to parent
+            }
+             else {
+            onStatsChange(null);
             }
         }
     }, [data, onStatsChange]);
@@ -192,6 +195,7 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
                         const std = Number(
                             math.std(values)
                         ).toFixed(2);
+                        // Display value: formatted as a percent string (e.g. "38.47%") for rendering in the summary row only
                         const CI =
                             Number(
                                 BenchmarkMath.confidence_interval(
