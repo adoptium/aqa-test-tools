@@ -37,7 +37,7 @@ orjson==3.11.6
 packaging==24.0
 proto-plus==1.23.0
 protobuf==5.29.6
-pyasn1==0.6.0
+pyasn1==0.6.3
 pyasn1_modules==0.4.0
 pydantic==2.7.3
 pydantic_core==2.18.4
