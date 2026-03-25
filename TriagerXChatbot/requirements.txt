@@ -32,7 +32,7 @@ oauthlib==3.2.2
 packaging==24.1
 pycparser==2.22
 PyJWT==2.12.0
-requests==2.32.4
+requests==2.33.0
 requests-oauthlib==2.0.0
 six==1.16.0
 slack_bolt==1.19.0
