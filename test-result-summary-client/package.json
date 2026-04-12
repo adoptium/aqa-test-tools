@@ -13,7 +13,7 @@
         "highstock-release": "^6.0.4",
         "history": "^5.3.0",
         "jquery": "^3.6.4",
-        "mathjs": "^7.6.0",
+        "mathjs": "^15.2.0",
         "mergely": "^4.3.9",
         "moment": "^2.29.4",
         "qs": "^6.14.2",
