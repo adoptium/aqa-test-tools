@@ -5,7 +5,7 @@ import { getParams } from '../utils/query';
 
 function MetricsDetails() {
     const { testId, baselineId, benchmarkName } = getParams(location.search);
-    
+
     // State to track data from both tables
     const [testData, setTestData] = useState(null);
     const [baselineData, setBaselineData] = useState(null);
@@ -21,13 +21,13 @@ function MetricsDetails() {
         }
 
         setSaving(true);
-        
+
         try {
             // Calculate which iterations are disabled for TEST
             const testDisabledIterations = testData
                 .filter(item => !item.enabled)
                 .map(item => item.iteration);
-            
+
             // Calculate which iterations are disabled for BASELINE
             const baselineDisabledIterations = baselineData
                 .filter(item => !item.enabled)
@@ -43,8 +43,8 @@ function MetricsDetails() {
             // One API call saves both TEST and BASELINE stats together
             const response = await fetch('/api/updateStats', {
                 method: 'PUT',
-                headers: { 
-                    'Content-Type': 'application/json' 
+                headers: {
+                    'Content-Type': 'application/json',
                 },
                 body: JSON.stringify({
                     testId,
@@ -54,11 +54,11 @@ function MetricsDetails() {
                     baselineStats,
                     testDisabledIterations,
                     baselineDisabledIterations,
-                })
+                }),
             });
 
             const result = await response.json();
-            
+
             if (result.success) {
                 message.success('✓ Both TEST and BASELINE statistics saved successfully!');
             } else {
@@ -75,35 +75,44 @@ function MetricsDetails() {
     return (
         <div>
             {/* One Save Button for bothH tables */}
-            <div style={{ 
-                marginBottom: 16, 
-                padding: 16,
-                background: '#f5f5f5',
-                borderRadius: 8,
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center'
-            }}>
-            <div>
-                <div style={{ margin: 0, fontSize: 20, fontWeight: 'bold' }}>
-                    Metrics Details - {benchmarkName}
+            <div
+                style={{
+                    marginBottom: 16,
+                    padding: 16,
+                    background: '#f5f5f5',
+                    borderRadius: 8,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
+                }}
+            >
+                <div>
+                    <div
+                        style={{ margin: 0, fontSize: 20, fontWeight: 'bold' }}
+                    >
+                        Metrics Details - {benchmarkName}
+                    </div>
+                    <div
+                        style={{
+                            margin: 0,
+                            fontSize: 12,
+                            color: 'rgba(0, 0, 0, 1)',
+                        }}
+                    >
+                        Annotate bad runs for both test and baseline, then SAVE
+                    </div>
                 </div>
-                <div style={{ margin: 0, fontSize: 12, color: 'rgba(0, 0, 0, 1)' }}>
-                    Annotate bad runs for both test and baseline, then SAVE
-                </div>
-            </div>
-                <Button 
-                    type="primary" 
+                <Button
+                    type="primary"
                     size="large"
                     onClick={handleSave}
                     loading={saving}
                     disabled={!testStats || !baselineStats}
                 >
-                    Save Both Statistics
+                    Save
                 </Button>
             </div>
 
-            
             <MetricsTable
                 type="test"
                 id={testId}
