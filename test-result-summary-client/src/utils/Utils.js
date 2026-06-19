@@ -7,10 +7,27 @@ export const order = (a, b) => {
 };
 export const getInfoFromBuildName = (buildName) => {
     const regex =
-        /^(Test|Perf)_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl|_fips140_2|_fips140_3_openjceplusfips|_fips140_3_openjceplusfips.fips140-3|_fips140_3_openjceplusfips.fips140-3-strongly-enforced|_openjceplus|_criu)?)(_.+)?$/i;
+        /^(Test|Perf)_openjdk(\w+)_(\w+)_(\w+).(.+?)_(.+?_.+?(_xl|_f2|_f3_weak|_f3_strict|_f3_strong|_fips140_2|_fips140_3_openjceplusfips|_fips140_3_openjceplusfips.fips140-3|_fips140_3_openjceplusfips.fips140-3-strongly-enforced|_openjceplus|_criu)?)(_.+)?$/i;
     const tokens = buildName.match(regex);
     if (Array.isArray(tokens) && tokens.length > 5) {
-        const [_, type, jdkVersion, jdkImpl, level, group, platform] = tokens;
+        let [_, type, jdkVersion, jdkImpl, level, group, platform] = tokens;
+
+        // Map abbreviated FIPS suffixes to full display names for UI
+        const fipsSuffixMap = {
+            '_f2': '_fips140_2',
+            '_f3_weak': '_fips140_3_openjceplusfips',
+            '_f3_strict': '_fips140_3_openjceplusfips.fips140-3',
+            '_f3_strong': '_fips140_3_openjceplusfips.fips140-3-strongly-enforced'
+        };
+
+        // Check if platform ends with an abbreviated suffix and expand it
+        for (const [abbrev, full] of Object.entries(fipsSuffixMap)) {
+            if (platform.endsWith(abbrev)) {
+                platform = platform.slice(0, -abbrev.length) + full;
+                break;
+            }
+        }
+
         let rerun = false;
         if (buildName.includes('_rerun')) {
             rerun = true;
