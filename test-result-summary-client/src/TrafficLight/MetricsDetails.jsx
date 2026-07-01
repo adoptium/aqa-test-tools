@@ -32,8 +32,8 @@ function MetricsDetails() {
         try {
             // Calculate which iterations are disabled for TEST
             const testDisabledIterations = testData
-                .filter((item) => !item.enabled)
-                .map((item) => item.iteration);
+                .filter(item => !item.enabled)
+                .map(item => item.iteration);
 
             // Calculate which iterations are disabled for BASELINE
             const baselineDisabledIterations = baselineData
@@ -134,117 +134,43 @@ function MetricsDetails() {
 
     return (
         <div>
-            {/* Header with Save Button and Percentage Score */}
+            {/* One Save Button for bothH tables */}
             <div
                 style={{
                     marginBottom: 16,
                     padding: 16,
                     background: '#f5f5f5',
                     borderRadius: 8,
+                    display: 'flex',
+                    justifyContent: 'space-between',
+                    alignItems: 'center',
                 }}
             >
-                <div
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                        marginBottom: 16,
-                    }}
-                >
-                    <div>
-                        <div
-                            style={{
-                                margin: 0,
-                                fontSize: 20,
-                                fontWeight: 'bold',
-                            }}
-                        >
-                            Metrics Details - {benchmarkName}
-                        </div>
-                        <div
-                            style={{
-                                margin: 0,
-                                fontSize: 12,
-                                color: 'rgba(0, 0, 0, 1)',
-                            }}
-                        >
-                            Annotate bad runs for both test and baseline, then
-                            SAVE
-                        </div>
-                    </div>
-                    <Button
-                        type="primary"
-                        size="large"
-                        onClick={handleSave}
-                        loading={saving}
-                        disabled={!testStats || !baselineStats}
+                <div>
+                    <div
+                        style={{ margin: 0, fontSize: 20, fontWeight: 'bold' }}
                     >
-                        Save Both Statistics
-                    </Button>
-                </div>
-
-                {/* Percentage Score Display - Updates in Real-Time */}
-                {percentage !== null && (
-                    <Card
+                        Metrics Details - {benchmarkName}
+                    </div>
+                    <div
                         style={{
-                            background: 'white',
-                            borderLeft: `4px solid ${scoreDisplay.color}`,
+                            margin: 0,
+                            fontSize: 12,
+                            color: 'rgba(0, 0, 0, 1)',
                         }}
                     >
-                        <div
-                            style={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
-                                gap: 20,
-                            }}
-                        >
-                            <Statistic
-                                title="Benchmark Performance Score"
-                                value={percentage}
-                                suffix="%"
-                                valueStyle={{
-                                    color: scoreDisplay.color,
-                                    fontSize: 32,
-                                    fontWeight: 'bold',
-                                }}
-                                prefix={scoreDisplay.icon}
-                            />
-                            <div style={{ textAlign: 'right' }}>
-                                <div
-                                    style={{
-                                        fontSize: 16,
-                                        fontWeight: 'bold',
-                                        color: scoreDisplay.color,
-                                    }}
-                                >
-                                    {scoreDisplay.status}
-                                </div>
-                                <div
-                                    style={{
-                                        fontSize: 12,
-                                        color: '#666',
-                                        marginTop: 4,
-                                    }}
-                                >
-                                    Test Mean: {testStats?.mean || 'N/A'} | Test
-                                    CI: {testStats?.CI || 'N/A'}%
-                                </div>
-                                <div
-                                    style={{
-                                        fontSize: 12,
-                                        color: '#666',
-                                        marginTop: 2,
-                                    }}
-                                >
-                                    Baseline Mean:{' '}
-                                    {baselineStats?.mean || 'N/A'} | Baseline
-                                    CI: {baselineStats?.CI || 'N/A'}%
-                                </div>
-                            </div>
-                        </div>
-                    </Card>
-                )}
+                        Annotate bad runs for both test and baseline, then SAVE
+                    </div>
+                </div>
+                <Button
+                    type="primary"
+                    size="large"
+                    onClick={handleSave}
+                    loading={saving}
+                    disabled={!testStats || !baselineStats}
+                >
+                    Save
+                </Button>
             </div>
 
             <MetricsTable
