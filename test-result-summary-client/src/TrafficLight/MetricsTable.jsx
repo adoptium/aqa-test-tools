@@ -75,7 +75,7 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
     useEffect(() => {
         if (data.length > 0 && onStatsChange) {
             const enabledData = data.filter(item => item.enabled);
-            
+
             if (enabledData.length > 0) {
                 const pivot = zip(...enabledData.map(d => d.metrics));
                 const stats = pivot.map((p) => {
@@ -109,10 +109,9 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
     if (onDataChange) {
         onDataChange(newData);
     }
-    
+
     };
 
-    // const uniqueTitle = [...new Set(data.map((item) => item.metricName))];
     const columns = [
     {
         title: 'Iteration',
@@ -127,11 +126,15 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
             key: metricName,
             render: (_, record) => {
                 return (
-                    <div style={{ 
-                        opacity: record.enabled ? 1 : 0.4,
-                        textDecoration: record.enabled ? 'none' : 'line-through',
-                        color: record.enabled ? 'inherit' : '#999'
-                    }}>
+                    <div
+                        style={{
+                            opacity: record.enabled ? 1 : 0.4,
+                            textDecoration: record.enabled
+                                ? 'none'
+                                : 'line-through',
+                            color: record.enabled ? 'inherit' : '#999',
+                        }}
+                    >
                         {record.metrics[i].value}
                     </div>
                 );
@@ -147,9 +150,9 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
         render: (enabled, record) => {
             return (
                 <Switch
-                    checked={enabled}
+                    checked={!enabled}
                     onChange={() => handleToggle(record)}
-                    checkedChildren={<span>&nbsp;</span>} 
+                    checkedChildren={<span>&nbsp;</span>}
                     unCheckedChildren="Exclude data"
                 />
             );
@@ -181,7 +184,7 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
                     const enabledData = pageData.filter(item => item.enabled);
                     if (!enabledData.length) return null;
                     const pivot = zip(...enabledData.map(d => d.metrics));
-                    
+
                     const stats = pivot.map((p) => {
                         const values = p.map(({ value }) => value)
                         const mean = Number(
