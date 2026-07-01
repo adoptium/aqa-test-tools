@@ -16,7 +16,7 @@
         "mathjs": "^15.2.0",
         "mergely": "^4.3.9",
         "moment": "^2.29.4",
-        "qs": "^6.14.2",
+        "qs": "^6.15.2",
         "react": "^18.2.0",
         "react-app-rewired": "^2.2.1",
         "react-copy-to-clipboard": "^5.1.0",
@@ -28,8 +28,8 @@
         "react-jsx-highcharts": "^3.6.1",
         "react-jsx-highstock": "^3.6.1",
         "react-nl2br": "^1.0.4",
-        "react-router": "^7.12.0",
-        "react-router-dom": "^7.12.0",
+        "react-router": "^7.16.0",
+        "react-router-dom": "^7.16.0",
         "react-scripts": "^5.0.1",
         "react-table": "^6.11.5",
         "reactjs-visibility": "^0.1.4",
@@ -44,7 +44,7 @@
     },
     "proxy": "http://localhost:3001",
     "devDependencies": {
-        "cypress": "^8.6.0",
+        "cypress": "^15.17.0",
         "npm-check": "^6.0.1",
         "prettier": "2.5.1"
     },
