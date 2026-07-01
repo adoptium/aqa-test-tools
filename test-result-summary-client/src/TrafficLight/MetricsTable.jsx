@@ -112,7 +112,6 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
 
     };
 
-    // const uniqueTitle = [...new Set(data.map((item) => item.metricName))];
     const columns = [
     {
         title: 'Iteration',
