@@ -44,6 +44,66 @@ export default function ResultSummary() {
     });
 
     useEffect(() => {
+        const loadJckResults = async (jckBuilds) => {
+            // Collect all JCK entries first, then apply in a single setState using
+            // prevState.buildMap so we never overwrite concurrently-committed state.
+            const jckEntries = []; // [{ platform, jdkVersion, level, group, jdkImpl, entry }]
+            try {
+                await Promise.all(
+                    jckBuilds.map(async (jckBuild) => {
+                        if (!jckBuild.buildUrl || !jckBuild.buildNum) return;
+                        const baseUrl = jckBuild.buildUrl.replace(
+                            /\/job\/[^/]+\/\d+\/?$/,
+                            ''
+                        );
+                        const jckResults = await fetchData(
+                            `/api/getRemoteJckBuildInfo${params({
+                                url: baseUrl,
+                                buildName: jckBuild.buildName,
+                                buildNum: jckBuild.buildNum,
+                            })}`
+                        );
+                        if (!Array.isArray(jckResults)) return;
+                        jckResults.forEach(
+                            ({ target, platform, jdkVersion, buildResult, remoteUrl }) => {
+                                if (!target || !platform || !jdkVersion) return;
+                                jckEntries.push({
+                                    platform,
+                                    jdkVersion,
+                                    level: target, // sanity / extended / special / dev
+                                    group: 'jck',
+                                    jdkImpl: 'hs', // JCK compliance tests are Temurin (hotspot) only
+                                    entry: {
+                                        buildResult: buildResult || null,
+                                        buildUrl: remoteUrl || jckBuild.buildUrl,
+                                        jckPublicUrl: jckBuild.buildUrl,
+                                        buildId: jckBuild._id,
+                                        hasChildren: false,
+                                        testSummary: null,
+                                    },
+                                });
+                            }
+                        );
+                    })
+                );
+            } catch (e) {
+                console.error('Failed to fetch JCK build info:', e);
+            }
+            if (jckEntries.length === 0) return;
+            setState((prevState) => {
+                // Deep-copy only the affected paths so we don't mutate existing state
+                const buildMap = { ...prevState.buildMap };
+                jckEntries.forEach(({ platform, jdkVersion, jdkImpl, level, group, entry }) => {
+                    buildMap[platform] = { ...buildMap[platform] };
+                    buildMap[platform][jdkVersion] = { ...buildMap[platform][jdkVersion] };
+                    buildMap[platform][jdkVersion][jdkImpl] = { ...buildMap[platform][jdkVersion][jdkImpl] };
+                    buildMap[platform][jdkVersion][jdkImpl][level] = { ...buildMap[platform][jdkVersion][jdkImpl][level] };
+                    buildMap[platform][jdkVersion][jdkImpl][level][group] = entry;
+                });
+                return { ...prevState, buildMap };
+            });
+        };
+
         const updateData = async () => {
             const { parentId } = getParams(location.search);
 
@@ -73,12 +133,26 @@ export default function ResultSummary() {
                     parentId,
                 })}`
             );
-            const [summary, buildInfo, sdkBuilds, builds] = await Promise.all([
-                summaryRes,
-                buildInfoRes,
-                sdkBuildsRes,
-                buildsRes,
-            ]);
+
+            // get JCK pipeline child builds
+            const jckBuildsRes = fetchData(
+                `/api/getAllChildBuilds${params({
+                    buildNameRegex: '^AQA_Test_Pipeline_JCK$',
+                    parentId,
+                })}`
+            );
+
+            const [summary, buildInfo, sdkBuilds, builds, jckBuilds] =
+                await Promise.all([
+                    summaryRes,
+                    buildInfoRes,
+                    sdkBuildsRes,
+                    buildsRes,
+                    jckBuildsRes,
+                ]).catch((e) => {
+                    console.error('Promise.all failed:', e);
+                    return [undefined, undefined, [], [], []];
+                });
             const parentBuildInfo = buildInfo[0] || {};
             let childBuildsResult = 'UNDEFINED';
             let javaVersion = null;
@@ -192,6 +266,7 @@ export default function ResultSummary() {
 
                 childBuildsResult = setBuildsStatus(build, childBuildsResult);
             });
+
             builds.sort((a, b) => a.buildName.localeCompare(b.buildName));
 
             builds.forEach((build) => {
@@ -321,6 +396,9 @@ export default function ResultSummary() {
             jdkVersionOpts = [...new Set(jdkVersionOpts)].sort(order);
             jdkImplOpts = [...new Set(jdkImplOpts)].sort(order);
 
+            // Render the grid immediately with all non-JCK data, then fetch
+            // JCK console logs asynchronously and patch the result into state.
+            // This ensures a slow or failing remote Jenkins never blocks rendering.
             setState((prevState) => ({
                 ...prevState,
                 buildMap,
@@ -336,6 +414,9 @@ export default function ResultSummary() {
                 sdkBuilds,
                 javaVersion,
             }));
+
+            // Fetch JCK console results after the grid is already rendered
+            loadJckResults(jckBuilds || []);
         };
 
         updateData();

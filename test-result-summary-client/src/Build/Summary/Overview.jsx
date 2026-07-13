@@ -115,7 +115,7 @@ export default class Overview extends Component {
                                 <Divider>Test Summary</Divider>
                             </Col>
                             <Col span={6}>
-                                <Divider>Pass Percentage</Divider>
+                                <Divider>Pass Percentage (excl. Remote JCK)</Divider>
                             </Col>
                             <Col span={6}>
                                 <Divider>Build Result</Divider>
@@ -177,7 +177,7 @@ export default class Overview extends Component {
                             </Col>
                             <Col span={6}>
                                 <div>
-                                    <Tooltip title="Pass % = (Passed/Executed) * 100">
+                                    <Tooltip title="Pass % = (Passed/Executed) * 100. Excludes Remote JCK targets.">
                                         <span style={{ fontSize: '38px' }}>
                                             {passPercentage
                                                 ? passPercentage.toFixed(2) +
