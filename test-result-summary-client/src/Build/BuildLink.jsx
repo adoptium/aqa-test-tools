@@ -13,7 +13,7 @@ const BuildLink = ({
     if (id) {
         return (
             <span>
-                {label}
+                <strong>{label}</strong>
                 <Link
                     to={{
                         pathname: '/buildDetail',

@@ -142,7 +142,13 @@ class Database {
     }
 
     // ToDo: impl check can be added once we have impl stored
-    async getTotals(query) {
+    /**
+     * Base function for aggregating data from testResults.
+     * @param {Object} query - The query object.
+     * @param {string} type - The type of request (e.g., 'totals', 'rerunDetails', 'jobsDetails').
+     * @returns {Object} - The aggregation result.
+     */
+    async testResultsBaseAggregation(query, type) {
         const url = query.url;
         const buildName = query.buildName;
         let id = query.id;
@@ -170,27 +176,61 @@ class Database {
         if (query.platform)
             buildNameRegex = `${buildNameRegex}${query.platform}`;
 
-        const result = await this.aggregate([
-            { $match: matchQuery },
-            {
-                $graphLookup: {
-                    from: 'testResults',
-                    startWith: '$_id',
-                    connectFromField: '_id',
-                    connectToField: 'parentId',
-                    as: 'childBuilds',
+        // Call the routing function to get the specific aggregation
+        const specificAggregation = this.getSpecificAggregation(type, buildNameRegex, query);
+
+        try {
+            const result = await this.aggregate([
+                { $match: matchQuery },
+                {
+                    $graphLookup: {
+                        from: 'testResults',
+                        startWith: '$_id',
+                        connectFromField: '_id',
+                        connectToField: 'parentId',
+                        as: 'childBuilds',
+                    },
                 },
-            },
-            {
-                $project: {
-                    childBuilds: '$childBuilds',
+                {
+                    $project: {
+                        childBuilds: '$childBuilds',
+                    },
                 },
-            },
+                ...specificAggregation,
+            ]);
+            return result[0] || {};
+        } catch (error) {
+            console.error('Error:', error);
+        }
+    }
+
+    /**
+     * Routing function to get the specific aggregation based on the type.
+     * @param {string} type - The type of request (e.g., 'totals', 'rerunDetails', 'jobsDetails').
+     * @param {string} buildNameRegex - The build name regex.
+     * @param {Object} query - The query object.
+     * @returns {Array} - The specific aggregation steps.
+     */
+    getSpecificAggregation(type, buildNameRegex, query) {
+        switch (type) {
+            case 'totals':
+                return this.getTotalsAggregation(query, buildNameRegex);
+            case 'rerunDetails':
+                return this.getRerunDetailsAggregation();
+            case 'jobsDetails':
+                return this.getJobsDetailsAggregation();
+            default:
+                throw new Error(`Unknown type: ${type}`);
+        }
+    }
+
+    getTotalsAggregation(query, buildNameRegex) {
+        return [
             { $unwind: '$childBuilds' },
             { $match: { 'childBuilds.buildName': { $regex: buildNameRegex } } },
             {
                 $group: {
-                    _id: id,
+                    _id: query.id,
                     total: { $sum: '$childBuilds.testSummary.total' },
                     executed: { $sum: '$childBuilds.testSummary.executed' },
                     passed: { $sum: '$childBuilds.testSummary.passed' },
@@ -199,8 +239,153 @@ class Database {
                     skipped: { $sum: '$childBuilds.testSummary.skipped' },
                 },
             },
-        ]);
-        return result[0] || {};
+        ];
+    }
+
+    getRerunDetailsAggregation() {
+        return [
+            {
+                $addFields: {
+                    manual_rerun_needed_list: {
+                      $filter: {
+                          input: '$childBuilds',
+                          as: 'build',
+                          cond: {
+                                  $and: [
+                                  { $in: ['$$build.buildResult', ['UNSTABLE', 'FAILED', 'ABORTED']] },
+                                  {
+                                      $or: [
+                                      {
+                                        $regexMatch: { input: '$$build.buildName', regex: /_rerun$/ }
+                                      },
+                                      {
+                                          // If buildName does not end with '_rerun', check if another build with the same name exists that ends with '_rerun'
+                                          $and: [
+                                          { $not: [{ $regexMatch: { input: '$$build.buildName', regex: /_rerun$/ } }] },
+                                          {
+                                              // Veriy that there is no '_rerun' build for this build
+                                              $eq: [
+                                              {
+                                                  $size: {
+                                                  $filter: {
+                                                      input: '$childBuilds',
+                                                      as: 'internal_build',
+                                                      cond: {
+                                                      $and: [
+                                                          {
+                                                              $regexMatch: {
+                                                                  input: '$$internal_build.buildName',
+                                                                  regex: { $concat: ['^', '$$build.buildName'] }
+                                                              }
+                                                              },
+                                                          { $regexMatch: { input: '$$internal_build.buildName', regex: /_rerun$/ } }
+                                                      ]
+                                                      }
+                                                  }
+                                                  }
+                                              },
+                                              0
+                                              ]
+                                          }
+                                          ]
+                                      }
+                                      ]
+                                  }
+                                  ]
+                              },
+                          }
+                      }
+                  },
+            },
+            {
+                $addFields: {
+                    manual_rerun_needed: {
+                        $size:
+                            '$manual_rerun_needed_list'
+                    }
+                  },
+            },
+            {
+                $addFields: {
+                    tests_needed_manual_rerun: {
+                        $reduce: {
+                            input: '$manual_rerun_needed_list',
+                            initialValue: 0,
+                            in: {
+                                $add: [
+                                    '$$value',
+                                    { $ifNull: ['$$this.testSummary.failed', 0] }
+                                ]
+                            }
+                        }
+                    }
+                }
+            },
+            {
+                $addFields: {
+                    manual_rerun_needed_regex: {
+                        $concat: [
+                            '^(',
+                            {
+                                $reduce: {
+                                    input: '$manual_rerun_needed_list',
+                                    initialValue: '',
+                                    in: {
+                                        $cond: [
+                                            { $eq: ['$$value', ''] }, // If the first item
+                                            { $replaceAll: { input: '$$this.buildName', find: '.', replacement: '\\.' } },
+                                            {
+                                                $concat: [
+                                                    '$$value',
+                                                    '|',
+                                                    { $replaceAll: { input: '$$this.buildName', find: '.', replacement: '\\.' } }
+                                                ]
+                                            }
+                                        ]
+                                    }
+                                }
+                            },
+                            ')$'
+                        ]
+                    }
+                }
+            },
+            { $unset: ['childBuilds', 'manual_rerun_needed_list'] }
+        ];
+    }
+
+    getJobsDetailsAggregation() {
+        return [
+            {
+                $addFields: {
+                    job_success_rate: {
+                        $round: [
+                            {
+                                $multiply: [
+                                    {
+                                        $divide: [
+                                            {
+                                                $size: {
+                                                    $filter: {
+                                                        input: "$childBuilds",
+                                                        as: "build",
+                                                        cond: { $eq: ["$$build.buildResult", "SUCCESS"] }
+                                                    }
+                                                }
+                                            },
+                                            { $size: "$childBuilds" }
+                                        ]
+                                    },
+                                    100
+                                ]
+                            },
+                            2
+                        ]
+                    }
+                }
+            },
+            { $unset: ['childBuilds'] }
+        ];
     }
 
     async getRootBuildId(id) {
