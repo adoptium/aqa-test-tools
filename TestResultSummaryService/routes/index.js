@@ -11,6 +11,7 @@ app.get(
 app.get('/deleteCollection', require('./deleteCollection'));
 app.get('/deleteUnusedOutput', require('./deleteUnusedOutput'));
 app.get('/getAllChildBuilds', require('./getAllChildBuilds'));
+app.get('/getRemoteJckBuildInfo', require('./getRemoteJckBuildInfo'));
 app.get('/getAllTestsWithHistory', require('./getAllTestsWithHistory'));
 app.get('/getApplicationTests', require('./getApplicationTests'));
 app.get('/getAuditLogs', require('./getAuditLogs'));
