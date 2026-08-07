@@ -54,9 +54,17 @@ class BuildProcessor {
                         minutes = Math.floor(diff / 1000 / 60);
                     }
                     if (minutes > 5) {
-                        let startPtr = 0;
-                        // if output exists, get last position from output and continue
-                        // streaming. Otherwise, create build.
+                        // NOTE: startPtr must track the TRUE byte offset into the
+                        // Jenkins log stream.
+                        let startPtr = task.logOffset || 0;
+
+                        // Safety cap on a single fetched chunk, mirroring the
+                        // 50MB guard already used for completed builds in
+                        // JenkinsInfo.getBuildOutput(). Prevents one abnormal
+                        // fetch (e.g. after a bug or a very chatty build) from
+                        // blowing up memory in a single poll cycle.
+                        const CHUNK_SIZE_LIMIT = 50 * 1024 * 1024;
+
                         if (task.buildOutputId) {
                             const outputDB = new OutputDB();
                             const result = await outputDB
@@ -66,7 +74,6 @@ class BuildProcessor {
                                 .toArray();
 
                             if (result && result.length === 1) {
-                                startPtr = result[0].output.length;
                                 output = result[0].output;
                             } else {
                                 throw new Error(
@@ -77,6 +84,7 @@ class BuildProcessor {
                         }
 
                         let chunk = '';
+                        let fetchedLength = 0;
                         try {
                             const logStream = new LogStream({
                                 baseUrl: url,
@@ -84,6 +92,14 @@ class BuildProcessor {
                                 build: buildNum,
                             });
                             chunk = await logStream.next(startPtr);
+                            fetchedLength = chunk ? chunk.length : 0;
+
+                            if (chunk && chunk.length > CHUNK_SIZE_LIMIT) {
+                                logger.warn(
+                                    `BuildProcessor: Streaming chunk size ${chunk.length} > limit ${CHUNK_SIZE_LIMIT} for ${buildName} #${buildNum}. Truncating stored copy to protect memory (offset tracking remains accurate).`
+                                );
+                                chunk = chunk.substr(-CHUNK_SIZE_LIMIT);
+                            }
                         } catch (e) {
                             logger.error('BuildProcessor: ', e.toString());
                             logger.error('Cannot get log stream ', task);
@@ -101,6 +117,7 @@ class BuildProcessor {
                             logger.silly('chunk', chunk);
 
                             task.output = output;
+                            task.logOffset = startPtr + fetchedLength;
                             task.timestamp = buildInfo.timestamp;
                             task.buildUrl = buildInfo.url;
                             task.buildDuration = buildInfo.duration;
