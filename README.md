@@ -12,10 +12,5 @@ Some of the identified requirements are to allow developers to:
 - store history of results
 - compare results against other historical results
 
-### [Smart Media Metrics](https://github.com/adoptium/aqa-test-tools/tree/master/SmartMedia)
-- tracks the impact of the social media efforts (i.e., twitter, blog posts, etc) on the downloads of the open-source products (i.e., git clones, dockerhub downloads, etc)
-- visually and dynamically represents the findings
-- evaluates the findings and recommends future actions
-
 ### [Test Result Summary Service (TRSS)](https://github.com/adoptium/aqa-test-tools/tree/master/TestResultSummaryService)
  - helps summarize different Jenkins jobs, providing additional features that a simple Jenkins plugin may not be able to support (including the ability to monitor multiple Jenkins servers, push different sets of test results to a database, search test and compare results across different platforms, report on differences between jobs, etc).  This project aims to be abstract enough for any build to log results to and present results in a personalized dashboard.
