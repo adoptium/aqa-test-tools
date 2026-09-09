@@ -27,7 +27,7 @@
         "body-parser": "^1.20.6",
         "compression": "^1.8.1",
         "cors": "^2.8.5",
-        "csv": "^5.5.0",
+        "csv": "^6.6.3",
         "express": "^5.2.0",
         "express-rate-limit": "^6.6.0",
         "express-swagger-generator": "^1.1.17",
