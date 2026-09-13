@@ -1,4 +1,4 @@
-name: GlitchWitcher - Bug Prediction Analysis
+name: GlitchWitcher - Bug Prediction Analysis (Traditional & Semantic)
 
 on:
   issue_comment:
@@ -7,10 +7,10 @@ on:
 permissions:
   pull-requests: write
   issues: write
-  contents: read
+  contents: write
 
 jobs:
-  glitch-witcher:
+  glitch-witcher-traditional:
     runs-on: ubuntu-latest
     if: contains(github.event.comment.body, 'GlitchWitcher')
 
@@ -409,15 +409,543 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const commentBody = `## 🔮 GlitchWitcher Analysis Results
+            const commentBody = `## 🔮 GlitchWitcher Traditional Analysis Results
 
             **Target PR:** ${process.env.PR_LINK}
             **Repository:** ${process.env.REPO_NAME}
 
             ${process.env.COMMENT_BODY}
 
-            *Analysis performed by GlitchWitcher Bot*`;
+            *Traditional analysis performed by GlitchWitcher Bot*`;
 
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: commentBody
+            });
+
+  glitch-witcher-semantic:
+    runs-on: ubuntu-latest
+    if: contains(github.event.comment.body, 'GlitchWitcher')
+
+    steps:
+      - name: Parse GlitchWitcher Command for Semantic Analysis
+        id: parse-command
+        uses: actions/github-script@v6
+        with:
+          script: |
+            const body = context.payload.comment?.body ?? '';
+            core.info(`Full comment: ${body}`);
+            // Look for an explicit PR link in the comment
+            const linkMatch = body.match(/https:\/\/github\.com\/[^/]+\/[^/]+\/pull\/\d+/);
+            let prLink = null;
+            if (linkMatch) {
+              prLink = linkMatch[0];
+              core.info(`PR link provided: ${prLink}`);
+            } else {
+              // Allow "GlitchWitcher" alone when the comment is on a PR
+              const hasCmdOnly = /(^|\s)GlitchWitcher\s*$/.test(body);
+              if (hasCmdOnly && context.payload.issue?.pull_request) {
+                const { owner, repo } = context.repo;
+                const prNumber = context.issue.number;
+                prLink = `https://github.com/${owner}/${repo}/pull/${prNumber}`;
+                core.info(`Using current PR: ${prLink}`);
+              } else {
+                core.setFailed('ERROR: Invalid GlitchWitcher command format or missing PR link');
+                return;
+              }
+            }
+            // Extract repo owner/name/number from the PR link
+            const m = prLink.match(/^https:\/\/github\.com\/([^/]+)\/([^/]+)\/pull\/(\d+)$/);
+            if (!m) {
+              core.setFailed(`ERROR: Could not parse repository info from PR link: ${prLink}`);
+              return;
+            }
+            const [, repoOwner, repoName, prNumber] = m;
+            const fullRepoName = `${repoOwner}-${repoName}`;
+            const repoUrl = `https://github.com/${repoOwner}/${repoName}.git`;
+            core.setOutput('repo_owner', repoOwner);
+            core.setOutput('repo_name', repoName);
+            core.setOutput('pr_number', prNumber);
+            core.setOutput('full_repo_name', fullRepoName);
+            core.setOutput('pr_link', prLink);
+            core.setOutput('repo_url', repoUrl)
+
+      - name: Set up Python for Semantic Analysis
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.10"
+
+      - name: Install dependencies for Semantic Analysis
+        run: |
+          pip install tensorflow==2.12.0 pandas joblib scipy numpy urllib3 scikit-learn javalang torch keras
+          sudo apt-get update
+          sudo apt-get install -y cloc git openjdk-11-jdk
+
+      - name: Download Semantic Analysis Scripts
+        run: |
+          echo "Downloading semantic analysis scripts from external repository..."
+
+          # Function to download with error handling
+          download_script() {
+            local url="$1"
+            local filename="$2"
+            echo "Downloading $filename from $url"
+            if curl -L -f -o "$filename" "$url"; then
+              echo "✅ Successfully downloaded $filename"
+              return 0
+            else
+              echo "❌ Failed to download $filename from $url"
+              return 1
+            fi
+          }
+
+          # Download scripts with error handling
+          failed_downloads=()
+
+          if ! download_script "https://raw.githubusercontent.com/adoptium/aqa-triage-data/refs/heads/main/GlitchWitcher/Semantic%20Dataset/extract_semantic_dataset.sh" "extract_semantic_dataset.sh"; then
+            failed_downloads+=("extract_semantic_dataset.sh")
+          fi
+
+          if ! download_script "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/analyze_java_file.py" "analyze_java_file.py"; then
+            failed_downloads+=("analyze_java_file.py")
+          fi
+
+          if ! download_script "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/compare_semantic_predictions.py" "compare_semantic_predictions.py"; then
+            failed_downloads+=("compare_semantic_predictions.py")
+          fi
+
+          if ! download_script "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/train_semantic_model.py" "train_semantic_model.py"; then
+            failed_downloads+=("train_semantic_model.py")
+          fi
+
+          if ! download_script "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/autoencoder_tf2.py" "autoencoder_tf2.py"; then
+            failed_downloads+=("autoencoder_tf2.py")
+          fi
+
+          if ! download_script "https://raw.githubusercontent.com/Ndacyayisenga-droid/REPD-FORK/refs/heads/master/train_semantic_model_safe.py" "train_semantic_model_safe.py"; then
+            failed_downloads+=("train_semantic_model_safe.py")
+          fi
+
+          if ! download_script "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/load_semantic_model.py" "load_semantic_model.py"; then
+            failed_downloads+=("load_semantic_model.py")
+          fi
+
+          if ! download_script "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/REPD_Impl.py" "REPD_Impl.py"; then
+            failed_downloads+=("REPD_Impl.py")
+          fi
+
+          if ! download_script "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/autoencoder.py" "autoencoder.py"; then
+            failed_downloads+=("autoencoder.py")
+          fi
+
+          if ! download_script "https://raw.githubusercontent.com/adoptium/aqa-test-tools/refs/heads/master/BugPredict/GlitchWitcher/stat_util.py" "stat_util.py"; then
+            failed_downloads+=("stat_util.py")
+          fi
+
+          # Check for failed downloads
+          if [ ${#failed_downloads[@]} -gt 0 ]; then
+            echo "❌ Failed to download the following scripts:"
+            printf '%s\n' "${failed_downloads[@]}"
+            echo "Please check the URLs and repository structure."
+            exit 1
+          fi
+
+          # Make shell scripts executable
+          if [ -f "extract_semantic_dataset.sh" ]; then
+            chmod +x extract_semantic_dataset.sh
+            echo "✅ Made extract_semantic_dataset.sh executable"
+          else
+            echo "❌ extract_semantic_dataset.sh not found after download"
+            exit 1
+          fi
+
+          # Verify downloads
+          echo "Verifying downloaded files..."
+          ls -la *.py *.sh
+          echo "✅ All scripts downloaded successfully"
+
+      - name: Check Semantic Dataset Availability
+        id: check-semantic-dataset
+        run: |
+          dataset_url="https://raw.githubusercontent.com/adoptium/aqa-triage-data/refs/heads/main/GlitchWitcher/Semantic%20Dataset/${{ steps.parse-command.outputs.full_repo_name }}/data/${{ steps.parse-command.outputs.repo_name }}_metrics.csv"
+          base_model_url="https://raw.githubusercontent.com/adoptium/aqa-triage-data/refs/heads/main/GlitchWitcher/Semantic%20Dataset/${{ steps.parse-command.outputs.full_repo_name }}/seantic_trained_models"
+          echo "Checking semantic dataset availability..."
+          echo "Dataset URL: $dataset_url"
+          echo "Model base URL: $base_model_url"
+
+          dataset_exists="false"
+          model_exists="false"
+
+          # Check if dataset CSV exists
+          if curl -sI --fail "$dataset_url" > /dev/null 2>&1; then
+            echo "Semantic dataset CSV found for ${{ steps.parse-command.outputs.full_repo_name }}"
+            dataset_exists="true"
+          else
+            echo "Semantic dataset CSV not found for ${{ steps.parse-command.outputs.full_repo_name }}"
+          fi
+
+          # Check if semantic model artifacts exist
+          if \
+            curl -sI --fail "$base_model_url/repd_model_DA.pkl" > /dev/null 2>&1 && \
+            curl -sI --fail "$base_model_url/scaler.pkl" > /dev/null 2>&1 && \
+            curl -sI --fail "$base_model_url/training_results.pkl" > /dev/null 2>&1
+          then
+            echo "Semantic model artifacts found"
+            model_exists="true"
+          else
+            echo "Semantic model artifacts not found or incomplete"
+          fi
+
+          echo "dataset_exists=$dataset_exists" >> $GITHUB_OUTPUT
+          echo "model_exists=$model_exists" >> $GITHUB_OUTPUT
+          echo "dataset_url=$dataset_url" >> $GITHUB_OUTPUT
+          echo "base_model_url=$base_model_url" >> $GITHUB_OUTPUT
+
+      - name: Generate Semantic Dataset if Missing
+        if: steps.check-semantic-dataset.outputs.dataset_exists == 'false'
+        run: |
+          echo "Generating semantic dataset for ${{ steps.parse-command.outputs.full_repo_name }}..."
+          ./extract_semantic_dataset.sh "${{ steps.parse-command.outputs.repo_url }}"
+
+          # Find the generated CSV file
+          generated_csv=$(find . -name "*_metrics.csv" -path "./metrics_output/*" | head -1)
+          if [ ! -f "$generated_csv" ]; then
+            echo "ERROR: Failed to generate CSV file"
+            exit 1
+          fi
+
+          echo "Generated CSV file: $generated_csv"
+
+          # Move the generated file to the data directory with the correct name
+          target_file="data/${{ steps.parse-command.outputs.repo_name }}_metrics.csv"
+          mkdir -p data
+          mv "$generated_csv" "$target_file"
+
+          echo "Moved dataset to: $target_file"
+          echo "csv_file_path=$target_file" >> $GITHUB_ENV
+
+      - name: Train Semantic Model if Missing
+        if: steps.check-semantic-dataset.outputs.dataset_exists == 'false' || steps.check-semantic-dataset.outputs.model_exists == 'false'
+        run: |
+          echo "Training semantic model for ${{ steps.parse-command.outputs.full_repo_name }}..."
+
+          # Determine dataset path
+          if [ "${{ steps.check-semantic-dataset.outputs.dataset_exists }}" == "true" ]; then
+            dataset_path="${{ steps.check-semantic-dataset.outputs.dataset_url }}"
+          else
+            dataset_path="data/${{ steps.parse-command.outputs.repo_name }}_metrics.csv"
+          fi
+
+          echo "Using dataset: $dataset_path"
+
+          # Try the main training script first
+          if python3 train_semantic_model.py "$dataset_path"; then
+            echo "✅ Main training script succeeded"
+          else
+            echo "⚠️ Main training script failed, trying safe alternative..."
+            # Try the safe alternative training script
+            if python3 train_semantic_model_safe.py "$dataset_path"; then
+              echo "✅ Safe training script succeeded"
+            else
+              echo "❌ Both training scripts failed"
+              exit 1
+            fi
+          fi
+
+          if [ ! -d "trained_model" ]; then
+            echo "ERROR: Failed to generate trained model directory"
+            exit 1
+          fi
+
+          # Copy trained models to seantic_trained_models directory for consistency
+          mkdir -p seantic_trained_models
+          if [ -f "trained_model/repd_model_DA.pkl" ]; then
+            cp trained_model/repd_model_DA.pkl seantic_trained_models/
+          fi
+          if [ -f "trained_model/scaler.pkl" ]; then
+            cp trained_model/scaler.pkl seantic_trained_models/
+          fi
+          if [ -f "trained_model/training_results.pkl" ]; then
+            cp trained_model/training_results.pkl seantic_trained_models/
+          fi
+
+          echo "Semantic model training completed successfully"
+
+      - name: Checkout adoptium/aqa-triage-data for Semantic
+        if: steps.check-semantic-dataset.outputs.dataset_exists == 'false' || steps.check-semantic-dataset.outputs.model_exists == 'false'
+        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
+        with:
+          repository: adoptium/aqa-triage-data
+          token: ${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}
+          path: aqa-triage-data-semantic
+          ref: main
+
+      - name: Prepare Semantic PR content
+        id: prep-semantic-pr
+        if: steps.check-semantic-dataset.outputs.dataset_exists == 'false' || steps.check-semantic-dataset.outputs.model_exists == 'false'
+        run: |
+          echo "Preparing semantic PR contents for adoptium/aqa-triage-data..."
+
+          # Compute variables
+          branch_name="add-semantic-dataset-${{ steps.parse-command.outputs.full_repo_name }}-$(date +%Y%m%d-%H%M%S)"
+          target_dir="GlitchWitcher/Semantic Dataset/${{ steps.parse-command.outputs.full_repo_name }}"
+
+          # Create target directory and copy artifacts
+          mkdir -p "aqa-triage-data-semantic/$target_dir"
+
+          if [ "${{ steps.check-semantic-dataset.outputs.dataset_exists }}" == "false" ]; then
+            echo "Copying semantic CSV file..."
+            mkdir -p "aqa-triage-data-semantic/$target_dir/data"
+            cp "data/${{ steps.parse-command.outputs.repo_name }}_metrics.csv" "aqa-triage-data-semantic/$target_dir/data/"
+          fi
+
+          if [ "${{ steps.check-semantic-dataset.outputs.model_exists }}" == "false" ]; then
+            echo "Copying semantic trained model..."
+            cp -r "seantic_trained_models" "aqa-triage-data-semantic/$target_dir/"
+          fi
+
+          # Create PR body in target repo workspace
+          cat > "aqa-triage-data-semantic/pr_body.md" << 'EOF'
+          # GlitchWitcher Semantic Dataset Addition
+
+          This PR adds the semantic dataset and trained models for repository: **${{ steps.parse-command.outputs.repo_owner }}/${{ steps.parse-command.outputs.repo_name }}**
+
+          ## Contents:
+          - Semantic Dataset CSV file: `data/${{ steps.parse-command.outputs.repo_name }}_metrics.csv`
+          - Trained semantic models directory: `seantic_trained_models/`
+
+          ## Triggered by:
+          - Comment in: ${{ github.event.issue.html_url }}
+          - Target PR: ${{ steps.parse-command.outputs.pr_link }}
+
+          This PR was automatically generated by the GlitchWitcher semantic workflow.
+          EOF
+
+          # Outputs for subsequent steps
+          echo "branch_name=$branch_name" >> "$GITHUB_OUTPUT"
+          echo "target_dir=$target_dir" >> "$GITHUB_OUTPUT"
+          echo "pr_body_path=pr_body.md" >> "$GITHUB_OUTPUT"
+
+      - name: Create Pull Request to aqa-triage-data for Semantic
+        id: cpr-semantic
+        if: steps.check-semantic-dataset.outputs.dataset_exists == 'false' || steps.check-semantic-dataset.outputs.model_exists == 'false'
+        uses: peter-evans/create-pull-request@271a8d0340265f705b14b6d32b9829c1cb33d45e # v7.0.8
+        with:
+          token: ${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}
+          path: aqa-triage-data-semantic
+          commit-message: "Add semantic dataset and trained models for ${{ steps.parse-command.outputs.full_repo_name }}"
+          committer: GlitchWitcher Bot <glitchwicher-bot@adoptium.net>
+          author: GlitchWitcher Bot <glitchwicher-bot@adoptium.net>
+          title: "Add GlitchWitcher semantic dataset for ${{ steps.parse-command.outputs.full_repo_name }}"
+          body-path: ${{ steps.prep-semantic-pr.outputs.pr_body_path }}
+          branch: ${{ steps.prep-semantic-pr.outputs.branch_name }}
+          base: main
+          draft: false
+          add-paths: |
+            ${{ steps.prep-semantic-pr.outputs.target_dir }}/**
+
+      - name: Merge Semantic PR
+        if: steps.cpr-semantic.outputs.pull-request-number != ''
+        run: |
+          PR_NUMBER="${{ steps.cpr-semantic.outputs.pull-request-number }}"
+          PR_URL="${{ steps.cpr-semantic.outputs.pull-request-url }}"
+          echo "✅ Successfully created semantic PR #$PR_NUMBER"
+          echo "PR URL: $PR_URL"
+
+          echo "Enabling auto-merge for semantic PR #$PR_NUMBER..."
+          MERGE_RESPONSE=$(curl -sS -X PUT \
+            -H "Authorization: token ${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}" \
+            -H "Accept: application/vnd.github.v3+json" \
+            "https://api.github.com/repos/adoptium/aqa-triage-data/pulls/$PR_NUMBER/merge" \
+            -d "{
+              \"commit_title\": \"Auto-merge: Add GlitchWitcher semantic dataset for ${{ steps.parse-command.outputs.full_repo_name }}\",
+              \"commit_message\": \"Automatically merged by GlitchWitcher semantic workflow\",
+              \"merge_method\": \"squash\"
+            }")
+          echo "Auto-merge response: $MERGE_RESPONSE"
+
+      - name: Run Semantic Analysis on Target PR
+        id: semantic-analysis
+        run: |
+          set -e
+          echo "Running GlitchWitcher semantic analysis on ${{ steps.parse-command.outputs.pr_link }}..."
+
+          # Get PR details using GitHub API
+          pr_api_url="https://api.github.com/repos/${{ steps.parse-command.outputs.repo_owner }}/${{ steps.parse-command.outputs.repo_name }}/pulls/${{ steps.parse-command.outputs.pr_number }}"
+          pr_info=$(curl -s -H "Accept: application/vnd.github.v3+json" "$pr_api_url")
+
+          # Parse base/head SHAs using Python (more robust than grep)
+          base_sha=$(printf "%s" "$pr_info" | python3 -c "import sys, json; d=json.load(sys.stdin); print(d['base']['sha'])")
+          head_sha=$(printf "%s" "$pr_info" | python3 -c "import sys, json; d=json.load(sys.stdin); print(d['head']['sha'])")
+
+          echo "Base SHA: $base_sha"
+          echo "Head SHA: $head_sha"
+
+          # Clone the target repository
+          git clone "${{ steps.parse-command.outputs.repo_url }}" target_repo
+
+          # Ensure we have the PR head commit (works for forks)
+          git -C target_repo fetch origin "pull/${{ steps.parse-command.outputs.pr_number }}/head:prhead" || true
+          git -C target_repo fetch --all --tags --prune
+
+          # Get changed files between base..head (Java only)
+          merge_base=$(git -C target_repo merge-base "$base_sha" "$head_sha")
+          echo "Merge base: $merge_base"
+          changed_files=$(git -C target_repo diff --name-only "$merge_base" "$head_sha" | grep -E "\.java$" || true)
+
+          if [ -z "$changed_files" ]; then
+            echo "No Java files changed in this PR"
+            echo "comment=No Java files found in the PR changes." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          echo "Changed files:"
+          printf "%s\n" "$changed_files"
+
+          # Extract semantic features for base commit
+          git -C target_repo checkout "$base_sha"
+          mkdir -p metrics_output_base
+          echo "project_name,version,class_name,wmc,rfc,loc,max_cc,avg_cc,cbo,ca,ce,ic,cbm,lcom,lcom3,dit,noc,mfa,npm,dam,moa,cam,amc,bug" > metrics_output_base/summary_metrics.csv
+
+          for file in $changed_files; do
+            fpath="target_repo/$file"
+            if [ -f "$fpath" ]; then
+              echo "Processing $file (base)..."
+              # Use the downloaded Java analysis script with error handling
+              if python3 analyze_java_file.py "$fpath" "${{ steps.parse-command.outputs.repo_name }}" "unknown" "target_repo"; then
+                if [ -f "temp_metrics.csv" ]; then
+                  # Check if temp_metrics.csv has data (more than just header)
+                  if [ $(wc -l < "temp_metrics.csv") -gt 1 ]; then
+                    tail -n +2 "temp_metrics.csv" >> metrics_output_base/summary_metrics.csv
+                    echo "✅ Successfully processed $file"
+                  else
+                    echo "⚠️ No data in temp_metrics.csv for $file"
+                  fi
+                  rm "temp_metrics.csv"
+                fi
+              else
+                echo "⚠️ Failed to process $file, continuing with next file..."
+              fi
+            else
+              echo "Warning: File not found at $fpath (base)."
+            fi
+          done
+
+          # Extract semantic features for head commit
+          git -C target_repo checkout "$head_sha"
+          mkdir -p metrics_output_head
+          echo "project_name,version,class_name,wmc,rfc,loc,max_cc,avg_cc,cbo,ca,ce,ic,cbm,lcom,lcom3,dit,noc,mfa,npm,dam,moa,cam,amc,bug" > metrics_output_head/summary_metrics.csv
+
+          for file in $changed_files; do
+            fpath="target_repo/$file"
+            if [ -f "$fpath" ]; then
+              echo "Processing $file (head)..."
+              # Use the downloaded Java analysis script with error handling
+              if python3 analyze_java_file.py "$fpath" "${{ steps.parse-command.outputs.repo_name }}" "unknown" "target_repo"; then
+                if [ -f "temp_metrics.csv" ]; then
+                  # Check if temp_metrics.csv has data (more than just header)
+                  if [ $(wc -l < "temp_metrics.csv") -gt 1 ]; then
+                    tail -n +2 "temp_metrics.csv" >> metrics_output_head/summary_metrics.csv
+                    echo "✅ Successfully processed $file"
+                  else
+                    echo "⚠️ No data in temp_metrics.csv for $file"
+                  fi
+                  rm "temp_metrics.csv"
+                fi
+              else
+                echo "⚠️ Failed to process $file, continuing with next file..."
+              fi
+            else
+              echo "Warning: File not found at $fpath (head)."
+            fi
+          done
+
+          echo "=== Row counts ==="
+          base_rows=$(wc -l < metrics_output_base/summary_metrics.csv || echo 0)
+          head_rows=$(wc -l < metrics_output_head/summary_metrics.csv || echo 0)
+          echo "Base rows: $base_rows"
+          echo "Head rows: $head_rows"
+
+          # Check if we have actual data (more than just headers)
+          if [ "$base_rows" -le 1 ] || [ "$head_rows" -le 1 ]; then
+            echo "⚠️ Insufficient data for analysis (need more than 1 row per file)"
+            echo "comment=Insufficient Java class data extracted for semantic analysis. Only $base_rows base rows and $head_rows head rows found." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Prepare trained model: Prefer remote artifacts; otherwise use locally trained model
+          have_model="false"
+          if [ "${{ steps.check-semantic-dataset.outputs.model_exists }}" == "true" ]; then
+            echo "Preparing semantic model artifacts from remote..."
+            mkdir -p trained_model
+            base_url="${{ steps.check-semantic-dataset.outputs.base_model_url }}"
+            curl -fSL -o trained_model/repd_model_DA.pkl "$base_url/repd_model_DA.pkl"
+            curl -fSL -o trained_model/scaler.pkl "$base_url/scaler.pkl"
+            curl -fSL -o trained_model/training_results.pkl "$base_url/training_results.pkl"
+            have_model="true"
+          elif [ -d "seantic_trained_models" ] && [ -f "seantic_trained_models/repd_model_DA.pkl" ]; then
+            echo "Using locally trained semantic model artifacts..."
+            mkdir -p trained_model
+            cp seantic_trained_models/* trained_model/
+            have_model="true"
+          fi
+
+          if [ "$have_model" != "true" ]; then
+            echo "comment=No semantic model found for predictions." >> $GITHUB_OUTPUT
+            exit 0
+          fi
+
+          # Use the downloaded compare_semantic_predictions.py file
+          echo "Running semantic comparison predictions..."
+          echo "🔍 Analyzing semantic features and training models..."
+          if [ -f "metrics_output_base/summary_metrics.csv" ] && [ -f "metrics_output_head/summary_metrics.csv" ]; then
+            # Run the comparison using the downloaded Python file (redirect stderr to suppress progress bars)
+            if python3 compare_semantic_predictions.py > semantic_analysis_result.txt 2>/dev/null; then
+              # Check if the output file has content
+              if [ -s "semantic_analysis_result.txt" ]; then
+                echo "✅ Semantic analysis completed successfully"
+                # Format the comment with better structure
+                {
+                  echo "comment<<EOF"
+                  echo "## 🔮 GlitchWitcher Semantic Analysis Results"
+                  echo "**Target PR:** ${{ steps.parse-command.outputs.pr_link }}"
+                  echo "**Repository:** ${{ steps.parse-command.outputs.full_repo_name }}"
+                  echo ""
+                  cat semantic_analysis_result.txt
+                  echo ""
+                  echo "### 📋 Interpretation Note:"
+                  echo "> The values shown are Probability Densities (PDFs), not probabilities. They represent the model's assessment of how likely a file's characteristics are to be 'defective' vs. 'non-defective'. A higher value indicates a better fit for that category. Very small values are expected and normal."
+                  echo ""
+                  echo "EOF"
+                } >> $GITHUB_OUTPUT
+              else
+                echo "⚠️ Semantic analysis produced no output"
+                echo "comment=Semantic comparison prediction produced no output." >> $GITHUB_OUTPUT
+              fi
+            else
+              echo "❌ Error running semantic analysis"
+              cat semantic_analysis_result.txt
+              echo "comment=Error running semantic comparison predictions." >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "❌ Missing base or head metrics files for semantic comparison"
+            echo "comment=Missing base or head metrics files for semantic comparison." >> $GITHUB_OUTPUT
+          fi
+
+      - name: Comment on PR for Semantic Analysis
+        if: steps.semantic-analysis.outputs.comment != ''
+        uses: actions/github-script@v6
+        env:
+          COMMENT_BODY: "${{ steps.semantic-analysis.outputs.comment }}"
+          PR_LINK: "${{ steps.parse-command.outputs.pr_link }}"
+          REPO_NAME: "${{ steps.parse-command.outputs.full_repo_name }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const commentBody = `${process.env.COMMENT_BODY}
+            *Semantic analysis performed by GlitchWitcher Bot*`;
             github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
