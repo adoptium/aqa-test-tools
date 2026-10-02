@@ -28,7 +28,7 @@ mistune==3.3.3
 msal==1.29.0
 msrest==0.7.1
 multidict==6.0.5
-oauthlib==3.2.2
+oauthlib==4.0.0
 packaging==24.1
 pycparser==2.22
 PyJWT==2.15.0
