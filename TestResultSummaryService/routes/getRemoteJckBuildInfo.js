@@ -42,10 +42,9 @@ module.exports = async (req, res) => {
 /**
  * Parse the raw console text and return an array of JCK remote job descriptors.
  *
- * The console interleaves trigger blocks with polling lines so we collect
- * trigger metadata (target / platform / jdkVersion) in order, then pair each
- * "Remote build URL" and "Remote job … Status" line with the corresponding
- * trigger entry by index.
+ * Trigger metadata is collected in log order. Status lines are associated with
+ * their target using the remote job display name when possible, since parallel
+ * jobs can finish in a different order than they were triggered.
  */
 function parseJckConsole(text) {
     const lines = text.split('\n');
@@ -94,15 +93,58 @@ function parseJckConsole(text) {
         }
     }
 
-    // ---- pass 2: pair urls and statuses with triggers by index -------------
-    // Remote URLs and status entries appear in the same order as triggers.
+    // ---- pass 2: pair urls and statuses with triggers ----------------------
     for (let i = 0; i < triggers.length; i++) {
         if (i < remoteUrls.length) triggers[i].remoteUrl = remoteUrls[i];
-        if (i < statusEntries.length) {
-            triggers[i].buildResult = statusEntries[i].buildResult;
-            triggers[i].displayName = statusEntries[i].displayName;
-        }
     }
+
+    const statusByTrigger = new Map();
+    const escapeRegExp = (value) =>
+        value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const matchesName = (name, value) => {
+        const escapedValue = escapeRegExp(value);
+        return new RegExp(`(?:^|[^\\w])${escapedValue}(?:$|[^\\w])`, 'i').test(
+            name
+        );
+    };
+    statusEntries.forEach((statusEntry) => {
+        const targetMatches = triggers.filter((trigger) => {
+            const escapedTarget = escapeRegExp(trigger.target);
+            return new RegExp(
+                `(?:^|[^\\w])${escapedTarget}(?:\\.jck)?(?:$|[^\\w])`,
+                'i'
+            ).test(statusEntry.displayName);
+        });
+        const exactMatches =
+            targetMatches.length > 1
+                ? targetMatches.filter(
+                      ({ platform, jdkVersion }) =>
+                          matchesName(statusEntry.displayName, platform) &&
+                          matchesName(
+                              statusEntry.displayName,
+                              `jdk${jdkVersion}`
+                          )
+                  )
+                : targetMatches;
+        if (exactMatches.length === 1) {
+            statusByTrigger.set(exactMatches[0], statusEntry);
+        }
+    });
+
+    const matchedStatuses = new Set(statusByTrigger.values());
+    const unmatchedStatuses = statusEntries.filter(
+        (statusEntry) => !matchedStatuses.has(statusEntry)
+    );
+    triggers.forEach((trigger) => {
+        if (!statusByTrigger.has(trigger) && unmatchedStatuses.length > 0) {
+            statusByTrigger.set(trigger, unmatchedStatuses.shift());
+        }
+        const statusEntry = statusByTrigger.get(trigger);
+        if (statusEntry) {
+            trigger.buildResult = statusEntry.buildResult;
+            trigger.displayName = statusEntry.displayName;
+        }
+    });
 
     return triggers;
 }
