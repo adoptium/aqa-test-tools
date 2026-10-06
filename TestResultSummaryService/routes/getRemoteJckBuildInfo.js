@@ -56,7 +56,7 @@ function parseJckConsole(text) {
         /Triggering\s+(\S+\.jck)\s+on\s+(\S+)\s+with\s+JDK\s+(\S+)/i;
     const remoteUrlRe = /Remote build URL:\s*(https?:\/\/\S+)/i;
     const statusRe =
-        /Remote job\s+(.+?)\s+Status:\s*(SUCCESS|UNSTABLE|FAILURE|ABORTED)/i;
+        /Remote job\s+(.+?)(?:\s+Target:\s*(\S+))?\s+Status:\s*(SUCCESS|UNSTABLE|FAILURE|ABORTED)/i;
 
     const triggers = []; // { target, platform, jdkVersion }
     const remoteUrls = []; // collected in order
@@ -88,7 +88,8 @@ function parseJckConsole(text) {
         if (statusMatch) {
             statusEntries.push({
                 displayName: statusMatch[1].trim(),
-                buildResult: statusMatch[2],
+                target: statusMatch[2]?.replace(/\.jck$/i, ''),
+                buildResult: statusMatch[3],
             });
         }
     }
@@ -108,13 +109,15 @@ function parseJckConsole(text) {
         );
     };
     statusEntries.forEach((statusEntry) => {
-        const targetMatches = triggers.filter((trigger) => {
-            const escapedTarget = escapeRegExp(trigger.target);
-            return new RegExp(
-                `(?:^|[^\\w])${escapedTarget}(?:\\.jck)?(?:$|[^\\w])`,
-                'i'
-            ).test(statusEntry.displayName);
-        });
+        const targetMatches = triggers.filter((trigger) =>
+            statusEntry.target
+                ? trigger.target.toLowerCase() ===
+                  statusEntry.target.toLowerCase()
+                : new RegExp(
+                      `(?:^|[^\\w])${escapeRegExp(trigger.target)}(?:\\.jck)?(?:$|[^\\w])`,
+                      'i'
+                  ).test(statusEntry.displayName)
+        );
         const exactMatches =
             targetMatches.length > 1
                 ? targetMatches.filter(
