@@ -2,7 +2,10 @@ const BenchmarkMetric = require('./BenchmarkMetric');
 
 class Utils {
     static getBenchmarkParserKey(testName) {
-        for (let key of Object.keys(BenchmarkMetric)) {
+        // Sort keys by length descending so more specific keys (e.g. DayTrader30_WAS855gen1GB_4way)
+        // match before shorter prefix keys (e.g. DayTrader30)
+        const keys = Object.keys(BenchmarkMetric).sort((a, b) => b.length - a.length);
+        for (let key of keys) {
             if (testName.includes(key)) {
                 return key;
             }

@@ -16,6 +16,10 @@ class TestBenchmarkParser extends Parser {
                     index + 1,
                     testName.length
                 );
+            } else {
+                // No underscore: the whole name is the benchmark, use a default variant
+                benchmarkName = testName;
+                benchmarkVariant = 'default';
             }
         }
         return { benchmarkName, benchmarkVariant };
