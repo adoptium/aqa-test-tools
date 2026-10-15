@@ -1,0 +1,18 @@
+{
+  "name": "jenkins-pipeline-analyzer-cli",
+  "version": "0.1.0",
+  "description": "Standalone CLI that analyzes downloaded Jenkins pipeline logs and generates prompt files for Your AI",
+  "type": "module",
+  "bin": {
+    "jenkins-download": "./bin/download-pipeline-logs.cjs",
+    "jenkins-analyze": "./bin/jenkins-analyze.js",
+    "run-research-queries": "./bin/run-research-queries.js"
+  },
+  "scripts": {
+    "test": "node --test test/analyzer.test.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "license": "MIT"
+}
