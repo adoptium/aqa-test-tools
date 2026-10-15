@@ -105,6 +105,7 @@ The \`---\` rule goes on its own line with a blank line before and after it. Use
    - Include the specific test case names that failed
    - Use proper markdown formatting with <br> for line breaks in table cells
    - Ignore any line containing REDACTED (e.g. "### REDACTED ###"), but still list the failed test target with its Stats (e.g. "passed: 58; failed: 2").
+   - **system and perf jobs:** AQA "system" and "perf" test jobs do NOT report individual test case names, nor do they report pass/fail statistics. When no stats or test case names are found for a job whose name indicates it is a system or perf job, put a literal \`-\` in the Stats column and a literal \`-\` in the Failed Tests column (do NOT write "(no stats)" or "(no test case names reported)").
    
    #### Other Failed/Unstable Jobs
    Any jobs that failed but don't have detailed test info
