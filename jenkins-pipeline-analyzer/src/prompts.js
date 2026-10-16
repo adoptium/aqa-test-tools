@@ -14,39 +14,38 @@ export function buildPlatformSummaryPrompt(analysisFilePath, outputPath) {
 
   return `# Platform Summary Generation Task
 
-The pipeline analysis file has ${lineCount} lines. You MUST read it in full before generating the summary.
+The pipeline analysis file has ${lineCount} lines. It is too large to hold in context all at once, so you will process it ONE PLATFORM AT A TIME: read a platform's section, write its part of the summary to disk, then move on. Once a platform is written to the output file you never need to read it again.
 
-## ⚠️ STEP 1 — Read the full analysis file first
+**Analysis file path:** ${analysisFilePath}
 
-Use your read_file tool to read the COMPLETE file:
+## STEP 1 — Read the header of the analysis file (and nothing else yet)
 
-**File path:** ${analysisFilePath}
+The file is organised for reading one platform at a time. Use read_file with line ranges only (do not use sed/awk/scripts to shorten or filter the content — truncated or collapsed lists lose the test case names and URLs the summary needs).
 
-Read ONLY with read_file and line ranges (do not use sed/grep/awk/scripts to shorten or filter the content — truncated or collapsed lists lose the test case names and URLs the summary needs). You must read every one of the ${lineCount} lines before generating the summary.
-
-The file is organised to be read one platform at a time:
-1. Read the top of the file first (e.g. lines 1-60). It has the Summary Statistics, a "## Section Index" table, and the "Still Running Jobs" tree. The index lists, for every platform section, its START and END line numbers in this file.
-2. Each platform's section in the tree is wrapped in marker lines \`<!-- PLATFORM START: <name> -->\` and \`<!-- PLATFORM END: <name> -->\` (jobs that are not platform builds are wrapped in \`<!-- OTHER JOBS START -->\` / \`<!-- OTHER JOBS END -->\`). Read each section with read_file using its index range, one section per read. If a section is longer than about 400 lines, read it in consecutive ranges of at most 400 lines. If the index is missing, run \`grep -n "START\\|END" <file>\` once to find the markers.
-3. Lines between the "## Detailed Pipeline Tree" heading and the first START marker are the root pipeline job line. Make sure the ranges you read together cover the whole file, including that root line and anything after the last END marker.
-
-Do NOT start generating the summary until you have read every section — platforms appear throughout the file and missing any section will produce an incomplete summary. The marker blocks map one-to-one to the platforms in the Platform Overview Table, so use them as your platform list for the TODO list in STEP 2.
+1. Read from line 1 up to the line just before the first section's START line (the "## Section Index" table gives each section's START and END line, so this is roughly the first 45 lines). This gives you the Summary Statistics, the Section Index, the "Still Running Jobs" tree and the root pipeline job line (the line right after the "## Detailed Pipeline Tree" heading).
+2. Each platform's section in the tree is wrapped in marker lines \`<!-- PLATFORM START: <name> -->\` and \`<!-- PLATFORM END: <name> -->\` (jobs that are not platform builds are wrapped in \`<!-- OTHER JOBS START -->\` / \`<!-- OTHER JOBS END -->\`). If the index is missing, run \`grep -n "START\\|END" <file>\` once to find the markers.
+3. The index rows are your platform list. Do NOT read any platform section yet.
 
 To save context, the analysis file already omits successful \`Test_\` jobs that have no failures: each parent shows a single "N more successful test job(s) with no failures (omitted)" line instead. Those jobs are still counted in the Summary Statistics, so take job totals from there. Do not try to list them.
 
 ## STEP 2 — Plan, then build the summary file INCREMENTALLY
 
 ⚠️ The summary can be very large. NEVER write it in one response or one tool call — a single oversized response fails with "Maximum response length reached".
-⚠️ CRITICAL — NO PARALLEL APPENDS: Never issue multiple \`insert_content\` calls in parallel in the same turn. Parallel appends execute concurrently and clobber each other, corrupting the output. Every append must be strictly sequential in its own separate turn.
+⚠️ CRITICAL — NO PARALLEL WRITES: Never issue multiple \`insert_content\` / \`search_and_replace\` calls in parallel in the same turn. They execute concurrently and clobber each other, corrupting the output. Every write to the output file must be strictly sequential in its own separate turn.
 
-Instead:
+Do this:
 
-1. First list the platforms found in the analysis file and create a TODO list with update_todo_list: one item for the header/executive summary/overview table, one item per platform, and one for the still-running section.
-2. In turn 1, create the output file with write_file containing ONLY the Header, Executive Summary and Platform Overview Table (sections 1-3 below).
-3. Then, for each platform in turn (strictly ONE platform and ONE \`insert_content\` tool call per assistant turn — NEVER call \`insert_content\` in parallel):
-   - The first platform's append starts with the "# 4. Detailed Platform Analysis" heading followed by that platform's section.
-   - APPEND that platform's detailed section (section 4) to the end of the file using insert_content with line 0 (line 0 = append).
-   - Wait for the tool result in the next turn, mark the TODO item complete with update_todo_list, and then append the next platform in a new turn.
-4. Finally, in a separate turn, append section 5 (Still Running Jobs) in its own insert_content call.
+1. Create a TODO list with update_todo_list: one item for the header/executive summary/overview table skeleton, one item per platform (taken from the Section Index), one for the still-running section, and one for the final totals. In each platform's item text, record its failure count once you have processed it (a running tally for the Executive Summary).
+2. Create the output file with write_file containing ONLY:
+   - Section 1 (Header) and Section 2 (Executive Summary) filled in from the header you read. For the "Total test failures" line write the literal placeholder \`TOTAL_FAILURES_PLACEHOLDER\` to replace at the end.
+   - Section 3 heading, the table header row, the separator row, and then, on its own final line, the placeholder \`<!-- OVERVIEW ROWS -->\` (no table rows yet).
+3. Then, for each platform from the Section Index, one at a time:
+   a. read_file ONLY that platform's START–END range (if longer than about 400 lines, read it in consecutive ranges of at most 400 lines). Do not read other platforms.
+   b. In its own turn, APPEND that platform's detailed section (section 4) to the end of the file with insert_content (line 0 = append). The first platform's append starts with the "# 4. Detailed Platform Analysis" heading followed by that platform's section.
+   c. In the next turn, use search_and_replace to replace the line \`<!-- OVERVIEW ROWS -->\` with that platform's Platform Overview table row followed by a newline and \`<!-- OVERVIEW ROWS -->\` (so the next platform's row can be added after it).
+   d. Mark the TODO item complete (note the failure count) and move to the next platform. Do not go back to earlier platforms and do not repeat their content.
+   Treat the "other jobs" section the same way if it has anything to report (add it to section 4 under its own heading, no overview row unless it is a platform).
+4. After the last platform, in separate sequential turns: (i) search_and_replace \`<!-- OVERVIEW ROWS -->\` with an empty string (remove the placeholder line), (ii) replace \`TOTAL_FAILURES_PLACEHOLDER\` with the total from your tally, (iii) append section 5 (Still Running Jobs) with insert_content, using the Still Running tree you read in STEP 1.
 5. Keep every response short: do not repeat content already written, and do not echo the file back in chat.
 
 The summary must meet the following requirements:
