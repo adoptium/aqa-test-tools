@@ -112,9 +112,10 @@ The \`---\` rule goes on its own line with a blank line before and after it. Use
    Table with: Job Name (as clickable link with #NN), Status, Details
 
    #### Test Summary
-   Write exactly two lines immediately after the sub-section heading — one for AQA, one for JCK. Each line MUST be on its own line (a hard line break, not a sentence continuation). Use this exact format:
+   Write exactly two separate paragraphs immediately after the sub-section heading — one for AQA, one for JCK. They MUST be separated by a blank line so that markdown renders them as two distinct lines (consecutive lines without a blank line merge into one line). Never put the AQA and JCK summaries on the same line. Use this exact format:
 
    **AQA Test summary:** [AQA_Test_Pipeline or AQA_Test_Pipeline_RELEASE #NN](URL) — one sentence outcome (e.g. "extended.openjdk UNSTABLE — 1 hotspot_runtime and 1 jdk_imageio failure; all other targets passed." or "All AQA tests passed.").
+
    **JCK Test summary:** [AQA_Test_Pipeline_JCK #NN](URL) — one sentence outcome (e.g. "extended.jck FAILURE, dev.jck UNSTABLE; sanity and special passed." or "All JCK targets passed.").
 
    Rules:
