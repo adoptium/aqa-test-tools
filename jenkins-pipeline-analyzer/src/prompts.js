@@ -14,32 +14,38 @@ export function buildPlatformSummaryPrompt(analysisFilePath, outputPath) {
 
   return `# Platform Summary Generation Task
 
-The pipeline analysis file has ${lineCount} lines. You MUST read it in full before generating the summary.
+The pipeline analysis file has ${lineCount} lines. It is too large to hold in context all at once, so you will process it ONE PLATFORM AT A TIME: read a platform's section, write its part of the summary to disk, then move on. Once a platform is written to the output file you never need to read it again.
 
-## ⚠️ STEP 1 — Read the full analysis file first
+**Analysis file path:** ${analysisFilePath}
 
-Use your read_file tool to read the COMPLETE file:
+## STEP 1 — Read the header of the analysis file (and nothing else yet)
 
-**File path:** ${analysisFilePath}
+The file is organised for reading one platform at a time. Use read_file with line ranges only (do not use sed/awk/scripts to shorten or filter the content — truncated or collapsed lists lose the test case names and URLs the summary needs).
 
-If the file is large, read it in range chunks (e.g. 1-300, 301-600, …) until you have read ALL ${lineCount} lines. Do NOT start generating the summary until you have read every line — platforms appear throughout the file and missing any section will produce an incomplete summary.
+1. Read from line 1 up to the line just before the first section's START line (the "## Section Index" table gives each section's START and END line, so this is roughly the first 45 lines). This gives you the Summary Statistics, the Section Index, the "Still Running Jobs" tree and the root pipeline job line (the line right after the "## Detailed Pipeline Tree" heading).
+2. Each platform's section in the tree is wrapped in marker lines \`<!-- PLATFORM START: <name> -->\` and \`<!-- PLATFORM END: <name> -->\` (jobs that are not platform builds are wrapped in \`<!-- OTHER JOBS START -->\` / \`<!-- OTHER JOBS END -->\`). If the index is missing, run \`grep -n "START\\|END" <file>\` once to find the markers.
+3. The index rows are your platform list. Do NOT read any platform section yet.
 
 To save context, the analysis file already omits successful \`Test_\` jobs that have no failures: each parent shows a single "N more successful test job(s) with no failures (omitted)" line instead. Those jobs are still counted in the Summary Statistics, so take job totals from there. Do not try to list them.
 
 ## STEP 2 — Plan, then build the summary file INCREMENTALLY
 
 ⚠️ The summary can be very large. NEVER write it in one response or one tool call — a single oversized response fails with "Maximum response length reached".
-⚠️ CRITICAL — NO PARALLEL APPENDS: Never issue multiple \`insert_content\` calls in parallel in the same turn. Parallel appends execute concurrently and clobber each other, corrupting the output. Every append must be strictly sequential in its own separate turn.
+⚠️ CRITICAL — NO PARALLEL WRITES: Never issue multiple \`insert_content\` / \`search_and_replace\` calls in parallel in the same turn. They execute concurrently and clobber each other, corrupting the output. Every write to the output file must be strictly sequential in its own separate turn.
 
-Instead:
+Do this:
 
-1. First list the platforms found in the analysis file and create a TODO list with update_todo_list: one item for the header/executive summary/overview table, one item per platform, and one for the still-running section.
-2. In turn 1, create the output file with write_file containing ONLY the Header, Executive Summary and Platform Overview Table (sections 1-3 below).
-3. Then, for each platform in turn (strictly ONE platform and ONE \`insert_content\` tool call per assistant turn — NEVER call \`insert_content\` in parallel):
-   - The first platform's append starts with the "# 4. Detailed Platform Analysis" heading followed by that platform's section.
-   - APPEND that platform's detailed section (section 4) to the end of the file using insert_content with line 0 (line 0 = append).
-   - Wait for the tool result in the next turn, mark the TODO item complete with update_todo_list, and then append the next platform in a new turn.
-4. Finally, in a separate turn, append section 5 (Still Running Jobs) in its own insert_content call.
+1. Create a TODO list with update_todo_list: one item for the header/executive summary/overview table skeleton, one item per platform (taken from the Section Index), one for the still-running section, and one for the final totals. In each platform's item text, record its failure count once you have processed it (a running tally for the Executive Summary).
+2. Create the output file with write_file containing ONLY:
+   - Section 1 (Header) and Section 2 (Executive Summary) filled in from the header you read. For the "Total test failures" line write the literal placeholder \`TOTAL_FAILURES_PLACEHOLDER\` to replace at the end.
+   - Section 3 heading, the table header row, the separator row, and then, on its own final line, the placeholder \`<!-- OVERVIEW ROWS -->\` (no table rows yet).
+3. Then, for each platform from the Section Index, one at a time:
+   a. read_file ONLY that platform's START–END range (if longer than about 400 lines, read it in consecutive ranges of at most 400 lines). Do not read other platforms.
+   b. In its own turn, APPEND that platform's detailed section (section 4) to the end of the file with insert_content (line 0 = append). The first platform's append starts with the "# 4. Detailed Platform Analysis" heading followed by that platform's section.
+   c. In the next turn, use search_and_replace to replace the line \`<!-- OVERVIEW ROWS -->\` with that platform's Platform Overview table row followed by a newline and \`<!-- OVERVIEW ROWS -->\` (so the next platform's row can be added after it).
+   d. Mark the TODO item complete (note the failure count) and move to the next platform. Do not go back to earlier platforms and do not repeat their content.
+   Treat the "other jobs" section the same way if it has anything to report (add it to section 4 under its own heading, no overview row unless it is a platform).
+4. After the last platform, in separate sequential turns: (i) search_and_replace \`<!-- OVERVIEW ROWS -->\` with an empty string (remove the placeholder line), (ii) replace \`TOTAL_FAILURES_PLACEHOLDER\` with the total from your tally, (iii) append section 5 (Still Running Jobs) with insert_content, using the Still Running tree you read in STEP 1.
 5. Keep every response short: do not repeat content already written, and do not echo the file back in chat.
 
 The summary must meet the following requirements:
@@ -81,6 +87,12 @@ The \`---\` rule goes on its own line with a blank line before and after it. Use
    - Column order: Platform, Build Status, AQA Test Pipeline, JCK Pipeline, Test Failures, Notes.
    - Every Platform cell MUST be an in-document hyperlink to that platform's section in "4. Detailed Platform Analysis": [Platform name](#platform-<slug>), e.g. [Alpine Linux](#platform-alpine-linux). The slug is the platform name lowercased with every run of non-alphanumeric characters replaced by a single hyphen (e.g. "Linux x64" → \`platform-linux-x64\`).
 
+   **"Test Failures" column format:** write exactly two lines (use \`<br>\` to separate them in the table cell), one for AQA and one for JCK. Each line is a terse, human-readable phrase — no long lists of test case names. Omit a line if there were no failures for that suite. Examples:
+   - \`AQA: 4 extended, 1 perf sanity, 2 system sanity failed test cases<br>JCK: sanity, special, and extended failed\`
+   - \`AQA: all passed\` (when AQA had no failures)
+   - \`JCK: extended failed\` (when only JCK had failures)
+   - If both passed: \`AQA: all passed<br>JCK: all passed\`
+
    Include ALL platforms found (AIX, Alpine Linux, Linux variants, macOS, Windows)
 
 4. **Detailed Platform Analysis**
@@ -98,7 +110,21 @@ The \`---\` rule goes on its own line with a blank line before and after it. Use
 
    #### Build Job
    Table with: Job Name (as clickable link with #NN), Status, Details
-   
+
+   #### Test Summary
+   Write exactly two separate paragraphs immediately after the sub-section heading — one for AQA, one for JCK. They MUST be separated by a blank line so that markdown renders them as two distinct lines (consecutive lines without a blank line merge into one line). Never put the AQA and JCK summaries on the same line. Use this exact format:
+
+   **AQA Test summary:** [AQA_Test_Pipeline or AQA_Test_Pipeline_RELEASE #NN](URL) — one sentence outcome (e.g. "extended.openjdk UNSTABLE — 1 hotspot_runtime and 1 jdk_imageio failure; all other targets passed." or "All AQA tests passed.").
+
+   **JCK Test summary:** [AQA_Test_Pipeline_JCK #NN](URL) — one sentence outcome (e.g. "extended.jck FAILURE, dev.jck UNSTABLE; sanity and special passed." or "All JCK targets passed.").
+
+   Rules:
+   - The hyperlink is the top-level AQA or JCK pipeline job that is an immediate descendant of the build job for this platform. Use the #NN build number and URL exactly as they appear in the analysis tree.
+   - AQA pipeline job name is \`AQA_Test_Pipeline\` or \`AQA_Test_Pipeline_RELEASE\`; JCK pipeline job name is \`AQA_Test_Pipeline_JCK\`.
+   - If a suite was not run for this platform, write: **AQA Test summary:** Not run. (or **JCK Test summary:** Not run.)
+   - Keep each summary to one sentence — no parenthetical elaboration, no second sentence.
+   - These are the ONLY two lines in this sub-section. Do not add any other content here.
+
    #### Test Failures Detail
    Table with: Job (clickable link), Test Target, Stats, Failed Tests
    - List ALL failed test targets found in the analysis for jobs that did not finish SUCCESS (see the Final result rule below)

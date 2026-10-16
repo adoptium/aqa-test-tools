@@ -99,7 +99,7 @@ It writes the output files with a shared timestamp and prints their paths:
 
 | File | Purpose |
 |---|---|
-| `pipeline-analysis-<ts>.md` | The analysis report: summary counts and the full job tree with failed test targets and test cases. |
+| `pipeline-analysis-<ts>.md` | The analysis report: summary counts, a Section Index (start/end line of each platform), and the full job tree with failed test targets and test cases. Each platform is wrapped in `<!-- PLATFORM START/END: name -->` marker lines. |
 | `prompt-1-platform-summary-<ts>.md` | Prompt for Your AI. Reads the analysis report and writes `platform-summary-<ts>.md`. |
 
 The last lines it prints are the steps to run, in order:

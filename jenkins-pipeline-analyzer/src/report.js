@@ -19,6 +19,21 @@ function isPlainSuccessTestJob(a) {
   );
 }
 
+// Direct children of the root pipeline job are the per-platform build jobs, e.g.
+// "build-scripts » jobs » release » jobs » jdk21u » jdk21u-release-alpine-linux-x64-temurin #33"
+// -> "alpine-linux-x64". Anything else (e.g. refactor_openjdk_release_tool) is grouped as "other jobs".
+// Each section is wrapped in marker comments so a reader can find and chunk it by line range:
+//   <!-- PLATFORM START: alpine-linux-x64 -->  ...  <!-- PLATFORM END: alpine-linux-x64 -->
+const PLATFORM_JOB = /^jdk\d+u?-(?:release-)?(.+?)-[a-z0-9_]+$/;
+const OTHER_LABEL = 'other-jobs';
+function platformLabel(analysis) {
+  const name = analysis.buildInfo.jobName.replace(/\s+#\d+\s*$/, '').split('»').pop().trim();
+  return PLATFORM_JOB.exec(name)?.[1] ?? null;
+}
+const markerStart = (label) => (label === OTHER_LABEL ? `<!-- OTHER JOBS START -->` : `<!-- PLATFORM START: ${label} -->`);
+const markerEnd = (label) => (label === OTHER_LABEL ? `<!-- OTHER JOBS END -->` : `<!-- PLATFORM END: ${label} -->`);
+const MARKER = /^<!-- (PLATFORM|OTHER JOBS) (START|END)(?:: (.+?))? -->$/;
+
 // Rerun lists repeat entries and can contain whole job-parameter strings: dedupe and cap the length.
 const MAX_ITEM_LENGTH = 200;
 const compactItems = (items) =>
@@ -114,9 +129,20 @@ export function formatTreeOutput(analysis, level = 0, itemNumber = 1) {
   if (analysis.downstreamAnalyses?.length > 0) {
     lines.push(`${'  '.repeat(level + 1)}- 🔗 **Downstream Jobs:**`);
     const plain = analysis.downstreamAnalyses.filter(isPlainSuccessTestJob);
-    analysis.downstreamAnalyses
-      .filter((d) => !isPlainSuccessTestJob(d))
-      .forEach((d, idx) => lines.push(formatTreeOutput(d, level + 2, idx + 1)));
+    const shown = analysis.downstreamAnalyses.filter((d) => !isPlainSuccessTestJob(d));
+    // Only the root's children are platform sections; markers are emitted only if at least one is a platform
+    const labels = level === 0 ? shown.map((d) => platformLabel(d) ?? OTHER_LABEL) : [];
+    const useMarkers = labels.some((l) => l !== OTHER_LABEL);
+    let open = null;
+    shown.forEach((d, idx) => {
+      if (useMarkers && labels[idx] !== open) {
+        if (open) lines.push(markerEnd(open));
+        open = labels[idx];
+        lines.push(markerStart(open));
+      }
+      lines.push(formatTreeOutput(d, level + 2, idx + 1));
+    });
+    if (open) lines.push(markerEnd(open));
     if (plain.length > 0) {
       lines.push(`${'  '.repeat(level + 2)}- ✅ ${plain.length} more successful test job(s) with no failures (omitted)`);
     }
@@ -172,10 +198,42 @@ ${formatRunningNode(tree, 0)}
 `;
 }
 
+// Section index: one row per marker pair, with 1-based line numbers in the final file.
+function formatSectionIndex(sections) {
+  if (sections.length === 0) return '';
+  const rows = sections.map(
+    (s) => `| ${s.label} | ${s.start} | ${s.end} | ${s.end - s.start + 1} |`
+  );
+  return `## Section Index
+
+Line numbers refer to this file. Each section is wrapped in \`<!-- PLATFORM START: name -->\` / \`<!-- PLATFORM END: name -->\` marker lines (\`grep -n "START:\\|END:\\|JOBS START\\|JOBS END"\`). Lines before the first section are the root pipeline job line.
+
+| Section | Start line | End line | Lines |
+|---------|-----------|---------|-------|
+${rows.join('\n')}
+
+`;
+}
+
 /** The markdown report written to pipeline-analysis-<timestamp>.md */
 export function renderReport(analysis) {
   const stats = countJobs(analysis);
-  return `# Jenkins Pipeline Analysis
+  const tree = formatTreeOutput(analysis);
+  const treeLines = tree.split('\n');
+
+  // Locate the marker pairs inside the tree (0-based, relative to the tree's first line)
+  const found = [];
+  let current = null;
+  treeLines.forEach((line, i) => {
+    const m = MARKER.exec(line);
+    if (!m) return;
+    if (m[2] === 'START') current = { label: m[1] === 'PLATFORM' ? m[3] : OTHER_LABEL, start: i };
+    else if (current) found.push({ ...current, end: i });
+  });
+
+  const build = (treeFirstLine) => {
+    const sections = found.map((s) => ({ label: s.label, start: treeFirstLine + s.start, end: treeFirstLine + s.end }));
+    const head = `# Jenkins Pipeline Analysis
 
 ## Summary Statistics
 - **Total Jobs**: ${stats.total}
@@ -184,8 +242,13 @@ export function renderReport(analysis) {
 - **⏳ Still running**: ${stats.running}
 - **⚠️ Other (Unstable/Aborted/Unknown)**: ${stats.total - stats.success - stats.failed - stats.running}
 
-${formatRunningSection(analysis)}## Detailed Pipeline Tree
+${formatSectionIndex(sections)}${formatRunningSection(analysis)}## Detailed Pipeline Tree
 
-${formatTreeOutput(analysis)}
 `;
+    return head;
+  };
+
+  // The index length does not depend on the numbers in it, so one pass fixes the offset for the second
+  const firstLine = build(0).split('\n').length;
+  return `${build(firstLine)}${tree}\n`;
 }
