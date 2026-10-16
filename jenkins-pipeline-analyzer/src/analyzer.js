@@ -18,15 +18,12 @@ export function detectJobType(jobName) {
   return jobName.startsWith('Test_') || jobName.startsWith('AQA_Test_Pipeline_') ? 'test' : 'build';
 }
 
-<<<<<<< HEAD
 // Ignore utility/generator jobs like Test_Job_Auto_Gen whose instances are frequently purged by Jenkins
 export function isIgnoredJob(jobName) {
   if (!jobName) return false;
   return /(?:^|[^a-zA-Z0-9])Test_Job_Auto_Gen(?:$|[^a-zA-Z0-9])/.test(jobName);
 }
 
-=======
->>>>>>> upstream/master
 // Downstream job results reported in a console log. Two equivalent line formats are recognised:
 //   "Build <job path> #<n> completed: <STATUS>"
 //        -> { jobName, buildNumber, status }
@@ -38,15 +35,10 @@ export function extractDownstreamResults(logPath) {
   for (const line of output.split('\n')) {
     const completed = line.match(/Build\s+(.+?)\s+#(\d+)\s+completed:\s+(\w+)/);
     if (completed) {
-<<<<<<< HEAD
       const jobName = completed[1].replace(/\s+»\s+/g, '/job/');
       if (isIgnoredJob(jobName)) continue;
       results.push({
         jobName,
-=======
-      results.push({
-        jobName: completed[1].replace(/\s+»\s+/g, '/job/'),
->>>>>>> upstream/master
         buildNumber: parseInt(completed[2]),
         status: completed[3],
       });
@@ -54,10 +46,7 @@ export function extractDownstreamResults(logPath) {
     }
     const target = line.match(/Remote job (.+?)\s+Target:\s+(\S+)\s+Status:\s+(\S+)/);
     if (target) {
-<<<<<<< HEAD
       if (isIgnoredJob(target[2]) || isIgnoredJob(target[1])) continue;
-=======
->>>>>>> upstream/master
       const segments = target[1].split(':').map((s) => s.trim()).filter((s) => s.length > 0);
       const platform = segments.length > 0 ? segments[segments.length - 1] : target[1].trim();
       results.push({ jobName: target[2], platform, target: target[2], status: target[3] });
@@ -413,7 +402,6 @@ function logsUnavailableEntry(dir, dirName, opts) {
 }
 
 /**
-<<<<<<< HEAD
  * When a job is still-running but a parent's TARGET RESULTS already recorded the outcome for a
  * matching target, the parent is authoritative.  Walk the child's full downstream tree and override
  * any still-running node whose job name contains one of the parent's target names.
@@ -480,8 +468,6 @@ function resolveStillRunningFromParentTargets(childAnalysis, parentTargetResults
 }
 
 /**
-=======
->>>>>>> upstream/master
  * Recursively analyze a job directory (console.log + build-info.json) and its child job directories.
  * @param {string} jobDir
  * @param {{jenkinsUrl: string}} opts jenkinsUrl is used to build stub entries for empty directories
@@ -502,10 +488,7 @@ export function analyzeJobDirectory(jobDir, opts) {
   const childDirs = fs.readdirSync(jobDir, { withFileTypes: true }).filter((e) => e.isDirectory());
 
   for (const childDir of childDirs) {
-<<<<<<< HEAD
     if (isIgnoredJob(childDir.name)) continue;
-=======
->>>>>>> upstream/master
     const childPath = path.join(jobDir, childDir.name);
     const childLogPath = path.join(childPath, 'console.log');
     const childInfoPath = path.join(childPath, 'build-info.json');
@@ -535,7 +518,6 @@ export function analyzeJobDirectory(jobDir, opts) {
           if (childAnalysis.testTargetsSummary) childAnalysis.testTargetsSummary.rerun_info = rerunInfo;
         }
 
-<<<<<<< HEAD
         // If this job has TARGET RESULTS from its parent-reported outcomes, use them to resolve any
         // still-running descendants whose job names match a target (parent is authoritative once it
         // has completed and recorded results for all targets).
@@ -543,8 +525,6 @@ export function analyzeJobDirectory(jobDir, opts) {
           resolveStillRunningFromParentTargets(childAnalysis, analysis.targetResults);
         }
 
-=======
->>>>>>> upstream/master
         (analysis.downstreamAnalyses ??= []).push(childAnalysis);
       } catch (error) {
         console.error(`Failed to analyze child directory ${childPath}: ${error.message}`);
@@ -570,11 +550,7 @@ export function analyzePipeline(pipelineDir, opts = { jenkinsUrl: 'https://ci.ad
 
   const jobDirs = fs
     .readdirSync(pipelineDir, { withFileTypes: true })
-<<<<<<< HEAD
     .filter((e) => e.isDirectory() && !isIgnoredJob(e.name) && fs.existsSync(path.join(pipelineDir, e.name, 'console.log')));
-=======
-    .filter((e) => e.isDirectory() && fs.existsSync(path.join(pipelineDir, e.name, 'console.log')));
->>>>>>> upstream/master
 
   if (jobDirs.length === 0) throw new Error(`No root job directory found in ${pipelineDir}`);
   if (jobDirs.length > 1) {
