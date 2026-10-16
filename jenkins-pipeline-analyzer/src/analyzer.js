@@ -485,7 +485,12 @@ export function analyzeJobDirectory(jobDir, opts) {
       ? analyzeTestJob(logPath, infoPath)
       : analyzeBuildJob(logPath, infoPath);
 
-  const childDirs = fs.readdirSync(jobDir, { withFileTypes: true }).filter((e) => e.isDirectory());
+  // readdirSync order is filesystem-dependent: sort by name so the report order (and thus the
+  // platform section order) is deterministic.
+  const childDirs = fs
+    .readdirSync(jobDir, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
 
   for (const childDir of childDirs) {
     if (isIgnoredJob(childDir.name)) continue;

@@ -22,7 +22,14 @@ Use your read_file tool to read the COMPLETE file:
 
 **File path:** ${analysisFilePath}
 
-If the file is large, read it in range chunks (e.g. 1-300, 301-600, …) until you have read ALL ${lineCount} lines. Do NOT start generating the summary until you have read every line — platforms appear throughout the file and missing any section will produce an incomplete summary.
+Read ONLY with read_file and line ranges (do not use sed/grep/awk/scripts to shorten or filter the content — truncated or collapsed lists lose the test case names and URLs the summary needs). You must read every one of the ${lineCount} lines before generating the summary.
+
+The file is organised to be read one platform at a time:
+1. Read the top of the file first (e.g. lines 1-60). It has the Summary Statistics, a "## Section Index" table, and the "Still Running Jobs" tree. The index lists, for every platform section, its START and END line numbers in this file.
+2. Each platform's section in the tree is wrapped in marker lines \`<!-- PLATFORM START: <name> -->\` and \`<!-- PLATFORM END: <name> -->\` (jobs that are not platform builds are wrapped in \`<!-- OTHER JOBS START -->\` / \`<!-- OTHER JOBS END -->\`). Read each section with read_file using its index range, one section per read. If a section is longer than about 400 lines, read it in consecutive ranges of at most 400 lines. If the index is missing, run \`grep -n "START\\|END" <file>\` once to find the markers.
+3. Lines between the "## Detailed Pipeline Tree" heading and the first START marker are the root pipeline job line. Make sure the ranges you read together cover the whole file, including that root line and anything after the last END marker.
+
+Do NOT start generating the summary until you have read every section — platforms appear throughout the file and missing any section will produce an incomplete summary. The marker blocks map one-to-one to the platforms in the Platform Overview Table, so use them as your platform list for the TODO list in STEP 2.
 
 To save context, the analysis file already omits successful \`Test_\` jobs that have no failures: each parent shows a single "N more successful test job(s) with no failures (omitted)" line instead. Those jobs are still counted in the Summary Statistics, so take job totals from there. Do not try to list them.
 

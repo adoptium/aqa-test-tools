@@ -336,3 +336,51 @@ test('Test_Job_Auto_Gen instances (e.g. purged HTTP 404 or empty dir) are ignore
   assert.doesNotMatch(report, /Test_Job_Auto_Gen/);
   assert.match(report, /\*\*Total Jobs\*\*: 2/);
 });
+
+test('platform build jobs are wrapped in START/END markers, sorted by name, and listed in a Section Index with correct line numbers', () => {
+  const mk = (n, platform) => ({
+    name: `jdk21u-release-${platform}-temurin_${n}`,
+    files: {
+      'build-info.json': JSON.stringify({ fullDisplayName: `build-scripts » jobs » jdk21u » jdk21u-release-${platform}-temurin #${n}`, number: n, result: 'SUCCESS', duration: 1000, url: `https://ci.example/job/${n}/` }),
+      'console.log': 'Finished: SUCCESS\n',
+    },
+  });
+  const other = {
+    name: 'refactor_tool_9',
+    files: {
+      'build-info.json': JSON.stringify({ fullDisplayName: 'build-scripts » release » refactor_tool #9', number: 9, result: 'SUCCESS', duration: 1000, url: 'https://ci.example/job/9/' }),
+      'console.log': 'Finished: SUCCESS\n',
+    },
+  };
+  // deliberately created out of order
+  const report = pipelineWithChildren([mk(3, 'windows-x64'), other, mk(1, 'alpine-linux-x64'), mk(2, 'mac-aarch64')]);
+  const lines = report.split('\n');
+
+  const markers = lines.map((l, i) => [i + 1, l]).filter(([, l]) => l.startsWith('<!--'));
+  assert.deepEqual(
+    markers.map(([, l]) => l),
+    [
+      '<!-- PLATFORM START: alpine-linux-x64 -->', '<!-- PLATFORM END: alpine-linux-x64 -->',
+      '<!-- PLATFORM START: mac-aarch64 -->', '<!-- PLATFORM END: mac-aarch64 -->',
+      '<!-- PLATFORM START: windows-x64 -->', '<!-- PLATFORM END: windows-x64 -->',
+      '<!-- OTHER JOBS START -->', '<!-- OTHER JOBS END -->',
+    ]
+  );
+  // every index row's start/end must point at the matching marker line in the file
+  const rows = [...report.matchAll(/^\| ([\w-]+) \| (\d+) \| (\d+) \| \d+ \|$/gm)];
+  assert.equal(rows.length, 4);
+  for (const [, label, start, end] of rows) {
+    const startText = label === 'other-jobs' ? '<!-- OTHER JOBS START -->' : `<!-- PLATFORM START: ${label} -->`;
+    const endText = label === 'other-jobs' ? '<!-- OTHER JOBS END -->' : `<!-- PLATFORM END: ${label} -->`;
+    assert.equal(lines[start - 1], startText);
+    assert.equal(lines[end - 1], endText);
+  }
+});
+
+test('no markers or index when the root job has no platform build children', () => {
+  const report = pipelineWithChildren([
+    { name: 'Test_x_2', files: { 'build-info.json': JSON.stringify({ fullDisplayName: 'Test_x #2', number: 2, result: 'FAILURE', duration: 1000, url: 'https://ci.example/job/2/' }), 'console.log': 'Finished: FAILURE\n' } },
+  ]);
+  assert.doesNotMatch(report, /<!--/);
+  assert.doesNotMatch(report, /Section Index/);
+});
