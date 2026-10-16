@@ -4,6 +4,7 @@ ArgParser.parse();
 const express = require('express');
 const cors = require('cors');
 const app = express();
+app.set('trust proxy', true); // When using a reverse proxy ensure that the rate limiter uses the correct src_ip, rather than the reverse proxy ip
 const bodyParser = require('body-parser');
 const routes = require('./routes');
 const compression = require('compression');

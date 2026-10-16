@@ -1,0 +1,19 @@
+[
+  {
+    "apiBase": "https://api.github.ibm.com",
+    "repos": [
+      "repo:runtimes/backlog",
+      "repo:runtimes/infrastructure"
+    ],
+    "tokenKey": "https://api.github.ibm.com",
+    "maxResults": 50
+  },
+  {
+    "apiBase": "https://api.github.com",
+    "repos": [
+      "repo:eclipse-openj9/openj9"
+    ],
+    "tokenKey": "https://api.github.com",
+    "maxResults": 50
+  }
+]

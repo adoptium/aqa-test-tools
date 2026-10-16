@@ -6,7 +6,11 @@ import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { grepWithContext, tailLines, isJobFinished } from '../src/logtools.js';
+<<<<<<< HEAD
 import { parseTestTargetsSummary, detectJobType, isIgnoredJob, extractDownstreamResults } from '../src/analyzer.js';
+=======
+import { parseTestTargetsSummary, detectJobType } from '../src/analyzer.js';
+>>>>>>> upstream/master
 
 const CLI = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'bin', 'jenkins-analyze.js');
 
@@ -80,6 +84,7 @@ test('detectJobType', () => {
   assert.equal(detectJobType('build-scripts » jobs » jdk21'), 'build');
 });
 
+<<<<<<< HEAD
 test('isIgnoredJob matches Test_Job_Auto_Gen variants and ignores them', () => {
   assert.equal(isIgnoredJob('Test_Job_Auto_Gen'), true);
   assert.equal(isIgnoredJob('Test_Job_Auto_Gen_68332'), true);
@@ -91,6 +96,8 @@ test('isIgnoredJob matches Test_Job_Auto_Gen variants and ignores them', () => {
   assert.equal(isIgnoredJob('AQA_Test_Pipeline_Foo #1'), false);
 });
 
+=======
+>>>>>>> upstream/master
 test('CLI analyzes a pipeline dir and writes the report and three prompt files', () => {
   const root = tmpDir();
   const job = path.join(root, 'root_job_1');
@@ -258,6 +265,7 @@ test('SUCCESS job whose failed target was recovered on rerun is labelled RECOVER
   const prompt1 = fs.readFileSync(path.join(out, files.find((f) => f.startsWith('prompt-1-platform-summary-'))), 'utf-8');
   assert.match(prompt1, /Final result rule/);
 });
+<<<<<<< HEAD
 
 test('still-running child overridden by parent AQA_Test_Pipeline_JCK TARGET RESULTS', () => {
   // Structure:
@@ -336,3 +344,5 @@ test('Test_Job_Auto_Gen instances (e.g. purged HTTP 404 or empty dir) are ignore
   assert.doesNotMatch(report, /Test_Job_Auto_Gen/);
   assert.match(report, /\*\*Total Jobs\*\*: 2/);
 });
+=======
+>>>>>>> upstream/master

@@ -1,7 +1,0 @@
-node_modules
-/bin/
-/.apt_generated/
-credentials.json
-.README.md.html
-.DS_Store
-APP_DATA.json

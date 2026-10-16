@@ -81,12 +81,15 @@ The \`---\` rule goes on its own line with a blank line before and after it. Use
    - Column order: Platform, Build Status, AQA Test Pipeline, JCK Pipeline, Test Failures, Notes.
    - Every Platform cell MUST be an in-document hyperlink to that platform's section in "4. Detailed Platform Analysis": [Platform name](#platform-<slug>), e.g. [Alpine Linux](#platform-alpine-linux). The slug is the platform name lowercased with every run of non-alphanumeric characters replaced by a single hyphen (e.g. "Linux x64" → \`platform-linux-x64\`).
 
+<<<<<<< HEAD
    **"Test Failures" column format:** write exactly two lines (use \`<br>\` to separate them in the table cell), one for AQA and one for JCK. Each line is a terse, human-readable phrase — no long lists of test case names. Omit a line if there were no failures for that suite. Examples:
    - \`AQA: 4 extended, 1 perf sanity, 2 system sanity failed test cases<br>JCK: sanity, special, and extended failed\`
    - \`AQA: all passed\` (when AQA had no failures)
    - \`JCK: extended failed\` (when only JCK had failures)
    - If both passed: \`AQA: all passed<br>JCK: all passed\`
 
+=======
+>>>>>>> upstream/master
    Include ALL platforms found (AIX, Alpine Linux, Linux variants, macOS, Windows)
 
 4. **Detailed Platform Analysis**
@@ -104,6 +107,7 @@ The \`---\` rule goes on its own line with a blank line before and after it. Use
 
    #### Build Job
    Table with: Job Name (as clickable link with #NN), Status, Details
+<<<<<<< HEAD
 
    #### Test Summary
    Write exactly two lines immediately after the sub-section heading — one for AQA, one for JCK. Each line MUST be on its own line (a hard line break, not a sentence continuation). Use this exact format:
@@ -118,6 +122,9 @@ The \`---\` rule goes on its own line with a blank line before and after it. Use
    - Keep each summary to one sentence — no parenthetical elaboration, no second sentence.
    - These are the ONLY two lines in this sub-section. Do not add any other content here.
 
+=======
+   
+>>>>>>> upstream/master
    #### Test Failures Detail
    Table with: Job (clickable link), Test Target, Stats, Failed Tests
    - List ALL failed test targets found in the analysis for jobs that did not finish SUCCESS (see the Final result rule below)

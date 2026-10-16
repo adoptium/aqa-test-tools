@@ -3,14 +3,12 @@ import { Route, Routes } from 'react-router';
 import { Link } from 'react-router-dom';
 import { ConfigProvider, Layout, Menu } from 'antd';
 import enUS from 'antd/es/calendar/locale/en_US';
-
 import { Dashboard } from './Dashboard/';
 import ErrorBoundary from './ErrorBoundary';
 import { Output } from './Build/Output/';
 import { TestCompare } from './TestCompare/';
 import { ThirdPartyAppView } from './ThirdPartyAppView/';
 import { PerfCompare } from './PerfCompare/';
-import { TabularView } from './TabularView/';
 import { TrafficLight, MetricsDetails } from './TrafficLight/';
 import { AdvancedSearch } from './AdvancedSearch/';
 
@@ -32,6 +30,7 @@ import { Settings } from './Settings/';
 
 import './App.css';
 import { ReactComponent as AdoptiumLogo } from './AdoptiumLogo.svg';
+import { getParams } from './utils/query';
 
 const { SubMenu } = Menu;
 const { Header, Content, Sider } = Layout;
@@ -107,14 +106,6 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '3',
-                                        label: (
-                                            <Link to="/trafficLight">
-                                                Traffic Light
-                                            </Link>
-                                        ),
-                                    },
-                                    {
                                         key: '4',
                                         label: (
                                             <Link to="/tests/AQAvitCert">
@@ -135,7 +126,7 @@ export default class App extends Component {
                                         label: 'Perf Related',
                                         children: [
                                             {
-                                                key: 'sub1',
+                                                key: 'perfCompare',
                                                 label: (
                                                     <Link to="/perfCompare">
                                                         Perf Compare
@@ -143,10 +134,10 @@ export default class App extends Component {
                                                 ),
                                             },
                                             {
-                                                key: 'sub2',
+                                                key: 'trafficLight',
                                                 label: (
-                                                    <Link to="/tabularView">
-                                                        Tabular View
+                                                    <Link to="/trafficLight">
+                                                        Traffic Light
                                                     </Link>
                                                 ),
                                             },
@@ -169,7 +160,7 @@ export default class App extends Component {
                                         ),
                                     },
                                     {
-                                        key: '',
+                                        key: '9',
                                         label: (
                                             <Link to="/AdvancedSearch">
                                                 Advanced Search
@@ -227,10 +218,6 @@ export default class App extends Component {
                                             element={<PerfCompare />}
                                         />
                                         <Route
-                                            path="/tabularView"
-                                            element={<TabularView />}
-                                        />
-                                        <Route
                                             path="/trafficLight"
                                             element={<TrafficLight />}
                                         />
@@ -256,7 +243,14 @@ export default class App extends Component {
                                         />
                                         <Route
                                             path="/possibleIssues"
-                                            element={<PossibleIssues />}
+                                            element={
+                                                <PossibleIssues
+                                                    {...getParams(
+                                                        location.search
+                                                    )}
+                                                    showCrumbs
+                                                />
+                                            }
                                         />
                                         <Route
                                             path="/searchResult"

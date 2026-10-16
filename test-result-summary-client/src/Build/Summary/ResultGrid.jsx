@@ -54,6 +54,7 @@ class Cell extends Component {
                                 const result = groups[group].buildResult;
                                 const rerunBuildUrl =
                                     groups[group].rerunBuildUrl;
+                                const jckPublicUrl = groups[group].jckPublicUrl;
                                 let element = '';
                                 if (!groups[group].testSummary) {
                                     element = (
@@ -66,8 +67,20 @@ class Cell extends Component {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                             >
-                                                Jenkins Link
+                                                {jckPublicUrl ? 'Jenkins Link (priv)' : 'Jenkins Link'}
                                             </a>
+                                            {jckPublicUrl && (
+                                                <>
+                                                    <br />
+                                                    <a
+                                                        href={jckPublicUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        Jenkins Link (pub)
+                                                    </a>
+                                                </>
+                                            )}
                                         </div>
                                     );
                                 } else {
@@ -114,8 +127,20 @@ class Cell extends Component {
                                                 target="_blank"
                                                 rel="noopener noreferrer"
                                             >
-                                                Test build
+                                                {jckPublicUrl ? 'Test build (priv)' : 'Test build'}
                                             </a>
+                                            {jckPublicUrl && (
+                                                <>
+                                                    <br />
+                                                    <a
+                                                        href={jckPublicUrl}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                    >
+                                                        Jenkins Link (pub)
+                                                    </a>
+                                                </>
+                                            )}
                                         </div>
                                     );
                                 }

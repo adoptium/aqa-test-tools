@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Table, Button } from 'antd';
+import { Table, Button, notification } from 'antd';
 import TestBreadcrumb from './TestBreadcrumb';
-import { getParams } from '../utils/query';
 import { fetchData } from '../utils/Utils';
 import { SmileOutlined, FrownOutlined } from '@ant-design/icons';
-import { useLocation } from 'react-router-dom';
-import { notification } from 'antd';
-
 import './table.css';
 
-const PossibleIssues = () => {
+const PossibleIssues = ({
+    buildId,
+    testId,
+    testName,
+    buildName,
+    showCrumbs,
+}) => {
     const [dataSource, setDataSource] = useState({});
     const [loading, setLoading] = useState(true);
-    const [error, setError] = useState('');
-    const location = useLocation();
 
     useEffect(() => {
         fetchIssues();
@@ -30,7 +30,7 @@ const PossibleIssues = () => {
         accuracy
     ) => {
         try {
-            const postData = {
+            const response = await fetch(`/api/postIssueFeedback`, {
                 method: 'POST',
                 headers: {
                     Accept: 'application/json',
@@ -46,219 +46,197 @@ const PossibleIssues = () => {
                     testName,
                     testId,
                 }),
-            };
-
-            const response = await fetch(`/api/postIssueFeedback`, postData);
+            });
 
             if (response.status === 200) {
-                notification.success({
-                    message: 'Feedback collected',
-                });
+                notification.success({ message: 'Feedback collected' });
             } else {
                 throw new Error('Write error');
             }
-        } catch (error) {
-            notification.error({
-                message: 'Unable to collect feedback',
-            });
+        } catch {
+            notification.error({ message: 'Unable to collect feedback' });
         }
     };
 
     const fetchIssues = async () => {
-        const { testId, buildName, testName } = getParams(location.search);
-        const generalTestName = testName.replace(/_\d+$/, '');
-
-        // fetch test output content
-        const info = await fetchData(`/api/getTestById?id=${testId} `, {
+        // load test object
+        const info = await fetchData(`/api/getTestById?id=${testId}`, {
             method: 'get',
         });
 
-        const result = await fetchData(
-            `/api/getOutputById?id=${info.testOutputId}`,
-            {
-                method: 'get',
-            }
-        );
-
-        const testOutput = result.output;
-
-        // fetch related issues with Github API
-        let additionalRepo = '';
-        if (buildName.includes('j9') || buildName.includes('ibm')) {
-            additionalRepo = '+repo:eclipse-openj9/openj9';
+        // Call unified backend multi-host search
+        let relatedIssues = [];
+        try {
+            relatedIssues = await fetchData(
+                `/api/getInternalGitIssues?text=${encodeURIComponent(testName)}`
+            );
+        } catch (e) {
+            // ignore internal lookup errors
         }
-        else if (buildName.includes('hs')) {
-            additionalRepo = '+repo:adoptium/infrastructure+repo:adoptium/aqa-build';
-        }
-        const response = await fetch(
-            `https://api.github.com/search/issues?q=${generalTestName}+repo:adoptium/aqa-tests` +
-                `+repo:adoptium/aqa-systemtest+repo:adoptium/TKG${additionalRepo}`,
-            {
-                method: 'get',
-            }
-        );
-        var oldDate = new Date();
-        oldDate.setMonth(oldDate.getMonth() - 6);
-        if (response.ok) {
-            const relatedIssues = await response.json();
-            let dataSource = {};
-            const repoUrlAPIPrefix = 'https://api.github.com/repos/';
-            for (let index = 0; index < relatedIssues.items.length; index++) {
-                const createdAt = new Date(
-                    relatedIssues.items[index].created_at
-                );
-                const is_opne = relatedIssues.items[index].state;
-                if (createdAt < oldDate && is_opne === 'closed') {
-                    continue;
-                }
-                const createdAtStr = createdAt.toLocaleString();
-                const repoName = relatedIssues.items[
-                    index
-                ].repository_url.replace(repoUrlAPIPrefix, '');
-                const issue = (
-                    <a
-                        href={relatedIssues.items[index].html_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        {relatedIssues.items[index].title}
-                    </a>
-                );
-                const issueCreator = (
-                    <a
-                        href={relatedIssues.items[index].user.html_url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                    >
-                        {relatedIssues.items[index].user.login}
-                    </a>
-                );
-                const issueState = relatedIssues.items[index].state;
-                const issueFullName = relatedIssues.items[index].title;
-                const issueNumber = relatedIssues.items[index].number;
-                const creatorName = relatedIssues.items[index].user.login;
-                const userFeedback = (
-                    <>
-                        <Button
-                            onClick={async () =>
-                                await storeIssueFeedback(
-                                    repoName,
-                                    buildName,
-                                    issueFullName,
-                                    issueNumber,
-                                    creatorName,
-                                    testName,
-                                    testId,
-                                    1
-                                )
-                            }
-                        >
-                            <SmileOutlined
-                                style={{ fontSize: '25px', color: 'green' }}
-                            />
-                        </Button>
-                        &nbsp;
-                        <Button
-                            onClick={async () =>
-                                await storeIssueFeedback(
-                                    repoName,
-                                    buildName,
-                                    issueFullName,
-                                    issueNumber,
-                                    creatorName,
-                                    testName,
-                                    testId,
-                                    0
-                                )
-                            }
-                        >
-                            <FrownOutlined
-                                style={{ fontSize: '25px', color: 'red' }}
-                            />
-                        </Button>
-                    </>
-                );
 
-                dataSource[repoName] = dataSource[repoName] || [];
-                dataSource[repoName].push({
-                    key: dataSource[repoName].length,
-                    issue,
-                    issueCreator,
-                    createdAt,
-                    createdAtStr,
-                    issueState,
-                    userFeedback,
-                });
-            }
+        if (!relatedIssues || relatedIssues.length === 0) {
             setLoading(false);
-            setDataSource(dataSource);
-        } else {
-            setError(response.status + ' ' + response.statusText);
+            setDataSource({});
+            return;
         }
+
+        // Filter + Structure
+        let issuesByRepo = {};
+        const today = new Date();
+        const closedIssueMinDate = new Date().setMonth(today.getMonth() - 6);
+        const openIssueMinDate = new Date().setMonth(today.getMonth() - 24);
+
+        relatedIssues.forEach((issue) => {
+            const createdAt = new Date(issue.created_at);
+            const closedAt = issue.closed_at ? new Date(issue.closed_at) : null;
+
+            // time filtering logic
+            if (issue.state === 'closed') {
+                if (closedAt && createdAt < closedIssueMinDate) return;
+            } else if (createdAt < openIssueMinDate) {
+                return;
+            }
+
+            const repoName = issue.repository_url;
+
+            const issueTitle = (
+                <a
+                    href={issue.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {issue.number}: {issue.title}
+                </a>
+            );
+
+            const issueCreator = (
+                <a
+                    href={issue.user.html_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                >
+                    {issue.user.login}
+                </a>
+            );
+
+            const userFeedback = (
+                <>
+                    <Button
+                        onClick={() =>
+                            storeIssueFeedback(
+                                repoName,
+                                buildName,
+                                issue.title,
+                                issue.number,
+                                issue.user.login,
+                                testName,
+                                testId,
+                                1
+                            )
+                        }
+                    >
+                        <SmileOutlined
+                            style={{ fontSize: '25px', color: 'green' }}
+                        />
+                    </Button>
+                    &nbsp;
+                    <Button
+                        onClick={() =>
+                            storeIssueFeedback(
+                                repoName,
+                                buildName,
+                                issue.title,
+                                issue.number,
+                                issue.user.login,
+                                testName,
+                                testId,
+                                0
+                            )
+                        }
+                    >
+                        <FrownOutlined
+                            style={{ fontSize: '25px', color: 'red' }}
+                        />
+                    </Button>
+                </>
+            );
+
+            issuesByRepo[repoName] = issuesByRepo[repoName] || [];
+            issuesByRepo[repoName].push({
+                key: issuesByRepo[repoName].length,
+                issueTitle,
+                issueCreator,
+                createdAt,
+                createdAtStr: createdAt.toLocaleString(),
+                closedAt,
+                closedAtStr: closedAt ? closedAt.toLocaleString() : '',
+                issueState: issue.state,
+                userFeedback,
+            });
+        });
+
+        setLoading(false);
+        setDataSource(issuesByRepo);
     };
 
-    const { buildId, testId, testName } = getParams(location.search);
+    const columns = [
+        {
+            title: 'Possible Issues',
+            dataIndex: 'issueTitle',
+            key: 'issueTitle',
+        },
+        {
+            title: 'Issue Creator',
+            dataIndex: 'issueCreator',
+            key: 'issueCreator',
+        },
+        {
+            title: 'Created At',
+            dataIndex: 'createdAtStr',
+            key: 'createdAtStr',
+            sorter: (a, b) => a.createdAt - b.createdAt,
+        },
+        { title: 'Closed At', dataIndex: 'closedAtStr', key: 'closedAtStr' },
+        {
+            title: 'State',
+            dataIndex: 'issueState',
+            key: 'issueState',
+            defaultSortOrder: 'ascend',
+            sorter: (a, b) => {
+                if (a.issueState === b.issueState)
+                    return b.createdAt - a.createdAt;
+                return a.issueState === 'open' ? -1 : 1;
+            },
+        },
+    ];
 
-    if (error) {
-        return <div>Error: {error}</div>;
-    } else {
-        const columns = [
-            {
-                title: 'Possible Issues',
-                dataIndex: 'issue',
-                key: 'issue',
-            },
-            {
-                title: 'Issue Creator',
-                dataIndex: 'issueCreator',
-                key: 'issueCreator',
-            },
-            {
-                title: 'Created At',
-                dataIndex: 'createdAtStr',
-                key: 'createdAtStr',
-                sorter: (a, b) => {
-                    return a.createdAt - b.createdAt;
-                },
-            },
-            {
-                title: 'State',
-                dataIndex: 'issueState',
-                key: 'issueState',
-                defaultSortOrder: 'ascend',
-                sorter: (a, b) => {
-                    if (a.issueState === b.issueState)
-                        return b.createdAt - a.createdAt;
-                    else if (a.issueState === 'open') return -1;
-                    else return 1;
-                },
-            },
-        ];
-
-        return (
-            <div>
+    return (
+        <div>
+            {showCrumbs && (
                 <TestBreadcrumb
                     buildId={buildId}
                     testId={testId}
                     testName={testName}
                 />
-                {!loading &&
-                    (Object.keys(dataSource).length > 0 ? (
-                        Object.keys(dataSource).map((repoName, index) => (
-                            <Table
-                                key={index}
-                                columns={columns}
-                                dataSource={dataSource[repoName]}
-                                bordered
-                                title={() => repoName}
-                            />
-                        ))
-                    ) : (
-                        <span>No Possible Issues Found</span>
-                    ))}
-            </div>
-        );
-    }
+            )}
+
+            {!loading &&
+                (Object.keys(dataSource).length > 0 ? (
+                    Object.keys(dataSource).map((repoName, index) => (
+                        <Table
+                            key={index}
+                            columns={columns}
+                            dataSource={dataSource[repoName]}
+                            bordered
+                            title={() => `Search ${testName} in ${repoName}`}
+                            pagination={{ pageSize: 5 }}
+                        />
+                    ))
+                ) : (
+                    <span>No Possible Issues Found via Git Search</span>
+                ))}
+        </div>
+    );
 };
 
 export default PossibleIssues;

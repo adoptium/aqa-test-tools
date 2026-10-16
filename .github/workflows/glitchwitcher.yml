@@ -168,7 +168,6 @@ jobs:
         uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4.3.0
         with:
           repository: adoptium/aqa-triage-data
-          token: ${{ secrets.ADOPTIUM_AQAVIT_BOT_TOKEN }}
           path: aqa-triage-data
           ref: main
 
@@ -215,7 +214,7 @@ jobs:
           # Outputs for subsequent steps
           echo "branch_name=$branch_name" >> "$GITHUB_OUTPUT"
           echo "target_dir=$target_dir" >> "$GITHUB_OUTPUT"
-          echo "pr_body_path=pr_body.md" >> "$GITHUB_OUTPUT"
+          echo "pr_body_path=aqa-triage-data/pr_body.md" >> "$GITHUB_OUTPUT"
 
       - name: Create Pull Request to aqa-triage-data
         id: cpr

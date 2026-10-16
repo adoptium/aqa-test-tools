@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Typography } from 'antd';
+import { Table, Typography, Switch } from 'antd';
 import { DeleteTwoTone } from '@ant-design/icons';
 import { fetchData } from '../utils/Utils';
 import BenchmarkMath from '../utils/BenchmarkMathCalculation';
@@ -21,8 +21,9 @@ const SummaryRow = ({ type, stats }) => {
     );
 };
 
-const MetricsTable = ({ type, id, benchmarkName }) => {
+const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) => {
     const [data, setData] = useState([]);
+    const [javaVersion, setJavaVersion] = useState([]);
     useEffect(() => {
         const updateData = async () => {
             let results;
@@ -30,68 +31,134 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
                 results = await fetchData(`/api/getData?_id=${id}`);
             }
             if (results && results[0]) {
-                results = results[0].aggregateInfo;
-
-                const fliteredData = Object.values(results).find(
+                const aggregateInfo = results[0].aggregateInfo;
+                const fliteredData = Object.values(aggregateInfo).find(
                     (item) =>
                         benchmarkName === item.benchmarkName &&
                         item.buildName.includes(type)
                 );
 
                 const [firstMetric] = fliteredData.metrics;
+                const disabledIterations = fliteredData.metrics[0]?.disabledIterations || [];
                 const rawValues = firstMetric.rawValues.map((_, i) => {
-                    return fliteredData.metrics.map((metric, j) => {
-                        return {
-                            metricName: metric.name,
-                            value: metric.rawValues[i],
-                            i,
-                        };
-                    });
+                    return {
+                        key: i,
+                        iteration: i,
+                        enabled: !disabledIterations.includes(i),
+                        metrics: fliteredData.metrics.map((metric) => {
+                            return {
+                                metricName: metric.name,
+                                value: metric.rawValues[i],
+                            };
+                        })
+                    };
                 });
-
+                const grandchildrenData = await fetchData(
+                    `/api/getChildBuilds?parentId=${results[0]._id}&buildName=${fliteredData.buildName}`
+                );
+                let javaVersion = '';
+                for (const grandchildData of grandchildrenData) {
+                    if (grandchildData.javaVersion) {
+                        javaVersion = grandchildData.javaVersion;
+                        break;
+                    }
+                }
+                setJavaVersion(javaVersion);
                 setData(rawValues);
+                if (onDataChange) {
+                    onDataChange(rawValues);
+                }
             }
         };
         updateData();
-    }, []);
+    }, [id, benchmarkName, type, onDataChange]);
+    useEffect(() => {
+        if (data.length > 0 && onStatsChange) {
+            const enabledData = data.filter(item => item.enabled);
 
-    const handleDelete = (record) => {
-        const newData = data.filter((item) => item !== record);
-        setData(newData);
+            if (enabledData.length > 0) {
+                const pivot = zip(...enabledData.map(d => d.metrics));
+                const stats = pivot.map((p) => {
+                    const values = p.map(({ value }) => value);
+                    const mean = Number(math.mean(values)).toFixed(0);
+                    const max = math.max(values);
+                    const min = math.min(values);
+                    const median = Number(math.median(values)).toFixed(0);
+                    const std = Number(math.std(values)).toFixed(2);
+                    // State value: plain numeric string (e.g. "38.47") for use in comparisons and further calculations by parent components
+                    const CI = Number(BenchmarkMath.confidence_interval(values) * 100).toFixed(2);
+                    return { mean, max, min, median, std, CI };
+                });
+                onStatsChange(stats[0]); // Send first metric stats to parent
+            }
+             else {
+            onStatsChange(null);
+            }
+        }
+    }, [data, onStatsChange]);
+
+
+    const handleToggle = (record) => {
+        const newData = data.map((item) => {
+            if (item.iteration === record.iteration) {
+                return { ...item, enabled: !item.enabled };
+            }
+            return item;
+        });
+    setData(newData);
+    if (onDataChange) {
+        onDataChange(newData);
+    }
+
     };
-    // const uniqueTitle = [...new Set(data.map((item) => item.metricName))];
+
     const columns = [
-        {
-            title: 'Name',
-            dataIndex: 'name',
-            key: 'name',
-        },
-        ...(data[0]?.map(({ metricName }, i) => {
-            return {
-                title: metricName,
-                key: metricName,
-                render: (_, record, obj) => {
-                    return <div>{record[i].value}</div>;
-                },
-            };
-        }) ?? []),
-        {
-            title: 'Remove',
-            dataIndex: 'remove',
-            key: 'remove',
-            render: (_, record, obj) => {
-                return data.length >= 1 ? (
-                    <DeleteTwoTone
-                        onClick={() => handleDelete(record)}
-                        type="primary"
+    {
+        title: 'Iteration',
+        dataIndex: 'iteration',
+        key: 'iteration',
+        width: 100,
+        render: (iteration) => `Run ${iteration + 1}`,
+    },
+    ...(data[0]?.metrics.map(({ metricName }, i) => {
+        return {
+            title: metricName,
+            key: metricName,
+            render: (_, record) => {
+                return (
+                    <div
                         style={{
-                            marginBottom: 16,
+                            opacity: record.enabled ? 1 : 0.4,
+                            textDecoration: record.enabled
+                                ? 'none'
+                                : 'line-through',
+                            color: record.enabled ? 'inherit' : '#999',
                         }}
-                    />
-                ) : null;
+                    >
+                        {record.metrics[i].value}
+                    </div>
+                );
             },
+        };
+    }) ?? []),
+    {
+        title: 'Annotate data outliers',
+        dataIndex: 'enabled',
+        key: 'enabled',
+        width: 150,
+        fixed: 'right',
+        render: (enabled, record) => {
+            return (
+                <Switch
+                    checked={!enabled}
+                    onChange={() => handleToggle(record)}
+                    checkedChildren={<span>&nbsp;</span>}
+                    unCheckedChildren="Exclude data"
+                />
+            );
         },
-    ];
+    },
+];
 
     return (
         <div>
@@ -102,32 +169,40 @@ const MetricsTable = ({ type, id, benchmarkName }) => {
             >
                 {type.toUpperCase()} - {benchmarkName}
             </p>
+            <pre>JDK Version: {javaVersion}</pre>
+            <div style={{ marginBottom: 12, color: '#665' }}>
+            <Text>
+                Enabled: <strong>{data.filter(d => d.enabled).length}</strong> / {data.length} iterations
+            </Text>
+            </div>
             <Table
                 bordered
                 dataSource={data}
                 columns={columns}
                 pagination={{ defaultPageSize: 50 }}
                 summary={(pageData) => {
-                    if (!pageData.length) return null;
-
-                    const pivot = zip(...pageData);
+                    const enabledData = pageData.filter(item => item.enabled);
+                    if (!enabledData.length) return null;
+                    const pivot = zip(...enabledData.map(d => d.metrics));
 
                     const stats = pivot.map((p) => {
+                        const values = p.map(({ value }) => value)
                         const mean = Number(
-                            math.mean(p.map(({ value }) => value))
+                            math.mean(values)
                         ).toFixed(0);
-                        const max = math.max(p.map(({ value }) => value));
-                        const min = math.min(p.map(({ value }) => value));
+                        const max = math.max(values);
+                        const min = math.min(values);
                         const median = Number(
-                            math.median(p.map(({ value }) => value))
+                            math.median(values)
                         ).toFixed(0);
                         const std = Number(
-                            math.std(p.map(({ value }) => value))
+                            math.std(values)
                         ).toFixed(2);
+                        // Display value: formatted as a percent string (e.g. "38.47%") for rendering in the summary row only
                         const CI =
                             Number(
                                 BenchmarkMath.confidence_interval(
-                                    p.map(({ value }) => value)
+                                    values
                                 ) * 100
                             ).toFixed(2) + '%';
                         return {

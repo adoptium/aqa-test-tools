@@ -236,12 +236,15 @@ function makeBuildUrl(baseUrl, jobName, buildNumber) {
   return `${baseUrl.replace(/\/+$/, '')}/job/${jobName}/${buildNumber}/`;
 }
 
+<<<<<<< HEAD
 // Ignore utility/generator jobs like Test_Job_Auto_Gen whose instances are frequently purged by Jenkins
 function isIgnoredJob(jobName) {
   if (!jobName) return false;
   return /(?:^|[^a-zA-Z0-9])Test_Job_Auto_Gen(?:$|[^a-zA-Z0-9])/.test(jobName);
 }
 
+=======
+>>>>>>> upstream/master
 // Parse downstream jobs from a console log. Every search term yields a canonical build URL, so the
 // caller can treat all downstream jobs uniformly (see resolveConsoleHandler for per-URL handling).
 //   "Starting building: a » b #8"        - relative to contextBaseUrl (the Jenkins this console came from)
@@ -254,7 +257,10 @@ function parseDownstreamJobs(consoleLog, contextBaseUrl) {
     const startMatch = line.match(/Starting building:\s+(.+?)\s+#(\d+)/);
     if (startMatch) {
       const jobName = startMatch[1].replace(/\s+»\s+/g, '/job/');
+<<<<<<< HEAD
       if (isIgnoredJob(jobName)) continue;
+=======
+>>>>>>> upstream/master
       const buildNumber = parseInt(startMatch[2]);
       const url = makeBuildUrl(contextBaseUrl, jobName, buildNumber);
       // Status 'STARTED' is overwritten if a completion line is found
@@ -264,7 +270,10 @@ function parseDownstreamJobs(consoleLog, contextBaseUrl) {
     const completeMatch = line.match(/Build\s+(.+?)\s+#(\d+)\s+completed:\s+(\w+)/);
     if (completeMatch) {
       const jobName = completeMatch[1].replace(/\s+»\s+/g, '/job/');
+<<<<<<< HEAD
       if (isIgnoredJob(jobName)) continue;
+=======
+>>>>>>> upstream/master
       const buildNumber = parseInt(completeMatch[2]);
       const url = makeBuildUrl(contextBaseUrl, jobName, buildNumber);
       jobs.set(url, { buildUrl: url, jobName, buildNumber, status: completeMatch[3] });
@@ -274,7 +283,10 @@ function parseDownstreamJobs(consoleLog, contextBaseUrl) {
     if (remoteUrlMatch) {
       try {
         const { baseUrl, jobName, buildNumber } = parseJenkinsUrl(remoteUrlMatch[1]);
+<<<<<<< HEAD
         if (isIgnoredJob(jobName)) continue;
+=======
+>>>>>>> upstream/master
         const url = makeBuildUrl(baseUrl, jobName, buildNumber);
         if (!jobs.has(url)) jobs.set(url, { buildUrl: url, jobName, buildNumber, status: 'STARTED' });
       } catch (err) {
@@ -374,10 +386,13 @@ function writeDownloadFailure(jobDir, url, error) {
 // Recursively download pipeline logs. Every job is identified by its build URL.
 async function downloadPipeline(buildUrl, parentDir, currentDepth = 0, analyzedJobs = new Set()) {
   const { baseUrl, jobName, buildNumber } = parseJenkinsUrl(buildUrl);
+<<<<<<< HEAD
   if (isIgnoredJob(jobName)) {
     console.log(`Skipping ignored job: ${jobName}`);
     return;
   }
+=======
+>>>>>>> upstream/master
   const jobKey = makeBuildUrl(baseUrl, jobName, buildNumber);
 
   // Prevent circular downloads
