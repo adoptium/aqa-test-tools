@@ -106,10 +106,17 @@ The \`---\` rule goes on its own line with a blank line before and after it. Use
    Table with: Job Name (as clickable link with #NN), Status, Details
 
    #### Test Summary
-   Two one-line statements, one per suite, written immediately after the sub-section heading (no table):
-   - **AQA Test summary:** a single sentence describing the overall AQA outcome for this platform (e.g. "4 targets failed across extended and system jobs; perf sanity had 1 failure. Rerun recovered X targets." or "All AQA tests passed.").
-   - **JCK Test summary:** a single sentence describing the overall JCK outcome (e.g. "extended.jck FAILURE, dev.jck UNSTABLE; sanity and special passed." or "All JCK targets passed.").
-   If a suite was not run for this platform, write "Not run." for that line.
+   Write exactly two lines immediately after the sub-section heading — one for AQA, one for JCK. Each line MUST be on its own line (a hard line break, not a sentence continuation). Use this exact format:
+
+   **AQA Test summary:** [AQA_Test_Pipeline or AQA_Test_Pipeline_RELEASE #NN](URL) — one sentence outcome (e.g. "extended.openjdk UNSTABLE — 1 hotspot_runtime and 1 jdk_imageio failure; all other targets passed." or "All AQA tests passed.").
+   **JCK Test summary:** [AQA_Test_Pipeline_JCK #NN](URL) — one sentence outcome (e.g. "extended.jck FAILURE, dev.jck UNSTABLE; sanity and special passed." or "All JCK targets passed.").
+
+   Rules:
+   - The hyperlink is the top-level AQA or JCK pipeline job that is an immediate descendant of the build job for this platform. Use the #NN build number and URL exactly as they appear in the analysis tree.
+   - AQA pipeline job name is \`AQA_Test_Pipeline\` or \`AQA_Test_Pipeline_RELEASE\`; JCK pipeline job name is \`AQA_Test_Pipeline_JCK\`.
+   - If a suite was not run for this platform, write: **AQA Test summary:** Not run. (or **JCK Test summary:** Not run.)
+   - Keep each summary to one sentence — no parenthetical elaboration, no second sentence.
+   - These are the ONLY two lines in this sub-section. Do not add any other content here.
 
    #### Test Failures Detail
    Table with: Job (clickable link), Test Target, Stats, Failed Tests
