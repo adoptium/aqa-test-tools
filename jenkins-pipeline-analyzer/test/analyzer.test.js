@@ -6,7 +6,7 @@ import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { grepWithContext, tailLines, isJobFinished } from '../src/logtools.js';
-import { parseTestTargetsSummary, detectJobType } from '../src/analyzer.js';
+import { parseTestTargetsSummary, detectJobType, isIgnoredJob, extractDownstreamResults } from '../src/analyzer.js';
 
 const CLI = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'bin', 'jenkins-analyze.js');
 
@@ -78,6 +78,17 @@ test('detectJobType', () => {
   assert.equal(detectJobType('Test_openjdk21_x'), 'test');
   assert.equal(detectJobType('AQA_Test_Pipeline_Foo #1'), 'test');
   assert.equal(detectJobType('build-scripts » jobs » jdk21'), 'build');
+});
+
+test('isIgnoredJob matches Test_Job_Auto_Gen variants and ignores them', () => {
+  assert.equal(isIgnoredJob('Test_Job_Auto_Gen'), true);
+  assert.equal(isIgnoredJob('Test_Job_Auto_Gen_68332'), true);
+  assert.equal(isIgnoredJob('Test_Job_Auto_Gen #68332'), true);
+  assert.equal(isIgnoredJob('build-scripts » Test_Job_Auto_Gen'), true);
+  assert.equal(isIgnoredJob('build-scripts/job/Test_Job_Auto_Gen'), true);
+  assert.equal(isIgnoredJob('build-scripts/job/Test_Job_Auto_Gen/68332/'), true);
+  assert.equal(isIgnoredJob('Test_openjdk21_hs_extended.openjdk_x86-64_linux'), false);
+  assert.equal(isIgnoredJob('AQA_Test_Pipeline_Foo #1'), false);
 });
 
 test('CLI analyzes a pipeline dir and writes the report and three prompt files', () => {
@@ -246,4 +257,14 @@ test('SUCCESS job whose failed target was recovered on rerun is labelled RECOVER
   assert.doesNotMatch(report, /FAILED test targets/);
   const prompt1 = fs.readFileSync(path.join(out, files.find((f) => f.startsWith('prompt-1-platform-summary-'))), 'utf-8');
   assert.match(prompt1, /Final result rule/);
+});
+
+test('Test_Job_Auto_Gen instances (e.g. purged HTTP 404 or empty dir) are ignored in report', () => {
+  const failure = JSON.stringify({ url: 'https://ci.example/job/Test_Job_Auto_Gen/68332/', error: 'HTTP 404: not found', status: 404 });
+  const report = pipelineWithChildren([
+    { name: 'Test_Job_Auto_Gen_68332', files: { 'download-failure.json': failure } },
+    { name: 'Test_real_job_1', files: { 'build-info.json': JSON.stringify({ fullDisplayName: 'Test_real_job #1', number: 1, result: 'SUCCESS', duration: 1000, url: 'https://ci.example/job/1/' }), 'console.log': 'Finished: SUCCESS\n' } },
+  ]);
+  assert.doesNotMatch(report, /Test_Job_Auto_Gen/);
+  assert.match(report, /\*\*Total Jobs\*\*: 2/);
 });
