@@ -18,6 +18,12 @@ export function detectJobType(jobName) {
   return jobName.startsWith('Test_') || jobName.startsWith('AQA_Test_Pipeline_') ? 'test' : 'build';
 }
 
+// Ignore utility/generator jobs like Test_Job_Auto_Gen whose instances are frequently purged by Jenkins
+export function isIgnoredJob(jobName) {
+  if (!jobName) return false;
+  return /(?:^|[^a-zA-Z0-9])Test_Job_Auto_Gen(?:$|[^a-zA-Z0-9])/.test(jobName);
+}
+
 // Downstream job results reported in a console log. Two equivalent line formats are recognised:
 //   "Build <job path> #<n> completed: <STATUS>"
 //        -> { jobName, buildNumber, status }
@@ -29,8 +35,10 @@ export function extractDownstreamResults(logPath) {
   for (const line of output.split('\n')) {
     const completed = line.match(/Build\s+(.+?)\s+#(\d+)\s+completed:\s+(\w+)/);
     if (completed) {
+      const jobName = completed[1].replace(/\s+»\s+/g, '/job/');
+      if (isIgnoredJob(jobName)) continue;
       results.push({
-        jobName: completed[1].replace(/\s+»\s+/g, '/job/'),
+        jobName,
         buildNumber: parseInt(completed[2]),
         status: completed[3],
       });
@@ -38,6 +46,7 @@ export function extractDownstreamResults(logPath) {
     }
     const target = line.match(/Remote job (.+?)\s+Target:\s+(\S+)\s+Status:\s+(\S+)/);
     if (target) {
+      if (isIgnoredJob(target[2]) || isIgnoredJob(target[1])) continue;
       const segments = target[1].split(':').map((s) => s.trim()).filter((s) => s.length > 0);
       const platform = segments.length > 0 ? segments[segments.length - 1] : target[1].trim();
       results.push({ jobName: target[2], platform, target: target[2], status: target[3] });
@@ -413,6 +422,7 @@ export function analyzeJobDirectory(jobDir, opts) {
   const childDirs = fs.readdirSync(jobDir, { withFileTypes: true }).filter((e) => e.isDirectory());
 
   for (const childDir of childDirs) {
+    if (isIgnoredJob(childDir.name)) continue;
     const childPath = path.join(jobDir, childDir.name);
     const childLogPath = path.join(childPath, 'console.log');
     const childInfoPath = path.join(childPath, 'build-info.json');
@@ -467,7 +477,7 @@ export function analyzePipeline(pipelineDir, opts = { jenkinsUrl: 'https://ci.ad
 
   const jobDirs = fs
     .readdirSync(pipelineDir, { withFileTypes: true })
-    .filter((e) => e.isDirectory() && fs.existsSync(path.join(pipelineDir, e.name, 'console.log')));
+    .filter((e) => e.isDirectory() && !isIgnoredJob(e.name) && fs.existsSync(path.join(pipelineDir, e.name, 'console.log')));
 
   if (jobDirs.length === 0) throw new Error(`No root job directory found in ${pipelineDir}`);
   if (jobDirs.length > 1) {
