@@ -81,6 +81,12 @@ The \`---\` rule goes on its own line with a blank line before and after it. Use
    - Column order: Platform, Build Status, AQA Test Pipeline, JCK Pipeline, Test Failures, Notes.
    - Every Platform cell MUST be an in-document hyperlink to that platform's section in "4. Detailed Platform Analysis": [Platform name](#platform-<slug>), e.g. [Alpine Linux](#platform-alpine-linux). The slug is the platform name lowercased with every run of non-alphanumeric characters replaced by a single hyphen (e.g. "Linux x64" → \`platform-linux-x64\`).
 
+   **"Test Failures" column format:** write exactly two lines (use \`<br>\` to separate them in the table cell), one for AQA and one for JCK. Each line is a terse, human-readable phrase — no long lists of test case names. Omit a line if there were no failures for that suite. Examples:
+   - \`AQA: 4 extended, 1 perf sanity, 2 system sanity failed test cases<br>JCK: sanity, special, and extended failed\`
+   - \`AQA: all passed\` (when AQA had no failures)
+   - \`JCK: extended failed\` (when only JCK had failures)
+   - If both passed: \`AQA: all passed<br>JCK: all passed\`
+
    Include ALL platforms found (AIX, Alpine Linux, Linux variants, macOS, Windows)
 
 4. **Detailed Platform Analysis**
@@ -98,7 +104,13 @@ The \`---\` rule goes on its own line with a blank line before and after it. Use
 
    #### Build Job
    Table with: Job Name (as clickable link with #NN), Status, Details
-   
+
+   #### Test Summary
+   Two one-line statements, one per suite, written immediately after the sub-section heading (no table):
+   - **AQA Test summary:** a single sentence describing the overall AQA outcome for this platform (e.g. "4 targets failed across extended and system jobs; perf sanity had 1 failure. Rerun recovered X targets." or "All AQA tests passed.").
+   - **JCK Test summary:** a single sentence describing the overall JCK outcome (e.g. "extended.jck FAILURE, dev.jck UNSTABLE; sanity and special passed." or "All JCK targets passed.").
+   If a suite was not run for this platform, write "Not run." for that line.
+
    #### Test Failures Detail
    Table with: Job (clickable link), Test Target, Stats, Failed Tests
    - List ALL failed test targets found in the analysis for jobs that did not finish SUCCESS (see the Final result rule below)
