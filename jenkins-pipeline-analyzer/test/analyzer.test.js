@@ -259,6 +259,74 @@ test('SUCCESS job whose failed target was recovered on rerun is labelled RECOVER
   assert.match(prompt1, /Final result rule/);
 });
 
+test('still-running child overridden by parent AQA_Test_Pipeline_JCK TARGET RESULTS', () => {
+  // Structure:
+  //   root (build)
+  //     AQA_Test_Pipeline_JCK_708  (test, completed FAILURE, has TARGET RESULTS including extended.jck=FAILURE)
+  //       AQA_Test_Pipeline_18752  (test, no Finished line -> still running)
+  //         Test_openjdk21_hs_extended.jck_x86-64_windows_136  (test, no Finished -> still running)
+  //           Test_openjdk21_hs_extended.jck_x86-64_windows_testList_0_127  (test, no Finished)
+  //           Test_openjdk21_hs_extended.jck_x86-64_windows_testList_1_124  (test, no Finished)
+  const root = tmpDir();
+  const rootJob = path.join(root, 'root_1');
+  const jckJob = path.join(rootJob, 'AQA_Test_Pipeline_JCK_708');
+  const pipeJob = path.join(jckJob, 'AQA_Test_Pipeline_18752');
+  const extJob = path.join(pipeJob, 'Test_openjdk21_hs_extended.jck_x86-64_windows_136');
+  const tl0 = path.join(extJob, 'Test_openjdk21_hs_extended.jck_x86-64_windows_testList_0_127');
+  const tl1 = path.join(extJob, 'Test_openjdk21_hs_extended.jck_x86-64_windows_testList_1_124');
+  fs.mkdirSync(tl0, { recursive: true });
+  fs.mkdirSync(tl1, { recursive: true });
+
+  fs.writeFileSync(path.join(root, 'metadata.json'), '{}');
+  const info = (name, n, result, dur = 1000) =>
+    JSON.stringify({ fullDisplayName: name, number: n, result, duration: dur, url: `https://ci.example/job/${n}/` });
+
+  // root build job — finished SUCCESS
+  fs.writeFileSync(path.join(rootJob, 'build-info.json'), info('build-scripts » pipeline #1', 1, 'SUCCESS'));
+  fs.writeFileSync(path.join(rootJob, 'console.log'), 'building\nFinished: SUCCESS\n');
+
+  // AQA_Test_Pipeline_JCK: completed FAILURE, reports TARGET RESULTS via "Remote job" lines
+  fs.writeFileSync(path.join(jckJob, 'build-info.json'), info('AQA_Test_Pipeline_JCK #708 - jdk21 : release : x86-64_windows', 708, 'FAILURE', 50976000));
+  fs.writeFileSync(
+    path.join(jckJob, 'console.log'),
+    [
+      '[2026-10-15T10:00:00.000Z] Remote job jdk21 : release : x86-64_windows Target: special.jck Status: SUCCESS',
+      '[2026-10-15T10:00:01.000Z] Remote job jdk21 : release : x86-64_windows Target: sanity.jck Status: SUCCESS',
+      '[2026-10-15T10:00:02.000Z] Remote job jdk21 : release : x86-64_windows Target: dev.jck Status: UNSTABLE',
+      '[2026-10-15T10:00:03.000Z] Remote job jdk21 : release : x86-64_windows Target: extended.jck Status: FAILURE',
+      'Finished: FAILURE',
+    ].join('\n') + '\n'
+  );
+
+  // AQA_Test_Pipeline_18752: no Finished line → still running
+  fs.writeFileSync(path.join(pipeJob, 'build-info.json'), info('AQA_Test_Pipeline #18752', 18752, null, 0));
+  fs.writeFileSync(path.join(pipeJob, 'console.log'), 'starting tests\n');
+
+  // Test_openjdk21_hs_extended.jck_x86-64_windows: no Finished line → still running
+  fs.writeFileSync(path.join(extJob, 'build-info.json'), info('Test_openjdk21_hs_extended.jck_x86-64_windows #136', 136, null, 0));
+  fs.writeFileSync(path.join(extJob, 'console.log'), '[2026-10-15T01:52:56.683Z] Exception: hudson.AbortException: Unable to find project for artifact copy: getTRSSOutput\n');
+
+  // testList_0 and testList_1: no Finished line → still running
+  fs.writeFileSync(path.join(tl0, 'build-info.json'), info('Test_openjdk21_hs_extended.jck_x86-64_windows_testList_0 #127', 127, null, 0));
+  fs.writeFileSync(path.join(tl0, 'console.log'), 'running tests\n');
+  fs.writeFileSync(path.join(tl1, 'build-info.json'), info('Test_openjdk21_hs_extended.jck_x86-64_windows_testList_1 #124', 124, null, 0));
+  fs.writeFileSync(path.join(tl1, 'console.log'), 'running tests\n');
+
+  const out = path.join(root, 'out');
+  execFileSync('node', [CLI, root, '-o', out], { encoding: 'utf-8' });
+  const files = fs.readdirSync(out);
+  const report = fs.readFileSync(path.join(out, files.find((f) => f.startsWith('pipeline-analysis-'))), 'utf-8');
+
+  // The extended.jck target result is FAILURE — jobs containing "extended.jck" must NOT be shown as still running
+  assert.doesNotMatch(report, /Test_openjdk21_hs_extended\.jck_x86-64_windows_testList_0[^)]*\) — ⏳ \*\*STILL RUNNING\*\*/);
+  assert.doesNotMatch(report, /Test_openjdk21_hs_extended\.jck_x86-64_windows_testList_1[^)]*\) — ⏳ \*\*STILL RUNNING\*\*/);
+  // They should be reported as FAILURE
+  assert.match(report, /Test_openjdk21_hs_extended\.jck_x86-64_windows_testList_0[^\n]*\[FAILURE\]/);
+  assert.match(report, /Test_openjdk21_hs_extended\.jck_x86-64_windows_testList_1[^\n]*\[FAILURE\]/);
+  // Summary running count must not include the overridden jobs
+  assert.match(report, /\*\*⏳ Still running\*\*: 0/);
+});
+
 test('Test_Job_Auto_Gen instances (e.g. purged HTTP 404 or empty dir) are ignored in report', () => {
   const failure = JSON.stringify({ url: 'https://ci.example/job/Test_Job_Auto_Gen/68332/', error: 'HTTP 404: not found', status: 404 });
   const report = pipelineWithChildren([

@@ -402,6 +402,72 @@ function logsUnavailableEntry(dir, dirName, opts) {
 }
 
 /**
+ * When a job is still-running but a parent's TARGET RESULTS already recorded the outcome for a
+ * matching target, the parent is authoritative.  Walk the child's full downstream tree and override
+ * any still-running node whose job name contains one of the parent's target names.
+ *
+ * Matching rule: the job name must contain the target string (e.g. "extended.jck") as a substring,
+ * using a case-insensitive dot-aware comparison (dots in target names are treated literally).
+ */
+function resolveStillRunningFromParentTargets(childAnalysis, parentTargetResults) {
+  if (!parentTargetResults || parentTargetResults.length === 0) return;
+
+  if (childAnalysis.buildInfo.stillRunning) {
+    const jobName = childAnalysis.buildInfo.jobName;
+    for (const tr of parentTargetResults) {
+      // Escape dots in target names so "extended.jck" matches literally, not as regex wildcard
+      const escapedTarget = tr.target.replace(/\./g, '\\.');
+      if (new RegExp(escapedTarget, 'i').test(jobName)) {
+        // Override the still-running state with the parent-reported result
+        childAnalysis.buildInfo.result = tr.status;
+        delete childAnalysis.buildInfo.stillRunning;
+        childAnalysis.quickSummary = {
+          category: tr.status === 'FAILURE' ? 'test_failure' : tr.status === 'UNSTABLE' ? 'test_failure' : 'test_no_summary',
+          confidence: 0.9,
+          oneLineSummary: `Result from parent TARGET RESULTS: ${tr.target}=${tr.status}`,
+        };
+        if (childAnalysis.failureDetails) {
+          childAnalysis.failureDetails.rootCause = `Result from parent TARGET RESULTS: ${tr.target}=${tr.status}`;
+        }
+        break;
+      }
+    }
+  }
+
+  // Recurse into downstream jobs first so children are resolved before we inspect them below
+  for (const downstream of childAnalysis.downstreamAnalyses ?? []) {
+    resolveStillRunningFromParentTargets(downstream, parentTargetResults);
+  }
+
+  // AQA_Test_Pipeline intermediary jobs (e.g. AQA_Test_Pipeline #18752) don't carry a target name
+  // themselves; they are pure orchestrators. The stillRunning guard ensures we only do this when the
+  // job has no result of its own (no "Finished:" line in its console). Once all their downstream
+  // jobs are resolved, they must also have completed — infer result from the worst child outcome.
+  if (
+    childAnalysis.buildInfo.stillRunning &&
+    childAnalysis.buildInfo.jobName.includes('AQA_Test_Pipeline') &&
+    (childAnalysis.downstreamAnalyses?.length ?? 0) > 0 &&
+    !childAnalysis.downstreamAnalyses.some((d) => d.buildInfo.stillRunning)
+  ) {
+    const SEVERITY = { FAILURE: 3, UNSTABLE: 2, SUCCESS: 1 };
+    const worstResult = childAnalysis.downstreamAnalyses.reduce(
+      (worst, d) => ((SEVERITY[d.buildInfo.result] ?? 0) > (SEVERITY[worst] ?? 0) ? d.buildInfo.result : worst),
+      'UNKNOWN'
+    );
+    childAnalysis.buildInfo.result = worstResult;
+    delete childAnalysis.buildInfo.stillRunning;
+    childAnalysis.quickSummary = {
+      category: worstResult === 'FAILURE' ? 'test_failure' : worstResult === 'UNSTABLE' ? 'test_failure' : 'test_no_summary',
+      confidence: 0.8,
+      oneLineSummary: `Result inferred from downstream jobs: ${worstResult}`,
+    };
+    if (childAnalysis.failureDetails) {
+      childAnalysis.failureDetails.rootCause = `Result inferred from downstream jobs: ${worstResult}`;
+    }
+  }
+}
+
+/**
  * Recursively analyze a job directory (console.log + build-info.json) and its child job directories.
  * @param {string} jobDir
  * @param {{jenkinsUrl: string}} opts jenkinsUrl is used to build stub entries for empty directories
@@ -450,6 +516,13 @@ export function analyzeJobDirectory(jobDir, opts) {
           }
 
           if (childAnalysis.testTargetsSummary) childAnalysis.testTargetsSummary.rerun_info = rerunInfo;
+        }
+
+        // If this job has TARGET RESULTS from its parent-reported outcomes, use them to resolve any
+        // still-running descendants whose job names match a target (parent is authoritative once it
+        // has completed and recorded results for all targets).
+        if (analysis.targetResults?.length > 0) {
+          resolveStillRunningFromParentTargets(childAnalysis, analysis.targetResults);
         }
 
         (analysis.downstreamAnalyses ??= []).push(childAnalysis);
