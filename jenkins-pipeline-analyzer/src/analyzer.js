@@ -18,6 +18,12 @@ export function detectJobType(jobName) {
   return jobName.startsWith('Test_') || jobName.startsWith('AQA_Test_Pipeline_') ? 'test' : 'build';
 }
 
+// Ignore utility/generator jobs like Test_Job_Auto_Gen whose instances are frequently purged by Jenkins
+export function isIgnoredJob(jobName) {
+  if (!jobName) return false;
+  return /(?:^|[^a-zA-Z0-9])Test_Job_Auto_Gen(?:$|[^a-zA-Z0-9])/.test(jobName);
+}
+
 // Downstream job results reported in a console log. Two equivalent line formats are recognised:
 //   "Build <job path> #<n> completed: <STATUS>"
 //        -> { jobName, buildNumber, status }
@@ -29,8 +35,10 @@ export function extractDownstreamResults(logPath) {
   for (const line of output.split('\n')) {
     const completed = line.match(/Build\s+(.+?)\s+#(\d+)\s+completed:\s+(\w+)/);
     if (completed) {
+      const jobName = completed[1].replace(/\s+»\s+/g, '/job/');
+      if (isIgnoredJob(jobName)) continue;
       results.push({
-        jobName: completed[1].replace(/\s+»\s+/g, '/job/'),
+        jobName,
         buildNumber: parseInt(completed[2]),
         status: completed[3],
       });
@@ -38,6 +46,7 @@ export function extractDownstreamResults(logPath) {
     }
     const target = line.match(/Remote job (.+?)\s+Target:\s+(\S+)\s+Status:\s+(\S+)/);
     if (target) {
+      if (isIgnoredJob(target[2]) || isIgnoredJob(target[1])) continue;
       const segments = target[1].split(':').map((s) => s.trim()).filter((s) => s.length > 0);
       const platform = segments.length > 0 ? segments[segments.length - 1] : target[1].trim();
       results.push({ jobName: target[2], platform, target: target[2], status: target[3] });
@@ -393,6 +402,72 @@ function logsUnavailableEntry(dir, dirName, opts) {
 }
 
 /**
+ * When a job is still-running but a parent's TARGET RESULTS already recorded the outcome for a
+ * matching target, the parent is authoritative.  Walk the child's full downstream tree and override
+ * any still-running node whose job name contains one of the parent's target names.
+ *
+ * Matching rule: the job name must contain the target string (e.g. "extended.jck") as a substring,
+ * using a case-insensitive dot-aware comparison (dots in target names are treated literally).
+ */
+function resolveStillRunningFromParentTargets(childAnalysis, parentTargetResults) {
+  if (!parentTargetResults || parentTargetResults.length === 0) return;
+
+  if (childAnalysis.buildInfo.stillRunning) {
+    const jobName = childAnalysis.buildInfo.jobName;
+    for (const tr of parentTargetResults) {
+      // Escape dots in target names so "extended.jck" matches literally, not as regex wildcard
+      const escapedTarget = tr.target.replace(/\./g, '\\.');
+      if (new RegExp(escapedTarget, 'i').test(jobName)) {
+        // Override the still-running state with the parent-reported result
+        childAnalysis.buildInfo.result = tr.status;
+        delete childAnalysis.buildInfo.stillRunning;
+        childAnalysis.quickSummary = {
+          category: tr.status === 'FAILURE' ? 'test_failure' : tr.status === 'UNSTABLE' ? 'test_failure' : 'test_no_summary',
+          confidence: 0.9,
+          oneLineSummary: `Result from parent TARGET RESULTS: ${tr.target}=${tr.status}`,
+        };
+        if (childAnalysis.failureDetails) {
+          childAnalysis.failureDetails.rootCause = `Result from parent TARGET RESULTS: ${tr.target}=${tr.status}`;
+        }
+        break;
+      }
+    }
+  }
+
+  // Recurse into downstream jobs first so children are resolved before we inspect them below
+  for (const downstream of childAnalysis.downstreamAnalyses ?? []) {
+    resolveStillRunningFromParentTargets(downstream, parentTargetResults);
+  }
+
+  // AQA_Test_Pipeline intermediary jobs (e.g. AQA_Test_Pipeline #18752) don't carry a target name
+  // themselves; they are pure orchestrators. The stillRunning guard ensures we only do this when the
+  // job has no result of its own (no "Finished:" line in its console). Once all their downstream
+  // jobs are resolved, they must also have completed — infer result from the worst child outcome.
+  if (
+    childAnalysis.buildInfo.stillRunning &&
+    childAnalysis.buildInfo.jobName.includes('AQA_Test_Pipeline') &&
+    (childAnalysis.downstreamAnalyses?.length ?? 0) > 0 &&
+    !childAnalysis.downstreamAnalyses.some((d) => d.buildInfo.stillRunning)
+  ) {
+    const SEVERITY = { FAILURE: 3, UNSTABLE: 2, SUCCESS: 1 };
+    const worstResult = childAnalysis.downstreamAnalyses.reduce(
+      (worst, d) => ((SEVERITY[d.buildInfo.result] ?? 0) > (SEVERITY[worst] ?? 0) ? d.buildInfo.result : worst),
+      'UNKNOWN'
+    );
+    childAnalysis.buildInfo.result = worstResult;
+    delete childAnalysis.buildInfo.stillRunning;
+    childAnalysis.quickSummary = {
+      category: worstResult === 'FAILURE' ? 'test_failure' : worstResult === 'UNSTABLE' ? 'test_failure' : 'test_no_summary',
+      confidence: 0.8,
+      oneLineSummary: `Result inferred from downstream jobs: ${worstResult}`,
+    };
+    if (childAnalysis.failureDetails) {
+      childAnalysis.failureDetails.rootCause = `Result inferred from downstream jobs: ${worstResult}`;
+    }
+  }
+}
+
+/**
  * Recursively analyze a job directory (console.log + build-info.json) and its child job directories.
  * @param {string} jobDir
  * @param {{jenkinsUrl: string}} opts jenkinsUrl is used to build stub entries for empty directories
@@ -410,9 +485,15 @@ export function analyzeJobDirectory(jobDir, opts) {
       ? analyzeTestJob(logPath, infoPath)
       : analyzeBuildJob(logPath, infoPath);
 
-  const childDirs = fs.readdirSync(jobDir, { withFileTypes: true }).filter((e) => e.isDirectory());
+  // readdirSync order is filesystem-dependent: sort by name so the report order (and thus the
+  // platform section order) is deterministic.
+  const childDirs = fs
+    .readdirSync(jobDir, { withFileTypes: true })
+    .filter((e) => e.isDirectory())
+    .sort((a, b) => (a.name < b.name ? -1 : a.name > b.name ? 1 : 0));
 
   for (const childDir of childDirs) {
+    if (isIgnoredJob(childDir.name)) continue;
     const childPath = path.join(jobDir, childDir.name);
     const childLogPath = path.join(childPath, 'console.log');
     const childInfoPath = path.join(childPath, 'build-info.json');
@@ -442,6 +523,13 @@ export function analyzeJobDirectory(jobDir, opts) {
           if (childAnalysis.testTargetsSummary) childAnalysis.testTargetsSummary.rerun_info = rerunInfo;
         }
 
+        // If this job has TARGET RESULTS from its parent-reported outcomes, use them to resolve any
+        // still-running descendants whose job names match a target (parent is authoritative once it
+        // has completed and recorded results for all targets).
+        if (analysis.targetResults?.length > 0) {
+          resolveStillRunningFromParentTargets(childAnalysis, analysis.targetResults);
+        }
+
         (analysis.downstreamAnalyses ??= []).push(childAnalysis);
       } catch (error) {
         console.error(`Failed to analyze child directory ${childPath}: ${error.message}`);
@@ -467,7 +555,7 @@ export function analyzePipeline(pipelineDir, opts = { jenkinsUrl: 'https://ci.ad
 
   const jobDirs = fs
     .readdirSync(pipelineDir, { withFileTypes: true })
-    .filter((e) => e.isDirectory() && fs.existsSync(path.join(pipelineDir, e.name, 'console.log')));
+    .filter((e) => e.isDirectory() && !isIgnoredJob(e.name) && fs.existsSync(path.join(pipelineDir, e.name, 'console.log')));
 
   if (jobDirs.length === 0) throw new Error(`No root job directory found in ${pipelineDir}`);
   if (jobDirs.length > 1) {

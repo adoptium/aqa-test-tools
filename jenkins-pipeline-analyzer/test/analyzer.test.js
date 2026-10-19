@@ -6,7 +6,7 @@ import * as path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 import { grepWithContext, tailLines, isJobFinished } from '../src/logtools.js';
-import { parseTestTargetsSummary, detectJobType } from '../src/analyzer.js';
+import { parseTestTargetsSummary, detectJobType, isIgnoredJob, extractDownstreamResults } from '../src/analyzer.js';
 
 const CLI = path.join(path.dirname(fileURLToPath(import.meta.url)), '..', 'bin', 'jenkins-analyze.js');
 
@@ -78,6 +78,17 @@ test('detectJobType', () => {
   assert.equal(detectJobType('Test_openjdk21_x'), 'test');
   assert.equal(detectJobType('AQA_Test_Pipeline_Foo #1'), 'test');
   assert.equal(detectJobType('build-scripts » jobs » jdk21'), 'build');
+});
+
+test('isIgnoredJob matches Test_Job_Auto_Gen variants and ignores them', () => {
+  assert.equal(isIgnoredJob('Test_Job_Auto_Gen'), true);
+  assert.equal(isIgnoredJob('Test_Job_Auto_Gen_68332'), true);
+  assert.equal(isIgnoredJob('Test_Job_Auto_Gen #68332'), true);
+  assert.equal(isIgnoredJob('build-scripts » Test_Job_Auto_Gen'), true);
+  assert.equal(isIgnoredJob('build-scripts/job/Test_Job_Auto_Gen'), true);
+  assert.equal(isIgnoredJob('build-scripts/job/Test_Job_Auto_Gen/68332/'), true);
+  assert.equal(isIgnoredJob('Test_openjdk21_hs_extended.openjdk_x86-64_linux'), false);
+  assert.equal(isIgnoredJob('AQA_Test_Pipeline_Foo #1'), false);
 });
 
 test('CLI analyzes a pipeline dir and writes the report and three prompt files', () => {
@@ -246,4 +257,130 @@ test('SUCCESS job whose failed target was recovered on rerun is labelled RECOVER
   assert.doesNotMatch(report, /FAILED test targets/);
   const prompt1 = fs.readFileSync(path.join(out, files.find((f) => f.startsWith('prompt-1-platform-summary-'))), 'utf-8');
   assert.match(prompt1, /Final result rule/);
+});
+
+test('still-running child overridden by parent AQA_Test_Pipeline_JCK TARGET RESULTS', () => {
+  // Structure:
+  //   root (build)
+  //     AQA_Test_Pipeline_JCK_708  (test, completed FAILURE, has TARGET RESULTS including extended.jck=FAILURE)
+  //       AQA_Test_Pipeline_18752  (test, no Finished line -> still running)
+  //         Test_openjdk21_hs_extended.jck_x86-64_windows_136  (test, no Finished -> still running)
+  //           Test_openjdk21_hs_extended.jck_x86-64_windows_testList_0_127  (test, no Finished)
+  //           Test_openjdk21_hs_extended.jck_x86-64_windows_testList_1_124  (test, no Finished)
+  const root = tmpDir();
+  const rootJob = path.join(root, 'root_1');
+  const jckJob = path.join(rootJob, 'AQA_Test_Pipeline_JCK_708');
+  const pipeJob = path.join(jckJob, 'AQA_Test_Pipeline_18752');
+  const extJob = path.join(pipeJob, 'Test_openjdk21_hs_extended.jck_x86-64_windows_136');
+  const tl0 = path.join(extJob, 'Test_openjdk21_hs_extended.jck_x86-64_windows_testList_0_127');
+  const tl1 = path.join(extJob, 'Test_openjdk21_hs_extended.jck_x86-64_windows_testList_1_124');
+  fs.mkdirSync(tl0, { recursive: true });
+  fs.mkdirSync(tl1, { recursive: true });
+
+  fs.writeFileSync(path.join(root, 'metadata.json'), '{}');
+  const info = (name, n, result, dur = 1000) =>
+    JSON.stringify({ fullDisplayName: name, number: n, result, duration: dur, url: `https://ci.example/job/${n}/` });
+
+  // root build job — finished SUCCESS
+  fs.writeFileSync(path.join(rootJob, 'build-info.json'), info('build-scripts » pipeline #1', 1, 'SUCCESS'));
+  fs.writeFileSync(path.join(rootJob, 'console.log'), 'building\nFinished: SUCCESS\n');
+
+  // AQA_Test_Pipeline_JCK: completed FAILURE, reports TARGET RESULTS via "Remote job" lines
+  fs.writeFileSync(path.join(jckJob, 'build-info.json'), info('AQA_Test_Pipeline_JCK #708 - jdk21 : release : x86-64_windows', 708, 'FAILURE', 50976000));
+  fs.writeFileSync(
+    path.join(jckJob, 'console.log'),
+    [
+      '[2026-10-15T10:00:00.000Z] Remote job jdk21 : release : x86-64_windows Target: special.jck Status: SUCCESS',
+      '[2026-10-15T10:00:01.000Z] Remote job jdk21 : release : x86-64_windows Target: sanity.jck Status: SUCCESS',
+      '[2026-10-15T10:00:02.000Z] Remote job jdk21 : release : x86-64_windows Target: dev.jck Status: UNSTABLE',
+      '[2026-10-15T10:00:03.000Z] Remote job jdk21 : release : x86-64_windows Target: extended.jck Status: FAILURE',
+      'Finished: FAILURE',
+    ].join('\n') + '\n'
+  );
+
+  // AQA_Test_Pipeline_18752: no Finished line → still running
+  fs.writeFileSync(path.join(pipeJob, 'build-info.json'), info('AQA_Test_Pipeline #18752', 18752, null, 0));
+  fs.writeFileSync(path.join(pipeJob, 'console.log'), 'starting tests\n');
+
+  // Test_openjdk21_hs_extended.jck_x86-64_windows: no Finished line → still running
+  fs.writeFileSync(path.join(extJob, 'build-info.json'), info('Test_openjdk21_hs_extended.jck_x86-64_windows #136', 136, null, 0));
+  fs.writeFileSync(path.join(extJob, 'console.log'), '[2026-10-15T01:52:56.683Z] Exception: hudson.AbortException: Unable to find project for artifact copy: getTRSSOutput\n');
+
+  // testList_0 and testList_1: no Finished line → still running
+  fs.writeFileSync(path.join(tl0, 'build-info.json'), info('Test_openjdk21_hs_extended.jck_x86-64_windows_testList_0 #127', 127, null, 0));
+  fs.writeFileSync(path.join(tl0, 'console.log'), 'running tests\n');
+  fs.writeFileSync(path.join(tl1, 'build-info.json'), info('Test_openjdk21_hs_extended.jck_x86-64_windows_testList_1 #124', 124, null, 0));
+  fs.writeFileSync(path.join(tl1, 'console.log'), 'running tests\n');
+
+  const out = path.join(root, 'out');
+  execFileSync('node', [CLI, root, '-o', out], { encoding: 'utf-8' });
+  const files = fs.readdirSync(out);
+  const report = fs.readFileSync(path.join(out, files.find((f) => f.startsWith('pipeline-analysis-'))), 'utf-8');
+
+  // The extended.jck target result is FAILURE — jobs containing "extended.jck" must NOT be shown as still running
+  assert.doesNotMatch(report, /Test_openjdk21_hs_extended\.jck_x86-64_windows_testList_0[^)]*\) — ⏳ \*\*STILL RUNNING\*\*/);
+  assert.doesNotMatch(report, /Test_openjdk21_hs_extended\.jck_x86-64_windows_testList_1[^)]*\) — ⏳ \*\*STILL RUNNING\*\*/);
+  // They should be reported as FAILURE
+  assert.match(report, /Test_openjdk21_hs_extended\.jck_x86-64_windows_testList_0[^\n]*\[FAILURE\]/);
+  assert.match(report, /Test_openjdk21_hs_extended\.jck_x86-64_windows_testList_1[^\n]*\[FAILURE\]/);
+  // Summary running count must not include the overridden jobs
+  assert.match(report, /\*\*⏳ Still running\*\*: 0/);
+});
+
+test('Test_Job_Auto_Gen instances (e.g. purged HTTP 404 or empty dir) are ignored in report', () => {
+  const failure = JSON.stringify({ url: 'https://ci.example/job/Test_Job_Auto_Gen/68332/', error: 'HTTP 404: not found', status: 404 });
+  const report = pipelineWithChildren([
+    { name: 'Test_Job_Auto_Gen_68332', files: { 'download-failure.json': failure } },
+    { name: 'Test_real_job_1', files: { 'build-info.json': JSON.stringify({ fullDisplayName: 'Test_real_job #1', number: 1, result: 'SUCCESS', duration: 1000, url: 'https://ci.example/job/1/' }), 'console.log': 'Finished: SUCCESS\n' } },
+  ]);
+  assert.doesNotMatch(report, /Test_Job_Auto_Gen/);
+  assert.match(report, /\*\*Total Jobs\*\*: 2/);
+});
+
+test('platform build jobs are wrapped in START/END markers, sorted by name, and listed in a Section Index with correct line numbers', () => {
+  const mk = (n, platform) => ({
+    name: `jdk21u-release-${platform}-temurin_${n}`,
+    files: {
+      'build-info.json': JSON.stringify({ fullDisplayName: `build-scripts » jobs » jdk21u » jdk21u-release-${platform}-temurin #${n}`, number: n, result: 'SUCCESS', duration: 1000, url: `https://ci.example/job/${n}/` }),
+      'console.log': 'Finished: SUCCESS\n',
+    },
+  });
+  const other = {
+    name: 'refactor_tool_9',
+    files: {
+      'build-info.json': JSON.stringify({ fullDisplayName: 'build-scripts » release » refactor_tool #9', number: 9, result: 'SUCCESS', duration: 1000, url: 'https://ci.example/job/9/' }),
+      'console.log': 'Finished: SUCCESS\n',
+    },
+  };
+  // deliberately created out of order
+  const report = pipelineWithChildren([mk(3, 'windows-x64'), other, mk(1, 'alpine-linux-x64'), mk(2, 'mac-aarch64')]);
+  const lines = report.split('\n');
+
+  const markers = lines.map((l, i) => [i + 1, l]).filter(([, l]) => l.startsWith('<!--'));
+  assert.deepEqual(
+    markers.map(([, l]) => l),
+    [
+      '<!-- PLATFORM START: alpine-linux-x64 -->', '<!-- PLATFORM END: alpine-linux-x64 -->',
+      '<!-- PLATFORM START: mac-aarch64 -->', '<!-- PLATFORM END: mac-aarch64 -->',
+      '<!-- PLATFORM START: windows-x64 -->', '<!-- PLATFORM END: windows-x64 -->',
+      '<!-- OTHER JOBS START -->', '<!-- OTHER JOBS END -->',
+    ]
+  );
+  // every index row's start/end must point at the matching marker line in the file
+  const rows = [...report.matchAll(/^\| ([\w-]+) \| (\d+) \| (\d+) \| \d+ \|$/gm)];
+  assert.equal(rows.length, 4);
+  for (const [, label, start, end] of rows) {
+    const startText = label === 'other-jobs' ? '<!-- OTHER JOBS START -->' : `<!-- PLATFORM START: ${label} -->`;
+    const endText = label === 'other-jobs' ? '<!-- OTHER JOBS END -->' : `<!-- PLATFORM END: ${label} -->`;
+    assert.equal(lines[start - 1], startText);
+    assert.equal(lines[end - 1], endText);
+  }
+});
+
+test('no markers or index when the root job has no platform build children', () => {
+  const report = pipelineWithChildren([
+    { name: 'Test_x_2', files: { 'build-info.json': JSON.stringify({ fullDisplayName: 'Test_x #2', number: 2, result: 'FAILURE', duration: 1000, url: 'https://ci.example/job/2/' }), 'console.log': 'Finished: FAILURE\n' } },
+  ]);
+  assert.doesNotMatch(report, /<!--/);
+  assert.doesNotMatch(report, /Section Index/);
 });
