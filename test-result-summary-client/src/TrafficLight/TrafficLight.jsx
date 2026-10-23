@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Table, Space, Select, Tooltip, Divider } from 'antd';
+import { Table, Space, Select, Tooltip, Divider, Tabs } from 'antd';
 import { Link } from 'react-router-dom';
 import {
     CheckCircleOutlined,
@@ -12,7 +12,63 @@ import { fetchData, getInfoFromBuildName } from '../utils/Utils';
 import { params } from '../utils/query';
 import { Button } from '../Components/Button';
 import _, { first, identity, uniq } from 'lodash';
+// Display order of benchmark groups; a benchmark belongs to the first group
+// with a matching name prefix, and prefix order is kept within a group.
+const BENCHMARK_GROUPS = [
+    { label: 'Microbenchmarks', prefixes: ['specjbb', 'ilog'] },
+    { label: 'Liberty', prefixes: ['liberty'] },
+];
+const OTHER_GROUP_LABEL = 'Other';
+
+const getBenchmarkRank = (benchmarkName) => {
+    const name = benchmarkName.toLowerCase();
+    for (let group = 0; group < BENCHMARK_GROUPS.length; group++) {
+        const prefix = BENCHMARK_GROUPS[group].prefixes.findIndex((p) =>
+            name.startsWith(p)
+        );
+        if (prefix !== -1) return { group, prefix };
+    }
+    return { group: BENCHMARK_GROUPS.length, prefix: 0 };
+};
+
+const ALL_TAB_KEY = 'all';
+
+// Returns rows with their group rank, sorted by group, prefix and name.
+const rankAndSortRows = (rows) =>
+    rows
+        .map((row) => ({ row, rank: getBenchmarkRank(row.benchmarkName) }))
+        .sort(
+            (a, b) =>
+                a.rank.group - b.rank.group ||
+                a.rank.prefix - b.rank.prefix ||
+                a.row.benchmarkName.localeCompare(
+                    b.row.benchmarkName,
+                    undefined,
+                    { numeric: true, sensitivity: 'base' }
+                )
+        );
+
+// Inserts a header row at the start of each group.
+const addGroupHeaders = (ranked) => {
+    const result = [];
+    let lastGroup = -1;
+    ranked.forEach(({ row, rank }) => {
+        if (rank.group !== lastGroup) {
+            lastGroup = rank.group;
+            result.push({
+                isGroupHeader: true,
+                key: `group-${rank.group}`,
+                groupLabel:
+                    BENCHMARK_GROUPS[rank.group]?.label ?? OTHER_GROUP_LABEL,
+            });
+        }
+        result.push(row);
+    });
+    return result;
+};
+
 function TrafficLight() {
+    const [activeTab, setActiveTab] = useState(ALL_TAB_KEY);
     const [topBuild, setTopBuild] = useState();
     const [topBuildOptions, setTopBuildOptions] = useState([]);
     const [testBuild, setTestBuild] = useState();
@@ -189,6 +245,7 @@ function TrafficLight() {
         );
     };
     const renderCell = (title, _, obj) => {
+        if (obj.isGroupHeader) return null;
         const testBuild = Object.values(obj).find(
             ({ buildNameTitle, buildType }) =>
                 buildNameTitle === title && buildType === 'test'
@@ -300,20 +357,28 @@ function TrafficLight() {
             .flat()
     );
 
+    const groupHeaderStyle = { background: '#fafafa' };
     const columns = [
         {
             title: 'Benchmark Name',
             key: 'benchmarkName',
-            sorter: {
-                compare: (a, b) =>
-                    a.benchmarkName.localeCompare(b.benchmarkName, undefined, {
-                        numeric: true,
-                        sensitivity: 'base',
-                    }),
-            },
             width: '350px',
             fixed: 'left',
-            render: (_, { benchmarkName, metricsName }) => {
+            // Group header rows span every column.
+            onCell: (record) =>
+                record.isGroupHeader
+                    ? {
+                          colSpan: buildNameTitles.length + 1,
+                          style: groupHeaderStyle,
+                      }
+                    : {},
+            render: (
+                _,
+                { isGroupHeader, groupLabel, benchmarkName, metricsName }
+            ) => {
+                if (isGroupHeader) {
+                    return <b>{groupLabel}</b>;
+                }
                 return (
                     <div>
                         {benchmarkName}
@@ -334,6 +399,8 @@ function TrafficLight() {
                 return {
                     title,
                     key: i,
+                    onCell: (record) =>
+                        record.isGroupHeader ? { colSpan: 0 } : {},
                     render: renderCell.bind(null, title),
                 };
             }),
@@ -358,6 +425,42 @@ function TrafficLight() {
     useEffect(() => {
         setBuildOptionsOnChange(defaultBuildValue);
     }, []);
+
+    const rankedRows = rankAndSortRows(tableData);
+    const countBenchmarks = (ranked) =>
+        uniq(ranked.map(({ row }) => row.benchmarkName)).length;
+    const groupTabs = [
+        ...BENCHMARK_GROUPS.map(({ label }, i) => ({ key: String(i), label })),
+        { key: String(BENCHMARK_GROUPS.length), label: OTHER_GROUP_LABEL },
+    ]
+        .map((tab) => ({
+            ...tab,
+            ranked: rankedRows.filter(
+                ({ rank }) => String(rank.group) === tab.key
+            ),
+        }))
+        // "Other" only appears when some benchmark falls outside the groups.
+        .filter(
+            ({ key, ranked }) =>
+                ranked.length > 0 || key !== String(BENCHMARK_GROUPS.length)
+        );
+    const selectedGroupTab = groupTabs.find(({ key }) => key === activeTab);
+    const visibleRanked = selectedGroupTab
+        ? selectedGroupTab.ranked
+        : rankedRows;
+    const tableRows = selectedGroupTab
+        ? visibleRanked.map(({ row }) => row)
+        : addGroupHeaders(rankedRows);
+    const tabItems = [
+        {
+            key: ALL_TAB_KEY,
+            label: `All (${countBenchmarks(rankedRows)})`,
+        },
+        ...groupTabs.map(({ key, label, ranked }) => ({
+            key,
+            label: `${label} (${countBenchmarks(ranked)})`,
+        })),
+    ];
     return (
         <Space direction="vertical" size="middle" style={{ display: 'flex' }}>
             <Select
@@ -422,16 +525,21 @@ function TrafficLight() {
                 </Button>
             </Space>
             <br />
-            {tableData ? (
-                <Table
-                    pagination={{ defaultPageSize: 100 }}
-                    dataSource={tableData}
-                    columns={columns}
-                    scroll={{ x: 'max-content' }}
-                />
-            ) : (
-                ''
-            )}
+            <Tabs
+                activeKey={selectedGroupTab ? activeTab : ALL_TAB_KEY}
+                onChange={setActiveTab}
+                items={tabItems}
+            />
+            <div>
+                Benchmarks visible: <b>{countBenchmarks(visibleRanked)}</b> (
+                {visibleRanked.length} metric rows)
+            </div>
+            <Table
+                pagination={{ defaultPageSize: 100 }}
+                dataSource={tableRows}
+                columns={columns}
+                scroll={{ x: 'max-content' }}
+            />
             <pre>
                 Note: <br />{' '}
                 <p style={{ display: 'flex' }}>
