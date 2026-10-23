@@ -19,6 +19,8 @@ function TrafficLight() {
     const [baselineBuild, setBaselineBuild] = useState();
     const [buildOptions, setBuildOptions] = useState([]);
     const [tableData, settableData] = useState([]);
+    const [recomputeStatus, setRecomputeStatus] = useState('');
+    const [recomputing, setRecomputing] = useState(false);
     const iconRed = (
         <CloseCircleOutlined
             style={{ color: 'rgb(255, 85, 0)', fontSize: 23 }}
@@ -123,8 +125,10 @@ function TrafficLight() {
                 }) => {
                     const { benchmarkName, benchmarkVariant, buildName } =
                         aggregateInfo;
-                    const benchmark = benchmarkName.split('-')[0];
-                    const { platform } = getInfoFromBuildName(buildName);
+                    const benchmark = Object.keys(metricPropsJSON).find(
+                        (key) => benchmarkName.includes(key)
+                    ) || benchmarkName.split('-')[0];
+                    const { platform } = getInfoFromBuildName(buildName) || {}; 
                     const originBuildNameTitle = parentBuildName.slice(
                         0,
                         parentBuildName.lastIndexOf('_')
@@ -187,6 +191,19 @@ function TrafficLight() {
                 return { ...JSON.parse(k), ...v };
             })
         );
+    };
+    const handleRecompute = async () => {
+        setRecomputing(true);
+        setRecomputeStatus('Recomputing aggregate data from existing builds...');
+        settableData([]);
+        await Promise.all([
+            fetchData(`/api/recomputeAggregateInfo?_id=${testBuild}`),
+            fetchData(`/api/recomputeAggregateInfo?_id=${baselineBuild}`),
+        ]);
+        setRecomputeStatus('Done — loading updated data...');
+        await handleCompare();
+        setRecomputeStatus('');
+        setRecomputing(false);
     };
     const renderCell = (title, _, obj) => {
         const testBuild = Object.values(obj).find(
@@ -271,6 +288,7 @@ function TrafficLight() {
                                     testId: testBuild._id,
                                     baselineId: baselineBuild._id,
                                     benchmarkName: testBuild.benchmarkName,
+                                    metricsName: testBuild.metricsName,
                                 }),
                             }}
                             target="_blank"
@@ -313,10 +331,17 @@ function TrafficLight() {
             },
             width: '350px',
             fixed: 'left',
-            render: (_, { benchmarkName, metricsName }) => {
+            render: (_, { benchmarkName, benchmarkVariant, metricsName }) => {
+                const showVariant = benchmarkVariant && benchmarkVariant !== '0' && benchmarkVariant !== 'default';
                 return (
                     <div>
                         {benchmarkName}
+                        {showVariant && (
+                            <>
+                                <br />
+                                <span style={{ color: '#57606a' }}>{benchmarkVariant}</span>
+                            </>
+                        )}
                         <br />
                         <b>{metricsName}</b>
                     </div>
@@ -343,7 +368,7 @@ function TrafficLight() {
         setTestBuild();
         setBaselineBuild();
         const results = await fetchData(
-            `/api/getBuildHistory?buildName=${buildName}&status=Done&limit=120`
+            `/api/getBuildHistory?buildName=${buildName}&limit=120`
         );
         setBuildOptions(
             results.map((result) => {
@@ -417,10 +442,20 @@ function TrafficLight() {
             </div>
 
             <Space direction="horizontal">
-                <Button type="primary" onClick={handleCompare}>
+                <Button type="primary" onClick={handleCompare} disabled={recomputing}>
                     Compare
                 </Button>
+                <Button
+                    onClick={handleRecompute}
+                    disabled={!testBuild || !baselineBuild || recomputing}
+                    loading={recomputing}
+                >
+                    Recompute
+                </Button>
             </Space>
+            {recomputeStatus && (
+                <div style={{ color: 'rgb(44, 130, 201)' }}>{recomputeStatus}</div>
+            )}
             <br />
             {tableData ? (
                 <Table
