@@ -388,7 +388,7 @@ function TrafficLight() {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Jenkins Link
+                        Test Jenkins Link
                     </a>
                 )}
             </div>
@@ -411,7 +411,7 @@ function TrafficLight() {
                         target="_blank"
                         rel="noopener noreferrer"
                     >
-                        Jenkins Link
+                        Baseline Jenkins Link
                     </a>
                 )}
             </div>
