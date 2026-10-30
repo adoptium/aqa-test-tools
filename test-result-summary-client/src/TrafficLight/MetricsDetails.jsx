@@ -9,7 +9,7 @@ import MetricsTable from './MetricsTable';
 import { getParams } from '../utils/query';
 
 function MetricsDetails() {
-    const { testId, baselineId, benchmarkName } = getParams(location.search);
+    const { testId, baselineId, benchmarkName, metricsName } = getParams(location.search);
 
     // State to track data from both tables
     const [testData, setTestData] = useState(null);
@@ -251,6 +251,7 @@ function MetricsDetails() {
                 type="test"
                 id={testId}
                 benchmarkName={benchmarkName}
+                metricsName={metricsName}
                 onDataChange={setTestData}
                 onStatsChange={setTestStats}
             />
@@ -259,6 +260,7 @@ function MetricsDetails() {
                 type="baseline"
                 id={baselineId}
                 benchmarkName={benchmarkName}
+                metricsName={metricsName}
                 onDataChange={setBaselineData}
                 onStatsChange={setBaselineStats}
             />
