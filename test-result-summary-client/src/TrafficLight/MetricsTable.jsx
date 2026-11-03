@@ -21,9 +21,10 @@ const SummaryRow = ({ type, stats }) => {
     );
 };
 
-const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) => {
+const MetricsTable = ({ type, id, benchmarkName, metricsName, onDataChange, onStatsChange }) => {
     const [data, setData] = useState([]);
     const [javaVersion, setJavaVersion] = useState([]);
+    const [metricIndex, setMetricIndex] = useState(0);
     useEffect(() => {
         const updateData = async () => {
             let results;
@@ -38,14 +39,33 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
                         item.buildName.includes(type)
                 );
 
-                const [firstMetric] = fliteredData.metrics;
-                const disabledIterations = fliteredData.metrics[0]?.disabledIterations || [];
+                // Match the metric by name (test and baseline can have different
+                // metrics available/ordered -- e.g. baseline may only have
+                // Throughput while test has Adjusted Single Server Memory, CPU
+                // Util pct, and Throughput). Falls back to position 0 for older
+                // links that don't carry a metricsName param.
+                let selectedIndex = metricsName
+                    ? fliteredData.metrics.findIndex((m) => m.name === metricsName)
+                    : -1;
+                if (selectedIndex === -1) selectedIndex = 0;
+                setMetricIndex(0); // index into displayMetrics below, which is always [0] when filtered
+
+                // When a specific metricsName was requested, show only that one
+                // metric's column (matches what the person clicked on in the
+                // Traffic Light table). Older links with no metricsName still
+                // show every available metric side by side.
+                const displayMetrics = metricsName
+                    ? [fliteredData.metrics[selectedIndex]]
+                    : fliteredData.metrics;
+
+                const firstMetric = displayMetrics[0];
+                const disabledIterations = firstMetric?.disabledIterations || [];
                 const rawValues = firstMetric.rawValues.map((_, i) => {
                     return {
                         key: i,
                         iteration: i,
                         enabled: !disabledIterations.includes(i),
-                        metrics: fliteredData.metrics.map((metric) => {
+                        metrics: displayMetrics.map((metric) => {
                             return {
                                 metricName: metric.name,
                                 value: metric.rawValues[i],
@@ -71,7 +91,7 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
             }
         };
         updateData();
-    }, [id, benchmarkName, type, onDataChange]);
+    }, [id, benchmarkName, metricsName, type, onDataChange]);
     useEffect(() => {
         if (data.length > 0 && onStatsChange) {
             const enabledData = data.filter(item => item.enabled);
@@ -89,13 +109,13 @@ const MetricsTable = ({ type, id, benchmarkName, onDataChange, onStatsChange }) 
                     const CI = Number(BenchmarkMath.confidence_interval(values) * 100).toFixed(2);
                     return { mean, max, min, median, std, CI };
                 });
-                onStatsChange(stats[0]); // Send first metric stats to parent
+                onStatsChange(stats[metricIndex] || stats[0]); // Send the matched metric's stats to parent
             }
              else {
             onStatsChange(null);
             }
         }
-    }, [data, onStatsChange]);
+    }, [data, metricIndex, onStatsChange]);
 
 
     const handleToggle = (record) => {
