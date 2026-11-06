@@ -10,9 +10,10 @@
  *   node download-pipeline-logs.cjs <jenkins-url> [--depth N] [--output DIR] [--handlers FILE]
  *
  * Requires JENKINS_USER and JENKINS_TOKEN environment variables.
+ * Uses DASHBOARD_COOKIE (or GITHUB_TOKEN) environment variable for authenticating with external dashboards (e.g. jenkins-dashboard).
  * --depth defaults to 10.
  * --handlers defaults to ../console-handlers.json. Downstream build URLs containing a handler's
- * "urlKeyword" are fetched via its "consoleQuery" (unauthenticated); all others use the Jenkins API.
+ * "urlKeyword" are fetched via its "consoleQuery" (authenticated with DASHBOARD_COOKIE or GITHUB_TOKEN); all others use the Jenkins API.
  *
  * Example:
  *   node download-pipeline-logs.cjs https://ci.adoptium.net/job/build-scripts/job/openjdk21-pipeline/504/ --depth 10 --output ./analyse-jdk21u-build-504
@@ -42,9 +43,11 @@ if (Number.isNaN(maxDepth) || maxDepth < 0) {
 const outputIndex = args.indexOf('--output');
 const outputDir = outputIndex !== -1 ? args[outputIndex + 1] : null;
 
-// Get Jenkins credentials from environment
+// Get credentials from environment
 const JENKINS_USER = process.env.JENKINS_USER;
 const JENKINS_TOKEN = process.env.JENKINS_TOKEN;
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const DASHBOARD_COOKIE = process.env.DASHBOARD_COOKIE || process.env.JENKINS_DASHBOARD_COOKIE;
 
 if (!JENKINS_USER || !JENKINS_TOKEN) {
   console.error('Error: JENKINS_USER and JENKINS_TOKEN environment variables are required');
@@ -83,13 +86,23 @@ function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-// Make an unauthenticated HTTP GET request (for console handler queries)
-async function makeUnauthenticatedRequest(url) {
+// Make an HTTP GET request for console handler / dashboard queries using DASHBOARD_COOKIE or GITHUB_TOKEN
+async function makeDashboardRequest(url) {
   const protocol = url.startsWith('https') ? https : http;
+  const headers = {
+    'User-Agent': 'jenkins-pipeline-analyzer',
+  };
+  if (DASHBOARD_COOKIE) {
+    headers['Cookie'] = DASHBOARD_COOKIE;
+  }
+  if (GITHUB_TOKEN) {
+    headers['Authorization'] = `Bearer ${GITHUB_TOKEN}`;
+  }
+  const options = { headers };
 
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
     const result = await new Promise((resolve, reject) => {
-      protocol.get(url, {}, (res) => {
+      protocol.get(url, options, (res) => {
         if (res.statusCode !== 200) {
           res.resume();
           res.on('end', () => resolve({ status: res.statusCode, retryable: RETRYABLE_STATUSES.has(res.statusCode) }));
@@ -302,7 +315,8 @@ function resolveConsoleHandler(buildUrl) {
 }
 
 // Fetch console + build info through a matched handler: extract JOB / BUILD_NUMBER with the handler's
-// matcher regexes, then query consoleQuery (no authentication) with %JOB% / %BUILD_NUMBER% substituted.
+// matcher regexes, then query consoleQuery with %JOB% / %BUILD_NUMBER% substituted using GITHUB_TOKEN.
+// If GITHUB_TOKEN is not set, skip querying the dashboard, note it, and issue a warning.
 async function fetchViaConsoleHandler(handler, buildUrl) {
   const jobMatch = new RegExp(handler.jobRegex).exec(buildUrl);
   const numberMatch = new RegExp(handler.buildNumberRegex).exec(buildUrl);
@@ -315,8 +329,6 @@ async function fetchViaConsoleHandler(handler, buildUrl) {
     .replace(/%JOB%/g, encodeURIComponent(job))
     .replace(/%BUILD_NUMBER%/g, buildNumber);
 
-  console.log(`  Downloading console (${handler.urlKeyword}): ${queryUrl}`);
-  const consoleLog = await makeUnauthenticatedRequest(queryUrl);
   const buildInfo = {
     jobName: job,
     fullDisplayName: `${job} #${buildNumber}`,
@@ -324,6 +336,25 @@ async function fetchViaConsoleHandler(handler, buildUrl) {
     url: buildUrl,
     consoleSource: queryUrl,
   };
+
+  const hasAuth = Boolean(DASHBOARD_COOKIE || GITHUB_TOKEN);
+  if (!hasAuth) {
+    console.warn(`  ⚠ DASHBOARD_COOKIE (or GITHUB_TOKEN) is not set — skipping dashboard query for ${job} #${buildNumber} (${handler.urlKeyword})`);
+    const consoleError = new Error('DASHBOARD_COOKIE or GITHUB_TOKEN not set for dashboard authentication');
+    return { consoleLog: null, buildInfo, consoleError };
+  }
+
+  console.log(`  Downloading console (${handler.urlKeyword}): ${queryUrl}`);
+  let consoleLog = null;
+  let consoleError = null;
+  try {
+    consoleLog = await makeDashboardRequest(queryUrl);
+  } catch (error) {
+    consoleError = error;
+    console.error(`  ⚠ Console unavailable for ${job} #${buildNumber} from dashboard (${consoleError.message}) — keeping build info only`);
+    return { consoleLog: null, buildInfo, consoleError };
+  }
+
   return { consoleLog, buildInfo };
 }
 

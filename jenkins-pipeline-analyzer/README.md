@@ -19,6 +19,10 @@ Standalone tooling to download a Jenkins pipeline's logs, analyze them, and hand
    export JENKINS_USER="your-username"
    export JENKINS_TOKEN="your-api-token"
    ```
+3. (Optional) A session cookie or GitHub token if external dashboards (such as `jenkins-dashboard`) are used:
+   ```bash
+   export DASHBOARD_COOKIE="connect.sid=s%3A..."   # or GITHUB_TOKEN="ghp_..."
+   ```
 
 ## Workflow
 
@@ -58,7 +62,7 @@ analyse-jdk27-82/
 
 The downloader finds downstream jobs by searching each console log for `Starting building: <job> #<n>`, `Build <job> #<n> completed: <STATUS>` and `Remote build URL: <url>`. Each match becomes a build URL. For each build URL:
 
-1. If it contains a handler's `urlKeyword` (first match wins), the handler extracts `JOB` and `BUILD_NUMBER` with `jobRegex` and `buildNumberRegex` (capture group 1 of each) and fetches the console from `consoleQuery`, with `%JOB%` and `%BUILD_NUMBER%` substituted. No authentication is sent.
+1. If it contains a handler's `urlKeyword` (first match wins), the handler extracts `JOB` and `BUILD_NUMBER` with `jobRegex` and `buildNumberRegex` (capture group 1 of each) and fetches the console from `consoleQuery`, with `%JOB%` and `%BUILD_NUMBER%` substituted, authenticated via `DASHBOARD_COOKIE` (or `GITHUB_TOKEN`). If neither is set, the dashboard query is skipped with a warning.
 2. Otherwise the console and build info come from the Jenkins API at that URL using `JENKINS_USER` and `JENKINS_TOKEN`.
 
 `console-handlers.json`:
