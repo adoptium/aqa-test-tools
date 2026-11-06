@@ -10,10 +10,10 @@
  *   node download-pipeline-logs.cjs <jenkins-url> [--depth N] [--output DIR] [--handlers FILE]
  *
  * Requires JENKINS_USER and JENKINS_TOKEN environment variables.
- * Uses DASHBOARD_COOKIE (or GITHUB_TOKEN) environment variable for authenticating with external dashboards (e.g. jenkins-dashboard).
+ * Optional DASHBOARD_COOKIE (or GITHUB_TOKEN) environment variable for authenticating with external dashboards.
  * --depth defaults to 10.
  * --handlers defaults to ../console-handlers.json. Downstream build URLs containing a handler's
- * "urlKeyword" are fetched via its "consoleQuery" (authenticated with DASHBOARD_COOKIE or GITHUB_TOKEN); all others use the Jenkins API.
+ * "urlKeyword" are fetched via its "consoleQuery"; all others use the Jenkins API.
  *
  * Example:
  *   node download-pipeline-logs.cjs https://ci.adoptium.net/job/build-scripts/job/openjdk21-pipeline/504/ --depth 10 --output ./analyse-jdk21u-build-504
@@ -114,7 +114,12 @@ async function makeDashboardRequest(url) {
       }).on('error', (err) => reject(err));
     });
 
-    if (result.ok) return result.data;
+    if (result.ok) {
+      if (result.data.startsWith('{"error":') && result.data.includes('sign-in is required')) {
+        throw Object.assign(new Error(`Authentication required (sign-in is required)`), { status: 401 });
+      }
+      return result.data;
+    }
 
     if (result.retryable && attempt < MAX_RETRIES) {
       const delay = RETRY_BASE_DELAY_MS * Math.pow(2, attempt - 1);
@@ -315,8 +320,8 @@ function resolveConsoleHandler(buildUrl) {
 }
 
 // Fetch console + build info through a matched handler: extract JOB / BUILD_NUMBER with the handler's
-// matcher regexes, then query consoleQuery with %JOB% / %BUILD_NUMBER% substituted using GITHUB_TOKEN.
-// If GITHUB_TOKEN is not set, skip querying the dashboard, note it, and issue a warning.
+// matcher regexes, then query consoleQuery with %JOB% / %BUILD_NUMBER% substituted.
+// Uses DASHBOARD_COOKIE / GITHUB_TOKEN if set, otherwise queries unauthenticated.
 async function fetchViaConsoleHandler(handler, buildUrl) {
   const jobMatch = new RegExp(handler.jobRegex).exec(buildUrl);
   const numberMatch = new RegExp(handler.buildNumberRegex).exec(buildUrl);
@@ -336,13 +341,6 @@ async function fetchViaConsoleHandler(handler, buildUrl) {
     url: buildUrl,
     consoleSource: queryUrl,
   };
-
-  const hasAuth = Boolean(DASHBOARD_COOKIE || GITHUB_TOKEN);
-  if (!hasAuth) {
-    console.warn(`  ⚠ DASHBOARD_COOKIE (or GITHUB_TOKEN) is not set — skipping dashboard query for ${job} #${buildNumber} (${handler.urlKeyword})`);
-    const consoleError = new Error('DASHBOARD_COOKIE or GITHUB_TOKEN not set for dashboard authentication');
-    return { consoleLog: null, buildInfo, consoleError };
-  }
 
   console.log(`  Downloading console (${handler.urlKeyword}): ${queryUrl}`);
   let consoleLog = null;

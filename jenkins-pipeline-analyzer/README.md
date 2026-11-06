@@ -62,7 +62,7 @@ analyse-jdk27-82/
 
 The downloader finds downstream jobs by searching each console log for `Starting building: <job> #<n>`, `Build <job> #<n> completed: <STATUS>` and `Remote build URL: <url>`. Each match becomes a build URL. For each build URL:
 
-1. If it contains a handler's `urlKeyword` (first match wins), the handler extracts `JOB` and `BUILD_NUMBER` with `jobRegex` and `buildNumberRegex` (capture group 1 of each) and fetches the console from `consoleQuery`, with `%JOB%` and `%BUILD_NUMBER%` substituted, authenticated via `DASHBOARD_COOKIE` (or `GITHUB_TOKEN`). If neither is set, the dashboard query is skipped with a warning.
+1. If it contains a handler's `urlKeyword` (first match wins), the handler extracts `JOB` and `BUILD_NUMBER` with `jobRegex` and `buildNumberRegex` (capture group 1 of each) and fetches the console from `consoleQuery`, with `%JOB%` and `%BUILD_NUMBER%` substituted. If `DASHBOARD_COOKIE` or `GITHUB_TOKEN` is set, it will be included in the request headers; otherwise, the request is made unauthenticated.
 2. Otherwise the console and build info come from the Jenkins API at that URL using `JENKINS_USER` and `JENKINS_TOKEN`.
 
 `console-handlers.json`:
