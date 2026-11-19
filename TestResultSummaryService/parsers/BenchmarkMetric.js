@@ -36,18 +36,18 @@ function geomean(inputArray) {
  */
 const BenchmarkMetricRegex = {
     DayTrader30: {
-        outerRegex: /<run runNo="\d*" runType="measure"([\s\S\n]*)/,
+        outerRegex: /<run runNo="\d*" runType="measurement"([\s\S\n]*)/,
         metrics: {
             'Adjusted Single Server Memory': {
-                //Example: <metric type="Adjusted Single Server Memory">\n<data machine="sevenup10G" units="KB">1286449</data>
-                regex: /<metric type="Adjusted Single Server Memory">[\s\S\n]*?units="KB">(\d*\.?\d*)<\/data>/,
+                //Example: <metric type="Adjusted Single Server Memory">\n<data machine="sevenup10G" units="MB">1286449</data>
+                regex: /<metric type="Adjusted Single Server Memory">[\s\S\n]*?units="MB">(\d*\.?\d*)<\/data>/,
                 higherbetter: false,
-                units: 'kb',
+                units: 'mb',
             },
             'CPU Util pct': {
                 //we only keep track of first CPUutil
-                //Example: <metric type="CPU Utilization">\n<data machine="sevenup10G" units="%" cv="0.0">14.0</data>/n<data machine="bottas10G" units="%" cv="2.9951475130430323">15.3</data>
-                regex: /<metric type="CPU Utilization">[\s\S\n]*?cv="\d*\.?\d*">(\d*\.?\d*)<\/data>[\s\S\n]<data machine/,
+                //Example: <metric type="CPU Utilization">\n  <data machine="sevenup10G" units="%" cv="0.0">14.0</data>\n  <data machine="bottas10G" units="%" cv="2.9951475130430323">15.3</data>
+                regex: /<metric type="CPU Utilization">[\s\S\n]*?cv="\d*\.?\d*">(\d*\.?\d*)<\/data>/,
                 higherbetter: false,
                 units: '%',
             },
@@ -298,14 +298,15 @@ const BenchmarkMetricRegex = {
     WebSphereFootprint: {
         metrics: {
             'Adjusted Single Server Memory': {
-                //Example: <metric type="Adjusted Single Server Memory">\n<data serverName="DayTrader30" machine="mathis10G" units="KB">344130</data>
-                regex: /<metric type="Adjusted Single Server Memory">[\s\S\n]*?units="KB">(\d*\.?\d*)<\/data>/,
+                //Example: <metric type="Adjusted Single Server Memory">\n<data serverName="DayTrader30" machine="mathis10G" units="MB">344130</data>
+                regex: /<metric type="Adjusted Single Server Memory">[\s\S\n]*?units="MB">(\d*\.?\d*)<\/data>/,
                 higherbetter: false,
-                units: 'kb',
+                units: 'mb',
             },
         },
     },
     WebSphereStartup: {
+        outerRegex: /<run runNo="\d*" runType="measurement"([\s\S\n]*)/,
         metrics: {
             'Startup time in ms': {
                 //Example: <metric type="time">\n<data machine="poisonivy10G" units="ms">15496</data>
@@ -315,8 +316,44 @@ const BenchmarkMetricRegex = {
             },
         },
     },
-    SOABENCH: {
-        outerRegex: /<run runNo="\d*" runType="measure"([\s\S\n]*)/,
+    SOABench: {
+        outerRegex: /<run runNo="\d*" runType="measurement"([\s\S\n]*)/,
+        metrics: {
+            Throughput: {
+                //Example: <metric type="throughput">\n<data machine="schumi10G" units="req/sec">6425.683</data>\n</metric>
+                regex: /<metric type="throughput"[\s\S\n]*? units="req\/sec">(\d*\.?\d*)<\/data>/,
+                higherbetter: true,
+                units: 'req/sec',
+            },
+        },
+    },
+    // WAS 8.5.5 DayTrader30 variant — uses runType="measurement" XML format
+    DayTrader30_WAS855gen1GB_4way: {
+        outerRegex: /<run runNo="\d*" runType="measurement"([\s\S\n]*)/,
+        metrics: {
+            'Adjusted Single Server Memory': {
+                //Example: <metric type="Adjusted Single Server Memory">\n<data machine="sevenup10G" units="MB">1286449</data>
+                regex: /<metric type="Adjusted Single Server Memory">[\s\S\n]*?units="MB">(\d*\.?\d*)<\/data>/,
+                higherbetter: false,
+                units: 'mb',
+            },
+            'CPU Util pct': {
+                //Example: <metric type="CPU Utilization">\n  <data machine="sevenup10G" units="%" cv="0.0">14.0</data>
+                regex: /<metric type="CPU Utilization">[\s\S\n]*?cv="\d*\.?\d*">(\d*\.?\d*)<\/data>/,
+                higherbetter: false,
+                units: '%',
+            },
+            Throughput: {
+                //Example: <metric type="throughput">\n<data machine="bottas10G" units="req/sec">533.592</data>
+                regex: /<metric type="throughput"[\s\S\n]*? units="req\/sec">(\d*\.?\d*)<\/data>/,
+                higherbetter: true,
+                units: 'req/sec',
+            },
+        },
+    },
+    // WAS 8.5.5 SOABench 10k/10k variant
+    SOABench_10k10k: {
+        outerRegex: /<run runNo="\d*" runType="measurement"([\s\S\n]*)/,
         metrics: {
             Throughput: {
                 //Example: <metric type="throughput">\n<data machine="schumi10G" units="req/sec">6425.683</data>\n</metric>
