@@ -1,0 +1,59 @@
+.release-summary {
+    font-size: 13px;
+}
+
+.release-summary-select {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.release-summary-header {
+    margin-bottom: 8px;
+}
+
+.release-summary-reasons {
+    color: rgba(0, 0, 0, 0.45);
+    font-size: 12px;
+}
+
+.release-summary-counts {
+    margin: 4px 0 8px;
+}
+
+.release-summary-platform {
+    width: 100%;
+}
+
+.release-summary-primary {
+    color: #faad14;
+    margin-left: 6px;
+}
+
+.release-summary-aqa {
+    margin-left: 12px;
+    color: rgba(0, 0, 0, 0.65);
+}
+
+.release-summary-links a {
+    margin-left: 12px;
+}
+
+.release-summary-failures {
+    margin: 4px 0 0;
+    padding-left: 20px;
+    font-size: 12px;
+}
+
+.release-summary-section {
+    margin-top: 12px;
+}
+
+.release-summary-section-title {
+    font-weight: 600;
+    margin-bottom: 4px;
+}
+
+.release-summary-linux {
+    margin-top: 8px;
+}

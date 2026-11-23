@@ -5,7 +5,7 @@ import RGL, { WidthProvider } from 'react-grid-layout';
 import * as Widgets from './Widgets/';
 import WidgetWrapper from './WidgetWrapper';
 import LocalStorage from '../utils/LocalStorage';
-import Defaults from './Defaults';
+import { getTabDefaults } from './Defaults';
 import './dashboard.css';
 const ReactGridLayout = WidthProvider(RGL);
 
@@ -37,15 +37,14 @@ export default class TabInfo extends Component {
 
     getDefaultState() {
         const { tab } = this.props;
+        const defaults = getTabDefaults(tab);
         return {
-            layout: Defaults[tab].widgets.map(
-                ({ type, settings, ...rest }, i) => {
-                    const Widget = Widgets[type];
-                    const { w = 1, h = 1 } = Widget.defaultSize || {};
-                    return { ...rest, w, h, i: i.toString() };
-                }
-            ),
-            settings: Defaults[tab].widgets.map(
+            layout: defaults.widgets.map(({ type, settings, ...rest }, i) => {
+                const Widget = Widgets[type];
+                const { w = 1, h = 1 } = Widget.defaultSize || {};
+                return { ...rest, w, h, i: i.toString() };
+            }),
+            settings: defaults.widgets.map(
                 ({ type, settings, x, y, ...rest }, i) => {
                     const Widget = Widgets[type];
                     return {
