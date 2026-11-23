@@ -15,11 +15,11 @@ require.cache[gotPath] = {
     },
 };
 
-const getDockerTags = require('../routes/getDockerTags');
+const getTemurinDockerTags = require('../routes/getTemurinDockerTags');
 
 const run = async (query) => {
     let result;
-    await getDockerTags(
+    await getTemurinDockerTags(
         { query },
         {
             send: (response) => {

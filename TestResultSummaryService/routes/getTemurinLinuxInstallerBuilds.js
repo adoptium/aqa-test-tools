@@ -12,13 +12,13 @@ const PARAMS = ['TAG', 'ARTIFACTS_TO_COPY', 'DRY_RUN', 'SKIP_UPLOAD'];
 const BUILD_LIMIT = 300;
 
 /**
- * getLinuxInstallerBuilds returns the recent create_installer_linux runs for
+ * getTemurinLinuxInstallerBuilds returns the recent create_installer_linux runs for
  * a release tag, queried from the Jenkins API. Runs are matched on their TAG
  * parameter. The job URL can be overridden with the LINUX_INSTALLER_JOB_URL
  * environment variable, and Jenkins credentials come from the TRSS config file.
  *
  * Example:
- *   GET api/getLinuxInstallerBuilds?tag=jdk-21.0.5+11
+ *   GET api/getTemurinLinuxInstallerBuilds?tag=jdk-21.0.5+11
  *
  * @param {string} tag - Required. Release tag, the TAG parameter of the job
  * @return {object} { builds: [{ buildNum, buildResult, buildUrl, timestamp,

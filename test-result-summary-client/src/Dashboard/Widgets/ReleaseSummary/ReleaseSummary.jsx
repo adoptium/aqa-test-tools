@@ -351,7 +351,7 @@ const loadRelease = async (parentId) => {
             fetchAqaRelease(parent),
             releaseName
                 ? fetchData(
-                      `/api/getLinuxInstallerBuilds?tag=${encodeURIComponent(
+                      `/api/getTemurinLinuxInstallerBuilds?tag=${encodeURIComponent(
                           releaseName
                       )}`
                   )
@@ -359,7 +359,7 @@ const loadRelease = async (parentId) => {
         ]);
     const version = dockerVersionTag(releaseName);
     const docker = version
-        ? await fetchData(`/api/getDockerTags?name=${version}-jdk`)
+        ? await fetchData(`/api/getTemurinDockerTags?name=${version}-jdk`)
         : null;
 
     return {

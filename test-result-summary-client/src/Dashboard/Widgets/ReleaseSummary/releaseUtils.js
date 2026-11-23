@@ -442,7 +442,7 @@ export const linuxInstallerPlatform = (build) => {
 
 /**
  * Linux installer (RPM/DEB/APK) status per Linux platform, from the runs of
- * the create_installer_linux job. response is the getLinuxInstallerBuilds
+ * the create_installer_linux job. response is the getTemurinLinuxInstallerBuilds
  * result: { builds } (or { error } if Jenkins could not be queried). Runs
  * are matched to the release by their TAG
  * parameter, and the newest run of each platform is the one that counts.

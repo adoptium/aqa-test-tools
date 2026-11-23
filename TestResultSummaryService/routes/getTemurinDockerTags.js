@@ -4,12 +4,12 @@ const DEFAULT_REPO = 'library/eclipse-temurin';
 const REPO_REGEX = /^[a-z0-9_.-]+(\/[a-z0-9_.-]+)?$/i;
 
 /**
- * getDockerTags looks up image tags on Docker Hub. It exists because the
+ * getTemurinDockerTags looks up image tags on Docker Hub. It exists because the
  * Docker Hub API does not send CORS headers, so the browser cannot call it
  * directly.
  *
  * Example:
- *   GET api/getDockerTags?name=21.0.5_11-jdk
+ *   GET api/getTemurinDockerTags?name=21.0.5_11-jdk
  *
  * @param {string} name - Required. Tag name (substring match) to search for
  * @param {string} repo - Optional. Docker Hub repository, defaults to

@@ -15,11 +15,11 @@ require.cache[gotPath] = {
     },
 };
 
-const getLinuxInstallerBuilds = require('../routes/getLinuxInstallerBuilds');
+const getTemurinLinuxInstallerBuilds = require('../routes/getTemurinLinuxInstallerBuilds');
 
 const run = async (query) => {
     let result;
-    await getLinuxInstallerBuilds(
+    await getTemurinLinuxInstallerBuilds(
         { query },
         {
             send: (response) => {

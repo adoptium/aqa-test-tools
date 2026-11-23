@@ -61,7 +61,7 @@ const routes = {
     ],
     '(create_installer|sign_installer)': [b('create_installer_mac')],
     '^AQA_Test_Pipeline_JCK$': [],
-    '/api/getLinuxInstallerBuilds?tag=jdk-21.0.5+11': {
+    '/api/getTemurinLinuxInstallerBuilds?tag=jdk-21.0.5+11': {
         builds: [
             b('create_installer_linux', 'SUCCESS', {
                 buildNum: 3,
@@ -75,7 +75,7 @@ const routes = {
             }),
         ],
     },
-    '/api/getDockerTags': {
+    '/api/getTemurinDockerTags': {
         count: 1,
         tags: [{ name: '21.0.5_11-jdk-noble', platforms: ['linux/amd64'] }],
     },
