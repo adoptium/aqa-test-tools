@@ -278,16 +278,32 @@ export const buildPlatforms = ({
             state = 'ready';
         }
 
-        // A closed triage issue means the failures have been triaged
+        // A closed triage issue means the failures have been triaged. It only
+        // applies once everything has finished (JDK build and AQA builds are
+        // done and the TCK results have loaded), otherwise a closed issue
+        // could hide a platform that is still being tested.
         const issue = triageIssues[platform.key] || null;
+        const finished =
+            (jdkKind === 'pass' || jdkKind === 'fail') &&
+            aqa.inProgress === 0 &&
+            aqa.total > 0 &&
+            tckLoaded;
         let triaged = false;
         if (state === 'triage' && issue && issue.state === 'closed') {
-            state = 'ready';
-            triaged = true;
-            const failures = reasons.splice(0, reasons.length);
-            reasons.push(
-                `Triage issue #${issue.number} closed (${failures.join(', ')})`
-            );
+            if (finished) {
+                state = 'ready';
+                triaged = true;
+                const failures = reasons.splice(0, reasons.length);
+                reasons.push(
+                    `Triage issue #${issue.number} closed (${failures.join(
+                        ', '
+                    )})`
+                );
+            } else {
+                reasons.push(
+                    `Triage issue #${issue.number} is closed, but testing has not finished`
+                );
+            }
         } else if (state === 'ready' && issue && issue.state === 'open') {
             reasons.push(`Triage issue #${issue.number} is still open`);
         }
@@ -629,9 +645,6 @@ export const parseReleasePlanRevisions = (commits) =>
 // Revisions to look at in a lookup, so that an old or manually set tag does
 // not cause a request for every revision in the history
 const MAX_REVISIONS = 15;
-// GitHub limits unauthenticated API requests, so only a few distinct planned
-// tags are resolved to commits in one lookup
-const MAX_TAG_LOOKUPS = 5;
 
 export const githubCommitUrl = (repo, ref) =>
     `https://api.github.com/repos/adoptium/${repo}/commits/${encodeURIComponent(
@@ -662,13 +675,16 @@ export const parseCommit = (commit) =>
  * The source tag matches a planned tag when it is that tag, points to the
  * same commit, or is a merge commit with that commit as a parent.
  *
- * Only releasePlan.cfg revisions committed before the pipeline started are
- * searched, newest first. loadPlan(sha) returns the parsed plan of a revision
- * and resolveTag(repo, ref) returns { sha, parents } or null when the ref
- * does not exist. Both throw when they cannot be read.
+ * The source tag is only checked against the releasePlan.cfg revision in
+ * effect when the pipeline started: the newest revision committed before the
+ * start that plans a tag for the repo. An older revision is never used, as the
+ * tag it plans has been superseded. loadPlan(sha) returns the parsed plan of a
+ * revision and resolveTag(repo, ref) returns { sha, parents } or null when the
+ * ref does not exist. Both throw when they cannot be read.
  *
  * Returns { status } where status is one of:
- *   verified   - a planned tag matches (relation: tag, sha or merge)
+ *   verified   - the tag planned when the pipeline started matches (relation:
+ *                tag, sha or merge)
  *   differs    - the tag planned when the pipeline started does not match
  *   planned    - no tag given, plannedTag is the one planned when it started
  *   unresolved - the source tag does not exist in the repo
@@ -689,15 +705,10 @@ export const verifySourceTag = async ({
     const candidates = revisions
         .filter((r) => !startTime || r.time <= startTime)
         .slice(0, MAX_REVISIONS);
-    const checked = new Set();
-    let inEffect = null;
     for (const revision of candidates) {
         const plannedTag = (await loadPlan(revision.sha))[repo];
         if (!plannedTag) continue;
         if (!tag) return { status: 'planned', revision, plannedTag };
-        inEffect = inEffect || { revision, plannedTag };
-        if (checked.has(plannedTag)) continue;
-        checked.add(plannedTag);
 
         let relation = plannedTag === tag ? 'tag' : null;
         if (!relation) {
@@ -707,20 +718,11 @@ export const verifySourceTag = async ({
                 relation = 'merge';
             }
         }
-        if (relation) {
-            return {
-                status: 'verified',
-                relation,
-                revision,
-                plannedTag,
-                source,
-            };
-        }
-        if (checked.size >= MAX_TAG_LOOKUPS) break;
+        return relation
+            ? { status: 'verified', relation, revision, plannedTag, source }
+            : { status: 'differs', revision, plannedTag, source };
     }
-    return inEffect
-        ? { status: 'differs', ...inEffect, source }
-        : { status: 'notfound' };
+    return { status: 'notfound' };
 };
 
 /**
@@ -1004,7 +1006,11 @@ export const releaseNextSteps = ({
     } else if (containers.status !== 'published') {
         steps.push('Publish the container images on Docker Hub');
     }
-    if (releaseNotes && releaseNotes.status !== 'published') {
+    if (!releaseNotes) {
+        steps.push(
+            'Check the release notes manually: the Adoptium API status is unavailable'
+        );
+    } else if (releaseNotes.status !== 'published') {
         steps.push('Publish the release notes');
     }
     return steps;

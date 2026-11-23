@@ -279,6 +279,76 @@ describe('buildPlatforms', () => {
             expect(p.triaged).toBe(true);
         });
 
+        describe('a closed triage issue', () => {
+            const closed = { x64_linux: { number: 9, state: 'closed' } };
+            const failed = tckPass(['x64_linux']).map((r) =>
+                r.target === 'sanity' ? { ...r, buildResult: 'FAILURE' } : r
+            );
+
+            test('overrides failures once testing has finished', () => {
+                const p = platform({
+                    tckResults: failed,
+                    triageIssues: closed,
+                });
+                expect(p.state).toBe('ready');
+                expect(p.triaged).toBe(true);
+            });
+
+            test('does not apply while an AQA build is running', () => {
+                const [p] = buildPlatforms({
+                    sdkBuilds: linux,
+                    testBuilds: [
+                        t('x86-64_linux', 'FAILURE'),
+                        build(
+                            'Test_openjdk21_hs_extended.functional_x86-64_linux',
+                            null,
+                            {
+                                status: 'NotDone',
+                            }
+                        ),
+                    ],
+                    tckResults: tckPass(['x64_linux']),
+                    triageIssues: closed,
+                });
+                expect(p.state).toBe('triage');
+                expect(p.triaged).toBe(false);
+                expect(p.reasons.join(' ')).toMatch(
+                    /#9 is closed, but testing has not finished/
+                );
+            });
+
+            test('does not apply while the JDK build is running', () => {
+                const p = platform({
+                    tckResults: failed,
+                    triageIssues: closed,
+                });
+                const [running] = buildPlatforms({
+                    sdkBuilds: [
+                        build('jdk21u-linux-x64-temurin', null, {
+                            status: 'NotDone',
+                        }),
+                        build('jdk21u-linux-x64-temurin_SmokeTests', 'FAILURE'),
+                    ],
+                    testBuilds: aqa,
+                    triageIssues: closed,
+                });
+                expect(p.state).toBe('ready');
+                expect(running.state).toBe('triage');
+                expect(running.triaged).toBe(false);
+            });
+
+            test('does not apply while the TCK results are loading', () => {
+                const [p] = buildPlatforms({
+                    sdkBuilds: [build('jdk21u-linux-x64-temurin', 'FAILURE')],
+                    testBuilds: aqa,
+                    tckLoaded: false,
+                    triageIssues: closed,
+                });
+                expect(p.state).toBe('triage');
+                expect(p.triaged).toBe(false);
+            });
+        });
+
         test('stays in progress while the TCK results are loading', () => {
             const p = platform({
                 tckResults: tckPass(['x64_linux']),
@@ -835,7 +905,10 @@ jdk27uGA = 'jdk-27.0.1.1-ga'
             });
 
         test('verifies the same tag without resolving the planned tag', async () => {
-            const result = await verify({ tag: 'jdk-21.0.13-ga' });
+            const result = await verify({
+                tag: 'jdk-21.0.13-ga',
+                startTime: day(25),
+            });
             expect(result).toMatchObject({
                 status: 'verified',
                 relation: 'tag',
@@ -846,7 +919,10 @@ jdk27uGA = 'jdk-27.0.1.1-ga'
         });
 
         test('verifies a different tag on the same commit', async () => {
-            const result = await verify({ tag: 'jdk-21.0.13+9' });
+            const result = await verify({
+                tag: 'jdk-21.0.13+9',
+                startTime: day(25),
+            });
             expect(result).toMatchObject({
                 status: 'verified',
                 relation: 'sha',
@@ -856,7 +932,10 @@ jdk27uGA = 'jdk-27.0.1.1-ga'
         });
 
         test('verifies a _adopt merge of the planned tag', async () => {
-            const result = await verify({ tag: 'jdk-21.0.13+9_adopt' });
+            const result = await verify({
+                tag: 'jdk-21.0.13+9_adopt',
+                startTime: day(25),
+            });
             expect(result).toMatchObject({
                 status: 'verified',
                 relation: 'merge',
@@ -876,18 +955,38 @@ jdk27uGA = 'jdk-27.0.1.1-ga'
             expect(loaded).toEqual(['r1']);
         });
 
-        test('reports the planned tag in effect when nothing matches', async () => {
-            const result = await verify({ tag: 'jdk-21.0.12-ga' });
-            // the newest revision is checked first but the older one matches
-            expect(result.status).toBe('verified');
-            expect(result.revision.sha).toBe('r1');
-            const differs = await verify({
+        test('only compares with the plan in effect when the pipeline started', async () => {
+            // r3 is in effect and plans jdk-21.0.13.1-ga. The tag matches the
+            // superseded plan of r1, which must not verify it.
+            const superseded = await verify({ tag: 'jdk-21.0.12-ga' });
+            expect(superseded.status).toBe('differs');
+            expect(superseded.plannedTag).toBe('jdk-21.0.13.1-ga');
+            expect(superseded.revision.sha).toBe('r3');
+            expect(loaded).toEqual(['r3']);
+
+            // with r2 in effect the same tag is also not the planned one
+            const older = await verify({
                 tag: 'jdk-21.0.13.1-ga',
                 startTime: day(25),
             });
-            expect(differs.status).toBe('differs');
-            expect(differs.plannedTag).toBe('jdk-21.0.13-ga');
-            expect(differs.revision.sha).toBe('r2');
+            expect(older.status).toBe('differs');
+            expect(older.plannedTag).toBe('jdk-21.0.13-ga');
+            expect(older.revision.sha).toBe('r2');
+
+            // and verifies once the plan in effect is r3
+            const current = await verify({ tag: 'jdk-21.0.13.1-ga' });
+            expect(current.status).toBe('verified');
+            expect(current.revision.sha).toBe('r3');
+        });
+
+        test('skips revisions that do not plan the repo', async () => {
+            const result = await verify({
+                repo: 'jdk17u',
+                tag: 'jdk-17.0.21-ga',
+            });
+            // r3 has no jdk17u entry, r2 is the one in effect
+            expect(result.status).toBe('verified');
+            expect(result.revision.sha).toBe('r2');
         });
 
         test('is unresolved when the source tag does not exist', async () => {
@@ -1079,9 +1178,18 @@ describe('releaseNextSteps', () => {
             linux: { status: 'unavailable', expected: platforms },
             releaseNotes: null,
         });
-        expect(steps).toHaveLength(3);
+        expect(steps).toHaveLength(4);
         expect(steps.join(' ')).toMatch(/Adoptium API/);
         expect(steps.join(' ')).toMatch(/create_installer_linux/);
         expect(steps.join(' ')).toMatch(/Docker Hub/);
+        expect(steps).toContain(
+            'Check the release notes manually: the Adoptium API status is unavailable'
+        );
+    });
+
+    test('is not complete when the release notes status is unavailable', () => {
+        expect(releaseNextSteps({ ...done, releaseNotes: null })).toEqual([
+            'Check the release notes manually: the Adoptium API status is unavailable',
+        ]);
     });
 });

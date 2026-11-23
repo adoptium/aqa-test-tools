@@ -145,7 +145,8 @@ const loadPlan = (sha) => {
 };
 
 // Resolves a tag (or branch) of an adoptium repo to its commit and parents.
-// Returns null when it does not exist. A tag does not move, so it is cached.
+// Returns null when it does not exist. A tag does not move, so it is cached
+// once found.
 const commitCache = new Map();
 
 const resolveTag = (repo, ref) => {
@@ -164,7 +165,14 @@ const resolveTag = (repo, ref) => {
             }
         );
         commitCache.set(key, promise);
-        promise.catch(() => commitCache.delete(key));
+        // Only found commits are cached. A tag that does not exist yet may be
+        // created later, so it is looked up again on the next load.
+        promise.then(
+            (commit) => {
+                if (!commit) commitCache.delete(key);
+            },
+            () => commitCache.delete(key)
+        );
     }
     return commitCache.get(key);
 };
@@ -322,8 +330,14 @@ const loadRelease = async (parentId) => {
             childBuilds(parentId, '(create_installer|sign_installer)'),
             childBuilds(parentId, '^AQA_Test_Pipeline_JCK$'),
         ]);
+    // fetchData returns undefined when a request fails. The parent and the JDK
+    // and AQA builds decide the platforms, so a failure must not be shown as
+    // an empty pipeline.
+    if (![parentRes, sdkBuilds, testBuilds].every(Array.isArray)) {
+        throw new Error('Cannot read the builds of the release pipeline');
+    }
     const asList = (v) => (Array.isArray(v) ? v : []);
-    const parent = (parentRes && parentRes[0]) || null;
+    const parent = parentRes[0] || null;
     if (!parent) return null;
 
     const sdk = asList(sdkBuilds);

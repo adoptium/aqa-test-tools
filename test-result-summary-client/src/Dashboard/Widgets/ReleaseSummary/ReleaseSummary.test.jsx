@@ -560,3 +560,98 @@ describe('TCK results', () => {
         await act(async () => root.unmount());
     });
 });
+
+describe('failures reading data', () => {
+    const failing = (fragment) => {
+        const original = fetchData.getMockImplementation();
+        fetchData.mockImplementation(async (url) =>
+            decodeURIComponent(url).includes(fragment)
+                ? undefined
+                : original(url)
+        );
+    };
+
+    test('a failed JDK build query is an error, not an empty pipeline', async () => {
+        jest.spyOn(console, 'error').mockImplementation(() => {});
+        failing('^(jdk[0-9]{1,2}|jdk-|Build_)');
+        const { container, root } = await renderSelected();
+        const text = container.textContent;
+        expect(text).toContain('Failed to load release information');
+        expect(text).not.toContain('The release is complete');
+        expect(text).not.toContain('Platforms Published');
+        await act(async () => root.unmount());
+    });
+
+    test('a failed AQA build query is an error, not an empty pipeline', async () => {
+        jest.spyOn(console, 'error').mockImplementation(() => {});
+        failing('^(Test|Perf)_openjdk.*');
+        const { container, root } = await renderSelected();
+        expect(container.textContent).toContain(
+            'Failed to load release information'
+        );
+        expect(container.textContent).not.toContain('The release is complete');
+        await act(async () => root.unmount());
+    });
+
+    test('a failed installer query does not stop the summary', async () => {
+        failing('(create_installer|sign_installer)');
+        const { container, root } = await renderSelected();
+        expect(container.textContent).toContain('Platforms Published (2)');
+        await act(async () => root.unmount());
+    });
+
+    test('release notes that cannot be read need a manual check', async () => {
+        notesResponse = { status: 500, ok: false, json: async () => ({}) };
+        const { container, root } = await renderSelected();
+        expect(container.textContent).toContain(
+            'Check the release notes manually'
+        );
+        await act(async () => root.unmount());
+    });
+});
+
+describe('source tag lookups', () => {
+    test('a tag that does not exist yet is looked up again on refresh', async () => {
+        const parent = routes['/api/getData'][0];
+        parent.buildParams = [
+            { name: 'overridePublishName', value: 'jdk-21.0.5+11' },
+            { name: 'scmReference', value: 'jdk-21.0.14+1_adopt' },
+        ];
+        const lookups = () =>
+            global.fetch.mock.calls.filter(([u]) =>
+                u.includes('jdk21u/commits/jdk-21.0.14%2B1_adopt')
+            ).length;
+        const { container, root } = await renderSelected();
+        expect(container.textContent).toContain(
+            'Tag not found in adoptium/jdk21u'
+        );
+        expect(lookups()).toBe(1);
+
+        // the tag is created on GitHub
+        githubCommits['jdk-21.0.14+1_adopt'] = {
+            sha: 'merge14',
+            parents: [{ sha: 'rel' }, { sha: 'ga131' }],
+        };
+        try {
+            await act(async () => {
+                container.querySelector('button[aria-label="Refresh"]').click();
+            });
+            await flush();
+            await flush();
+            expect(lookups()).toBe(2);
+            expect(container.textContent).not.toContain('Tag not found');
+            expect(container.textContent).toContain('Matches planned');
+
+            // a tag that was found is not requested again
+            await act(async () => {
+                container.querySelector('button[aria-label="Refresh"]').click();
+            });
+            await flush();
+            await flush();
+            expect(lookups()).toBe(2);
+        } finally {
+            delete githubCommits['jdk-21.0.14+1_adopt'];
+        }
+        await act(async () => root.unmount());
+    });
+});
