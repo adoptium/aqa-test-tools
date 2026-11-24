@@ -549,6 +549,20 @@ export const paramValue = (build, name) => {
     return param ? param.value : null;
 };
 
+/**
+ * Tag shown beside a pipeline in the dropdown so that runs are easy to tell
+ * apart: the tag being built (scmReference), else the name it is published
+ * under. Empty when the pipeline has neither parameter.
+ */
+export const pipelineTag = (build) => {
+    const names = ['scmReference', 'overridePublishName', 'publishName'];
+    for (const name of names) {
+        const value = (paramValue(build, name) || '').trim();
+        if (value) return value;
+    }
+    return '';
+};
+
 export const getReleaseName = (parent, childBuilds = []) => {
     const builds = [parent, ...childBuilds];
     for (const name of PUBLISH_PARAMS) {

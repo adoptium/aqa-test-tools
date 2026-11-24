@@ -37,7 +37,19 @@ const routes = {
     ],
     '/api/getTopLevelBuildNames?type=Test': [],
     '/api/getBuildHistory': [
-        b('release-openjdk21-pipeline', 'SUCCESS', { _id: 'p1', buildNum: 7 }),
+        b('release-openjdk21-pipeline', 'SUCCESS', {
+            _id: 'p1',
+            buildNum: 7,
+            timestamp: Date.parse('2026-11-01T00:00:00Z'),
+            buildParams: [
+                { name: 'scmReference', value: 'jdk-21.0.13.1+2_adopt' },
+            ],
+        }),
+        b('release-openjdk21-pipeline', 'SUCCESS', {
+            _id: 'p0',
+            buildNum: 6,
+            timestamp: Date.parse('2026-10-01T00:00:00Z'),
+        }),
     ],
     '/api/getData': [
         b('release-openjdk21-pipeline', 'SUCCESS', {
@@ -654,4 +666,21 @@ describe('source tag lookups', () => {
         }
         await act(async () => root.unmount());
     });
+});
+
+test('dropdown options include the tag being built', async () => {
+    const { container, root } = await renderVersion('21');
+    await act(async () => {
+        container
+            .querySelector('.ant-select-selector')
+            .dispatchEvent(new MouseEvent('mousedown', { bubbles: true }));
+    });
+    await flush();
+    const text = document.body.textContent;
+    expect(text).toContain(
+        'release-openjdk21-pipeline #7 - jdk-21.0.13.1+2_adopt'
+    );
+    // a run without tag parameters keeps the plain label
+    expect(text).toMatch(/release-openjdk21-pipeline #6 \(\w{3} \d+ 2026\)/);
+    await act(async () => root.unmount());
 });
