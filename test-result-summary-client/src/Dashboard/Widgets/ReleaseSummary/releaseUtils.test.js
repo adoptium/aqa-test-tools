@@ -10,6 +10,7 @@ import {
     parseReleasePlan,
     parseReleasePlanRevisions,
     pipelineRepo,
+    pipelineTag,
     releaseNextSteps,
     isHeadlessPlatform,
     parseAqaIssues,
@@ -795,6 +796,46 @@ describe('release name', () => {
         expect(dockerVersionTag('jdk-21.0.5+11')).toBe('21.0.5_11');
         expect(dockerVersionTag('jdk8u432-b06')).toBe('8u432-b06');
         expect(dockerVersionTag(null)).toBeNull();
+    });
+});
+
+describe('pipelineTag', () => {
+    const withParams = (params) => ({
+        buildParams: Object.entries(params).map(([name, value]) => ({
+            name,
+            value,
+        })),
+    });
+
+    test('is the tag the pipeline builds', () => {
+        expect(
+            pipelineTag(
+                withParams({
+                    scmReference: 'jdk-21.0.13.1+2_adopt',
+                    overridePublishName: 'jdk-21.0.13.1+2',
+                })
+            )
+        ).toBe('jdk-21.0.13.1+2_adopt');
+    });
+
+    test('falls back to the publish name', () => {
+        expect(
+            pipelineTag(
+                withParams({
+                    scmReference: ' ',
+                    overridePublishName: 'jdk-21+1',
+                })
+            )
+        ).toBe('jdk-21+1');
+        expect(pipelineTag(withParams({ publishName: 'jdk-17+2' }))).toBe(
+            'jdk-17+2'
+        );
+    });
+
+    test('is empty without tag parameters', () => {
+        expect(pipelineTag(withParams({ other: 'x' }))).toBe('');
+        expect(pipelineTag({})).toBe('');
+        expect(pipelineTag(null)).toBe('');
     });
 });
 

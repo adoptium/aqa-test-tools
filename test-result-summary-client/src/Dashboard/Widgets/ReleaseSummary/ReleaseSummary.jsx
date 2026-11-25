@@ -39,6 +39,7 @@ import {
     parseReleasePlanRevisions,
     paramValue,
     pipelineRepo,
+    pipelineTag,
     pipelineVersion,
     releaseNextSteps,
     releasePlanUrl,
@@ -310,6 +311,8 @@ const loadPipelines = async (version) => {
                 options: (Array.isArray(builds) ? builds : []).map((b) => ({
                     value: b._id,
                     label: `${buildName} #${b.buildNum}${
+                        pipelineTag(b) ? ` - ${pipelineTag(b)}` : ''
+                    }${
                         b.timestamp
                             ? ` (${moment(b.timestamp).format('MMM DD YYYY')})`
                             : ''
